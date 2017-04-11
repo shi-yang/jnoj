@@ -1,0 +1,7 @@
+{
+  "require": {
+    "kriswallsmith/buzz": "v0.10",
+    "michelf/php-markdown": "1.5",
+    "jv2222/ezsql": "dev-master"
+  }
+}

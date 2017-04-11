@@ -1,0 +1,526 @@
+2017-03-19 11:00:17 Main[7860]: Successfully connected.
+2017-03-19 11:14:31 Main[7860]: Runid: 3 Type: 2
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.10
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.1
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.2
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.3
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.4
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.5
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.6
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.7
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.8
+2017-03-19 11:14:31 Main[7860]: Checking testdata/15/dining.9
+2017-03-19 11:14:31 Main[7860]: Do testdata/15/dining.10
+2017-03-19 11:14:31 Main[7860]: Compiling tmpfile/yoaagsrvhw.cpp
+2017-03-19 11:14:31 Main[7860]: Compile Child Process: 8659
+2017-03-19 11:14:31 Main[7860]: Compile time limit: 10
+2017-03-19 11:14:31 Main[7860]: Compiling Used: 0
+2017-03-19 11:14:31 Main[7860]: Compiled
+2017-03-19 11:14:31 Main[7860]: Sending results/3
+2017-03-19 11:14:31 Main[7860]: Sent.
+2017-03-19 11:16:00 Main[7860]: Runid: 4 Type: 2
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.10
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.1
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.2
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.3
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.4
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.5
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.6
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.7
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.8
+2017-03-19 11:16:00 Main[7860]: Checking testdata/15/dining.9
+2017-03-19 11:16:00 Main[7860]: Do testdata/15/dining.10
+2017-03-19 11:16:00 Main[7860]: Compiling tmpfile/bkgpkqcbxt.cpp
+2017-03-19 11:16:00 Main[7860]: Compile Child Process: 8752
+2017-03-19 11:16:00 Main[7860]: Compile time limit: 10
+2017-03-19 11:16:00 Main[7860]: Compiling Used: 0
+2017-03-19 11:16:01 Main[7860]: Compiled
+2017-03-19 11:16:01 Main[7860]: Watch Child Process: 8766
+2017-03-19 11:16:01 Sandbox[8766]: Program Child Process: 8767
+2017-03-19 11:16:01 Sandbox[8766]: Running program
+2017-03-19 11:16:01 Runner[8767]: Time limit for this program is 1
+2017-03-19 11:16:01 Sandbox[8766]: Used time: 0
+2017-03-19 11:16:01 Sandbox[8766]: Used Memory: 237568
+2017-03-19 11:16:01 Sandbox[8766]: Run status: 1407
+2017-03-19 11:16:01 Main[7860]: Running Used: 0
+2017-03-19 11:16:01 Main[7860]: Runned.
+2017-03-19 11:16:01 Main[7860]: Sending results/4
+2017-03-19 11:16:01 Main[7860]: Sent.
+2017-03-19 11:17:06 Main[7860]: Runid: 4 Type: 2
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.10
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.1
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.2
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.3
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.4
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.5
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.6
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.7
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.8
+2017-03-19 11:17:06 Main[7860]: Checking testdata/15/dining.9
+2017-03-19 11:17:06 Main[7860]: Do testdata/15/dining.10
+2017-03-19 11:17:06 Main[7860]: Compiling tmpfile/tkqaxnhfno.cpp
+2017-03-19 11:17:06 Main[7860]: Compile Child Process: 8863
+2017-03-19 11:17:06 Main[7860]: Compile time limit: 10
+2017-03-19 11:17:06 Main[7860]: Compiling Used: 0
+2017-03-19 11:17:06 Main[7860]: Compiled
+2017-03-19 11:17:06 Main[7860]: Watch Child Process: 8877
+2017-03-19 11:17:06 Sandbox[8877]: Program Child Process: 8878
+2017-03-19 11:17:06 Sandbox[8877]: Running program
+2017-03-19 11:17:06 Runner[8878]: Time limit for this program is 2
+2017-03-19 11:17:06 Sandbox[8877]: Used time: 23
+2017-03-19 11:17:06 Sandbox[8877]: Used Memory: 1335296
+2017-03-19 11:17:06 Sandbox[8877]: Run status: 0
+2017-03-19 11:17:06 Main[7860]: Running Used: 0
+2017-03-19 11:17:06 Main[7860]: Runned.
+2017-03-19 11:17:06 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:06 Main[7860]: Do testdata/15/dining.1
+2017-03-19 11:17:06 Main[7860]: Watch Child Process: 8888
+2017-03-19 11:17:06 Sandbox[8888]: Program Child Process: 8889
+2017-03-19 11:17:06 Sandbox[8888]: Running program
+2017-03-19 11:17:06 Runner[8889]: Time limit for this program is 2
+2017-03-19 11:17:06 Sandbox[8888]: Used time: 0
+2017-03-19 11:17:06 Sandbox[8888]: Used Memory: 1335296
+2017-03-19 11:17:06 Sandbox[8888]: Run status: 0
+2017-03-19 11:17:06 Main[7860]: Running Used: 0
+2017-03-19 11:17:06 Main[7860]: Runned.
+2017-03-19 11:17:06 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:06 Main[7860]: Do testdata/15/dining.2
+2017-03-19 11:17:06 Main[7860]: Watch Child Process: 8899
+2017-03-19 11:17:06 Sandbox[8899]: Program Child Process: 8900
+2017-03-19 11:17:06 Sandbox[8899]: Running program
+2017-03-19 11:17:06 Runner[8900]: Time limit for this program is 2
+2017-03-19 11:17:06 Sandbox[8899]: Used time: 0
+2017-03-19 11:17:06 Sandbox[8899]: Used Memory: 1335296
+2017-03-19 11:17:06 Sandbox[8899]: Run status: 0
+2017-03-19 11:17:06 Main[7860]: Running Used: 0
+2017-03-19 11:17:06 Main[7860]: Runned.
+2017-03-19 11:17:06 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:06 Main[7860]: Do testdata/15/dining.3
+2017-03-19 11:17:06 Main[7860]: Watch Child Process: 8910
+2017-03-19 11:17:06 Sandbox[8910]: Program Child Process: 8911
+2017-03-19 11:17:06 Sandbox[8910]: Running program
+2017-03-19 11:17:06 Runner[8911]: Time limit for this program is 2
+2017-03-19 11:17:06 Sandbox[8910]: Used time: 3
+2017-03-19 11:17:06 Sandbox[8910]: Used Memory: 1335296
+2017-03-19 11:17:06 Sandbox[8910]: Run status: 0
+2017-03-19 11:17:06 Main[7860]: Running Used: 0
+2017-03-19 11:17:06 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Do testdata/15/dining.4
+2017-03-19 11:17:07 Main[7860]: Watch Child Process: 8921
+2017-03-19 11:17:07 Sandbox[8921]: Program Child Process: 8922
+2017-03-19 11:17:07 Sandbox[8921]: Running program
+2017-03-19 11:17:07 Runner[8922]: Time limit for this program is 2
+2017-03-19 11:17:07 Sandbox[8921]: Used time: 9
+2017-03-19 11:17:07 Sandbox[8921]: Used Memory: 1335296
+2017-03-19 11:17:07 Sandbox[8921]: Run status: 0
+2017-03-19 11:17:07 Main[7860]: Running Used: 0
+2017-03-19 11:17:07 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Do testdata/15/dining.5
+2017-03-19 11:17:07 Main[7860]: Watch Child Process: 8932
+2017-03-19 11:17:07 Sandbox[8932]: Program Child Process: 8933
+2017-03-19 11:17:07 Sandbox[8932]: Running program
+2017-03-19 11:17:07 Runner[8933]: Time limit for this program is 2
+2017-03-19 11:17:07 Sandbox[8932]: Used time: 13
+2017-03-19 11:17:07 Sandbox[8932]: Used Memory: 1335296
+2017-03-19 11:17:07 Sandbox[8932]: Run status: 0
+2017-03-19 11:17:07 Main[7860]: Running Used: 0
+2017-03-19 11:17:07 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Do testdata/15/dining.6
+2017-03-19 11:17:07 Main[7860]: Watch Child Process: 8943
+2017-03-19 11:17:07 Sandbox[8943]: Program Child Process: 8944
+2017-03-19 11:17:07 Sandbox[8943]: Running program
+2017-03-19 11:17:07 Runner[8944]: Time limit for this program is 2
+2017-03-19 11:17:07 Sandbox[8943]: Used time: 19
+2017-03-19 11:17:07 Sandbox[8943]: Used Memory: 1335296
+2017-03-19 11:17:07 Sandbox[8943]: Run status: 0
+2017-03-19 11:17:07 Main[7860]: Running Used: 0
+2017-03-19 11:17:07 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Do testdata/15/dining.7
+2017-03-19 11:17:07 Main[7860]: Watch Child Process: 8954
+2017-03-19 11:17:07 Sandbox[8954]: Program Child Process: 8955
+2017-03-19 11:17:07 Sandbox[8954]: Running program
+2017-03-19 11:17:07 Runner[8955]: Time limit for this program is 2
+2017-03-19 11:17:07 Sandbox[8954]: Used time: 19
+2017-03-19 11:17:07 Sandbox[8954]: Used Memory: 1335296
+2017-03-19 11:17:07 Sandbox[8954]: Run status: 0
+2017-03-19 11:17:07 Main[7860]: Running Used: 0
+2017-03-19 11:17:07 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Do testdata/15/dining.8
+2017-03-19 11:17:07 Main[7860]: Watch Child Process: 8965
+2017-03-19 11:17:07 Sandbox[8965]: Program Child Process: 8966
+2017-03-19 11:17:07 Sandbox[8965]: Running program
+2017-03-19 11:17:07 Runner[8966]: Time limit for this program is 2
+2017-03-19 11:17:07 Sandbox[8965]: Used time: 26
+2017-03-19 11:17:07 Sandbox[8965]: Used Memory: 1335296
+2017-03-19 11:17:07 Sandbox[8965]: Run status: 0
+2017-03-19 11:17:07 Main[7860]: Running Used: 0
+2017-03-19 11:17:07 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Do testdata/15/dining.9
+2017-03-19 11:17:07 Main[7860]: Watch Child Process: 8976
+2017-03-19 11:17:07 Sandbox[8976]: Program Child Process: 8977
+2017-03-19 11:17:07 Sandbox[8976]: Running program
+2017-03-19 11:17:07 Runner[8977]: Time limit for this program is 2
+2017-03-19 11:17:07 Sandbox[8976]: Used time: 23
+2017-03-19 11:17:07 Sandbox[8976]: Used Memory: 1335296
+2017-03-19 11:17:07 Sandbox[8976]: Run status: 0
+2017-03-19 11:17:07 Main[7860]: Running Used: 0
+2017-03-19 11:17:07 Main[7860]: Runned.
+2017-03-19 11:17:07 Main[7860]: Comparing tmpfile/jnhnxffxhz and tmpfile/ahtpuirooy
+2017-03-19 11:17:07 Main[7860]: Sending results/4
+2017-03-19 11:17:07 Main[7860]: Sent.
+2017-03-19 11:34:46 Main[7860]: Runid: 5 Type: 2
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.10
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.1
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.2
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.3
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.4
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.5
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.6
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.7
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.8
+2017-03-19 11:34:46 Main[7860]: Checking testdata/15/dining.9
+2017-03-19 11:34:46 Main[7860]: Do testdata/15/dining.10
+2017-03-19 11:34:46 Main[7860]: Compiling tmpfile/tilyesiriv.cpp
+2017-03-19 11:34:46 Main[7860]: Compile Child Process: 9536
+2017-03-19 11:34:46 Main[7860]: Compile time limit: 10
+2017-03-19 11:34:46 Main[7860]: Compiling Used: 0
+2017-03-19 11:34:46 Main[7860]: Compiled
+2017-03-19 11:34:46 Main[7860]: Watch Child Process: 9550
+2017-03-19 11:34:46 Sandbox[9550]: Program Child Process: 9551
+2017-03-19 11:34:46 Sandbox[9550]: Running program
+2017-03-19 11:34:46 Runner[9551]: Time limit for this program is 2
+2017-03-19 11:34:46 Sandbox[9550]: Used time: 0
+2017-03-19 11:34:46 Sandbox[9550]: Used Memory: 598016
+2017-03-19 11:34:46 Sandbox[9550]: Run status: 0
+2017-03-19 11:34:46 Main[7860]: Running Used: 0
+2017-03-19 11:34:46 Main[7860]: Runned.
+2017-03-19 11:34:46 Main[7860]: Comparing tmpfile/mocwhklonh and tmpfile/hqbufowqgx
+2017-03-19 11:34:46 Main[7860]: Expected 9, Found 1 Not AC.
+2017-03-19 11:34:46 Main[7860]: Expected 9, Found 1 Not PE.
+2017-03-19 11:34:46 Main[7860]: Sending results/5
+2017-03-19 11:34:46 Main[7860]: Sent.
+2017-03-19 11:41:50 Main[7860]: Runid: 6 Type: 2
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.10
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.1
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.2
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.3
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.4
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.5
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.6
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.7
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.8
+2017-03-19 11:41:50 Main[7860]: Checking testdata/15/dining.9
+2017-03-19 11:41:50 Main[7860]: Do testdata/15/dining.10
+2017-03-19 11:41:50 Main[7860]: Compiling tmpfile/zjszuhcukq.cpp
+2017-03-19 11:41:50 Main[7860]: Compile Child Process: 9761
+2017-03-19 11:41:50 Main[7860]: Compile time limit: 10
+2017-03-19 11:41:50 Main[7860]: Compiling Used: 0
+2017-03-19 11:41:51 Main[7860]: Compiled
+2017-03-19 11:41:51 Main[7860]: Watch Child Process: 9775
+2017-03-19 11:41:51 Sandbox[9775]: Program Child Process: 9776
+2017-03-19 11:41:51 Sandbox[9775]: Running program
+2017-03-19 11:41:51 Runner[9776]: Time limit for this program is 2
+2017-03-19 11:41:51 Sandbox[9775]: Used time: 0
+2017-03-19 11:41:51 Sandbox[9775]: Used Memory: 606208
+2017-03-19 11:41:51 Sandbox[9775]: Run status: 0
+2017-03-19 11:41:51 Main[7860]: Running Used: 0
+2017-03-19 11:41:51 Main[7860]: Runned.
+2017-03-19 11:41:51 Main[7860]: Comparing tmpfile/bszlmbydnf and tmpfile/hxyvyxjcjt
+2017-03-19 11:41:51 Main[7860]: Expected 9, Found 3 Not AC.
+2017-03-19 11:41:51 Main[7860]: Expected 9, Found 3 Not PE.
+2017-03-19 11:41:51 Main[7860]: Sending results/6
+2017-03-19 11:41:51 Main[7860]: Sent.
+2017-03-19 12:11:50 Main[7860]: Runid: 7 Type: 2
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.10
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.1
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.2
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.3
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.4
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.5
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.6
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.7
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.8
+2017-03-19 12:11:50 Main[7860]: Checking testdata/15/dining.9
+2017-03-19 12:11:50 Main[7860]: Do testdata/15/dining.10
+2017-03-19 12:11:50 Main[7860]: Compiling tmpfile/tgqghvhvsb.cpp
+2017-03-19 12:11:50 Main[7860]: Compile Child Process: 10353
+2017-03-19 12:11:50 Main[7860]: Compile time limit: 10
+2017-03-19 12:11:50 Main[7860]: Compiling Used: 0
+2017-03-19 12:11:51 Main[7860]: Compiled
+2017-03-19 12:11:51 Main[7860]: Sending results/7
+2017-03-19 12:11:51 Main[7860]: Sent.
+2017-03-19 12:59:49 Main[7860]: Runid: 8 Type: 2
+2017-03-19 12:59:49 Main[7860]: Checking testdata/7/1
+2017-03-19 12:59:49 Main[7860]: Do testdata/7/1
+2017-03-19 12:59:49 Main[7860]: Compiling tmpfile/garugecxsz.cpp
+2017-03-19 12:59:49 Main[7860]: Compile Child Process: 10864
+2017-03-19 12:59:49 Main[7860]: Compile time limit: 10
+2017-03-19 12:59:49 Main[7860]: Compiling Used: 0
+2017-03-19 12:59:49 Main[7860]: Compiled
+2017-03-19 12:59:49 Main[7860]: Watch Child Process: 10878
+2017-03-19 12:59:49 Sandbox[10878]: Program Child Process: 10879
+2017-03-19 12:59:49 Sandbox[10878]: Running program
+2017-03-19 12:59:49 Runner[10879]: Time limit for this program is 1
+2017-03-19 12:59:49 Sandbox[10878]: Used time: 0
+2017-03-19 12:59:49 Sandbox[10878]: Used Memory: 614400
+2017-03-19 12:59:49 Sandbox[10878]: Run status: 0
+2017-03-19 12:59:50 Main[7860]: Running Used: 1
+2017-03-19 12:59:50 Main[7860]: Runned.
+2017-03-19 12:59:50 Main[7860]: Comparing tmpfile/wnoekirmwq and tmpfile/hdqzjxwssp
+2017-03-19 12:59:50 Main[7860]: Expected d, Found a Not AC.
+2017-03-19 12:59:50 Main[7860]: Expected d, Found a Not PE.
+2017-03-19 12:59:50 Main[7860]: Sending results/8
+2017-03-19 12:59:50 Main[7860]: Sent.
+2017-03-19 13:33:47 Main[29304]: Successfully connected.
+2017-03-19 13:34:02 Main[29304]: Runid: 9 Type: 2
+2017-03-19 13:34:02 Main[29304]: Checking testdata/7/1
+2017-03-19 13:34:02 Main[29304]: Do testdata/7/1
+2017-03-19 13:34:02 Main[29304]: Compiling tmpfile/kucetjyjdn.cpp
+2017-03-19 13:34:02 Main[29304]: Compile Child Process: 29326
+2017-03-19 13:34:02 Main[29304]: Compile time limit: 10
+2017-03-19 13:34:02 Main[29304]: Compiling Used: 0
+2017-03-19 13:34:02 Main[29304]: Compiled
+2017-03-19 13:34:03 Main[29304]: Watch Child Process: 29340
+2017-03-19 13:34:03 Sandbox[29340]: Program Child Process: 29341
+2017-03-19 13:34:03 Sandbox[29340]: Running program
+2017-03-19 13:34:03 Runner[29341]: Time limit for this program is 1
+2017-03-19 13:34:03 Sandbox[29340]: Used time: 3
+2017-03-19 13:34:03 Sandbox[29340]: Used Memory: 606208
+2017-03-19 13:34:03 Sandbox[29340]: Run status: 0
+2017-03-19 13:34:03 Main[29304]: Running Used: 0
+2017-03-19 13:34:03 Main[29304]: Runned.
+2017-03-19 13:34:03 Main[29304]: Comparing tmpfile/gxtwhsqsmk and tmpfile/vkshlgeqbj
+2017-03-19 13:34:03 Main[29304]: Expected d, Found a Not AC.
+2017-03-19 13:34:03 Main[29304]: Expected d, Found a Not PE.
+2017-03-19 13:34:03 Main[29304]: Sending results/9
+2017-03-19 13:34:03 Main[29304]: Sent.
+2017-03-19 13:41:19 Main[29304]: Runid: 9 Type: 2
+2017-03-19 13:41:19 Main[29304]: Checking testdata/7/1
+2017-03-19 13:41:19 Main[29304]: Do testdata/7/1
+2017-03-19 13:41:19 Main[29304]: Compiling tmpfile/jyouyorswe.cpp
+2017-03-19 13:41:19 Main[29304]: Compile Child Process: 29975
+2017-03-19 13:41:19 Main[29304]: Compile time limit: 10
+2017-03-19 13:41:19 Main[29304]: Compiling Used: 0
+2017-03-19 13:41:19 Main[29304]: Compiled
+2017-03-19 13:41:19 Main[29304]: Watch Child Process: 29989
+2017-03-19 13:41:19 Sandbox[29989]: Program Child Process: 29990
+2017-03-19 13:41:19 Sandbox[29989]: Running program
+2017-03-19 13:41:19 Runner[29990]: Time limit for this program is 1
+2017-03-19 13:41:19 Sandbox[29989]: Used time: 0
+2017-03-19 13:41:19 Sandbox[29989]: Used Memory: 618496
+2017-03-19 13:41:19 Sandbox[29989]: Run status: 0
+2017-03-19 13:41:19 Main[29304]: Running Used: 0
+2017-03-19 13:41:19 Main[29304]: Runned.
+2017-03-19 13:41:19 Main[29304]: Comparing tmpfile/axlzyxshlw and tmpfile/tqspijjxbe
+2017-03-19 13:41:19 Main[29304]: Expected d, Found a Not AC.
+2017-03-19 13:41:19 Main[29304]: Expected d, Found a Not PE.
+2017-03-19 13:41:19 Main[29304]: Sending results/9
+2017-03-19 13:41:19 Main[29304]: Sent.
+2017-03-19 13:44:27 Main[31440]: Successfully connected.
+2017-03-19 13:44:33 Main[31440]: Runid: 9 Type: 2
+2017-03-19 13:44:33 Main[31440]: Checking testdata/7/1
+2017-03-19 13:44:33 Main[31440]: Do testdata/7/1
+2017-03-19 13:44:33 Main[31440]: Compiling tmpfile/dvbxiuhozy.cpp
+2017-03-19 13:44:33 Main[31440]: Compile Child Process: 31454
+2017-03-19 13:44:33 Main[31440]: Compile time limit: 10
+2017-03-19 13:44:33 Main[31440]: Compiling Used: 0
+2017-03-19 13:44:33 Main[31440]: Compiled
+2017-03-19 13:44:34 Main[31440]: Watch Child Process: 31468
+2017-03-19 13:44:34 Runner[31469]: Time limit for this program is 1
+2017-03-19 13:44:34 Sandbox[31468]: Program Child Process: 31469
+2017-03-19 13:44:34 Sandbox[31468]: Running program
+2017-03-19 13:44:34 Sandbox[31468]: Used time: 0
+2017-03-19 13:44:34 Sandbox[31468]: Used Memory: 618496
+2017-03-19 13:44:34 Sandbox[31468]: Run status: 0
+2017-03-19 13:44:34 Main[31440]: Running Used: 0
+2017-03-19 13:44:34 Main[31440]: Runned.
+2017-03-19 13:44:34 Main[31440]: Comparing tmpfile/jjtntkfdpa and tmpfile/avedksbkzw
+2017-03-19 13:44:34 Main[31440]: Expected d, Found a Not AC.
+2017-03-19 13:44:34 Main[31440]: Expected d, Found a Not PE.
+2017-03-19 13:44:34 Main[31440]: Sending results/9
+2017-03-19 13:44:34 Main[31440]: Sent.
+2017-03-19 13:45:48 Main[31440]: Runid: 10 Type: 2
+2017-03-19 13:45:48 Main[31440]: Checking testdata/7/1
+2017-03-19 13:45:48 Main[31440]: Do testdata/7/1
+2017-03-19 13:45:48 Main[31440]: Compiling tmpfile/fcherpxxdq.cpp
+2017-03-19 13:45:48 Main[31440]: Compile Child Process: 31521
+2017-03-19 13:45:48 Main[31440]: Compile time limit: 10
+2017-03-19 13:45:48 Main[31440]: Compiling Used: 0
+2017-03-19 13:45:48 Main[31440]: Compiled
+2017-03-19 13:45:48 Main[31440]: Watch Child Process: 31535
+2017-03-19 13:45:48 Sandbox[31535]: Program Child Process: 31536
+2017-03-19 13:45:48 Sandbox[31535]: Running program
+2017-03-19 13:45:48 Runner[31536]: Time limit for this program is 1
+2017-03-19 13:45:48 Main[31440]: Running Used: 0
+2017-03-19 13:45:49 Sandbox[31535]: Used time: 996
+2017-03-19 13:45:49 Sandbox[31535]: Used Memory: 585728
+2017-03-19 13:45:49 Sandbox[31535]: Run status: 6271
+2017-03-19 13:45:49 Sandbox[31535]: Dectect TLE, type:2, signaled
+2017-03-19 13:45:49 Main[31440]: Running Used: 1
+2017-03-19 13:45:49 Main[31440]: Runned.
+2017-03-19 13:45:49 Main[31440]: Sending results/10
+2017-03-19 13:45:49 Main[31440]: Sent.
+2017-03-19 14:00:04 Main[31440]: Runid: 11 Type: 2
+2017-03-19 14:00:04 Main[31440]: Checking testdata/16/1
+2017-03-19 14:00:04 Main[31440]: Checking testdata/16/2
+2017-03-19 14:00:04 Main[31440]: Do testdata/16/1
+2017-03-19 14:00:04 Main[31440]: Compiling tmpfile/ltzfhodmid.cpp
+2017-03-19 14:00:04 Main[31440]: Compile Child Process: 32299
+2017-03-19 14:00:04 Main[31440]: Compile time limit: 10
+2017-03-19 14:00:04 Main[31440]: Compiling Used: 0
+2017-03-19 14:00:04 Main[31440]: Compiled
+2017-03-19 14:00:05 Main[31440]: Watch Child Process: 32313
+2017-03-19 14:00:05 Sandbox[32313]: Program Child Process: 32314
+2017-03-19 14:00:05 Sandbox[32313]: Running program
+2017-03-19 14:00:05 Runner[32314]: Time limit for this program is 1
+2017-03-19 14:00:05 Sandbox[32313]: Used time: 0
+2017-03-19 14:00:05 Sandbox[32313]: Used Memory: 237568
+2017-03-19 14:00:05 Sandbox[32313]: Run status: 1407
+2017-03-19 14:00:05 Main[31440]: Running Used: 0
+2017-03-19 14:00:05 Main[31440]: Runned.
+2017-03-19 14:00:05 Main[31440]: Sending results/11
+2017-03-19 14:00:05 Main[31440]: Sent.
+2017-03-19 14:04:58 Main[31440]: Runid: 11 Type: 2
+2017-03-19 14:04:58 Main[31440]: Checking testdata/16/1
+2017-03-19 14:04:58 Main[31440]: Checking testdata/16/2
+2017-03-19 14:04:58 Main[31440]: Do testdata/16/1
+2017-03-19 14:04:58 Main[31440]: Compiling tmpfile/nwgjgwgati.cpp
+2017-03-19 14:04:58 Main[31440]: Compile Child Process: 32544
+2017-03-19 14:04:58 Main[31440]: Compile time limit: 10
+2017-03-19 14:04:58 Main[31440]: Compiling Used: 0
+2017-03-19 14:04:59 Main[31440]: Compiled
+2017-03-19 14:04:59 Main[31440]: Watch Child Process: 32558
+2017-03-19 14:04:59 Sandbox[32558]: Program Child Process: 32559
+2017-03-19 14:04:59 Sandbox[32558]: Running program
+2017-03-19 14:04:59 Runner[32559]: Time limit for this program is 1
+2017-03-19 14:04:59 Sandbox[32558]: Used time: 0
+2017-03-19 14:04:59 Sandbox[32558]: Used Memory: 675840
+2017-03-19 14:04:59 Sandbox[32558]: Run status: 0
+2017-03-19 14:04:59 Main[31440]: Running Used: 0
+2017-03-19 14:04:59 Main[31440]: Runned.
+2017-03-19 14:04:59 Main[31440]: Comparing tmpfile/fzuiqvuucs and tmpfile/rkgtoqmwix
+2017-03-19 14:04:59 Main[31440]: Do testdata/16/2
+2017-03-19 14:04:59 Main[31440]: Watch Child Process: 32570
+2017-03-19 14:04:59 Sandbox[32570]: Program Child Process: 32571
+2017-03-19 14:04:59 Sandbox[32570]: Running program
+2017-03-19 14:04:59 Runner[32571]: Time limit for this program is 1
+2017-03-19 14:04:59 Sandbox[32570]: Used time: 0
+2017-03-19 14:04:59 Sandbox[32570]: Used Memory: 675840
+2017-03-19 14:04:59 Sandbox[32570]: Run status: 0
+2017-03-19 14:04:59 Main[31440]: Running Used: 0
+2017-03-19 14:04:59 Main[31440]: Runned.
+2017-03-19 14:04:59 Main[31440]: Comparing tmpfile/fzuiqvuucs and tmpfile/rkgtoqmwix
+2017-03-19 14:04:59 Main[31440]: Sending results/11
+2017-03-19 14:04:59 Main[31440]: Sent.
+2017-03-19 14:06:18 Main[1978]: Successfully connected.
+2017-03-19 14:06:18 Main[1978]: Runid: 3 Type: 2
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.10
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.1
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.2
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.3
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.4
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.5
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.6
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.7
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.8
+2017-03-19 14:06:18 Main[1978]: Checking testdata/15/dining.9
+2017-03-19 14:06:18 Main[1978]: Do testdata/15/dining.10
+2017-03-19 14:06:18 Main[1978]: Compiling tmpfile/sxfvjdlefi.cpp
+2017-03-19 14:06:18 Main[1978]: Compile Child Process: 1986
+2017-03-19 14:06:18 Main[1978]: Compile time limit: 10
+2017-03-19 14:06:18 Main[1978]: Compiling Used: 0
+2017-03-19 14:06:18 Main[1978]: Compiled
+2017-03-19 14:06:18 Main[1978]: Sending results/3
+2017-03-19 14:06:18 Main[1978]: Sent.
+2017-03-19 14:06:19 Main[1978]: Runid: 11 Type: 2
+2017-03-19 14:06:19 Main[1978]: Checking testdata/16/1
+2017-03-19 14:06:19 Main[1978]: Checking testdata/16/2
+2017-03-19 14:06:19 Main[1978]: Do testdata/16/1
+2017-03-19 14:06:19 Main[1978]: Compiling tmpfile/nemqeockdi.cpp
+2017-03-19 14:06:19 Main[1978]: Compile Child Process: 2003
+2017-03-19 14:06:19 Main[1978]: Compile time limit: 10
+2017-03-19 14:06:19 Main[1978]: Compiling Used: 0
+2017-03-19 14:06:19 Main[1978]: Compiled
+2017-03-19 14:06:19 Main[1978]: Watch Child Process: 2017
+2017-03-19 14:06:19 Sandbox[2017]: Program Child Process: 2018
+2017-03-19 14:06:19 Sandbox[2017]: Running program
+2017-03-19 14:06:19 Runner[2018]: Time limit for this program is 1
+2017-03-19 14:06:19 Sandbox[2017]: Used time: 0
+2017-03-19 14:06:19 Sandbox[2017]: Used Memory: 671744
+2017-03-19 14:06:19 Sandbox[2017]: Run status: 0
+2017-03-19 14:06:19 Main[1978]: Running Used: 0
+2017-03-19 14:06:19 Main[1978]: Runned.
+2017-03-19 14:06:19 Main[1978]: Comparing tmpfile/claxamgoer and tmpfile/zjohfxkscr
+2017-03-19 14:06:19 Main[1978]: Do testdata/16/2
+2017-03-19 14:06:19 Main[1978]: Watch Child Process: 2028
+2017-03-19 14:06:19 Sandbox[2028]: Program Child Process: 2029
+2017-03-19 14:06:19 Sandbox[2028]: Running program
+2017-03-19 14:06:19 Runner[2029]: Time limit for this program is 1
+2017-03-19 14:06:19 Sandbox[2028]: Used time: 0
+2017-03-19 14:06:19 Sandbox[2028]: Used Memory: 671744
+2017-03-19 14:06:19 Sandbox[2028]: Run status: 0
+2017-03-19 14:06:19 Main[1978]: Running Used: 0
+2017-03-19 14:06:19 Main[1978]: Runned.
+2017-03-19 14:06:19 Main[1978]: Comparing tmpfile/claxamgoer and tmpfile/zjohfxkscr
+2017-03-19 14:06:19 Main[1978]: Sending results/11
+2017-03-19 14:06:19 Main[1978]: Sent.
+2017-03-19 14:06:25 Main[1978]: Runid: 11 Type: 2
+2017-03-19 14:06:25 Main[1978]: Checking testdata/16/1
+2017-03-19 14:06:25 Main[1978]: Checking testdata/16/2
+2017-03-19 14:06:25 Main[1978]: Do testdata/16/1
+2017-03-19 14:06:25 Main[1978]: Compiling tmpfile/nzanrxwvjg.cpp
+2017-03-19 14:06:25 Main[1978]: Compile Child Process: 2071
+2017-03-19 14:06:25 Main[1978]: Compile time limit: 10
+2017-03-19 14:06:25 Main[1978]: Compiling Used: 0
+2017-03-19 14:06:26 Main[1978]: Compiled
+2017-03-19 14:06:26 Main[1978]: Watch Child Process: 2085
+2017-03-19 14:06:26 Sandbox[2085]: Program Child Process: 2086
+2017-03-19 14:06:26 Sandbox[2085]: Running program
+2017-03-19 14:06:26 Runner[2086]: Time limit for this program is 1
+2017-03-19 14:06:26 Sandbox[2085]: Used time: 0
+2017-03-19 14:06:26 Sandbox[2085]: Used Memory: 667648
+2017-03-19 14:06:26 Sandbox[2085]: Run status: 0
+2017-03-19 14:06:26 Main[1978]: Running Used: 0
+2017-03-19 14:06:26 Main[1978]: Runned.
+2017-03-19 14:06:26 Main[1978]: Comparing tmpfile/mlypwhekke and tmpfile/xpfytjfsrz
+2017-03-19 14:06:26 Main[1978]: Do testdata/16/2
+2017-03-19 14:06:26 Main[1978]: Watch Child Process: 2096
+2017-03-19 14:06:26 Sandbox[2096]: Program Child Process: 2097
+2017-03-19 14:06:26 Sandbox[2096]: Running program
+2017-03-19 14:06:26 Runner[2097]: Time limit for this program is 1
+2017-03-19 14:06:26 Sandbox[2096]: Used time: 0
+2017-03-19 14:06:26 Sandbox[2096]: Used Memory: 675840
+2017-03-19 14:06:26 Sandbox[2096]: Run status: 0
+2017-03-19 14:06:26 Main[1978]: Running Used: 0
+2017-03-19 14:06:26 Main[1978]: Runned.
+2017-03-19 14:06:26 Main[1978]: Comparing tmpfile/mlypwhekke and tmpfile/xpfytjfsrz
+2017-03-19 14:06:26 Main[1978]: Sending results/11
+2017-03-19 14:06:26 Main[1978]: Sent.
+2017-03-19 14:07:09 Main[1978]: Runid: 9 Type: 2
+2017-03-19 14:07:09 Main[1978]: Checking testdata/7/1
+2017-03-19 14:07:09 Main[1978]: Do testdata/7/1
+2017-03-19 14:07:09 Main[1978]: Compiling tmpfile/skphuqbteb.cpp
+2017-03-19 14:07:09 Main[1978]: Compile Child Process: 2307
+2017-03-19 14:07:09 Main[1978]: Compile time limit: 10
+2017-03-19 14:07:09 Main[1978]: Compiling Used: 0
+2017-03-19 14:07:09 Main[1978]: Compiled
+2017-03-19 14:07:09 Main[1978]: Watch Child Process: 2321
+2017-03-19 14:07:09 Sandbox[2321]: Program Child Process: 2322
+2017-03-19 14:07:09 Sandbox[2321]: Running program
+2017-03-19 14:07:09 Runner[2322]: Time limit for this program is 1
+2017-03-19 14:07:09 Sandbox[2321]: Used time: 0
+2017-03-19 14:07:09 Sandbox[2321]: Used Memory: 626688
+2017-03-19 14:07:09 Sandbox[2321]: Run status: 0
+2017-03-19 14:07:09 Main[1978]: Running Used: 0
+2017-03-19 14:07:09 Main[1978]: Runned.
+2017-03-19 14:07:09 Main[1978]: Comparing tmpfile/ftnkbuxmal and tmpfile/scgctevsfn
+2017-03-19 14:07:09 Main[1978]: Expected d, Found a Not AC.
+2017-03-19 14:07:09 Main[1978]: Expected d, Found a Not PE.
+2017-03-19 14:07:09 Main[1978]: Sending results/9
+2017-03-19 14:07:09 Main[1978]: Sent.

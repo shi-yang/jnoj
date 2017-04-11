@@ -1,0 +1,417 @@
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: #f5f5f5;
+}
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container .text-muted {
+    margin: 20px 0;
+}
+
+.footer > .container {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+#header {
+    background-color: #006179;
+    margin-bottom: 0px;
+    border: medium none;
+}
+
+.page-header {
+    margin: 0;
+    border-bottom: 0;
+}
+
+.page-header .navbar-brand img {
+    width: 178px;
+    height: 52px;
+}
+
+.logo .brand {
+    color: #fff;
+    font-size: 22px;
+    float: left;
+    padding-left: 10px;
+    position: relative;
+    top: 1px;
+    border-left: 1px solid #eaeaea;
+    margin-top: 15px;
+    margin-left: 5px;
+    overflow: hidden;
+    height: 55px;
+    line-height: 55px;
+}
+
+#flip-scroll {
+    padding-top: 20px;
+}
+
+* {
+    overflow-wrap: break-word;
+}
+
+#statustable, #rank, #contestlist, #csettable, #maillist, #problist {
+    table-layout: fixed;
+}
+
+/*#statustable td, #statustable th,
+#rank td, #rank th,
+#contestlist td, #contestlist th {
+    text-align: center;
+}*/
+
+.basetable td, .basetable th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tcenter {
+    text-align: center;
+}
+
+#showproblem #conditions div {
+    text-align: center;
+}
+
+/* results */
+.ac {
+    color: blue !important;
+    font-weight: bold;
+}
+
+.wa {
+    color: red !important;
+}
+
+.tle {
+    color: red !important;
+}
+
+.mle {
+    color: red !important;
+}
+
+.ole {
+    color: red !important;
+}
+
+.pe {
+    color: red !important;
+}
+
+.ce {
+    color: green !important;
+}
+
+.rf {
+    color: black !important;
+}
+
+.re {
+    color: red !important;
+}
+
+/* contests */
+.cpublic {
+    color: blue;
+}
+
+.cprivate {
+    color: red;
+}
+
+.crunning {
+    color: red;
+}
+
+.cscheduled {
+    color: blue;
+}
+
+.cpassed {
+    color: green;
+}
+
+/* form */
+form .prompt_text {
+    margin-bottom: 0;
+}
+
+/* flip-scroll */
+@media only screen and (max-width: 800px) {
+
+    #flip-scroll .cf:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+    }
+
+    #flip-scroll * html .cf {
+        zoom: 1;
+    }
+
+    #flip-scroll *:first-child + html .cf {
+        zoom: 1;
+    }
+
+    #flip-scroll table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    #flip-scroll th,
+    #flip-scroll td {
+        margin: 0;
+        vertical-align: top;
+    }
+
+    #flip-scroll th {
+        text-align: left;
+    }
+
+    #flip-scroll table {
+        display: block;
+        position: relative;
+        width: 100%;
+    }
+
+    #flip-scroll thead {
+        display: block;
+        float: left;
+    }
+
+    #flip-scroll tbody {
+        display: block;
+        width: auto;
+        position: relative;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #flip-scroll thead tr {
+        display: block;
+    }
+
+    #flip-scroll th {
+        display: block;
+        text-align: right;
+        width: 85% !important;
+    }
+
+    #flip-scroll tbody tr {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    #flip-scroll td {
+        display: block;
+        min-height: 1.4em;
+        text-align: left;
+    }
+
+    /* sort out borders */
+    #flip-scroll th {
+        border-bottom: 0;
+        border-left: 0;
+    }
+
+    #flip-scroll td {
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    #flip-scroll tbody tr {
+        border-left: 1px solid #babcbf;
+    }
+
+    #flip-scroll th:last-child,
+    #flip-scroll td:last-child {
+        border-bottom: 1px solid #babcbf;
+    }
+}
+
+/*standing table */
+
+#cstandingcontainer .rankcontainer {
+    overflow: visible;
+}
+
+.ac_stat {
+    background: #6F6 !important;
+}
+
+.notac_stat {
+    background: #F55 !important;
+}
+
+.acfb_stat {
+    background: #007F00 !important;
+    color: #fff;
+}
+
+.normal_stat {
+    background-color: #ECFFB3;
+}
+
+.trank {
+    min-width: 45px;
+    width: 5%;
+}
+
+.fileinput-button {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.fileinput-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px !important;
+    direction: ltr;
+    cursor: pointer;
+}
+
+.tname {
+    min-width: 100px;
+    width: 15%;
+}
+
+.tac {
+    min-width: 55px;
+    width: 9%;
+}
+
+.tprob {
+    min-width: 78px;
+    width: 10%;
+}
+
+.tpenal {
+    min-width: 80px;
+    width: 10%;
+}
+
+.tcid {
+    min-width: 50px;
+    width: 6%;
+}
+
+table.cstanding {
+    max-width: 8000px;
+    font-size: 0.9em;
+    table-layout: fixed;
+}
+
+table.cstanding th, table.cstanding td {
+    overflow: hidden;
+}
+
+table.cstanding.visover th, table.cstanding.visover td {
+    overflow: visible;
+}
+
+table.cstanding a.cha_click {
+    text-decoration: underline;
+    color: #444;
+}
+
+table.cstanding a.cha_click:hover {
+    text-decoration: none;
+    color: #444;
+}
+
+/***  noUiSlider  ***/
+.noUiSlider {
+    width: 100%;
+    border: 1px solid #CCC;
+    height: 8px;
+    background: #EEE;
+    -webkit-touch-callout: none;
+}
+
+.noUi-midBar {
+    height: 100%;
+    z-index: 0;
+    background: #39C;
+    -webkit-touch-callout: none;
+}
+
+.noUi-handle > div {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: -5px;
+    left: -8px;
+    z-index: 5;
+    border: 1px solid #CCC;
+    background: #EEE;
+}
+
+.noUi-handle > div:hover,
+.noUi-handle > div.noUi-activeHandle {
+    background: #ACE;
+    border-color: #369;
+}
+
+.disabled > .noUi-midBar {
+    background: #999;
+}
+
+.disabled .noUi-handle > div {
+    border-color: #CCC;
+    background: #CCC;
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.2), -moz-touch-enabled,(max-device-width: 1024px) {
+    .noUi-handle > div {
+        height: 32px;
+        width: 32px;
+        top: -13px;
+        left: -16px;
+    }
+}
+
+/*** problem ***/
+#showproblem .content-wrapper span {
+    width: auto;
+    float: none;
+    display: inline;
+    margin: auto;
+}
+
+/*** contest ***/
+#arrangeform textarea {
+    margin-bottom: 3px;
+}
