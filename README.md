@@ -11,8 +11,8 @@
 
 > 只是简单优化下。
 
-![index](preview/1.png)
+![index](docs/preview/1.png)
 
-![problem](preview/2.png)
+![problem](docs/preview/2.png)
 
-![problem_show](preview/3.png)
+![problem_show](docs/preview/3.png)
