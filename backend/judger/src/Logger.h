@@ -6,7 +6,7 @@
  */
 
 #ifndef LOGGER_H
-#define	LOGGER_H
+#define    LOGGER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,27 +23,35 @@ using namespace std;
 
 class Logger {
 public:
-  /** Default constructor */
-  Logger();
-  /** Default destructor */
-  virtual ~Logger();
-  /** Access instance
-   * \return The current value of instance
-   */
-  static Logger * Getinstance();
-  void log(char *);
-  void log(const char *);
-  void log(string);
-  void addIdentifier(int, string);
-  void eraseIdentifier(int);
-  static const string LOG_DIRECTORY;
+    /** Default constructor */
+    Logger();
+
+    /** Default destructor */
+    virtual ~Logger();
+
+    /** Access instance
+     * \return The current value of instance
+     */
+    static Logger *Getinstance();
+
+    void log(char *);
+
+    void log(const char *);
+
+    void log(string);
+
+    void addIdentifier(int, string);
+
+    void eraseIdentifier(int);
+
+    static const string LOG_DIRECTORY;
 protected:
 private:
-  map <int, string> identifier;
-  string name_prefix;
-  static Logger * instance; //!< Member variable "instance"
-  static pthread_mutex_t log_mutex;
+    map<int, string> identifier;
+    string name_prefix;
+    static Logger *instance; //!< Member variable "instance"
+    static pthread_mutex_t log_mutex;
 };
 
-#endif	/* LOGGER_H */
+#endif    /* LOGGER_H */
 

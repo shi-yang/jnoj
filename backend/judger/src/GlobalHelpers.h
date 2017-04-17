@@ -6,7 +6,7 @@
  */
 
 #ifndef GLOBALHELPERS_H
-#define	GLOBALHELPERS_H
+#define    GLOBALHELPERS_H
 
 #include <string.h>
 #include <stdio.h>
@@ -26,20 +26,30 @@ using namespace std;
 
 string trim(string);
 string loadAllFromFile(string);
+
 string intToString(int);
+
 string unescapeString(string);
+
 string escapeURL(const string &);
+
 int stringToInt(string);
+
 const string currentDateTime();
+
 const string currentDate();
+
 vector<string> split(const string &, char, bool);
+
 vector<string> split(const string &, char);
+
 void charset_convert(const char *, const char *, char *, size_t, char *, size_t);
+
 #define CONFIG Config::Getinstance()
 #define LOG Logger::Getinstance()->log
 #define LOGGER Logger::Getinstance()
 
 extern "C" size_t decode_html_entities_utf8(char *dest, const char *src);
 
-#endif	/* GLOBALHELPERS_H */
+#endif    /* GLOBALHELPERS_H */
 

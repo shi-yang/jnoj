@@ -6,27 +6,39 @@
  */
 
 #ifndef SOCKETHANDLER_H
-#define	SOCKETHANDLER_H
+#define    SOCKETHANDLER_H
 
 #include "chaclient.h"
 
 class SocketHandler {
 public:
-  SocketHandler();
-  void connectDispatcher();
-  void closeSocket();
-  string getConnectionMessage();
-  void sendMessage(string);
-  void sendFile(string);
-  void sendFileWithoutLength(string);
-  void receiveFile(string);
-  void receiveFileWithoutLength(string);
-  virtual ~SocketHandler();
+    SocketHandler();
+
+    void connectDispatcher();
+
+    void closeSocket();
+
+    string getConnectionMessage();
+
+    void sendMessage(string);
+
+    void sendFile(string);
+
+    void sendFileWithoutLength(string);
+
+    void receiveFile(string);
+
+    void receiveFileWithoutLength(string);
+
+    virtual ~SocketHandler();
+
 private:
-  void sendMessage(const char *, size_t);
-  size_t receiveMessage(char *, size_t);
-  int sockfd;
+    void sendMessage(const char *, size_t);
+
+    size_t receiveMessage(char *, size_t);
+
+    int sockfd;
 };
 
-#endif	/* SOCKETHANDLER_H */
+#endif    /* SOCKETHANDLER_H */
 

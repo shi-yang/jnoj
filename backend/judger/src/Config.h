@@ -18,153 +18,152 @@ using namespace std;
 
 class Config {
 public:
-  Config();
-  virtual ~Config();
+    Config();
 
-  static Config * Getinstance();
+    virtual ~Config();
 
-  string GetDispatcher_ip() const {
-    return dispatcher_ip;
-  }
+    static Config *Getinstance();
 
-  void SetDispatcher_ip(string dispatcher_ip) {
-    this->dispatcher_ip = dispatcher_ip;
-  }
+    string GetDispatcher_ip() const {
+        return dispatcher_ip;
+    }
 
-  int GetDispatcher_port() const {
-    return dispatcher_port;
-  }
+    void SetDispatcher_ip(string dispatcher_ip) {
+        this->dispatcher_ip = dispatcher_ip;
+    }
 
-  void SetDispatcher_port(int dispatcher_port) {
-    this->dispatcher_port = dispatcher_port;
-  }
+    int GetDispatcher_port() const {
+        return dispatcher_port;
+    }
 
-  string GetJudge_connect_string() const {
-    return judge_connect_string;
-  }
+    void SetDispatcher_port(int dispatcher_port) {
+        this->dispatcher_port = dispatcher_port;
+    }
 
-  void SetJudge_connect_string(string judge_connect_string) {
-    this->judge_connect_string = judge_connect_string;
-  }
+    string GetJudge_connect_string() const {
+        return judge_connect_string;
+    }
 
-  string GetTmpfile_path() const {
-    return tmpfile_path;
-  }
+    void SetJudge_connect_string(string judge_connect_string) {
+        this->judge_connect_string = judge_connect_string;
+    }
 
-  void SetTmpfile_path(string tmpfile_path) {
-    this->tmpfile_path = tmpfile_path;
-  }
+    string GetTmpfile_path() const {
+        return tmpfile_path;
+    }
 
-  int GetChecker_run_memory() const {
-    return checker_run_memory;
-  }
+    void SetTmpfile_path(string tmpfile_path) {
+        this->tmpfile_path = tmpfile_path;
+    }
 
-  void SetChecker_run_memory(int checker_run_memory) {
-    this->checker_run_memory = checker_run_memory;
-  }
+    int GetChecker_run_memory() const {
+        return checker_run_memory;
+    }
 
-  int GetChecker_run_time() const {
-    return checker_run_time;
-  }
+    void SetChecker_run_memory(int checker_run_memory) {
+        this->checker_run_memory = checker_run_memory;
+    }
 
-  void SetChecker_run_time(int checker_run_time) {
-    this->checker_run_time = checker_run_time;
-  }
+    int GetChecker_run_time() const {
+        return checker_run_time;
+    }
 
-  int GetExtra_runtime() const {
-    return extra_runtime;
-  }
+    void SetChecker_run_time(int checker_run_time) {
+        this->checker_run_time = checker_run_time;
+    }
 
-  void SetExtra_runtime(int extra_runtime) {
-    this->extra_runtime = extra_runtime;
-  }
+    int GetExtra_runtime() const {
+        return extra_runtime;
+    }
 
-  int GetGeneral_compile_time() const {
-    return general_compile_time;
-  }
+    void SetExtra_runtime(int extra_runtime) {
+        this->extra_runtime = extra_runtime;
+    }
 
-  void SetGeneral_compile_time(int general_compile_time) {
-    this->general_compile_time = general_compile_time;
-  }
+    int GetGeneral_compile_time() const {
+        return general_compile_time;
+    }
 
-  int GetGenerator_run_memory() const {
-    return generator_run_memory;
-  }
+    void SetGeneral_compile_time(int general_compile_time) {
+        this->general_compile_time = general_compile_time;
+    }
 
-  void SetGenerator_run_memory(int generator_run_memory) {
-    this->generator_run_memory = generator_run_memory;
-  }
+    int GetGenerator_run_memory() const {
+        return generator_run_memory;
+    }
 
-  int GetGenerator_run_time() const {
-    return generator_run_time;
-  }
+    void SetGenerator_run_memory(int generator_run_memory) {
+        this->generator_run_memory = generator_run_memory;
+    }
 
-  void SetGenerator_run_time(int generator_run_time) {
-    this->generator_run_time = generator_run_time;
-  }
+    int GetGenerator_run_time() const {
+        return generator_run_time;
+    }
 
-  static Config* GetInstance() {
-    return instance;
-  }
+    void SetGenerator_run_time(int generator_run_time) {
+        this->generator_run_time = generator_run_time;
+    }
 
-  static void SetInstance(Config* instance) {
-    Config::instance = instance;
-  }
+    static Config *GetInstance() {
+        return instance;
+    }
 
-  int GetLow_privilege_uid() const {
-    return low_privilege_uid;
-  }
+    static void SetInstance(Config *instance) {
+        Config::instance = instance;
+    }
 
-  void SetLow_privilege_uid(int low_privilege_uid) {
-    this->low_privilege_uid = low_privilege_uid;
-  }
+    int GetLow_privilege_uid() const {
+        return low_privilege_uid;
+    }
 
-  int GetMax_output_limit() const {
-    return max_output_limit;
-  }
+    void SetLow_privilege_uid(int low_privilege_uid) {
+        this->low_privilege_uid = low_privilege_uid;
+    }
 
-  void SetMax_output_limit(int max_output_limit) {
-    this->max_output_limit = max_output_limit;
-  }
+    int GetMax_output_limit() const {
+        return max_output_limit;
+    }
 
-  int GetVmlang_multiplier() const {
-    return vmlang_multiplier;
-  }
+    void SetMax_output_limit(int max_output_limit) {
+        this->max_output_limit = max_output_limit;
+    }
 
-  void SetVmlang_multiplier(int vmlang_multiplier) {
-    this->vmlang_multiplier = vmlang_multiplier;
-  }
+    int GetVmlang_multiplier() const {
+        return vmlang_multiplier;
+    }
 
-  int GetInteractive_max_run_time() const {
-    return interactive_max_run_time;
-  }
+    void SetVmlang_multiplier(int vmlang_multiplier) {
+        this->vmlang_multiplier = vmlang_multiplier;
+    }
 
-  void SetInteractive_max_run_time(int interactive_max_run_time) {
-    this->interactive_max_run_time = interactive_max_run_time;
-  }
+    int GetInteractive_max_run_time() const {
+        return interactive_max_run_time;
+    }
 
-
+    void SetInteractive_max_run_time(int interactive_max_run_time) {
+        this->interactive_max_run_time = interactive_max_run_time;
+    }
 
 
 protected:
 private:
 
-  string dispatcher_ip;
-  int dispatcher_port;
-  int low_privilege_uid;
-  int general_compile_time;
-  int generator_run_time;
-  int generator_run_memory;
-  int vmlang_multiplier;
-  int max_output_limit;
-  int extra_runtime;
-  int checker_run_time;
-  int checker_run_memory;
-  int interactive_max_run_time;
-  string judge_connect_string;
-  string tmpfile_path;
+    string dispatcher_ip;
+    int dispatcher_port;
+    int low_privilege_uid;
+    int general_compile_time;
+    int generator_run_time;
+    int generator_run_memory;
+    int vmlang_multiplier;
+    int max_output_limit;
+    int extra_runtime;
+    int checker_run_time;
+    int checker_run_memory;
+    int interactive_max_run_time;
+    string judge_connect_string;
+    string tmpfile_path;
 
-  static Config * instance;
+    static Config *instance;
 };
 
 #endif // CONFIG_H

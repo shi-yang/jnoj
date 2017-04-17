@@ -6,7 +6,7 @@
  */
 
 #ifndef JUDGERTHREAD_H
-#define	JUDGERTHREAD_H
+#define    JUDGERTHREAD_H
 
 #include "dispatcher.h"
 #include "SocketHandler.h"
@@ -16,40 +16,48 @@
 
 class JudgerThread {
 public:
-  JudgerThread(SocketHandler *, string);
-  virtual ~JudgerThread();
-  void run();
+    JudgerThread(SocketHandler *, string);
 
-  Submit* Getcurrent_submit() const {
-    return current_submit;
-  }
+    virtual ~JudgerThread();
 
-  void Setcurrent_submit(Submit* current_submit) {
-    this->current_submit = current_submit;
-  }
+    void run();
 
-  string Getoj() const {
-    return oj;
-  }
+    Submit *Getcurrent_submit() const {
+        return current_submit;
+    }
 
-  void Setoj(string oj) {
-    this->oj = oj;
-  }
+    void Setcurrent_submit(Submit *current_submit) {
+        this->current_submit = current_submit;
+    }
+
+    string Getoj() const {
+        return oj;
+    }
+
+    void Setoj(string oj) {
+        this->oj = oj;
+    }
 
 private:
-  DatabaseHandler * db;
-  SocketHandler * socket;
-  string oj;
-  Submit * current_submit;
+    DatabaseHandler *db;
+    SocketHandler *socket;
+    string oj;
+    Submit *current_submit;
 
-  void prepareBottForRun(Bott *, int);
-  void prepareBottForChallenge(Bott *, int);
-  void updateRunResult(int, string);
-  void updateRunStatus(Bott *);
-  void updateStatistics(int, string);
-  void updateChallengeResult(int, string);
-  void updateChallengeStatus(Bott *);
+    void prepareBottForRun(Bott *, int);
+
+    void prepareBottForChallenge(Bott *, int);
+
+    void updateRunResult(int, string);
+
+    void updateRunStatus(Bott *);
+
+    void updateStatistics(int, string);
+
+    void updateChallengeResult(int, string);
+
+    void updateChallengeStatus(Bott *);
 };
 
-#endif	/* JUDGERTHREAD_H */
+#endif    /* JUDGERTHREAD_H */
 

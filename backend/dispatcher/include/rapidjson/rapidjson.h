@@ -141,6 +141,7 @@
 // Other compilers should have this.
 #include <stdint.h>
 #include <inttypes.h>
+
 #endif
 //!@endcond
 #ifdef RAPIDJSON_DOXYGEN_RUNNING
@@ -287,7 +288,7 @@
     \c RAPIDJSON_SIMD to indicate the availability of the optimized code.
 */
 #if defined(RAPIDJSON_SSE2) || defined(RAPIDJSON_SSE42) \
-    || defined(RAPIDJSON_DOXYGEN_RUNNING)
+ || defined(RAPIDJSON_DOXYGEN_RUNNING)
 #define RAPIDJSON_SIMD
 #endif
 
@@ -319,13 +320,13 @@ RAPIDJSON_NAMESPACE_BEGIN
     instead of using \c size_t. Users may override the SizeType by defining
     \ref RAPIDJSON_NO_SIZETYPEDEFINE.
 */
-typedef unsigned SizeType;
+    typedef unsigned SizeType;
 RAPIDJSON_NAMESPACE_END
 #endif
 
 // always import std::size_t to rapidjson namespace
 RAPIDJSON_NAMESPACE_BEGIN
-using std::size_t;
+    using std::size_t;
 RAPIDJSON_NAMESPACE_END
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -340,7 +341,9 @@ RAPIDJSON_NAMESPACE_END
           \ref RAPIDJSON_ERRORS APIs.
 */
 #ifndef RAPIDJSON_ASSERT
+
 #include <cassert>
+
 #define RAPIDJSON_ASSERT(x) assert(x)
 #endif // RAPIDJSON_ASSERT
 
@@ -351,9 +354,17 @@ RAPIDJSON_NAMESPACE_END
 #ifndef RAPIDJSON_STATIC_ASSERT
 //!@cond RAPIDJSON_HIDDEN_FROM_DOXYGEN
 RAPIDJSON_NAMESPACE_BEGIN
-template <bool x> struct STATIC_ASSERTION_FAILURE;
-template <> struct STATIC_ASSERTION_FAILURE<true> { enum { value = 1 }; };
-template<int x> struct StaticAssertTest {};
+    template<bool x>
+    struct STATIC_ASSERTION_FAILURE;
+    template<>
+    struct STATIC_ASSERTION_FAILURE<true> {
+        enum {
+            value = 1
+        };
+    };
+    template<int x>
+    struct StaticAssertTest {
+    };
 RAPIDJSON_NAMESPACE_END
 
 #define RAPIDJSON_JOIN(X, Y) RAPIDJSON_DO_JOIN(X, Y)
@@ -383,12 +394,12 @@ RAPIDJSON_NAMESPACE_END
 
 //!@cond RAPIDJSON_HIDDEN_FROM_DOXYGEN
 
-#define RAPIDJSON_MULTILINEMACRO_BEGIN do {  
+#define RAPIDJSON_MULTILINEMACRO_BEGIN do {
 #define RAPIDJSON_MULTILINEMACRO_END \
 } while((void)0, 0)
 
 // adopted from Boost
-#define RAPIDJSON_VERSION_CODE(x,y,z) \
+#define RAPIDJSON_VERSION_CODE(x, y, z) \
   (((x)*100000) + ((y)*100) + (z))
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -399,7 +410,7 @@ RAPIDJSON_NAMESPACE_END
     RAPIDJSON_VERSION_CODE(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__)
 #endif
 
-#if defined(__clang__) || (defined(RAPIDJSON_GNUC) && RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4,2,0))
+#if defined(__clang__) || (defined(RAPIDJSON_GNUC) && RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4, 2, 0))
 
 #define RAPIDJSON_PRAGMA(x) _Pragma(RAPIDJSON_STRINGIFY(x))
 #define RAPIDJSON_DIAG_PRAGMA(x) RAPIDJSON_PRAGMA(GCC diagnostic x)
@@ -407,7 +418,7 @@ RAPIDJSON_NAMESPACE_END
     RAPIDJSON_DIAG_PRAGMA(ignored RAPIDJSON_STRINGIFY(RAPIDJSON_JOIN(-W,x)))
 
 // push/pop support in Clang and GCC>=4.6
-#if defined(__clang__) || (defined(RAPIDJSON_GNUC) && RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4,6,0))
+#if defined(__clang__) || (defined(RAPIDJSON_GNUC) && RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4, 6, 0))
 #define RAPIDJSON_DIAG_PUSH RAPIDJSON_DIAG_PRAGMA(push)
 #define RAPIDJSON_DIAG_POP  RAPIDJSON_DIAG_PRAGMA(pop)
 #else // GCC >= 4.2, < 4.6
@@ -440,7 +451,7 @@ RAPIDJSON_NAMESPACE_END
 #if defined(__clang__)
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS __has_feature(cxx_rvalue_references) && \
     (defined(_LIBCPP_VERSION) || defined(__GLIBCXX__) && __GLIBCXX__ >= 20080306)
-#elif (defined(RAPIDJSON_GNUC) && (RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4,3,0)) && defined(__GXX_EXPERIMENTAL_CXX0X__)) || \
+#elif (defined(RAPIDJSON_GNUC) && (RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4, 3, 0)) && defined(__GXX_EXPERIMENTAL_CXX0X__)) || \
       (defined(_MSC_VER) && _MSC_VER >= 1600)
 
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
@@ -452,7 +463,7 @@ RAPIDJSON_NAMESPACE_END
 #ifndef RAPIDJSON_HAS_CXX11_NOEXCEPT
 #if defined(__clang__)
 #define RAPIDJSON_HAS_CXX11_NOEXCEPT __has_feature(cxx_noexcept)
-#elif (defined(RAPIDJSON_GNUC) && (RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4,6,0)) && defined(__GXX_EXPERIMENTAL_CXX0X__))
+#elif (defined(RAPIDJSON_GNUC) && (RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4, 6, 0)) && defined(__GXX_EXPERIMENTAL_CXX0X__))
 //    (defined(_MSC_VER) && _MSC_VER >= ????) // not yet supported
 #define RAPIDJSON_HAS_CXX11_NOEXCEPT 1
 #else
@@ -544,22 +555,24 @@ concept Stream {
     For custom stream, this type can be specialized for other configuration.
     See TEST(Reader, CustomStringStream) in readertest.cpp for example.
 */
-template<typename Stream>
-struct StreamTraits {
-    //! Whether to make local copy of stream for optimization during parsing.
-    /*!
-        By default, for safety, streams do not use local copy optimization.
-        Stream that can be copied fast should specialize this, like StreamTraits<StringStream>.
-    */
-    enum { copyOptimization = 0 };
-};
+    template<typename Stream>
+    struct StreamTraits {
+        //! Whether to make local copy of stream for optimization during parsing.
+        /*!
+            By default, for safety, streams do not use local copy optimization.
+            Stream that can be copied fast should specialize this, like StreamTraits<StringStream>.
+        */
+        enum {
+            copyOptimization = 0
+        };
+    };
 
 //! Put N copies of a character to a stream.
-template<typename Stream, typename Ch>
-inline void PutN(Stream& stream, Ch c, size_t n) {
-    for (size_t i = 0; i < n; i++)
-        stream.Put(c);
-}
+    template<typename Stream, typename Ch>
+    inline void PutN(Stream &stream, Ch c, size_t n) {
+        for (size_t i = 0; i < n; i++)
+            stream.Put(c);
+    }
 
 ///////////////////////////////////////////////////////////////////////////////
 // StringStream
@@ -567,32 +580,45 @@ inline void PutN(Stream& stream, Ch c, size_t n) {
 //! Read-only string stream.
 /*! \note implements Stream concept
 */
-template <typename Encoding>
-struct GenericStringStream {
-    typedef typename Encoding::Ch Ch;
+    template<typename Encoding>
+    struct GenericStringStream {
+        typedef typename Encoding::Ch Ch;
 
-    GenericStringStream(const Ch *src) : src_(src), head_(src) {}
+        GenericStringStream(const Ch *src) : src_(src), head_(src) {}
 
-    Ch Peek() const { return *src_; }
-    Ch Take() { return *src_++; }
-    size_t Tell() const { return static_cast<size_t>(src_ - head_); }
+        Ch Peek() const { return *src_; }
 
-    Ch* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
-    void Put(Ch) { RAPIDJSON_ASSERT(false); }
-    void Flush() { RAPIDJSON_ASSERT(false); }
-    size_t PutEnd(Ch*) { RAPIDJSON_ASSERT(false); return 0; }
+        Ch Take() { return *src_++; }
 
-    const Ch* src_;     //!< Current read position.
-    const Ch* head_;    //!< Original head of the string.
-};
+        size_t Tell() const { return static_cast<size_t>(src_ - head_); }
 
-template <typename Encoding>
-struct StreamTraits<GenericStringStream<Encoding> > {
-    enum { copyOptimization = 1 };
-};
+        Ch *PutBegin() {
+            RAPIDJSON_ASSERT(false);
+            return 0;
+        }
+
+        void Put(Ch) { RAPIDJSON_ASSERT(false); }
+
+        void Flush() { RAPIDJSON_ASSERT(false); }
+
+        size_t PutEnd(Ch *) {
+            RAPIDJSON_ASSERT(false);
+            return 0;
+        }
+
+        const Ch *src_;     //!< Current read position.
+        const Ch *head_;    //!< Original head of the string.
+    };
+
+    template<typename Encoding>
+    struct StreamTraits<GenericStringStream<Encoding> > {
+        enum {
+            copyOptimization = 1
+        };
+    };
 
 //! String stream with UTF8 encoding.
-typedef GenericStringStream<UTF8<> > StringStream;
+    typedef GenericStringStream<UTF8<> > StringStream;
 
 ///////////////////////////////////////////////////////////////////////////////
 // InsituStringStream
@@ -601,53 +627,67 @@ typedef GenericStringStream<UTF8<> > StringStream;
 /*! This string stream is particularly designed for in-situ parsing.
     \note implements Stream concept
 */
-template <typename Encoding>
-struct GenericInsituStringStream {
-    typedef typename Encoding::Ch Ch;
+    template<typename Encoding>
+    struct GenericInsituStringStream {
+        typedef typename Encoding::Ch Ch;
 
-    GenericInsituStringStream(Ch *src) : src_(src), dst_(0), head_(src) {}
+        GenericInsituStringStream(Ch *src) : src_(src), dst_(0), head_(src) {}
 
-    // Read
-    Ch Peek() { return *src_; }
-    Ch Take() { return *src_++; }
-    size_t Tell() { return static_cast<size_t>(src_ - head_); }
+        // Read
+        Ch Peek() { return *src_; }
 
-    // Write
-    void Put(Ch c) { RAPIDJSON_ASSERT(dst_ != 0); *dst_++ = c; }
+        Ch Take() { return *src_++; }
 
-    Ch* PutBegin() { return dst_ = src_; }
-    size_t PutEnd(Ch* begin) { return static_cast<size_t>(dst_ - begin); }
-    void Flush() {}
+        size_t Tell() { return static_cast<size_t>(src_ - head_); }
 
-    Ch* Push(size_t count) { Ch* begin = dst_; dst_ += count; return begin; }
-    void Pop(size_t count) { dst_ -= count; }
+        // Write
+        void Put(Ch c) {
+            RAPIDJSON_ASSERT(dst_ != 0);
+            *dst_++ = c;
+        }
 
-    Ch* src_;
-    Ch* dst_;
-    Ch* head_;
-};
+        Ch *PutBegin() { return dst_ = src_; }
 
-template <typename Encoding>
-struct StreamTraits<GenericInsituStringStream<Encoding> > {
-    enum { copyOptimization = 1 };
-};
+        size_t PutEnd(Ch *begin) { return static_cast<size_t>(dst_ - begin); }
+
+        void Flush() {}
+
+        Ch *Push(size_t count) {
+            Ch *begin = dst_;
+            dst_ += count;
+            return begin;
+        }
+
+        void Pop(size_t count) { dst_ -= count; }
+
+        Ch *src_;
+        Ch *dst_;
+        Ch *head_;
+    };
+
+    template<typename Encoding>
+    struct StreamTraits<GenericInsituStringStream<Encoding> > {
+        enum {
+            copyOptimization = 1
+        };
+    };
 
 //! Insitu string stream with UTF8 encoding.
-typedef GenericInsituStringStream<UTF8<> > InsituStringStream;
+    typedef GenericInsituStringStream<UTF8<> > InsituStringStream;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Type
 
 //! Type of JSON value
-enum Type {
-    kNullType = 0,      //!< null
-    kFalseType = 1,     //!< false
-    kTrueType = 2,      //!< true
-    kObjectType = 3,    //!< object
-    kArrayType = 4,     //!< array 
-    kStringType = 5,    //!< string
-    kNumberType = 6     //!< number
-};
+    enum Type {
+        kNullType = 0,      //!< null
+        kFalseType = 1,     //!< false
+        kTrueType = 2,      //!< true
+        kObjectType = 3,    //!< object
+        kArrayType = 4,     //!< array
+        kStringType = 5,    //!< string
+        kNumberType = 6     //!< number
+    };
 
 RAPIDJSON_NAMESPACE_END
 

@@ -15,237 +15,244 @@ using namespace rapidjson;
 
 class Bott {
 public:
-  /** Default constructor */
-  Bott();
-  Bott(string filename);
-  /** Default destructor */
-  virtual ~Bott();
+    /** Default constructor */
+    Bott();
 
-  int Gettype() const {
-    return type;
-  }
+    Bott(string filename);
 
-  void Settype(int val) {
-    type = val;
-  }
+    /** Default destructor */
+    virtual ~Bott();
 
-  int Getrunid() const {
-    return runid;
-  }
+    int Gettype() const {
+        return type;
+    }
 
-  void Setrunid(int val) {
-    runid = val;
-  }
+    void Settype(int val) {
+        type = val;
+    }
 
-  int Getcha_id() const {
-    return cha_id;
-  }
+    int Getrunid() const {
+        return runid;
+    }
 
-  void Setcha_id(int val) {
-    cha_id = val;
-  }
+    void Setrunid(int val) {
+        runid = val;
+    }
 
-  string Getsrc() const {
-    return src;
-  }
+    int Getcha_id() const {
+        return cha_id;
+    }
 
-  void Setsrc(string val) {
-    src = val;
-  }
+    void Setcha_id(int val) {
+        cha_id = val;
+    }
 
-  int Getlanguage() const {
-    return language;
-  }
+    string Getsrc() const {
+        return src;
+    }
 
-  void Setlanguage(int val) {
-    language = val;
-  }
+    void Setsrc(string val) {
+        src = val;
+    }
 
-  int Getpid() const {
-    return pid;
-  }
+    int Getlanguage() const {
+        return language;
+    }
 
-  void Setpid(int val) {
-    pid = val;
-  }
+    void Setlanguage(int val) {
+        language = val;
+    }
 
-  int Getnumber_of_testcases() const {
-    return number_of_testcases;
-  }
+    int Getpid() const {
+        return pid;
+    }
 
-  void Setnumber_of_testcases(int val) {
-    number_of_testcases = val;
-  }
+    void Setpid(int val) {
+        pid = val;
+    }
 
-  int Gettime_limit() const {
-    return time_limit;
-  }
+    int Getnumber_of_testcases() const {
+        return number_of_testcases;
+    }
 
-  void Settime_limit(int val) {
-    time_limit = val;
-  }
+    void Setnumber_of_testcases(int val) {
+        number_of_testcases = val;
+    }
 
-  int Getcase_limit() const {
-    return case_limit;
-  }
+    int Gettime_limit() const {
+        return time_limit;
+    }
 
-  void Setcase_limit(int val) {
-    case_limit = val;
-  }
+    void Settime_limit(int val) {
+        time_limit = val;
+    }
 
-  int Getmemory_limit() const {
-    return memory_limit;
-  }
+    int Getcase_limit() const {
+        return case_limit;
+    }
 
-  void Setmemory_limit(int val) {
-    memory_limit = val;
-  }
+    void Setcase_limit(int val) {
+        case_limit = val;
+    }
 
-  int Getspj() const {
-    return spj;
-  }
+    int Getmemory_limit() const {
+        return memory_limit;
+    }
 
-  void Setspj(int val) {
-    spj = val;
-  }
+    void Setmemory_limit(int val) {
+        memory_limit = val;
+    }
 
-  string Getvname() const {
-    return vname;
-  }
+    int Getspj() const {
+        return spj;
+    }
 
-  void Setvname(string val) {
-    vname = val;
-  }
+    void Setspj(int val) {
+        spj = val;
+    }
 
-  string Getvid() const {
-    return vid;
-  }
+    string Getvname() const {
+        return vname;
+    }
 
-  void Setvid(string val) {
-    vid = val;
-  }
+    void Setvname(string val) {
+        vname = val;
+    }
 
-  int Getmemory_used() const {
-    return memory_used;
-  }
+    string Getvid() const {
+        return vid;
+    }
 
-  void Setmemory_used(int val) {
-    memory_used = val;
-  }
+    void Setvid(string val) {
+        vid = val;
+    }
 
-  int Gettime_used() const {
-    return time_used;
-  }
+    int Getmemory_used() const {
+        return memory_used;
+    }
 
-  void Settime_used(int val) {
-    time_used = val;
-  }
+    void Setmemory_used(int val) {
+        memory_used = val;
+    }
 
-  string Getresult() const {
-    return result;
-  }
+    int Gettime_used() const {
+        return time_used;
+    }
 
-  void Setresult(string val) {
-    result = val;
-  }
+    void Settime_used(int val) {
+        time_used = val;
+    }
 
-  string Getce_info() const {
-    return ce_info;
-  }
+    string Getresult() const {
+        return result;
+    }
 
-  void Setce_info(string val) {
-    ce_info = val;
-  }
+    void Setresult(string val) {
+        result = val;
+    }
 
-  int Getdata_type() const {
-    return data_type;
-  }
+    string Getce_info() const {
+        return ce_info;
+    }
 
-  void Setdata_type(int val) {
-    data_type = val;
-  }
+    void Setce_info(string val) {
+        ce_info = val;
+    }
 
-  string Getdata_detail() const {
-    return data_detail;
-  }
+    int Getdata_type() const {
+        return data_type;
+    }
 
-  void Setdata_detail(string val) {
-    data_detail = val;
-  }
+    void Setdata_type(int val) {
+        data_type = val;
+    }
 
-  int Getdata_lang() const {
-    return data_lang;
-  }
+    string Getdata_detail() const {
+        return data_detail;
+    }
 
-  void Setdata_lang(int val) {
-    data_lang = val;
-  }
+    void Setdata_detail(string val) {
+        data_detail = val;
+    }
 
-  string Getcha_result() const {
-    return cha_result;
-  }
+    int Getdata_lang() const {
+        return data_lang;
+    }
 
-  void Setcha_result(string val) {
-    cha_result = val;
-  }
+    void Setdata_lang(int val) {
+        data_lang = val;
+    }
 
-  string Getcha_detail() const {
-    return cha_detail;
-  }
+    string Getcha_result() const {
+        return cha_result;
+    }
 
-  void Setcha_detail(string val) {
-    cha_detail = val;
-  }
+    void Setcha_result(string val) {
+        cha_result = val;
+    }
 
-  string Getout_filename() const {
-    return out_filename;
-  }
+    string Getcha_detail() const {
+        return cha_detail;
+    }
 
-  void Setout_filename(string val) {
-    out_filename = val;
-  }
-  void toFile();
+    void Setcha_detail(string val) {
+        cha_detail = val;
+    }
 
-  void save() {
-    toFile();
-  }
+    string Getout_filename() const {
+        return out_filename;
+    }
 
-  static const string RAW_FILES_DIRECTORY;
-  static const string CHA_RAW_FILES_DIRECTORY;
-  static const string RESULTS_DIRECTORY;
-  static const string CHA_RESULTS_DIRECTORY;
-  static const string EXTENTION;
+    void Setout_filename(string val) {
+        out_filename = val;
+    }
+
+    void toFile();
+
+    void save() {
+        toFile();
+    }
+
+    static const string RAW_FILES_DIRECTORY;
+    static const string CHA_RAW_FILES_DIRECTORY;
+    static const string RESULTS_DIRECTORY;
+    static const string CHA_RESULTS_DIRECTORY;
+    static const string EXTENTION;
 protected:
 private:
-  int type;
-  int runid;
-  int cha_id;
-  string src;
-  int language;
-  int pid;
-  int number_of_testcases;
-  int time_limit;
-  int case_limit;
-  int memory_limit;
-  int spj;
-  string vname;
-  string vid;
-  int memory_used;
-  int time_used;
-  string result;
-  string ce_info;
-  int data_type;
-  int data_lang;
-  string data_detail;
-  string cha_result;
-  string cha_detail;
+    int type;
+    int runid;
+    int cha_id;
+    string src;
+    int language;
+    int pid;
+    int number_of_testcases;
+    int time_limit;
+    int case_limit;
+    int memory_limit;
+    int spj;
+    string vname;
+    string vid;
+    int memory_used;
+    int time_used;
+    string result;
+    string ce_info;
+    int data_type;
+    int data_lang;
+    string data_detail;
+    string cha_result;
+    string cha_detail;
 
-  inline void addIntValue(Document &, const char *, int);
-  inline void addStringValue(Document &, const char *, const char *);
-  inline void addIntValueToRef(Document &, Value &, const char *, int);
-  inline void addStringValueToRef(Document &, Value &, const char *,
-                                  const char *);
-  string out_filename;
+    inline void addIntValue(Document &, const char *, int);
+
+    inline void addStringValue(Document &, const char *, const char *);
+
+    inline void addIntValueToRef(Document &, Value &, const char *, int);
+
+    inline void addStringValueToRef(Document &, Value &, const char *,
+                                    const char *);
+
+    string out_filename;
 
 };
 

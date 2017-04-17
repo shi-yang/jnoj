@@ -6,7 +6,7 @@
  */
 
 #ifndef GLOBALHELPERS_H
-#define	GLOBALHELPERS_H
+#define    GLOBALHELPERS_H
 
 #include <string.h>
 #include <stdio.h>
@@ -24,16 +24,23 @@ using namespace std;
 #include "Exception.h"
 
 string loadAllFromFile(string);
+
 string intToString(int);
+
 int stringToInt(string);
 string trim(string);
+
 const string currentDateTime();
+
 const string currentDate();
+
 vector<string> split(const string &, char, bool);
+
 vector<string> split(const string &, char);
+
 #define CONFIG Config::Getinstance()
 #define LOG Logger::Getinstance()->log
 #define LOGGER Logger::Getinstance()
 
-#endif	/* GLOBALHELPERS_H */
+#endif    /* GLOBALHELPERS_H */
 

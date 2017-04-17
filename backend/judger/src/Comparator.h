@@ -7,80 +7,83 @@
 
 class Comparator {
 public:
-  Comparator();
-  virtual ~Comparator();
+    Comparator();
 
-  string Getstdout_filename() {
-    return stdout_filename;
-  }
+    virtual ~Comparator();
 
-  void Setstdout_filename(string val) {
-    stdout_filename = val;
-  }
+    string Getstdout_filename() {
+        return stdout_filename;
+    }
 
-  string Getout_filename() {
-    return out_filename;
-  }
+    void Setstdout_filename(string val) {
+        stdout_filename = val;
+    }
 
-  void Setout_filename(string val) {
-    out_filename = val;
-  }
+    string Getout_filename() {
+        return out_filename;
+    }
 
-  string Getin_filename() {
-    return in_filename;
-  }
+    void Setout_filename(string val) {
+        out_filename = val;
+    }
 
-  void Setin_filename(string val) {
-    in_filename = val;
-  }
+    string Getin_filename() {
+        return in_filename;
+    }
 
-  string Getsrc_filename() {
-    return src_filename;
-  }
+    void Setin_filename(string val) {
+        in_filename = val;
+    }
 
-  void Setsrc_filename(string val) {
-    src_filename = val;
-  }
+    string Getsrc_filename() {
+        return src_filename;
+    }
 
-  int Getisspj() {
-    return isspj;
-  }
+    void Setsrc_filename(string val) {
+        src_filename = val;
+    }
 
-  void Setisspj(int val) {
-    isspj = val;
-  }
+    int Getisspj() {
+        return isspj;
+    }
 
-  Program * Getspj() {
-    return spj;
-  }
+    void Setisspj(int val) {
+        isspj = val;
+    }
 
-  void Setspj(Program * val) {
-    spj = val;
-  }
+    Program *Getspj() {
+        return spj;
+    }
 
-  string Getdetail() {
-    return detail;
-  }
+    void Setspj(Program *val) {
+        spj = val;
+    }
 
-  void Setdetail(string val) {
-    detail = val;
-  }
-  int Compare();
+    string Getdetail() {
+        return detail;
+    }
 
-  void Setpid(int val) {
-    pid = val;
-  }
+    void Setdetail(string val) {
+        detail = val;
+    }
+
+    int Compare();
+
+    void Setpid(int val) {
+        pid = val;
+    }
+
 protected:
 private:
-  string src_filename;
-  string in_filename;
-  string stdout_filename;
-  string out_filename;
-  string infile;
-  string detail;
-  int isspj;
-  int pid;
-  Program * spj;
+    string src_filename;
+    string in_filename;
+    string stdout_filename;
+    string out_filename;
+    string infile;
+    string detail;
+    int isspj;
+    int pid;
+    Program *spj;
 };
 
 #endif // COMPARATOR_H

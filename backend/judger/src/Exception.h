@@ -6,23 +6,24 @@
  */
 
 #ifndef EXCEPTION_H
-#define	EXCEPTION_H
+#define    EXCEPTION_H
 
 class Exception : std::exception {
 public:
 
-  Exception(std::string _msg) : msg(_msg) {
-  }
+    Exception(std::string _msg) : msg(_msg) {
+    }
 
-  ~Exception() throw () {
-  }
+    ~Exception() throw() {
+    }
 
-  const char* what() const throw () {
-    return msg.c_str();
-  }
+    const char *what() const throw() {
+        return msg.c_str();
+    }
+
 private:
-  std::string msg;
+    std::string msg;
 };
 
-#endif	/* EXCEPTION_H */
+#endif    /* EXCEPTION_H */
 
