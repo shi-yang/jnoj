@@ -52,7 +52,6 @@ void initSocket() {
     sock = new SocketHandler;
     send_register_info();
     LOG("Successfully connected.");
-
 }
 
 void parse_bott() {
@@ -63,6 +62,18 @@ Program *datagen, *stdprogram, *usrprogram, *checker;
 PConfig *problem;
 Comparator *cmp;
 Bott retbott;
+
+string get_file_content(string file_path) {
+    ifstream read_file(file_path);
+    string file_content((istreambuf_iterator<char>(read_file)),
+                        istreambuf_iterator<char>());
+    read_file.close();
+    if (file_content.size() > 1000) {
+        file_content.substr(0, 1000);
+        file_content += "\n...";
+    }
+    return file_content;
+}
 
 string Loadallfromfile(string filename) {
     string res = "", tmps;
@@ -401,24 +412,10 @@ void dojudge(int type) {
         retbott.Setresult("Presentation Error");
     } else {
         retbott.Setresult("Wrong Answer");
-
-        ifstream read_file1(inpfile);
-        string standard_in((istreambuf_iterator<char>(read_file1)),
-                           istreambuf_iterator<char>());
-        read_file1.close();
-
-        ifstream read_file2(stdout_file);
-        string excepted((istreambuf_iterator<char>(read_file2)),
-                        istreambuf_iterator<char>());
-        read_file2.close();
-
+        string standard_in = get_file_content(inpfile);
+        string excepted = get_file_content(stdout_file);
+        string program_out = get_file_content(usrprogram->Getout_filename());
         system(((string) "rm " + stdout_file).c_str());
-
-        ifstream read_file3(usrprogram->Getout_filename());
-        string program_out((istreambuf_iterator<char>(read_file3)),
-                           istreambuf_iterator<char>());
-        read_file3.close();
-
         retbott.Setce_info(string("Input: \n" + standard_in + "\nExpected:\n"
                                   + excepted + "\nYour answer:\n" + program_out + "\n"));
     }
