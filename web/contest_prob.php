@@ -33,20 +33,12 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
         <?php
         } else {
         ?>
-        <?php
-        if (in_array($show_problem->get_val('vname'), array('UESTC', 'HDU', 'JNU'))) {
-        ?>
-            <script src="assets/js/Mathjax/MathJax.js?config=TeX-AMS_HTML"></script>
+            <script src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
             <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({
-            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-        });
-
-
+                MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+                });
             </script>
-        <?php
-        }
-        ?>
             <div id="showproblem">
                 <ul class="nav nav-pills" id="probpagi">
                     <?php

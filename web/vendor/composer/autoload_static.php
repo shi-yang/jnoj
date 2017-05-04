@@ -6,24 +6,24 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitafb23ff7552872b3ec845a355f0a214a
 {
-    public static $prefixesPsr0 = array(
-        'M' =>
-            array(
-                'Michelf' =>
-                    array(
-                        0 => __DIR__ . '/..' . '/michelf/php-markdown',
-                    ),
+    public static $prefixesPsr0 = array (
+        'M' => 
+        array (
+            'Michelf' => 
+            array (
+                0 => __DIR__ . '/..' . '/michelf/php-markdown',
             ),
-        'B' =>
-            array(
-                'Buzz' =>
-                    array(
-                        0 => __DIR__ . '/..' . '/kriswallsmith/buzz/lib',
-                    ),
+        ),
+        'B' => 
+        array (
+            'Buzz' => 
+            array (
+                0 => __DIR__ . '/..' . '/kriswallsmith/buzz/lib',
             ),
+        ),
     );
 
-    public static $classMap = array(
+    public static $classMap = array (
         'ezSQL_codeigniter' => __DIR__ . '/..' . '/jv2222/ezsql/codeigniter/Ezsql_codeigniter.php',
         'ezSQL_cubrid' => __DIR__ . '/..' . '/jv2222/ezsql/cubrid/ez_sql_cubrid.php',
         'ezSQL_mssql' => __DIR__ . '/..' . '/jv2222/ezsql/mssql/ez_sql_mssql.php',

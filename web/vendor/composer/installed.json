@@ -1,151 +1,151 @@
 [
-  {
-    "name": "jv2222/ezsql",
-    "version": "dev-master",
-    "version_normalized": "9999999-dev",
-    "source": {
-      "type": "git",
-      "url": "https://github.com/ezSQL/ezSQL.git",
-      "reference": "473d21355e4ebee015a126be8b406cc9c46da864"
+    {
+        "name": "kriswallsmith/buzz",
+        "version": "v0.10",
+        "version_normalized": "0.10.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/kriswallsmith/Buzz.git",
+            "reference": "759432d66387e3433d3b06cb6f773b97225b9b17"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/kriswallsmith/Buzz/zipball/759432d66387e3433d3b06cb6f773b97225b9b17",
+            "reference": "759432d66387e3433d3b06cb6f773b97225b9b17",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*"
+        },
+        "suggest": {
+            "ext-curl": "*"
+        },
+        "time": "2013-05-19T03:41:15+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Buzz": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Kris Wallsmith",
+                "email": "kris.wallsmith@gmail.com",
+                "homepage": "http://kriswallsmith.net/"
+            }
+        ],
+        "description": "Lightweight HTTP client",
+        "homepage": "https://github.com/kriswallsmith/Buzz",
+        "keywords": [
+            "curl",
+            "http client"
+        ]
     },
-    "dist": {
-      "type": "zip",
-      "url": "https://packagist.phpcomposer.com/files/ezSQL/ezSQL/473d21355e4ebee015a126be8b406cc9c46da864.zip",
-      "reference": "473d21355e4ebee015a126be8b406cc9c46da864",
-      "shasum": ""
+    {
+        "name": "michelf/php-markdown",
+        "version": "1.5.0",
+        "version_normalized": "1.5.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/michelf/php-markdown.git",
+            "reference": "e1aabe18173231ebcefc90e615565742fc1c7fd9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/michelf/php-markdown/zipball/e1aabe18173231ebcefc90e615565742fc1c7fd9",
+            "reference": "e1aabe18173231ebcefc90e615565742fc1c7fd9",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2015-03-01T12:03:08+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-lib": "1.4.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Michelf": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "John Gruber",
+                "homepage": "http://daringfireball.net/"
+            },
+            {
+                "name": "Michel Fortin",
+                "email": "michel.fortin@michelf.ca",
+                "homepage": "https://michelf.ca/",
+                "role": "Developer"
+            }
+        ],
+        "description": "PHP Markdown",
+        "homepage": "https://michelf.ca/projects/php-markdown/",
+        "keywords": [
+            "markdown"
+        ]
     },
-    "time": "2016-03-03T07:02:06+00:00",
-    "type": "library",
-    "installation-source": "source",
-    "autoload": {
-      "classmap": [
-        "cubrid/ez_sql_cubrid.php",
-        "pdo/ez_sql_pdo.php",
-        "postgresql/ez_sql_postgresql.php",
-        "mysql/ez_sql_mysql.php",
-        "mysqli/ez_sql_mysqli.php",
-        "sqlsrv/ez_sql_sqlsrv.php",
-        "oracle8_9/ez_sql_oracle8_9.php",
-        "sqlite/ez_sql_sqlite.php",
-        "shared/ez_sql_core.php",
-        "mssql/ez_sql_mssql.php",
-        "sybase/ez_sql_sybase.php",
-        "codeigniter/Ezsql_codeigniter.php"
-      ]
-    },
-    "notification-url": "https://packagist.org/downloads/",
-    "license": [
-      "LGPL"
-    ],
-    "authors": [
-      {
-        "name": "Justin Vincent",
-        "email": "webmaster@justinvincent.com"
-      }
-    ],
-    "description": "PHP class to make interacting with a database ridiculusly easy."
-  },
-  {
-    "name": "kriswallsmith/buzz",
-    "version": "v0.10",
-    "version_normalized": "0.10.0.0",
-    "source": {
-      "type": "git",
-      "url": "https://github.com/kriswallsmith/Buzz.git",
-      "reference": "759432d66387e3433d3b06cb6f773b97225b9b17"
-    },
-    "dist": {
-      "type": "zip",
-      "url": "https://api.github.com/repos/kriswallsmith/Buzz/zipball/759432d66387e3433d3b06cb6f773b97225b9b17",
-      "reference": "759432d66387e3433d3b06cb6f773b97225b9b17",
-      "shasum": ""
-    },
-    "require": {
-      "php": ">=5.3.0"
-    },
-    "require-dev": {
-      "phpunit/phpunit": "3.7.*"
-    },
-    "suggest": {
-      "ext-curl": "*"
-    },
-    "time": "2013-05-19T03:41:15+00:00",
-    "type": "library",
-    "installation-source": "dist",
-    "autoload": {
-      "psr-0": {
-        "Buzz": "lib/"
-      }
-    },
-    "notification-url": "https://packagist.org/downloads/",
-    "license": [
-      "MIT"
-    ],
-    "authors": [
-      {
-        "name": "Kris Wallsmith",
-        "email": "kris.wallsmith@gmail.com",
-        "homepage": "http://kriswallsmith.net/"
-      }
-    ],
-    "description": "Lightweight HTTP client",
-    "homepage": "https://github.com/kriswallsmith/Buzz",
-    "keywords": [
-      "curl",
-      "http client"
-    ]
-  },
-  {
-    "name": "michelf/php-markdown",
-    "version": "1.5.0",
-    "version_normalized": "1.5.0.0",
-    "source": {
-      "type": "git",
-      "url": "https://github.com/michelf/php-markdown.git",
-      "reference": "e1aabe18173231ebcefc90e615565742fc1c7fd9"
-    },
-    "dist": {
-      "type": "zip",
-      "url": "https://api.github.com/repos/michelf/php-markdown/zipball/e1aabe18173231ebcefc90e615565742fc1c7fd9",
-      "reference": "e1aabe18173231ebcefc90e615565742fc1c7fd9",
-      "shasum": ""
-    },
-    "require": {
-      "php": ">=5.3.0"
-    },
-    "time": "2015-03-01T12:03:08+00:00",
-    "type": "library",
-    "extra": {
-      "branch-alias": {
-        "dev-lib": "1.4.x-dev"
-      }
-    },
-    "installation-source": "dist",
-    "autoload": {
-      "psr-0": {
-        "Michelf": ""
-      }
-    },
-    "notification-url": "https://packagist.org/downloads/",
-    "license": [
-      "BSD-3-Clause"
-    ],
-    "authors": [
-      {
-        "name": "John Gruber",
-        "homepage": "http://daringfireball.net/"
-      },
-      {
-        "name": "Michel Fortin",
-        "email": "michel.fortin@michelf.ca",
-        "homepage": "https://michelf.ca/",
-        "role": "Developer"
-      }
-    ],
-    "description": "PHP Markdown",
-    "homepage": "https://michelf.ca/projects/php-markdown/",
-    "keywords": [
-      "markdown"
-    ]
-  }
+    {
+        "name": "jv2222/ezsql",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ezSQL/ezSQL.git",
+            "reference": "778f000c1c9a3bc113623a348096b8b2b2452749"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ezSQL/ezSQL/zipball/778f000c1c9a3bc113623a348096b8b2b2452749",
+            "reference": "778f000c1c9a3bc113623a348096b8b2b2452749",
+            "shasum": ""
+        },
+        "time": "2017-02-23T23:05:12+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "cubrid/ez_sql_cubrid.php",
+                "pdo/ez_sql_pdo.php",
+                "postgresql/ez_sql_postgresql.php",
+                "mysql/ez_sql_mysql.php",
+                "mysqli/ez_sql_mysqli.php",
+                "sqlsrv/ez_sql_sqlsrv.php",
+                "oracle8_9/ez_sql_oracle8_9.php",
+                "sqlite/ez_sql_sqlite.php",
+                "shared/ez_sql_core.php",
+                "mssql/ez_sql_mssql.php",
+                "sybase/ez_sql_sybase.php",
+                "codeigniter/Ezsql_codeigniter.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL"
+        ],
+        "authors": [
+            {
+                "name": "Justin Vincent",
+                "email": "webmaster@justinvincent.com"
+            }
+        ],
+        "description": "PHP class to make interacting with a database ridiculusly easy."
+    }
 ]

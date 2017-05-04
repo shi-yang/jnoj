@@ -67,7 +67,6 @@ $config["local_timezone"] = "Asia/Shanghai";
 $config["salt_problem_in_contest"] = "[-,-]";
 $config["database_debug"] = false;
 $config["cookie_prefix"] = "bnuoj_v3_";
-$config["default_style"] = "cerulean";
 
 $config["use_latex_render"] = false;
 
@@ -101,6 +100,3 @@ $ojoptions = '<option value="BNU">BNU</option>' .
     '<option value="ACdream">ACdream</option>' .
     '<option value="CodeChef">CodeChef</option>' .
     '<option value="HRBUST">HRBUST</option>';
-
-
-?>

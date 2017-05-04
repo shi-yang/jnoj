@@ -69,10 +69,10 @@ include_once("functions/users.php");
                 <li id="discuss"><a href="discuss.php">Discuss</a></li>
                 <li id="discuss"><a href="/swap">Swap</a></li>
                 <li class="dropdown" id="more">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="teaminfo.php">More <b class="caret"></b></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">More <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="news.php">News</a></li>
-                        <li><a href="teaminfo.php">Our Team</a></li>
+                        <li><a href="about.php">About This OJ</a></li>
                         <li class="divider"></li>
                         <li><a href="recent_contest.php">Recent Contests</a></li>
                         <!--<li><a href="training_stat.php">Training Stats</a></li>-->
@@ -117,7 +117,6 @@ include_once("functions/users.php");
     //var currenttime = '<?=date("l, F j, Y H:i:s", time())?>';
     var currenttime = '<?=time()?>';
     var cookie_prefix = '<?=$config["cookie_prefix"] ?>';
-    var default_style = '<?=$config["default_style"]?>';
 </script>
 <div class="container">
     <div class="row">

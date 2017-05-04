@@ -123,20 +123,12 @@ $(document).ready(function () {
         window.location.reload();
     });
 
-    $("#selstyle").change(function () {
-        $.cookie(cookie_prefix + "style", $(this).val());
-        window.location.reload();
-    })
-
     $("#selwidth").change(function () {
         if ($(this).prop("checked")) $.cookie(cookie_prefix + "fluid_width", true);
         else $.removeCookie(cookie_prefix + "fluid_width");
         window.location.reload();
     })
 
-    var stname = $.cookie(cookie_prefix + "style") == null ? $("#selstyle option[value='" + default_style + "']").text() : $("#selstyle option[value='" + $.cookie(cookie_prefix + "style") + "']").text();
-    $("#selstyle").val($.cookie(cookie_prefix + "style") == null ? default_style : $.cookie(cookie_prefix + "style"));
-    $("#stylename").text(stname);
     setInterval("displaytime()", 1000);
     setInterval("gettime()", 180000);
 });

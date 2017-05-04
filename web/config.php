@@ -44,16 +44,14 @@ $config["status"]["refresh_rate"] = 5000; //ms
 $config["status"]["max_refresh_times"] = 5;
 //other
 $config["OJcode"] = "JNU";
-$config["base_url"] = "http://localhost/oj/";
-$config["base_path"] = "/oj/";
-$config["base_local_path"] = "/usr/share/nginx/html/oj/";
-//$config["test_data_path"]                       =   "/usr/share/nginx/html/bnuoj-backend/judger-v2/testdata/";
+$config["base_url"] = "http://localhost/jnuoj/web/";
+$config["base_path"] = "/jnuoj/web/";
+$config["base_local_path"] = "/srv/http/jnuoj/web/";
 $config["test_data_path"] = "/tmp/bnuoj-backend/judger-v2/testdata/";
 $config["local_timezone"] = "Asia/Shanghai";
 $config["salt_problem_in_contest"] = "[-,-]";
 $config["database_debug"] = false;
 $config["cookie_prefix"] = "bnuoj_v3_";
-$config["default_style"] = "cerulean";
 $config["use_latex_render"] = false;
 //accounts
 $config["accounts"]["lightoj"]["username"] = "public@51isoft.com";

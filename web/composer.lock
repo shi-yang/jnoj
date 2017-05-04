@@ -4,7 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "94ad452b75d5471b35692797a5645c7f",
     "content-hash": "4bdd484ef43967a8e94ea697197127e3",
     "packages": [
         {
@@ -13,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ezSQL/ezSQL.git",
-                "reference": "473d21355e4ebee015a126be8b406cc9c46da864"
+                "reference": "778f000c1c9a3bc113623a348096b8b2b2452749"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packagist.phpcomposer.com/files/ezSQL/ezSQL/473d21355e4ebee015a126be8b406cc9c46da864.zip",
-                "reference": "473d21355e4ebee015a126be8b406cc9c46da864",
+                "url": "https://api.github.com/repos/ezSQL/ezSQL/zipball/778f000c1c9a3bc113623a348096b8b2b2452749",
+                "reference": "778f000c1c9a3bc113623a348096b8b2b2452749",
                 "shasum": ""
             },
             "type": "library",
@@ -49,7 +48,7 @@
                 }
             ],
             "description": "PHP class to make interacting with a database ridiculusly easy.",
-            "time": "2016-03-03 07:02:06"
+            "time": "2017-02-23 23:05:12"
         },
         {
             "name": "kriswallsmith/buzz",
@@ -97,7 +96,7 @@
                 "curl",
                 "http client"
             ],
-            "time": "2013-05-19 03:41:15"
+            "time": "2013-05-19T03:41:15+00:00"
         },
         {
             "name": "michelf/php-markdown",
@@ -148,7 +147,7 @@
             "keywords": [
                 "markdown"
             ],
-            "time": "2015-03-01 12:03:08"
+            "time": "2015-03-01T12:03:08+00:00"
         }
     ],
     "packages-dev": [],
