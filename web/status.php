@@ -106,8 +106,7 @@ else $start = "0";
                     <?php endif; ?>
                     <br/><b id='sharenote'>This code is shared.</b>
                 </div>
-                <button class="pull-right btn btn-mini btn-inverse" data-clipboard-target="dcontent" id="copybtn">Copy
-                </button>
+                <button class="pull-right btn btn-mini btn-inverse" data-clipboard-target="dcontent" id="copybtn">Copy</button>
                 <pre id="dcontent"></pre>
             </div>
         </div>

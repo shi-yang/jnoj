@@ -18,4 +18,3 @@ if ($current_user->is_root()) {
     $ret["msg"] = "Success! News ID: $currnid.";
 } else $ret["msg"] = "Please login as root!";
 echo json_encode($ret);
-?>
