@@ -90,9 +90,9 @@ $show_user->load_info($name);
         <div class="alert alert-error">No such user!</div>
     </div>
 <?php endif; ?>
-<script type="text/javascript" src="js/highcharts.js"></script>
+<script type="text/javascript" src="assets/js/highcharts.js"></script>
 <script type="text/javascript">
     var nametoc =<?=json_encode($name)?>;
 </script>
-<script type="text/javascript" src="js/userinfo.js?<?php echo filemtime("js/userinfo.js"); ?>"></script>
+<script type="text/javascript" src="assets/js/userinfo.js?<?php echo filemtime("assets/js/userinfo.js"); ?>"></script>
 <?php include("footer.php"); ?>

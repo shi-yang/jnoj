@@ -16,5 +16,7 @@ if ($current_user->is_root()) {
     if ($newsid == '') $currnid = $db->insert_id;
     else $currnid = $newsid;
     $ret["msg"] = "Success! News ID: $currnid.";
-} else $ret["msg"] = "Please login as root!";
+} else {
+    $ret["msg"] = "Please login as root!";
+}
 echo json_encode($ret);
