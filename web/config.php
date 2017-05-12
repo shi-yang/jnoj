@@ -44,9 +44,9 @@ $config["status"]["refresh_rate"] = 5000; //ms
 $config["status"]["max_refresh_times"] = 5;
 //other
 $config["OJcode"] = "JNU";
-$config["base_url"] = "http://localhost/jnuoj/web/";
-$config["base_path"] = "/jnuoj/web/";
-$config["base_local_path"] = "/srv/http/jnuoj/web/";
+$config["base_url"] = "http://localhost/jnuoj_/web/";
+$config["base_path"] = "/jnuoj_/web/";
+$config["base_local_path"] = "/srv/http/jnuoj_/web/";
 $config["test_data_path"] = "/tmp/bnuoj-backend/judger-v2/testdata/";
 $config["local_timezone"] = "Asia/Shanghai";
 $config["salt_problem_in_contest"] = "[-,-]";

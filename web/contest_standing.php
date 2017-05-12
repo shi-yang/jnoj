@@ -77,7 +77,6 @@ if (contest_exist($cid)) {
     }
     ?>
 
-
     <div id="cstandingcontainer">
     <h3 class="pagetitle" style="display:none"><?= $pagetitle ?></h3>
     <div class="tcenter currentstat">

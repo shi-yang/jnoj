@@ -28,16 +28,26 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
             if ($current_user->is_root()) {
                 ?>
                 <pre align='right'>By <?= $row["username"] ?></pre>
-                Answer: <br/>
                 <form class="clarform" method="post" action="ajax/admin_deal_clarify.php">
-                    <textarea rows="6" name="answer"
-                              class="input-block-level"><?= htmlspecialchars($row["reply"]) ?></textarea>
-                    <label class="radio inline"><input name="<?= "ispublic" . $row["ccid"] ?>" type="radio"
-                                                       value="1" <?= $row["ispublic"] == '1' ? "checked" : "" ?> />
-                        Public </label> &nbsp;&nbsp;&nbsp;&nbsp;
-                    <label class="radio inline"><input name="<?= "ispublic" . $row["ccid"] ?>" type="radio"
-                                                       value="0" <?= $row["ispublic"] == '0' ? "checked" : "" ?> />
-                        Private </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="form-group">
+                        <label for="answer">Answer: </label>
+                        <textarea rows="6" name="answer"
+                                  class="form-control"><?= htmlspecialchars($row["reply"]) ?></textarea>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input name="<?= "ispublic" . $row["ccid"] ?>" type="radio"
+                                   value="1" <?= $row["ispublic"] == '1' ? "checked" : "" ?> />
+                            Public
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input name="<?= "ispublic" . $row["ccid"] ?>" type="radio"
+                                   value="0" <?= $row["ispublic"] == '0' ? "checked" : "" ?> />
+                            Private
+                        </label>
+                    </div>
                     <input type="submit" class="btn btn-primary" value="Answer"/>
                     <span id="msgbox" style="display:none;"></span>
                     <input name="ccid" type="hidden" value="<?= $row["ccid"] ?>"/>

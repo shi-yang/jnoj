@@ -9,78 +9,146 @@ if (contest_exist($cid) && ($current_user->is_root() || contest_get_val($cid, "i
         (contest_get_val($cid, "isprivate") == 2 && contest_get_val($cid, "password") == $_COOKIE[$config["cookie_prefix"] . "contest_pass_$cid"]))
 ) {
     ?>
-    <ul class="nav nav-tabs" id="contest_nav">
-        <!-- <div class="btn-group"> -->
-        <li id="cinfo_a"><a href="#info">Information</a></li>
-        <li id="cprob_a"><a href="#problem/0">Problems</a></li>
-        <?php if (contest_get_val($cid, "type") != 99) {//not replay ?>
-            <li id="cstatus_a"><a href="#status">Status</a></li>
-        <?php } ?>
-        <li id="cstand_a"><a href="#standing">Standing</a></li>
-
-        <?php
-        if ($current_user->is_root() && contest_get_val($cid, "type") != 99) {
-            ?>
-            <li id="cadminstand_a"><a href="#adminstanding">Standing(Admin)</a></li>
-            <?php
+    <style>
+        body {
+            background-color: #f1f1f1;
         }
-        ?>
-        <?php
-        if (contest_get_val($cid, "type") != 99) {
-            ?>
-            <li id="cclar_a"><a href="#clarify">Clarify</a></li>
+    </style>
+    <div class="box">
+        <h3 class="pagetitle"><?= contest_get_val($cid, "title") ?></h3>
+        <div class="tcenter well">
+            Contest Start Time: <?= contest_get_val($cid, "start_time") ?> &nbsp;&nbsp;&nbsp;&nbsp;
+            <?= contest_get_val($cid, "has_cha") == 0 ? "Contest End Time: " : "Coding End Time: " ?><?= contest_get_val($cid, "end_time") ?>
+            <?php if (contest_get_val($cid, "has_cha") == 1) { ?>
+                <br/> Challenge Start Time: <?= contest_get_val($cid, "challenge_start_time") ?> &nbsp;&nbsp;&nbsp;&nbsp; Challenge End Time: <?= contest_get_val($cid, "challenge_end_time") ?>
+            <?php } ?>
+            <br/>
             <?php
-        }
-        ?>
-        <li id="creport_a"><a href="#report">Report</a></li>
-        <div class="pull-right btn-group">
-            <?php
-            if ($current_user->is_root()) {
-                ?>
-                <a class="btn btn-danger" id="cdel_a">Delete</a>
-                <?php
-            } else if ($current_user->match(contest_get_val($cid, "owner")) && !contest_started($cid)) {
-                ?>
-                <a class="btn btn-danger" id="cdel_a">Delete</a>
-                <?php
-            }
-            ?>
-            <?php
-            if (contest_get_val($cid, "has_cha") != 1) {//no challenge
-                ?>
-                <a class="btn btn-info" id="cset_a">Settings</a>
-                <?php
-            }
-            ?>
-            <?php
-            if (contest_get_val($cid, "isvirtual") == 0) {//standard contest
-                if ($current_user->is_root() && contest_get_val($cid, "type") != 99) {
-                    ?>
-                    <a href="admin_index.php?cid=<?= $cid ?>#contesttab" class="btn btn-info">Edit</a>
-                    <?php
-                }
+            $canshow = true;
+            $nowtime = time();
+            if (contest_passed($cid)) echo "<span class='cpassed'>Passed</span>";
+            else if (contest_intermission($cid)) {
+                $diff = strtotime(contest_get_val($cid, "challenge_start_time")) - $nowtime;
+                $diffhour = (int)($diff / 3600);
+                $diffminute = (int)(($diff - $diffhour * 3600) / 60);
+                $diffsecond = $diff - $diffhour * 3600 - $diffminute * 60;
+                echo "Countdown: <span id='counttime'>$diffhour:$diffminute:$diffsecond</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class='crunning'>Intermission</span>";
+            } else if (contest_challenging($cid)) {
+                $diff = strtotime(contest_get_val($cid, "challenge_end_time")) - $nowtime;
+                $diffhour = (int)($diff / 3600);
+                $diffminute = (int)(($diff - $diffhour * 3600) / 60);
+                $diffsecond = $diff - $diffhour * 3600 - $diffminute * 60;
+                echo "Countdown: <span id='counttime'>$diffhour:$diffminute:$diffsecond</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class='crunning'>Challenging</span>";
+            } else if (contest_running($cid)) {
+                $diff = strtotime(contest_get_val($cid, "end_time")) - $nowtime;
+                $diffhour = (int)($diff / 3600);
+                $diffminute = (int)(($diff - $diffhour * 3600) / 60);
+                $diffsecond = $diff - $diffhour * 3600 - $diffminute * 60;
+                echo "Countdown: <span id='counttime'>$diffhour:$diffminute:$diffsecond</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class='crunning'>Running</span>";
             } else {
-                if (!contest_passed($cid) && ($current_user->is_root() || $current_user->match(contest_get_val($cid, "owner")))) {
-                    ?>
-                    <a href="contest_edit.php?cid=<?= $cid ?>" class="btn btn-info">Edit</a>
-                    <?php
-                }
+                $diff = strtotime(contest_get_val($cid, "start_time")) - $nowtime;
+                $diffhour = (int)($diff / 3600);
+                $diffminute = (int)(($diff - $diffhour * 3600) / 60);
+                $diffsecond = $diff - $diffhour * 3600 - $diffminute * 60;
+                $canshow = false;
+                echo "Countdown: <span id='counttime'>$diffhour:$diffminute:$diffsecond</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class='cscheduled'>Not Started</span>";
             }
-            ?>
-            <?php
-            if ($current_user->is_valid() && contest_passed($cid)) {//able to clone
+            if ($current_user->is_root() || $current_user->match(contest_get_val($cid, "owner"))) {
                 ?>
-                <a href="contest.php?type=50&open=1&clone=1&cid=<?= $cid ?>" class="btn btn-info">Clone</a>
+                <br/><a target="_blank" href="contest_problem_merge.php?cid=<?= $cid ?>">[Show All Problem Description]
+                    ( For print, shown to owner only. )</a>
                 <?php
             }
             ?>
         </div>
-        <!-- </div> -->
-    </ul>
-    <div id="contest_content">
-        <div class="tcenter"><img src="assets/img/ajax-loader.gif"/>Loading...</div>
     </div>
-    <div width="0px" id="temp_standing" style="display:none"></div>
+    <?php
+    if ($canshow) {
+        ?>
+        <div class="box" style="min-height: 600px">
+            <ul class="nav nav-tabs" id="contest_nav" style="padding: 5px 5px 0 5px">
+                <!-- <div class="btn-group"> -->
+                <li id="cinfo_a"><a href="#info">Information</a></li>
+                <li id="cprob_a"><a href="#problem/0">Problems</a></li>
+                <?php if (contest_get_val($cid, "type") != 99) {//not replay ?>
+                    <li id="cstatus_a"><a href="#status">Status</a></li>
+                <?php } ?>
+                <li id="cstand_a"><a href="#standing">Standing</a></li>
+
+                <?php
+                if ($current_user->is_root() && contest_get_val($cid, "type") != 99) {
+                    ?>
+                    <li id="cadminstand_a"><a href="#adminstanding">Standing(Admin)</a></li>
+                    <?php
+                }
+                ?>
+                <?php
+                if (contest_get_val($cid, "type") != 99) {
+                    ?>
+                    <li id="cclar_a"><a href="#clarify">Clarify</a></li>
+                    <?php
+                }
+                ?>
+                <li id="creport_a"><a href="#report">Report</a></li>
+                <div class="pull-right btn-group">
+                    <?php
+                    if ($current_user->is_root()) {
+                        ?>
+                        <a class="btn btn-danger" id="cdel_a">Delete</a>
+                        <?php
+                    } else if ($current_user->match(contest_get_val($cid, "owner")) && !contest_started($cid)) {
+                        ?>
+                        <a class="btn btn-danger" id="cdel_a">Delete</a>
+                        <?php
+                    }
+                    ?>
+                    <?php
+                    if (contest_get_val($cid, "has_cha") != 1) {//no challenge
+                        ?>
+                        <a class="btn btn-info" id="cset_a">Settings</a>
+                        <?php
+                    }
+                    ?>
+                    <?php
+                    if (contest_get_val($cid, "isvirtual") == 0) {//standard contest
+                        if ($current_user->is_root() && contest_get_val($cid, "type") != 99) {
+                            ?>
+                            <a href="admin_index.php?r=contest&cid=<?= $cid ?>#contesttab" class="btn btn-info">Edit</a>
+                            <?php
+                        }
+                    } else {
+                        if (!contest_passed($cid) && ($current_user->is_root() || $current_user->match(contest_get_val($cid, "owner")))) {
+                            ?>
+                            <a href="contest_edit.php?cid=<?= $cid ?>" class="btn btn-info">Edit</a>
+                            <?php
+                        }
+                    }
+                    ?>
+                    <?php
+                    if ($current_user->is_valid() && contest_passed($cid)) {//able to clone
+                        ?>
+                        <a href="contest.php?type=50&open=1&clone=1&cid=<?= $cid ?>" class="btn btn-info">Clone</a>
+                        <?php
+                    }
+                    ?>
+                </div>
+                <!-- </div> -->
+            </ul>
+            <div id="contest_content">
+                <div class="tcenter"><img src="assets/img/ajax-loader.gif"/>Loading...</div>
+            </div>
+            <div width="0px" id="temp_standing" style="display:none"></div>
+            <div class="clearfix"></div>
+        </div>
+        <?php
+    } else {
+        ?>
+        <div class="box">
+            <p class="alert alert-error">Contest Unavailable!</p>
+        </div>
+        <?php
+    }
+    ?>
 
     <div id="csetdlg" class="modal fade">
         <div class="modal-dialog modal-lg" role="document">
@@ -104,7 +172,6 @@ if (contest_exist($cid) && ($current_user->is_root() || contest_get_val($cid, "i
                             </thead>
                             <tbody>
                             <?php
-
                             foreach ((array)contest_get_comparable_list($cid) as $value) {
                                 ?>
                                 <tr>
@@ -167,7 +234,6 @@ if (contest_exist($cid) && ($current_user->is_root() || contest_get_val($cid, "i
     <div class="col-md-12">
         <p class="alert alert-error">Contest Unavailable!</p>
     </div>
-
     <?php
 }
 ?>

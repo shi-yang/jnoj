@@ -40,18 +40,21 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                 });
             </script>
             <div id="showproblem">
-                <ul class="nav nav-pills" id="probpagi">
-                    <?php
-                    foreach (contest_get_problem_basic($cid) as $prob) {
-                        ?>
-                        <li<?= $prob['lable'] == $label ? " class='active'" : "" ?>><a
-                                href="#problem/<?= $prob['lable'] ?>"><?= $prob['lable'] ?></a></li>
-                        <?php
-                    }
-                    ?>
-                </ul>
-                <h2 style="text-align:center"
-                    class="pagetitle"><?= $label . ". " . $show_problem->get_val("title") ?></h2>
+                <div class="center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="probpagi">
+                            <?php
+                            foreach (contest_get_problem_basic($cid) as $prob) {
+                                ?>
+                                <li<?= $prob['lable'] == $label ? " class='active'" : "" ?>><a
+                                            href="#problem/<?= $prob['lable'] ?>"><?= $prob['lable'] ?></a></li>
+                                <?php
+                            }
+                            ?>
+                        </ul>
+                    </nav>
+                </div>
+                <h2 class="pagetitle center"><?= $label . ". " . $show_problem->get_val("title") ?></h2>
                 <div id="conditions" class="well tcenter">
                     <?php if ($show_problem->get_val("ignore_noc") == "0") { ?>
                         <?php if ($show_problem->get_val("time_limit") == $show_problem->get_val("case_time_limit")) { ?>
@@ -59,18 +62,15 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                             <div class="col-md-6">Memory Limit: <?= $show_problem->get_val("memory_limit") ?>KB</div>
                         <?php } else { ?>
                             <div class="col-md-4">Time Limit: <?= $show_problem->get_val("time_limit") ?>ms</div>
-                            <div class="col-md-4">Case Time Limit: <?= $show_problem->get_val("case_time_limit") ?>ms
-                            </div>
+                            <div class="col-md-4">Case Time Limit: <?= $show_problem->get_val("case_time_limit") ?>ms</div>
                             <div class="col-md-4">Memory Limit: <?= $show_problem->get_val("memory_limit") ?>KB</div>
                         <?php } ?>
                     <?php } else { ?>
                         <div class="col-md-6">Case Time Limit: <?= $show_problem->get_val("case_time_limit") ?>ms</div>
                         <div class="col-md-6">Memory Limit: <?= $show_problem->get_val("memory_limit") ?>KB</div>
                     <?php } ?>
-                    64-bit integer IO format: <span
-                        class="badge badge-inverse"><?= htmlspecialchars($show_problem->get_val("i64io_info")) ?></span>
-                    &nbsp;&nbsp;&nbsp;&nbsp; Java class name: <span
-                        class="badge badge-inverse"><?= htmlspecialchars($show_problem->get_val("java_class")) ?></span>
+                    64-bit integer IO format: <span class="badge badge-inverse"><?= htmlspecialchars($show_problem->get_val("i64io_info")) ?></span>
+                    Java class name: <span class="badge badge-inverse"><?= htmlspecialchars($show_problem->get_val("java_class")) ?></span>
                     <?php
                     if ($show_problem->get_val("special_judge_status")) {
                         ?>
@@ -94,7 +94,7 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                     <?php
                     if ($current_user->is_root()) {
                         ?>
-                        <a href="admin_index.php?pid=<?= $pid ?>#problemtab" class="btn btn-primary">Edit</a>
+                        <a href="admin_index.php?r=problem&pid=<?= $pid ?>#problemtab" class="btn btn-primary">Edit</a>
                         <?php
                     }
                     ?>
@@ -102,7 +102,8 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                 <?php
                 if ($show_problem->get_val("description") != "") {
                     ?>
-                    <div class="content-wrapper well">
+                    <h3>Description</h3>
+                    <div class="content-wrapper">
                         <?= latex_content(preg_replace('/<style[\s\S]*\/style>/', "", $show_problem->get_val("description"))) . "\n" ?>
                         <div style="clear:both"></div>
                     </div>
@@ -111,7 +112,7 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                 if ($show_problem->get_val("input") != "") {
                     ?>
                     <h3> Input </h3>
-                    <div class="content-wrapper well">
+                    <div class="content-wrapper">
                         <?= latex_content($show_problem->get_val("input")) . "\n" ?>
                         <div style="clear:both"></div>
                     </div>
@@ -120,7 +121,7 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                 if ($show_problem->get_val("output") != "") {
                     ?>
                     <h3> Output </h3>
-                    <div class="content-wrapper well">
+                    <div class="content-wrapper">
                         <?= latex_content($show_problem->get_val("output")) . "\n" ?>
                         <div style="clear:both"></div>
                     </div>
@@ -130,28 +131,36 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                     $sin = $show_problem->get_val("sample_in");
                     ?>
                     <h3> Sample Input </h3>
-                    <?php
-                    if (stristr($sin, '<br') == null && stristr($sin, '<pre') == null && stristr($sin, '<p>') == null) {
-                        ?>
-                        <pre class="content-wrapper"><?= $sin ?></pre>
+                    <div class="content-wrapper">
                         <?php
-                    } else echo '<div class="content-wrapper well">' . $sin . "</div>\n";
+                        if (stristr($sin, '<br') == null && stristr($sin, '<pre') == null && stristr($sin, '<p>') == null) {
+                            ?>
+                            <pre><?= $sin ?></pre>
+                            <?php
+                        } else echo '<div class="well">' . $sin . "</div>\n";
+                        ?>
+                    </div>
+                    <?php
                 }
                 if ($show_problem->get_val("sample_out") != "") {
                     $sout = $show_problem->get_val("sample_out");
                     ?>
                     <h3> Sample Output </h3>
-                    <?php
-                    if (stristr($sout, '<br') == null && stristr($sout, '<pre') == null && stristr($sout, '<p>') == null) {
-                        ?>
-                        <pre class="content-wrapper"><?= $sout ?></pre>
+                    <div class="content-wrapper">
                         <?php
-                    } else echo '<div class="content-wrapper well">' . $sout . "</div>\n";
+                        if (stristr($sout, '<br') == null && stristr($sout, '<pre') == null && stristr($sout, '<p>') == null) {
+                            ?>
+                            <pre class=""><?= $sout ?></pre>
+                            <?php
+                        } else echo '<div class="well">' . $sout . "</div>\n";
+                        ?>
+                    </div>
+                    <?php
                 }
                 if (trim(strip_tags($show_problem->get_val("hint"))) != "" || strlen($show_problem->get_val("hint")) > 50) {
                     ?>
                     <h3> Hint </h3>
-                    <div class="content-wrapper well">
+                    <div class="content-wrapper">
                         <?= latex_content($show_problem->get_val("hint")) . "\n" ?>
                         <div style="clear:both"></div>
                     </div>
@@ -173,7 +182,7 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                     <?php
                     if ($current_user->is_root()) {
                         ?>
-                        <a href="admin_index.php?pid=<?= $pid ?>#problemtab" class="btn btn-primary">Edit</a>
+                        <a href="admin_index.php?r=problem&pid=<?= $pid ?>#problemtab" class="btn btn-primary">Edit</a>
                         <?php
                     }
                     ?>
@@ -258,7 +267,7 @@ if (!contest_started($cid) || !($current_user->is_root() || contest_get_val($cid
                                 <th colspan="2">Source Code:</th>
                             </tr>
                             <tr>
-                                <td colspan="2"><textarea rows="12" class="input-block-level" name="source"
+                                <td colspan="2"><textarea rows="12" class="form-control" name="source"
                                                           onKeyUp="if(this.value.length > <?= $config["limits"]["max_source_code_len"] ?>) this.value=this.value.substr(0,<?= $config["limits"]["max_source_code_len"] ?>)"
                                                           placeholder="Put your solution here..."></textarea></td>
                             </tr>

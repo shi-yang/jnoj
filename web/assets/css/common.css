@@ -8,6 +8,7 @@ html {
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
+    /*background-color: #f1f1f1;*/
 }
 
 .footer {
@@ -38,11 +39,19 @@ body {
     border: medium none;
 }
 
+.box {
+    border: 1px solid #ddd;
+    background: #fbfbfb;
+    margin-bottom: 15px;
+}
 .page-header {
     margin: 0;
     border-bottom: 0;
 }
-
+.pagetitle {
+    text-align: center;
+    color: #3069BE;
+}
 .page-header .navbar-brand img {
     width: 178px;
     height: 52px;
@@ -63,6 +72,14 @@ body {
     line-height: 55px;
 }
 
+.center {
+    text-align: center;
+}
+
+.content-wrapper {
+    border-top: 1px solid #e8e8e8;
+    padding: 9px 15px;
+}
 #flip-scroll {
     padding-top: 20px;
 }
