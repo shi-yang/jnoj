@@ -1,0 +1,436 @@
+html,
+body {
+    height: 100%;
+    background-color: #e7e7e7
+}
+pre {
+    border-radius: unset;
+}
+.wrap {
+    min-height: 100%;
+    height: auto;
+    margin: 0 auto -60px;
+    padding: 0 0 60px;
+}
+
+.wrap > .container {
+    padding: 25px 15px 20px;
+    background-color: #FFF;
+}
+
+.footer {
+    height: 60px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+.logo .brand {
+    color: #fff;
+    font-size: 22px;
+    float: left;
+    padding-left: 10px;
+    position: relative;
+    top: 1px;
+    border-left: 1px solid #eaeaea;
+    margin-top: 15px;
+    margin-left: 5px;
+    overflow: hidden;
+    height: 55px;
+    line-height: 55px;
+}
+#header {
+    background-color: #006179;
+    margin-bottom: 0;
+    border: medium none;
+}
+.page-header {
+    margin: 0;
+    border-bottom: 0;
+}
+.page-header .navbar-brand img {
+    width: 178px;
+    height: 52px;
+}
+.jumbotron {
+    background-color: transparent;
+}
+
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
+}
+
+.progress {
+    height: 14px;
+}
+
+.progress-bar {
+    line-height: 14px;
+}
+
+.not-set {
+    color: #c55;
+    font-style: italic;
+}
+
+.well-done {
+    color: green;
+    font-weight: bold;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* add sorting icons to gridview sort links */
+a.asc:after, a.desc:after {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    padding-left: 5px;
+}
+
+a.asc:after {
+    content: /*"\e113"*/ "\e151";
+}
+
+a.desc:after {
+    content: /*"\e114"*/ "\e152";
+}
+
+.sort-numerical a.asc:after {
+    content: "\e153";
+}
+
+.sort-numerical a.desc:after {
+    content: "\e154";
+}
+
+.sort-ordinal a.asc:after {
+    content: "\e155";
+}
+
+.sort-ordinal a.desc:after {
+    content: "\e156";
+}
+
+.grid-view th {
+    white-space: nowrap;
+}
+
+.hint-block {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+}
+
+.error-summary {
+    color: #a94442;
+    background: #fdf7f7;
+    border-left: 3px solid #eed3d7;
+    padding: 10px 20px;
+    margin: 0 0 15px 0;
+}
+
+/* align the logout "link" (button in form) of the navbar */
+.nav li > form > button.logout {
+    padding: 15px;
+    border: none;
+}
+
+@media(max-width:767px) {
+    .nav li > form > button.logout {
+        display:block;
+        text-align: left;
+        width: 100%;
+        padding: 10px 15px;
+    }
+}
+
+.nav > li > form > button.logout:focus,
+.nav > li > form > button.logout:hover {
+    text-decoration: none;
+}
+
+.nav > li > form > button.logout:focus {
+    outline: none;
+}
+
+.solution-search {
+    padding-bottom: 20px;
+}
+
+/*
+ * Blog posts
+ */
+.blog {
+    padding: 0 30px;
+}
+.blog-main {
+    font-size: 18px;
+    line-height: 1.5;
+}
+.blog-post {
+    margin-bottom: 60px;
+}
+.blog-post-title {
+    margin-bottom: 5px;
+    }
+.blog-post-meta {
+    margin-bottom: 20px;
+    color: #999;
+}
+/* Sidebar modules for boxing content */
+.sidebar-module {
+    padding: 15px;
+    margin: 0 -15px 15px;
+}
+.sidebar-module-inset {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+.sidebar-module-inset p:last-child,
+.sidebar-module-inset ul:last-child,
+.sidebar-module-inset ol:last-child {
+    margin-bottom: 0;
+}
+
+.news-view {
+    max-width: 700px;
+    margin: auto;
+}
+.news-view .news-title {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    font-family: "Microsoft YaHei", "SimHei";
+    margin: 10px 0px;
+}
+.news-view .news-meta {
+    height: 24px;
+    color: rgb(153, 153, 153);
+    font-size: 12px;
+    text-align: center;
+    line-height: 24px;
+    background: rgb(243, 243, 243);
+}
+.news-view .news-content {
+    font-size: 17px;
+    line-height: 33px;
+    color: rgb(51, 51, 51);
+}
+.content-wrapper {
+    border-top: 1px solid #e8e8e8;
+    padding: 9px 15px;
+    font-family: -apple-system, 'SF UI Text', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 2em;
+}
+
+.content-wrapper img {
+    max-width: 100%;
+}
+
+.sample-test .input, .sample-test .output {
+    border: 1px solid #888;
+}
+
+.sample-test h4 {
+    padding: 0.25em;
+    margin: 0;
+    border-bottom: 1px solid #888;
+    text-transform: lowercase;
+    font-weight: bold;
+}
+.sample-test pre {
+    padding: 0.25em;
+    margin: 0;
+    background-color: #efefef;
+    border: none;
+}
+
+.sample-test .output {
+    margin-bottom: 1em;
+    position: relative;
+    top: -1px;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="text"] {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.box {
+    border: 1px solid #ddd;
+    background: #fbfbfb;
+    margin-bottom: 15px;
+}
+
+.contest-title {
+    text-align: center;
+    margin-top: 0;
+    font-weight: 700;
+}
+
+.solution-index table, .solution-index table th {
+    text-align: center;
+}
+
+.table-overview {
+    margin: 0 auto;
+    width: 50%;
+    min-width: 500px;
+}
+
+.table-overview td, .table-overview th {
+    font-weight: 400;
+    border-top: 0 !important;
+}
+
+.table-overview th {
+    text-align: right;
+}
+.table-problem-list {
+    margin: 0 auto;
+    width: 50%;
+    min-width: 600px;
+}
+.table-problem-list th {
+    text-align: center;
+}
+.table-problem-list td {
+    text-align: left;
+}
+
+.problem-index-list tr td:nth-child(1),
+.problem-index-list tr th:nth-child(1),
+.problem-index-list tr td:nth-child(3),
+.problem-index-list tr th:nth-child(3) {
+    text-align:center;
+}
+.contest-countdown {
+    padding: 20px;
+    font-size: 100px;
+}
+
+.solved {
+    background-color: #AAE2AB;
+}
+
+.solved-first {
+    background-color: #57B257;
+    color: #FFF;
+}
+
+.attempted {
+    background-color: #F67B51;
+}
+
+.pending {
+    background-color: #DCDCDC;
+}
+
+.legend-strip {
+    clear: both;
+}
+
+.legend-strip .table-legend:not(:first-child) {
+    margin-left: 20px;
+}
+
+.table-legend {
+    border: 1px solid #CBCBCB;
+    padding: 4px;
+    display: inline;
+    border-radius: 4px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    color: #82868b;
+}
+.table-legend div {
+    display: inline;
+}
+.table-legend .legend-status, .table-legend .legend-leader, .table-legend .legend-whoami {
+    width: 23px;
+    height: 23px;
+    border-radius: 2px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.table-legend .legend-label {
+    display: inline;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.table-rank th {
+    text-align: center;
+}
+.table-problem-cell {
+    font-size: 14px;
+    padding: 0 !important;
+    margin: 0;
+    text-align: center;
+}
+
+.problem-list-tags {
+    float: right;
+}
+
+.problem-list-tags .label {
+    margin: 2px;
+}
+.tag-group {
+    padding: 0;
+}
+.tag-group-item {
+    display: inline-block;
+    background-color: #DDD;
+    margin-right: 3px;
+    margin-bottom: 5px;
+    padding: 5px 7px;
+    border-radius: 2px;
+    color: #555;
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition-timing-function: ease;
+    transition-duration: 0.2s;
+    transition-property: background-color;
+}

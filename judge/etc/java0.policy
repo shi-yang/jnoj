@@ -1,0 +1,5 @@
+
+grant {
+    permission java.io.FilePermission "./-", "read,write";
+    permission java.io.FilePermission "/usr/lib/jvm", "read";
+};
