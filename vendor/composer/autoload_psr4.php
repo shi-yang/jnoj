@@ -7,9 +7,9 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'yii\\swiftmailer\\' => array($vendorDir . '/yiisoft/yii2-swiftmailer'),
-    'yii\\gii\\' => array($vendorDir . '/yiisoft/yii2-gii/src'),
-    'yii\\faker\\' => array($vendorDir . '/yiisoft/yii2-faker/src'),
-    'yii\\debug\\' => array($vendorDir . '/yiisoft/yii2-debug/src'),
+    'yii\\gii\\' => array($vendorDir . '/yiisoft/yii2-gii'),
+    'yii\\faker\\' => array($vendorDir . '/yiisoft/yii2-faker'),
+    'yii\\debug\\' => array($vendorDir . '/yiisoft/yii2-debug'),
     'yii\\composer\\' => array($vendorDir . '/yiisoft/yii2-composer'),
     'yii\\bootstrap\\' => array($vendorDir . '/yiisoft/yii2-bootstrap/src'),
     'yii\\' => array($vendorDir . '/yiisoft/yii2'),
