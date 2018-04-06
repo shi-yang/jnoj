@@ -111,6 +111,14 @@
     3. 运行 `sudo ./dispatcher` 命令
 
 
+开发者支持
+---------
+Issues: [https://github.com/shi-yang/jnoj/issues](https://github.com/shi-yang/jnoj/issues)
+Wiki: [https://github.com/shi-yang/jnoj/wiki](https://github.com/shi-yang/jnoj/wiki)
+
+微信、QQ：
+![Wechat & QQ](docs/images/contact.png)
+
 目录结构
 ----------
 
