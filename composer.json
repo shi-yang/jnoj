@@ -1,21 +1,14 @@
 {
-    "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Project Template",
+    "name": "jnoj",
+    "description": "Jiangnan Online Judge",
     "keywords": [
-        "yii2",
-        "framework",
-        "basic",
-        "project template"
+        "online judge",
     ],
-    "homepage": "http://www.yiiframework.com/",
+    "homepage": "http://www.github.com/shi-yang/jnoj",
     "type": "project",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
+        "issues": "https://github.com/shi-yang/jnoj/issues"
     },
     "minimum-stability": "stable",
     "require": {

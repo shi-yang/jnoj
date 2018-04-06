@@ -50,12 +50,21 @@
 
 在 Linux 环境下安装。判题机是在 Linux 环境下写的，Windows 下无法运行判题机。
 
-PHP 7.x、MySQL、Apache2 / Nginx
+搭建 LAMP (或 LANP) 环境：PHP 7.x、MySQL、Apache2 / Nginx
 
-安装方法
+安装额外的依赖：php-mbstring
+
+安装过程
 ------------
+1. 下载　`jnoj`
+    提供两种方法下载：
+    1. 运行命令：
+        ~~~
+        git clone https://github.com/shi-yang/jnoj.git
+        ~~~
+    2. 到　[https://github.com/shi-yang/jnoj/releases](https://github.com/shi-yang/jnoj/releases) 选择最新版本下载。
 
-1. 配置 Web 端
+2. 配置 Web 端
     1. 配置数据库信息
     
         在 `config/db.php` 文件中配置数据库信息，例如:
@@ -74,22 +83,19 @@ PHP 7.x、MySQL、Apache2 / Nginx
         
     2. 安装 Web 相关依赖
         这里提供两种安装方法。一种是用 `composer` 来安装，另一种是通过压缩包来安装。
-        1. 使用 `composer` 来安装。这种方法因国内网络问题，安装时间漫长。
+        1. 使用 `composer` 来安装。这种方法因国内网络问题，安装时间漫长或无法安装。需要先下载安装 `composer`。然后执行
         
             ```bash
             php composer.phar update
             ```
-        2. 通过安装包来安装。到 [] 下载后，解压到 vendor 目录下即可。
-    
-    3. 初始化环境
-    
-        运行 `./init`
+        2. 通过安装包来安装。到 [https://github.com/shi-yang/jnoj/releases](https://github.com/shi-yang/jnoj/releases)
+        下载最新版的 `vendor.zip` 后，放在 `jnoj` 目录下，直接解压即可。
         
-    4. 导入数据库信息
+    3. 导入数据库信息
         
-        运行 `./yii migrate`。根据提示输入管理员账号密码邮箱即可。
+        运行 `./yii migrate`。根据提示输入管理员账号密码邮箱。
 
-    5. 启动 Socket 功能 (启动该功能是为了在发布公告时给前台用户弹窗提醒)
+    4. 启动 Socket 功能 (启动该功能是为了在发布公告时给前台用户弹窗提醒)
     
     做好以上步骤后便使用 Web 端：
     
@@ -99,7 +105,7 @@ PHP 7.x、MySQL、Apache2 / Nginx
     
     此时还不能进行判题，需配置判题机才能判题。
     
-2. 配置判题机
+3. 配置判题机
     1. 在 `judge/config.ini` 文件中配置数据库信息
     2. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
     3. 运行 `sudo ./dispatcher` 命令
