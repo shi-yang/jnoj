@@ -28,3 +28,8 @@ phpunit.phar
 
 tests/_output/*
 tests/_support/_generated
+
+#judge
+/judge/run
+/judge/etc
+/judge/log
