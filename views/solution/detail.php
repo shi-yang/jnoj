@@ -42,6 +42,22 @@ $this->params['breadcrumbs'][] = $this->title;
     </table>
 </div>
 <hr>
+
+<h3>Tests(<?= $model->getPassedTestCount() ?>/<?= $model->getTestCount() ?>):</h3>
+<h3>
+<?php for ($i = 1; $i <= $model->getPassedTestCount(); $i++): ?>
+    <?php if ($i <= $model->getTestCount()) :?>
+        <span class="glyphicon glyphicon-ok-circle text-success"></span>
+    <?php else: ?>
+        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+    <?php endif; ?>
+<?php endfor; ?>
+<?php if ($model->getPassedTestCount() < $model->getTestCount()) :?>
+    <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+<?php endif; ?>
+</h3>
+
+<hr>
 <h3>Source:</h3>
 <pre><?= Html::encode($model->source) ?></pre>
 

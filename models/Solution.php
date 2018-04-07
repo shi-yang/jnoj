@@ -141,6 +141,16 @@ class Solution extends ActiveRecord
         }
     }
 
+    public function getTestCount()
+    {
+        return intval(substr(strstr($this->pass_info,'/'), 1));
+    }
+
+    public function getPassedTestCount()
+    {
+        return intval(strstr($this->pass_info,'/', true));
+    }
+
     public function getLang()
     {
         switch ($this->language) {

@@ -22,7 +22,7 @@ class Rejudge extends Model
     public function rules()
     {
         return [
-            [['problem_id', 'conteset_id', 'run_id'], 'integer'],
+            [['problem_id', 'contest_id', 'run_id'], 'integer'],
         ];
     }
 
@@ -58,7 +58,7 @@ class Rejudge extends Model
             Solution::updateAll(['result' => 0], ['problem_id' => $this->problem_id]);
         }
         if (!empty($this->contest_id)) {
-            Solution::updateAll(['result' => 0], ['problem_id' => $this->contest_id]);
+            Solution::updateAll(['result' => 0], ['contest_id' => $this->contest_id]);
         }
         if (!empty($this->run_id)) {
             Solution::updateAll(['result' => 0], ['solution_id' => $this->run_id]);

@@ -52,14 +52,16 @@ foreach ($problems as $key => $p) {
                 'value' => function ($solution, $key, $index, $column) use ($model) {
                     if ($solution->result == $solution::OJ_CE || $solution->result == $solution::OJ_WA
                         || $solution->result == $solution::OJ_RE) {
-                    if ($solution->status == 1
-                        || (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id
-                        || ($solution->result == $solution::OJ_CE && Yii::$app->user->id == $solution->user_id)))) {
-                        return Html::a($solution->getResult(),
-                            ['/solution/result', 'id' => $solution->id],
-                            ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
-                        );
-                    }
+                        if ($solution->status == 1 ||
+                            (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id ||
+                            ($solution->result == $solution::OJ_CE && Yii::$app->user->id == $solution->user_id)))) {
+                            return Html::a($solution->getResult(),
+                                ['/solution/result', 'id' => $solution->id],
+                                ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
+                            );
+                        } else {
+                            return $solution->getResult();
+                        }
                     } else {
                         return $solution->getResult();
                     }
