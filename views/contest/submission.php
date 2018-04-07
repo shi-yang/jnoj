@@ -8,7 +8,7 @@ use app\models\Solution;
 ?>
 <?php foreach ($submissions as $submission): ?>
     <p>
-        <span class="glyphicon glyphicon-time"></span> <?= date("Y-m-d H:i:s", $submission['created_at']) ?>
+        <span class="glyphicon glyphicon-time"></span> <?= $submission['created_at'] ?>
         <?php
         $label = Solution::getResultList($submission['result']);
         if ($submission['result'] == Solution::OJ_AC) {
@@ -18,6 +18,6 @@ use app\models\Solution;
         }
         ?>
         →
-        <?= Html::a($submission['solution_id'], ['/solution/detail', 'id' => $submission['solution_id']], ['target' => '_blank', 'data-pjax' => 0]) ?>
+        <?= Html::a($submission['id'], ['/solution/detail', 'id' => $submission['id']], ['target' => '_blank', 'data-pjax' => 0]) ?>
     </p>
 <?php endforeach; ?>

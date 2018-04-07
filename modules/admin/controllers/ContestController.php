@@ -220,9 +220,9 @@ class ContestController extends Controller
 
         if (($post = Yii::$app->request->post())) {
             $pid = intval($post['problem_id']);
-            $has_problem = (new Query())->select('problem_id')
+            $has_problem = (new Query())->select('id')
                 ->from('{{%problem}}')
-                ->where('problem_id=:id', [':id' => $pid])
+                ->where('id=:id', [':id' => $pid])
                 ->exists();
             if ($has_problem) {
                 $problem_in_contest = (new Query())->select('problem_id')
@@ -231,7 +231,7 @@ class ContestController extends Controller
                     ->exists();
                 if ($problem_in_contest) {
                     Yii::$app->session->setFlash('info', Yii::t('app', 'This problem has in the contest.'));
-                    return $this->refresh();
+                    return $this->redirect(['contest/view', 'id' => $id]);
                 }
                 $count = (new Query())->select('contest_id')
                     ->from('{{%contest_problem}}')

@@ -59,6 +59,6 @@ class ContestUser extends \yii\db\ActiveRecord
 
     public function getContest()
     {
-        return $this->hasOne(Contest::className(), ['contest_id' => 'contest_id']);
+        return $this->hasOne(Contest::className(), ['id' => 'contest_id']);
     }
 }

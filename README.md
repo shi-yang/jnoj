@@ -89,7 +89,12 @@
             php composer.phar update
             ```
         2. 通过安装包来安装。到 [https://github.com/shi-yang/jnoj/releases](https://github.com/shi-yang/jnoj/releases)
-        下载最新版的 `vendor.zip` 后，放在 `jnoj` 目录下，直接解压即可。
+        下载最新版的 `vendor.zip` 后，放在 `jnoj` 目录下，直接解压即可。然后依次运行下列命令修改目录权限：
+            ```bash
+            chmod 777 runtime
+            chmod 777 web/assets
+            chmod 777 web/uploads
+            ```
         
     3. 导入数据库信息
         
@@ -106,9 +111,10 @@
     此时还不能进行判题，需配置判题机才能判题。
     
 3. 配置判题机
-    1. 在 `judge/config.ini` 文件中配置数据库信息
-    2. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
-    3. 运行 `sudo ./dispatcher` 命令
+    1. 创建一个用于判题的用户，运行命令：`useradd -m -u 1536 judge`
+    2. 在 `judge/config.ini` 文件中配置数据库信息
+    3. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
+    4. 运行 `sudo ./dispatcher` 命令
 
 
 开发者支持

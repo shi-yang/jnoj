@@ -91,7 +91,7 @@ class ContestController extends Controller
         }
         $submissions = Yii::$app->db
             ->createCommand(
-                'SELECT id, result, created_at, solution_id FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND user_id=:uid',
+                'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND user_id=:uid',
                 [':pid' => $pid, ':cid' => $model->id, ':uid' => $uid]
             )->queryAll();
         return $this->render('submission', [

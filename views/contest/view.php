@@ -74,7 +74,7 @@ $problems = $model->problems;
             'columns' => [
                 'created_at:datetime',
                 [
-                    'attribute' => 'announcement',
+                    'attribute' => Yii::t('app', 'Announcement'),
                     'value' => function ($model, $key, $index, $column) {
                         return $model->content;
                     },

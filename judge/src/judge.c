@@ -1119,9 +1119,6 @@ void mk_shm_workdir(char * work_dir)
     execute_cmd("/bin/ln -s %s %s", shm_path, oj_home);
     execute_cmd("/bin/chown judge %s ", shm_path);
     execute_cmd("chmod 755 %s ", shm_path);
-    //sim need a soft link in shm_dir to work correctly
-    sprintf(shm_path, "/dev/shm/jnoj%s", oj_home);
-    execute_cmd("/bin/ln -s %sdata %s", oj_home, shm_path);
 }
 
 int count_in_files(char * dirpath)

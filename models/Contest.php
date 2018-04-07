@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
 use yii\db\Query;
 
 /**
@@ -196,7 +197,7 @@ class Contest extends \yii\db\ActiveRecord
             SELECT `username`, `nickname`, `result`, `s`.`problem_id`, `s`.`created_at`, `s`.`id`
             FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.user_id
             WHERE `contest_id`=:id AND `s`.`created_at` <= :endtime ORDER BY `s`.`id`
-        ', [':id' => $this->id, ':endtime' => strtotime($this->end_time)])->queryAll();
+        ', [':id' => $this->id, ':endtime' => $this->end_time])->queryAll();
     }
 
     /**
@@ -243,8 +244,8 @@ class Contest extends \yii\db\ActiveRecord
         $first_blood = [];
         $problem_solved_count = [];
         $count = count($users_solution_data);
-        $current_time = time();
-        $start_time = strtotime($this->start_time);
+        $current_time = new Expression("NOW()");
+        $start_time = $this->start_time;
         for ($i = 0; $i < $count; $i++) {
             $row = $users_solution_data[$i];
             $user = $row['username'];
@@ -327,10 +328,10 @@ class Contest extends \yii\db\ActiveRecord
         $first_blood = [];
         $submit_count = [];
         $count = count($users_solution_data);
-        $start_time = strtotime($this->start_time);
-        $end_time = strtotime($this->end_time);
+        $start_time = $this->start_time;
+        $end_time = $this->end_time;
         $lock_time = 0x7fffffff;
-        $current_time = time();
+        $current_time = new Expression("NOW()");
 
         foreach ($users as $user) {
             $result[$user['username']]['time'] = 0;
@@ -342,7 +343,7 @@ class Contest extends \yii\db\ActiveRecord
         }
 
         if (!empty($this->lock_board_time)) {
-            $lock_time = strtotime($this->lock_board_time);
+            $lock_time = $this->lock_board_time;
         }
 
         for ($i = 0; $i < $count; $i++) {
@@ -388,7 +389,7 @@ class Contest extends \yii\db\ActiveRecord
                 if (empty($first_blood[$pid]))
                     $first_blood[$pid] = $user;
 
-                $sec = $created_at - $start_time;
+                $sec = strtotime($created_at) - strtotime($start_time);
                 $result[$user]['ac_time'][$pid] = $sec;
 
                 ++$result[$user]['solved'];
