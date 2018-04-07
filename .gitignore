@@ -31,8 +31,8 @@ tests/_support/_generated
 
 #judge
 /judge/run
-/judge/etc
-/judge/log
+/judge/etc/*
+/judge/log/*
 
 #db
 /config/db.php
