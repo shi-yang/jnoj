@@ -68,6 +68,8 @@ class m180401_030422_import_initial_table extends BaseMigration
             'major' => $this->string(64)
         ], $this->tableOptions);
 
+        $this->execute('ALTER TABLE `user_profile` ADD PRIMARY KEY(`user_id`);');
+
         $this->insert('{{%user_profile}}', [
             'user_id' => self::USER_AUTO_INCREMENT_NUM,
         ]);

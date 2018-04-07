@@ -8,7 +8,7 @@ return [
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)
-    'enableSchemaCache' => true,
+    'enableSchemaCache' => !YII_DEBUG,
     'schemaCacheDuration' => 60,
     'schemaCache' => 'cache',
 ];
