@@ -33,3 +33,6 @@ tests/_support/_generated
 /judge/run
 /judge/etc
 /judge/log
+
+#db
+/config/db.php
