@@ -74,7 +74,7 @@ foreach ($problems as $key => $p) {
                             if ($model->result == $model::OJ_CE || $model->result == $model::OJ_WA
                                 || $model->result == $model::OJ_RE) {
                                 return Html::a($model->getResult(),
-                                    ['/solution/result', 'id' => $model->solution_id],
+                                    ['/solution/result', 'id' => $model->id],
                                     ['onclick' => 'return false', 'data-click' => "solution_info"]
                                 );
                             } else {
@@ -101,7 +101,7 @@ foreach ($problems as $key => $p) {
                         'attribute' => 'language',
                         'value' => function ($model, $key, $index, $column) {
                             return Html::a($model->getLang(),
-                                ['/solution/source', 'id' => $model->solution_id],
+                                ['/solution/source', 'id' => $model->id],
                                 ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
                             );
                         },

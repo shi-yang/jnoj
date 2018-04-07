@@ -3,6 +3,7 @@
 namespace app\modules\polygon\models;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%polygon_problem}}".
@@ -24,7 +25,7 @@ use Yii;
  * @property int $memory_limit
  * @property string $tags
  * @property int $status
- * @property int $solution_language
+ * @property int $solution_lang
  * @property string $solution_source
  */
 class Problem extends \yii\db\ActiveRecord
@@ -51,7 +52,7 @@ class Problem extends \yii\db\ActiveRecord
             [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'tags', 'spj_source', 'solution_source'], 'string'],
             [['created_at'], 'safe'],
             [['title'], 'required'],
-            [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_language', 'spj_lang'], 'integer'],
+            [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_lang', 'spj_lang'], 'integer'],
             [['title'], 'string', 'max' => 200],
             [['spj'], 'string', 'max' => 1],
         ];
@@ -80,7 +81,7 @@ class Problem extends \yii\db\ActiveRecord
             'memory_limit' => Yii::t('app', 'Memory Limit'),
             'tags' => Yii::t('app', 'Tags'),
             'status' => Yii::t('app', 'Status'),
-            'solution_language' => Yii::t('app', 'Solution Language'),
+            'solution_lang' => Yii::t('app', 'Solution Language'),
             'solution_source' => Yii::t('app', 'Solution Source'),
         ];
     }
@@ -94,7 +95,7 @@ class Problem extends \yii\db\ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->created_by = Yii::$app->user->id;
-                $this->created_at = time();
+                $this->created_at = new Expression('NOW()');
             }
             return true;
         } else {

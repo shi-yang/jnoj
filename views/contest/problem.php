@@ -107,7 +107,6 @@ $sample_output = unserialize($problem['sample_output']);
         </div>
         <div class="col-md-4 problem-info">
             <div class="panel panel-default">
-                <div class="panel-heading">Information</div>
                 <!-- Table -->
                 <table class="table">
                     <tbody>
@@ -125,7 +124,7 @@ $sample_output = unserialize($problem['sample_output']);
 
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#submit-solution"><span class="glyphicon glyphicon-plus"></span> Submit a solution</button>
 
-            <?php if (!Yii::$app->user->isGuest): ?>
+            <?php if (!Yii::$app->user->isGuest && !empty($submissions)): ?>
             <div class="panel panel-default" style="margin-top: 40px">
                 <div class="panel-heading">Submissions</div>
                 <!-- Table -->

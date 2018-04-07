@@ -84,7 +84,6 @@ $model->setSamples();
     </div>
     <div class="col-md-3 problem-info">
         <div class="panel panel-default">
-            <div class="panel-heading">Information</div>
             <!-- Table -->
             <table class="table">
                 <tbody>
@@ -135,7 +134,7 @@ $model->setSamples();
             ['class' => 'btn btn-default', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Problem statistics']
         )?>
 
-        <?php if (!Yii::$app->user->isGuest): ?>
+        <?php if (!Yii::$app->user->isGuest && !empty($submissions)): ?>
             <div class="panel panel-default" style="margin-top: 40px">
             <div class="panel-heading">Submissions</div>
             <!-- Table -->

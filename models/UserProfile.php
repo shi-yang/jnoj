@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $user_id
  * @property int $gender
+ * @property int $qq_number
  * @property string $birthdate
  * @property string $signature
  * @property string $address
@@ -34,7 +35,7 @@ class UserProfile extends \yii\db\ActiveRecord
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'gender'], 'integer'],
+            [['user_id', 'gender', 'qq_number'], 'integer'],
             [['birthdate'], 'safe'],
             [['address', 'description', 'major'], 'string'],
             [['signature', 'school'], 'string', 'max' => 128],
@@ -51,6 +52,7 @@ class UserProfile extends \yii\db\ActiveRecord
         return [
             'user_id' => Yii::t('app', 'User ID'),
             'gender' => Yii::t('app', 'Gender'),
+            'qq_number' => Yii::t('app', 'QQ'),
             'birthdate' => Yii::t('app', 'Birthdate'),
             'signature' => Yii::t('app', 'Signature'),
             'address' => Yii::t('app', 'Address'),

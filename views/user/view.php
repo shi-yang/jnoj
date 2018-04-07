@@ -21,6 +21,13 @@ $solutionStats = $model->getSolutionStats();
             'nickname',
             'email',
             [
+                'attribute' => Yii::t('app', 'QQ'),
+                'value' => function ($model, $widget) {
+                    return Html::encode($model->profile->qq_number);
+                },
+                'format' => 'raw'
+            ],
+            [
                 'attribute' => Yii::t('app', 'Major'),
                 'value' => function ($model, $widget) {
                     return Html::encode($model->profile->major);

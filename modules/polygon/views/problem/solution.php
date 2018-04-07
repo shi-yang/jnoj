@@ -19,7 +19,7 @@ $model->setSamples();
 </p>
 <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'solution_language')->dropDownList(Solution::getLanguageList()) ?>
+    <?= $form->field($model, 'solution_lang')->dropDownList(Solution::getLanguageList()) ?>
 
     <?= $form->field($model, 'solution_source')->textarea(['rows' => 20, 'autocomplete'=>'off']) ?>
 
