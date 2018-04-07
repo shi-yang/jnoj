@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -91,7 +92,7 @@ class ContestController extends Controller
         }
         $submissions = Yii::$app->db
             ->createCommand(
-                'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND user_id=:uid',
+                'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND user_id=:uid ORDER BY id DESC',
                 [':pid' => $pid, ':cid' => $model->id, ':uid' => $uid]
             )->queryAll();
         return $this->render('submission', [
@@ -223,7 +224,7 @@ class ContestController extends Controller
                     return $this->refresh();
                 }
                 $newClarify->parent_id = $discuss->id;
-                $discuss->updated_at = time();
+                $discuss->updated_at = new Expression('NOW()');
                 $discuss->update();
             } else if (empty($newClarify->title)) {
                 Yii::$app->session->setFlash('error', '标题不能为空');

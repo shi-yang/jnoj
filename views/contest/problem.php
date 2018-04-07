@@ -167,7 +167,6 @@ $sample_output = unserialize($problem['sample_output']);
     </div>
 </div>
 <?php Modal::begin([
-    'header' => '<h3>'.Yii::t('app','Information').'</h3>',
     'options' => ['id' => 'solution-info']
 ]); ?>
 <div id="solution-content">
