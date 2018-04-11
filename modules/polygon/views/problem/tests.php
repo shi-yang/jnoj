@@ -1,8 +1,9 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use app\models\Solution;
+use app\modules\polygon\models\Problem;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\polygon\models\Problem */
@@ -33,7 +34,7 @@ $files = $model->getDataFiles();
         <tbody>
         <tr>
             <th><?= $model->solution_lang ?></th>
-            <th><?= $solutionStatus['result'] ?></th>
+            <th><?= Problem::getResultList($solutionStatus['result']) ?></th>
             <th><?= $solutionStatus['time'] ?>MS</th>
             <th><?= $solutionStatus['memory'] ?>KB</th>
             <th><?= $solutionStatus['created_at'] ?></th>
@@ -78,7 +79,7 @@ $files = $model->getDataFiles();
                             <th><?= $file['size'] ?></th>
                             <th><?= date('Y-m-d H:i', $file['time']) ?></th>
                             <th>
-                                <a href="">
+                                <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>">
                                     <span class="glyphicon glyphicon-remove"></span>
                                     <?= Yii::t('app', 'Delete') ?>
                                 </a>

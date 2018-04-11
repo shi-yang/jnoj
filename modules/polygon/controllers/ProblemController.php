@@ -36,7 +36,8 @@ class ProblemController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj', 'img_upload', 'run'],
+                        'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj',
+                                      'img_upload', 'run', 'deletefile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -136,12 +137,19 @@ class ProblemController extends Controller
         $model = $this->findModel($id);
         $solutionStatus = Yii::$app->db->createCommand("SELECT * FROM {{%polygon_status}} WHERE problem_id=:pid", [':pid' => $model->id])->queryOne();
         if (Yii::$app->request->isPost) {
-            @move_uploaded_file($_FILES["file"]["tmp_name"], DATA_PATH . $model->id . '/' . $_FILES["file"]["name"]);
+            @move_uploaded_file($_FILES["file"]["tmp_name"], Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $_FILES["file"]["name"]);
         }
         return $this->render('tests', [
             'model' => $model,
             'solutionStatus' => $solutionStatus
         ]);
+    }
+
+    public function actionDeletefile($id, $name)
+    {
+        $model = $this->findModel($id);
+        @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+        return $this->redirect(['tests', 'id' => $model->id]);
     }
 
     /**
@@ -155,7 +163,7 @@ class ProblemController extends Controller
         $model = new Problem();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            @mkdir(DATA_PATH . $model->id);
+            @mkdir(Yii::$app->params['polygonProblemDataPath'] . $model->id);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

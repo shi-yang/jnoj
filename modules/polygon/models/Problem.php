@@ -3,8 +3,6 @@
 
 namespace app\modules\polygon\models;
 
-define('DATA_PATH', dirname(__FILE__) . '/../../../polygon/data/');
-
 use Yii;
 use yii\db\Expression;
 
@@ -33,6 +31,19 @@ use yii\db\Expression;
  */
 class Problem extends \yii\db\ActiveRecord
 {
+    const OJ_WT0 = 0;
+    const OJ_WT1 = 1;
+    const OJ_CI  = 2;
+    const OJ_RI  = 3;
+    const OJ_AC  = 4;
+    const OJ_PE  = 5;
+    const OJ_WA  = 6;
+    const OJ_TL  = 7;
+    const OJ_ML  = 8;
+    const OJ_OL  = 9;
+    const OJ_RE  = 10;
+    const OJ_CE  = 11;
+    const OJ_CO  = 12;
 
     public $sample_input_2;
     public $sample_output_2;
@@ -104,6 +115,27 @@ class Problem extends \yii\db\ActiveRecord
         } else {
             return false;
         }
+    }
+
+    public static function getResultList($res = '')
+    {
+        $results = [
+            '' => 'All',
+            self::OJ_WT0 => Yii::t('app', 'Pending'),
+            self::OJ_WT1 => Yii::t('app', 'Pending Rejudge'),
+            self::OJ_CI => Yii::t('app', 'Compiling'),
+            self::OJ_RI => Yii::t('app', 'Running & Judging'),
+            self::OJ_AC => Yii::t('app', 'Accepted'),
+            self::OJ_PE => Yii::t('app', 'Presentation Error'),
+            self::OJ_WA => Yii::t('app', 'Wrong Answer'),
+            self::OJ_TL => Yii::t('app', 'Time Limit Exceeded'),
+            self::OJ_ML => Yii::t('app', 'Memory Limit Exceeded'),
+            self::OJ_OL => Yii::t('app', 'Output Limit Exceeded'),
+            self::OJ_RE => Yii::t('app', 'Runtime Error'),
+            self::OJ_CE => Yii::t('app', 'Compile Error'),
+            //Solution::OJ_CO => Yii::t('app', 'Compile Succeed')
+        ];
+        return $res === '' ? $results : $results[$res];
     }
 
     /**
