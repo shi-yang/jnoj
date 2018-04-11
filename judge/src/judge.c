@@ -618,8 +618,7 @@ void _create_solution_file(char *source, int lang)
     fclose(fp_src);
 }
 
-void get_solution_info(int solution_id, int * p_id, char * user_id,
-                       int * lang)
+void get_solution_info(int solution_id, int * p_id, int * lang)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
@@ -627,17 +626,16 @@ void get_solution_info(int solution_id, int * p_id, char * user_id,
     char sql[BUFFER_SIZE];
     // get the problem id and user id from Table:solution
     sprintf(sql,
-            "SELECT problem_id, user_id, language, source FROM solution "
+            "SELECT problem_id, language, source FROM solution "
             "WHERE id=%d", solution_id);
     //printf("%s\n",sql);
     mysql_real_query(conn, sql, strlen(sql));
     res = mysql_store_result(conn);
     row = mysql_fetch_row(res);
     *p_id = atoi(row[0]);
-    strcpy(user_id, row[1]);
-    *lang = atoi(row[2]);
-    _create_solution_file(row[3], *lang);
-    if(res != NULL) {
+    *lang = atoi(row[1]);
+    _create_solution_file(row[2], *lang);
+    if (res != NULL) {
         mysql_free_result(res);  // free the memory
         res = NULL;
     }
@@ -1137,7 +1135,6 @@ int count_in_files(char * dirpath)
 int main(int argc, char** argv)
 {
     char work_dir[BUFFER_SIZE];
-    char user_id[BUFFER_SIZE];
     int solution_id = 1000;
     int runner_id = 0;
     int problem_id, lang, max_case_time = 0;
@@ -1160,8 +1157,7 @@ int main(int argc, char** argv)
     if (shm_run)
         mk_shm_workdir(work_dir);
     chdir(work_dir);
-
-    get_solution_info(solution_id, &problem_id, user_id, &lang);
+    get_solution_info(solution_id, &problem_id, &lang);
 
     //get the limit
     problem = get_problem_info(problem_id);

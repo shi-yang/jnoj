@@ -3,17 +3,15 @@
 namespace app\models;
 
 use Yii;
-use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "{{%contest_announcement}}".
  *
  * @property int $contest_id
  * @property string $content
- * @property int $created_at
+ * @property string $created_at
  */
-class ContestAnnouncement extends \yii\db\ActiveRecord
+class ContestAnnouncement extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -26,12 +24,7 @@ class ContestAnnouncement extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            [
-                'class' => TimestampBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
-                ]
-            ]
+            'timestamp' => $this->timeStampBehavior(false),
         ];
     }
 
@@ -42,8 +35,8 @@ class ContestAnnouncement extends \yii\db\ActiveRecord
     {
         return [
             [['content'], 'required'],
-            [['contest_id', 'created_at'], 'integer'],
-            [['content'], 'string'],
+            [['contest_id'], 'integer'],
+            [['content', 'created_at'], 'string'],
         ];
     }
 

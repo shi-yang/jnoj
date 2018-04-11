@@ -145,7 +145,7 @@ class ProblemController extends Controller
                 ->from('{{%solution}}')
                 ->where([
                     'problem_id' => $id,
-                    'user_id' => Yii::$app->user->id
+                    'created_by' => Yii::$app->user->id
                 ])
                 ->orderBy('id DESC')
                 ->limit(10)

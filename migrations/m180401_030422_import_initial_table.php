@@ -85,37 +85,37 @@ class m180401_030422_import_initial_table extends BaseMigration
             'status' => $this->smallInteger(),
             'editorial' => $this->text(),
             'description' => $this->text(),
-            'type' => $this->smallInteger()->defaultValue(0),
-            'scenario' => $this->smallInteger()->defaultValue(0),
-            'created_by' => $this->integer()
+            'type' => $this->smallInteger()->notNull()->defaultValue(0),
+            'scenario' => $this->smallInteger()->notNull()->defaultValue(0),
+            'created_by' => $this->integer()->notNull()
         ], $this->tableOptions);
 
         $this->createTable('{{%contest_announcement}}', [
-            'contest_id' => $this->integer(),
-            'content' => $this->text(),
-            'created_at' => $this->integer(10)
+            'contest_id' => $this->integer()->notNull(),
+            'content' => $this->text()->notNull(),
+            'created_at' => $this->dateTime()->notNull()
         ], $this->tableOptions);
 
         $this->createTable('{{%contest_print}}', [
             'id' => $this->primaryKey(),
-            'user_id' => $this->integer(),
-            'source' => $this->text(),
-            'created_at' => $this->integer(10),
-            'status' => $this->smallInteger()->defaultValue(0),
-            'contest_id' => $this->integer()
+            'user_id' => $this->integer()->notNull(),
+            'source' => $this->text()->notNull(),
+            'created_at' => $this->dateTime()->notNull(),
+            'status' => $this->smallInteger()->notNull()->defaultValue(0),
+            'contest_id' => $this->integer()->notNull()
         ], $this->tableOptions);
 
         $this->createTable('{{%contest_problem}}', [
             'id' => $this->primaryKey(),
-            'problem_id' => $this->integer(),
-            'contest_id' => $this->integer(),
-            'num' => $this->smallInteger()
+            'problem_id' => $this->integer()->notNull(),
+            'contest_id' => $this->integer()->notNull(),
+            'num' => $this->smallInteger()->notNull()
         ], $this->tableOptions);
 
         $this->createTable('{{%contest_user}}', [
             'id' => $this->primaryKey(),
-            'user_id' => $this->integer(),
-            'contest_id' => $this->integer(),
+            'user_id' => $this->integer()->notNull(),
+            'contest_id' => $this->integer()->notNull(),
             'user_password' => $this->string(32)
         ], $this->tableOptions);
 
@@ -123,11 +123,11 @@ class m180401_030422_import_initial_table extends BaseMigration
             'id' => $this->primaryKey(),
             'parent_id' => $this->integer()->defaultValue(0),
             'title' => $this->string(),
-            'user_id' => $this->integer(),
+            'created_by' => $this->integer()->notNull(),
             'content' => $this->text(),
-            'created_at' => $this->dateTime(),
-            'updated_at' => $this->dateTime(),
-            'status' => $this->smallInteger(),
+            'created_at' => $this->dateTime()->notNull(),
+            'updated_at' => $this->dateTime()->notNull(),
+            'status' => $this->smallInteger()->notNull(),
             'entity' => $this->string(32),
             'entity_id' => $this->integer()
         ], $this->tableOptions);
@@ -163,24 +163,24 @@ class m180401_030422_import_initial_table extends BaseMigration
 
         $this->createTable('{{%solution}}', [
             'id' => $this->primaryKey(),
-            'problem_id' => $this->integer(),
-            'user_id' => $this->integer(),
-            'time' => $this->integer(),
-            'memory' => $this->integer(),
+            'problem_id' => $this->integer()->notNull(),
+            'time' => $this->integer()->notNull(),
+            'memory' => $this->integer()->notNull(),
             'created_at' => $this->dateTime()->notNull(),
             'source' => $this->text()->notNull(),
             'result' => $this->smallInteger()->notNull()->defaultValue(0),
-            'language' => $this->smallInteger(),
+            'language' => $this->smallInteger()->notNull(),
             'contest_id' => $this->integer()->defaultValue(null),
-            'status' => $this->smallInteger(),
-            'code_length' => $this->integer(),
+            'status' => $this->smallInteger()->notNull(),
+            'code_length' => $this->integer()->notNull(),
             'judgetime' => $this->dateTime(),
             'pass_info' => $this->string(),
-            'judge' => $this->string(32)
+            'judge' => $this->string(32),
+            'created_by' => $this->integer()->notNull()
         ], $this->tableOptions);
 
         $this->createTable('{{%solution_info}}', [
-            'solution_id' => $this->integer(),
+            'solution_id' => $this->integer()->notNull(),
             'error' => $this->text()
         ], $this->tableOptions);
 
@@ -206,9 +206,9 @@ class m180401_030422_import_initial_table extends BaseMigration
             'tags' => $this->text(),
             'solution_lang' => $this->smallInteger(),
             'solution_source' => $this->text(),
-            'created_at' => $this->dateTime(),
-            'created_by' => $this->integer(),
-            'updated_at' => $this->dateTime(),
+            'created_at' => $this->dateTime()->notNull(),
+            'updated_at' => $this->dateTime()->notNull(),
+            'created_by' => $this->integer()->notNull(),
         ], $this->tableOptions);
 
         $this->createTable('{{%polygon_status}}', [

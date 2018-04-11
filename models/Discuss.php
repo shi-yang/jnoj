@@ -12,9 +12,9 @@ use Yii;
  * @property string $entity
  * @property int $entity_id
  * @property string title
- * @property int $user_id
- * @property int $updated_at
- * @property int $created_at
+ * @property int $created_by
+ * @property string $updated_at
+ * @property string $created_at
  * @property string $content
  * @property int $status
  */
@@ -52,9 +52,9 @@ class Discuss extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'created_at', 'updated_at', 'problem_id', 'status', 'contest_id', 'parent_id', 'entity_id'], 'integer'],
+            [['created_by', 'problem_id', 'status', 'contest_id', 'parent_id', 'entity_id'], 'integer'],
             ['status', 'in', 'range' => [self::STATUS_DRAFT, self::STATUS_PUBLIC, self::STATUS_PRIVATE]],
-            [['title', 'content', 'entity'], 'string'],
+            [['title', 'content', 'entity', 'created_at', 'updated_at'], 'string'],
             [['title'], 'required', 'on' => 'problem']
         ];
     }
@@ -75,7 +75,7 @@ class Discuss extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'title' => Yii::t('app', 'Title'),
-            'user_id' => Yii::t('app', 'User ID'),
+            'created_by' => Yii::t('app', 'Created By'),
             'updated_at' => Yii::t('app', 'Last reply time'),
             'created_at' => Yii::t('app', 'Created At'),
             'content' => Yii::t('app', 'Content'),
@@ -91,7 +91,7 @@ class Discuss extends ActiveRecord
     {
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
-                $this->user_id = Yii::$app->user->id;
+                $this->created_by = Yii::$app->user->id;
             }
             return true;
         } else {
@@ -101,7 +101,7 @@ class Discuss extends ActiveRecord
 
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
 
     public function getReply()

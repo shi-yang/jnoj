@@ -195,7 +195,7 @@ class Contest extends \yii\db\ActiveRecord
     {
         return Yii::$app->db->createCommand('
             SELECT `username`, `nickname`, `result`, `s`.`problem_id`, `s`.`created_at`, `s`.`id`
-            FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.user_id
+            FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id AND `s`.`created_at` <= :endtime ORDER BY `s`.`id`
         ', [':id' => $this->id, ':endtime' => $this->end_time])->queryAll();
     }

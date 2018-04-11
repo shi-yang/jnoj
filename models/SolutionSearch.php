@@ -21,7 +21,7 @@ class SolutionSearch extends Solution
     {
         return [
             [['id', 'problem_id', 'time', 'memory', 'result', 'language', 'contest_id', 'status', 'code_length'], 'integer'],
-            [['user_id', 'created_at', 'ip', 'judgetime', 'judge'], 'safe'],
+            [['created_by', 'created_at', 'ip', 'judgetime', 'judge'], 'safe'],
             [['username', 'pass_info'], 'string'],
         ];
     }
@@ -71,9 +71,9 @@ class SolutionSearch extends Solution
             // $query->where('0=1');
             return $dataProvider;
         }
-        $user_id = '';
+        $created_by = '';
         if (isset($this->username)) {
-            $user_id = (new Query())->select('id')
+            $created_by = (new Query())->select('id')
                 ->from('{{%user}}')
                 ->andWhere('nickname=:name', [':name' => $this->username])
                 ->orWhere('username=:name', [':name' => $this->username])
@@ -88,13 +88,13 @@ class SolutionSearch extends Solution
             'created_at' => $this->created_at,
             'result' => $this->result,
             'language' => $this->language,
-            'user_id' => $user_id,
+            'created_by' => $created_by,
             'code_length' => $this->code_length,
             'judgetime' => $this->judgetime,
             'pass_info' => $this->pass_info,
         ]);
 
-        $query->andFilterWhere(['like', 'user_id', $this->user_id])
+        $query->andFilterWhere(['like', 'created_by', $this->created_by])
             ->andFilterWhere(['like', 'judge', $this->judge]);
 
         return $dataProvider;

@@ -20,8 +20,8 @@ use yii\web\IdentityInterface;
  * @property integer $status
  * @property integer $role
  * @property integer $language
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $created_at
+ * @property string $updated_at
  * @property string $password write-only password
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -283,7 +283,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function getSolutionStats()
     {
         $data = Yii::$app->db->createCommand(
-            'SELECT problem_id, language, result FROM {{%solution}} WHERE user_id=:uid',
+            'SELECT problem_id, language, result FROM {{%solution}} WHERE created_by=:uid',
             [':uid' => $this->id]
         )->queryAll();
 

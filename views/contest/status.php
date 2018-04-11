@@ -34,7 +34,7 @@ foreach ($problems as $key => $p) {
             [
                 'attribute' => 'who',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a(Html::encode($model->user->nickname), ['/user/view', 'id' => $model->user_id]);
+                    return Html::a(Html::encode($model->user->nickname), ['/user/view', 'id' => $model->created_by]);
                 },
                 'format' => 'raw'
             ],
@@ -43,7 +43,7 @@ foreach ($problems as $key => $p) {
                 'value' => function ($model, $key, $index, $column) {
                     $res = $model->getProblemInContest();
                     return Html::a(chr(65 + $res->num),
-                        ['/contest/problem', 'id' => $res->id, 'pid' => $res->num]);
+                        ['/contest/problem', 'id' => $res->contest_id, 'pid' => $res->num]);
                 },
                 'format' => 'raw'
             ],
@@ -54,7 +54,7 @@ foreach ($problems as $key => $p) {
                         || $solution->result == $solution::OJ_RE) {
                         if ($solution->status == 1 ||
                             (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id ||
-                            ($solution->result == $solution::OJ_CE && Yii::$app->user->id == $solution->user_id)))) {
+                            ($solution->result == $solution::OJ_CE && Yii::$app->user->id == $solution->created_by)))) {
                             return Html::a($solution->getResult(),
                                 ['/solution/result', 'id' => $solution->id],
                                 ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
@@ -86,7 +86,7 @@ foreach ($problems as $key => $p) {
                 'attribute' => 'language',
                 'value' => function ($solution, $key, $index, $column) use ($model) {
                     if ($solution->status == 1
-                        || (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id || $solution->user_id == Yii::$app->user->id))) {
+                        || (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id || $solution->created_by == Yii::$app->user->id))) {
                         return Html::a($solution->getLang(),
                             ['/solution/source', 'id' => $solution->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]

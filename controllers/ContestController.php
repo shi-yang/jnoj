@@ -92,7 +92,7 @@ class ContestController extends Controller
         }
         $submissions = Yii::$app->db
             ->createCommand(
-                'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND user_id=:uid ORDER BY id DESC',
+                'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND created_by=:uid ORDER BY id DESC',
                 [':pid' => $pid, ':cid' => $model->id, ':uid' => $uid]
             )->queryAll();
         return $this->render('submission', [
@@ -240,7 +240,7 @@ class ContestController extends Controller
             ->with('user')
             ->orderBy('created_at DESC');
         if (!Yii::$app->user->isGuest) {
-            $query->orWhere(['parent_id' => 0, 'entity_id' => $model->id, 'entity' => Discuss::ENTITY_CONTEST, 'user_id' => Yii::$app->user->id]);
+            $query->orWhere(['parent_id' => 0, 'entity_id' => $model->id, 'entity' => Discuss::ENTITY_CONTEST, 'created_by' => Yii::$app->user->id]);
         }
         $clarifies = new ActiveDataProvider([
             'query' => $query,
@@ -316,7 +316,7 @@ class ContestController extends Controller
                 ->where([
                     'problem_id' => $problem['id'],
                     'contest_id' => $model->id,
-                    'user_id' => Yii::$app->user->id
+                    'created_by' => Yii::$app->user->id
                 ])
                 ->orderBy('id DESC')
                 ->limit(10)

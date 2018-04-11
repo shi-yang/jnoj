@@ -13,8 +13,8 @@ class ActiveRecord extends \yii\db\ActiveRecord
             self::EVENT_BEFORE_INSERT => 'created_at',
         ];
         if ($hasUpdatedField) {
-            $attributes[] = [self::EVENT_BEFORE_INSERT => 'updated_at'];
-            $attributes[] = [self::EVENT_BEFORE_UPDATE => 'updated_at'];
+            $attributes[self::EVENT_BEFORE_INSERT] = ['created_at', 'updated_at'];
+            $attributes[self::EVENT_BEFORE_UPDATE] = 'updated_at';
         }
         return [
             'class' => TimestampBehavior::class,

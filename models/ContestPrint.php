@@ -10,10 +10,10 @@ use Yii;
  * @property int $id
  * @property int $user_id
  * @property int $source
- * @property int $created_at
+ * @property string $created_at
  * @property int $status
  */
-class ContestPrint extends \yii\db\ActiveRecord
+class ContestPrint extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -23,15 +23,22 @@ class ContestPrint extends \yii\db\ActiveRecord
         return '{{%contest_print}}';
     }
 
+    public function behaviors()
+    {
+        return [
+            'timestamp' => $this->timeStampBehavior(false),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['source'], 'string'],
+            [['source', 'created_at'], 'string'],
             [['source'], 'required'],
-            [['id', 'user_id', 'contest_id','created_at', 'status'], 'integer'],
+            [['id', 'user_id', 'contest_id', 'status'], 'integer'],
         ];
     }
 
@@ -59,7 +66,6 @@ class ContestPrint extends \yii\db\ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->user_id = Yii::$app->user->id;
-                $this->created_at = time();
             }
             return true;
         } else {

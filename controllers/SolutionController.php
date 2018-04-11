@@ -60,7 +60,8 @@ class SolutionController extends Controller
         // 验证是否有权限查看
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
             if (Yii::$app->user->isGuest
-                || ($model->user_id != Yii::$app->user->id && Yii::$app->user->identity->role == User::ROLE_USER)) {
+                || ($model->created_by != Yii::$app->user->id &&
+                    (Yii::$app->user->identity->role != User::ROLE_MODERATOR || Yii::$app->user->identity->role != User::ROLE_ADMIN))) {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
         }
@@ -80,11 +81,17 @@ class SolutionController extends Controller
         $this->layout = false;
         $model = $this->findModel($id);
 
+
         // 验证是否有权限查看
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
+            if (!Yii::$app->user->isGuest) {
+                $role = (Yii::$app->user->identity->role != User::ROLE_MODERATOR || Yii::$app->user->identity->role != User::ROLE_ADMIN);
+            } else {
+                $role = true;
+            }
             if (Yii::$app->user->isGuest
-                || ($model->user_id != Yii::$app->user->id && Yii::$app->user->identity->role == User::ROLE_USER)
-                || ($model->result != Solution::OJ_CE && Yii::$app->user->identity->role == User::ROLE_USER)) {
+                || ($model->created_by != Yii::$app->user->id && $role)
+                || ($model->result != Solution::OJ_CE && $role)) {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
         }
@@ -106,12 +113,18 @@ class SolutionController extends Controller
 
         // 验证是否有权限查看
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
+            if (!Yii::$app->user->isGuest) {
+                $role = (Yii::$app->user->identity->role != User::ROLE_MODERATOR || Yii::$app->user->identity->role != User::ROLE_ADMIN);
+            } else {
+                $role = true;
+            }
             if (Yii::$app->user->isGuest
-                || ($model->user_id != Yii::$app->user->id && Yii::$app->user->identity->role == User::ROLE_USER)
-                || ($model->result != Solution::OJ_CE && Yii::$app->user->identity->role == User::ROLE_USER)) {
+                || ($model->created_by != Yii::$app->user->id && $role)
+                || ($model->result != Solution::OJ_CE && $role)) {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
         }
+
         return $this->render('detail', [
             'model' => $model,
         ]);

@@ -10,10 +10,10 @@ use yii\db\Query;
  *
  * @property int $id
  * @property int $problem_id
- * @property int $user_id
+ * @property int $created_by
  * @property int $time
  * @property int $memory
- * @property int $created_at
+ * @property string $created_at
  * @property string $source
  * @property int $result
  * @property int $language
@@ -73,7 +73,7 @@ class Solution extends ActiveRecord
     public function rules()
     {
         return [
-            [['problem_id', 'user_id', 'time', 'memory', 'result', 'language', 'contest_id', 'status', 'code_length'], 'integer'],
+            [['problem_id', 'created_by', 'time', 'memory', 'result', 'language', 'contest_id', 'status', 'code_length'], 'integer'],
             [['created_at', 'judgetime'], 'safe'],
             [['language', 'source'], 'required'],
             [['language'], 'in', 'range' => [0, 1, 2, 3], 'message' => 'Please select a language'],
@@ -90,7 +90,7 @@ class Solution extends ActiveRecord
         return [
             'id' => Yii::t('app', 'Run ID'),
             'problem_id' => Yii::t('app', 'Problem ID'),
-            'user_id' => Yii::t('app', 'User ID'),
+            'created_by' => Yii::t('app', 'Created By'),
             'time' => Yii::t('app', 'Time'),
             'memory' => Yii::t('app', 'Memory'),
             'created_at' => Yii::t('app', 'Submit Time'),
@@ -123,7 +123,7 @@ class Solution extends ActiveRecord
     {
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
-                $this->user_id = Yii::$app->user->id;
+                $this->created_by = Yii::$app->user->id;
                 $this->code_length = strlen($this->source);
             }
             return true;
@@ -218,7 +218,7 @@ class Solution extends ActiveRecord
 
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
 
     public function getProblem()
