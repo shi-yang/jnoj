@@ -1,6 +1,9 @@
 <?php
 
+
 namespace app\modules\polygon\models;
+
+define('DATA_PATH', dirname(__FILE__) . '/../../../polygon/data/');
 
 use Yii;
 use yii\db\Expression;
@@ -30,6 +33,7 @@ use yii\db\Expression;
  */
 class Problem extends \yii\db\ActiveRecord
 {
+
     public $sample_input_2;
     public $sample_output_2;
     public $sample_input_3;
@@ -52,9 +56,8 @@ class Problem extends \yii\db\ActiveRecord
             [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'tags', 'spj_source', 'solution_source'], 'string'],
             [['created_at'], 'safe'],
             [['title'], 'required'],
-            [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_lang', 'spj_lang'], 'integer'],
+            [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_lang', 'spj_lang', 'spj'], 'integer'],
             [['title'], 'string', 'max' => 200],
-            [['spj'], 'string', 'max' => 1],
         ];
     }
 
@@ -116,5 +119,27 @@ class Problem extends \yii\db\ActiveRecord
         $this->sample_output_2 = $output[1];
         $this->sample_input_3 = $input[2];
         $this->sample_output_3 = $output[2];
+    }
+
+    public function getDataFiles()
+    {
+        $path = Yii::$app->params['polygonProblemDataPath'] . $this->id ;
+        $files = [];
+        try {
+            if ($handler = opendir($path)) {
+                while (($file = readdir($handler)) !== false) {
+                    $files[$file]['name'] = $file;
+                    $files[$file]['size'] = filesize($path . '/' . $file);
+                    $files[$file]['time'] = filemtime($path . '/' . $file);
+                }
+                closedir($handler);
+            }
+            usort($files, function($a, $b) {
+                return (int) $a['name'] >  (int) $b['name'];
+            });
+        } catch(\Exception $e) {
+            echo 'Message: ' .$e->getMessage();
+        }
+        return $files;
     }
 }

@@ -3,18 +3,22 @@
 namespace app\modules\polygon\controllers;
 
 use Yii;
+use app\models\User;
 use app\modules\polygon\models\Problem;
 use yii\data\ActiveDataProvider;
+use yii\db\Expression;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\ForbiddenHttpException;
 
 /**
  * ProblemController implements the CRUD actions for Problem model.
  */
 class ProblemController extends Controller
 {
+    public $enableCsrfValidation = false;
     public $layout = 'problem';
     /**
      * {@inheritdoc}
@@ -32,7 +36,7 @@ class ProblemController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj', 'img_upload'],
+                        'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj', 'img_upload', 'run'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -58,7 +62,7 @@ class ProblemController extends Controller
     {
         $this->layout = '/main';
         $dataProvider = new ActiveDataProvider([
-            'query' => Problem::find(),
+            'query' => Problem::find()->where(['created_by' => Yii::$app->user->id]),
         ]);
 
         return $this->render('index', [
@@ -77,6 +81,18 @@ class ProblemController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+    }
+
+    public function actionRun($id)
+    {
+        $model = $this->findModel($id);
+        if (empty($model->solution_lang) || empty($model->solution_source)) {
+            Yii::$app->session->setFlash('error', '请提供解决方案');
+            return $this->redirect(['tests', 'id' => $id]);
+        }
+        Yii::$app->db->createCommand()->delete('{{%polygon_status}}', ['problem_id' => $model->id])->execute();
+        Yii::$app->db->createCommand()->insert('{{%polygon_status}}', ['problem_id' => $model->id, 'created_at' => new Expression('NOW()')])->execute();
+        return $this->redirect(['tests', 'id' => $id]);
     }
 
     /**
@@ -117,8 +133,14 @@ class ProblemController extends Controller
 
     public function actionTests($id)
     {
+        $model = $this->findModel($id);
+        $solutionStatus = Yii::$app->db->createCommand("SELECT * FROM {{%polygon_status}} WHERE problem_id=:pid", [':pid' => $model->id])->queryOne();
+        if (Yii::$app->request->isPost) {
+            @move_uploaded_file($_FILES["file"]["tmp_name"], DATA_PATH . $model->id . '/' . $_FILES["file"]["name"]);
+        }
         return $this->render('tests', [
-            'model' => $this->findModel($id)
+            'model' => $model,
+            'solutionStatus' => $solutionStatus
         ]);
     }
 
@@ -133,6 +155,7 @@ class ProblemController extends Controller
         $model = new Problem();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            @mkdir(DATA_PATH . $model->id);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -181,11 +204,17 @@ class ProblemController extends Controller
      * @param integer $id
      * @return Problem the loaded model
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException if the model cannot be viewed
      */
     protected function findModel($id)
     {
         if (($model = Problem::findOne($id)) !== null) {
-            return $model;
+            if (Yii::$app->user->id === $model->created_by || (Yii::$app->user->identity->role == User::ROLE_MODERATOR &&
+                    Yii::$app->user->identity->role == User::ROLE_ADMIN)) {
+                return $model;
+            } else {
+                throw new ForbiddenHttpException('You are not allowed to perform this action.');
+            }
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));

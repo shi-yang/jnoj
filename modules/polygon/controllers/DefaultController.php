@@ -2,6 +2,7 @@
 
 namespace app\modules\polygon\controllers;
 
+use Yii;
 use yii\web\Controller;
 use app\modules\polygon\models\Problem;
 use yii\data\ActiveDataProvider;
@@ -18,7 +19,7 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Problem::find(),
+            'query' => Problem::find()->where(['created_by' => Yii::$app->user->id]),
         ]);
 
         return $this->render('index', [

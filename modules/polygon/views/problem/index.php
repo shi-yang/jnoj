@@ -7,6 +7,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Problems');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Polygon System'), 'url' => ['/polygon/default']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="problem-index">

@@ -6,25 +6,56 @@ use app\models\Solution;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\polygon\models\Problem */
+/* @var $solutionStatus array */
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Problems'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['model'] = $model;
 
+$files = $model->getDataFiles();
 ?>
+<p>
+    该页面用于生成、编辑程序的测试数据。
+</p>
+<hr>
+<div class="table-responsive">
+    <table class="table table-bordered table-rank">
+        <thead>
+        <tr>
+            <th width="80px">Lang</th>
+            <th>Verdict</th>
+            <th>Time</th>
+            <th>Memory</th>
+            <th>Submit Time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th><?= $model->solution_lang ?></th>
+            <th><?= $solutionStatus['result'] ?></th>
+            <th><?= $solutionStatus['time'] ?>MS</th>
+            <th><?= $solutionStatus['memory'] ?>KB</th>
+            <th><?= $solutionStatus['created_at'] ?></th>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <div class="row">
     <div class="col-md-4">
         <p>
-            该页面用于生成、编辑程序的测试数据。
-        </p>
-        <hr>
+            测试的输入文件需自行制作，然后在下边表格上传。为文本文件，文件名称必须以 in 最为后缀。例如 "apple.in"</p>
         <p>
-            测试的输入文件需自行制作，然后在下边表格上传。为文本文件，文件名称随意。</p>
-        <p>
-            测试的输出文件在上传输入文件后，点击此处<a href="#" class="btn btn-success">刷新</a>按钮，
+            测试的输出文件在上传输入文件后，点击此处
+            <?= Html::a(Yii::t('app', 'Run'), ['/polygon/problem/run', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+            按钮，
             会根据提供的“<?= Html::a(Yii::t('app', 'Solution'), ['/polygon/problem/solution', 'id' => $model->id]) ?>”自行生成。
         </p>
+        <p>
+            上传完成后刷新页面查看结果
+        </p>
+        <hr>
+        <?= \app\widgets\webuploader\MultiImage::widget() ?>
     </div>
     <div class="col-md-8">
         <div class="row">
@@ -37,6 +68,23 @@ $this->params['model'] = $model;
                         <th>修改时间</th>
                         <th>操作</th>
                     </tr>
+                    <?php foreach ($files as $file): ?>
+                        <?php
+                        if (!strpos($file['name'], '.in'))
+                            continue;
+                        ?>
+                        <tr>
+                            <th><?= $file['name'] ?></th>
+                            <th><?= $file['size'] ?></th>
+                            <th><?= date('Y-m-d H:i', $file['time']) ?></th>
+                            <th>
+                                <a href="">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    <?= Yii::t('app', 'Delete') ?>
+                                </a>
+                            </th>
+                        </tr>
+                    <?php endforeach; ?>
                 </table>
             </div>
             <div class="col-md-6">
@@ -48,6 +96,23 @@ $this->params['model'] = $model;
                         <th>修改时间</th>
                         <th>操作</th>
                     </tr>
+                    <?php foreach ($files as $file): ?>
+                        <?php
+                        if (!strpos($file['name'], '.out'))
+                            continue;
+                        ?>
+                        <tr>
+                            <th><?= $file['name'] ?></th>
+                            <th><?= $file['size'] ?></th>
+                            <th><?= date('Y-m-d H:i', $file['time']) ?></th>
+                            <th>
+                                <a href="">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    <?= Yii::t('app', 'Delete') ?>
+                                </a>
+                            </th>
+                        </tr>
+                    <?php endforeach; ?>
                 </table>
             </div>
         </div>
