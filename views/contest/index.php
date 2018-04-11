@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     if (!Yii::$app->user->isGuest && $model->isUserInContest()) {
                         $link = '<span class="well-done">' . Yii::t('app', 'Registration completed') . '</span>';
                     }
-                    if ($model->getRunStatus() == Contest::STATUS_NOT_START && $model->scenario == Contest::SCENARIO_ONLINE) {
+                    if ($model->getRunStatus() != Contest::STATUS_ENDED && $model->scenario == Contest::SCENARIO_ONLINE) {
                         $column = $model->getRunStatus(true) . ' ' . $link;
                     } else {
                         $column = $model->getRunStatus(true);

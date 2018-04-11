@@ -127,7 +127,7 @@ class ContestController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['editorial', 'id' => $model->contest_id]);
+            return $this->redirect(['editorial', 'id' => $model->id]);
         }
 
         return $this->render('editorial', [

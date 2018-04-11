@@ -21,6 +21,7 @@ use yii\db\Expression;
  * @property string $spj_source
  * @property string $hint
  * @property string $created_at
+ * @property string $updated_at
  * @property int $created_by
  * @property int $time_limit
  * @property int $memory_limit
@@ -65,7 +66,7 @@ class Problem extends \yii\db\ActiveRecord
     {
         return [
             [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'tags', 'spj_source', 'solution_source'], 'string'],
-            [['created_at'], 'safe'],
+            [['created_at', 'updated_at'], 'safe'],
             [['title'], 'required'],
             [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_lang', 'spj_lang', 'spj'], 'integer'],
             [['title'], 'string', 'max' => 200],
@@ -111,6 +112,7 @@ class Problem extends \yii\db\ActiveRecord
                 $this->created_by = Yii::$app->user->id;
                 $this->created_at = new Expression('NOW()');
             }
+            $this->updated_at = new Expression('NOW()');
             return true;
         } else {
             return false;
