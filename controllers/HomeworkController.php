@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Problem;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\ForbiddenHttpException;
@@ -140,7 +141,7 @@ class HomeworkController extends ContestController
             $pid = intval($post['problem_id']);
             $has_problem = (new Query())->select('id')
                 ->from('{{%problem}}')
-                ->where('id=:id', [':id' => $pid])
+                ->where('id=:id AND status=:status', [':id' => $pid, ':status' => Problem::STATUS_VISIBLE])
                 ->exists();
             if ($has_problem) {
                 $problem_in_contest = (new Query())->select('problem_id')
