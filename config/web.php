@@ -14,7 +14,6 @@ $config = [
     ],
     'sourceLanguage' => 'en-US',
     'language' => 'zh-CN',
-    'timeZone' => 'Asia/Shanghai',
     'modules' => [
         'admin' => [
             'class' => 'app\modules\admin\AdminModule',

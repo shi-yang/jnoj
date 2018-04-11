@@ -1149,7 +1149,6 @@ int main(int argc, char** argv)
     if (!init_mysql_conn()) {
         exit(0); //exit if mysql is down
     }
-    DEBUG = 1;
     //set work directory to start running & judging
     sprintf(work_dir, "%srun/%d", oj_home, runner_id);
     if (opendir(work_dir) == NULL) {

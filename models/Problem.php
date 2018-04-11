@@ -26,7 +26,9 @@ use yii\db\Query;
  * @property int $accepted
  * @property int $submit
  * @property int $solved
+ * @property int $created_by
  * @property string $tags
+ * @property int polygon_problem_id
  */
 class Problem extends ActiveRecord
 {
@@ -67,7 +69,8 @@ class Problem extends ActiveRecord
         return [
             [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'test_status', 'tags'], 'string'],
             [['sample_input_2', 'sample_output_2', 'sample_input_3', 'sample_output_3'], 'string'],
-            [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_at', 'updated_at'], 'integer'],
+            [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_at',
+              'updated_at', 'created_by', 'polygon_problem_id'], 'integer'],
             [['title'], 'string', 'max' => 200],
             [['spj'], 'string', 'max' => 1],
             [['source'], 'string', 'max' => 100],
@@ -103,7 +106,8 @@ class Problem extends ActiveRecord
             'solved' => Yii::t('app', 'Solved'),
             'problem_data' => Yii::t('app', 'Problem Data'),
             'test_status' => Yii::t('app', 'Test Status'),
-            'tags' => Yii::t('app', 'Tags')
+            'tags' => Yii::t('app', 'Tags'),
+            'created_by' => Yii::t('app', 'Created By')
         ];
     }
 
@@ -123,7 +127,6 @@ class Problem extends ActiveRecord
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-
             //标签分割
             $tags = trim($this->tags);
             $explodeTags = array_unique(explode(',', str_replace('，', ',', $tags)));
@@ -157,7 +160,7 @@ class Problem extends ActiveRecord
 
     public function getDataFiles()
     {
-        $path = "/var/www/html/jnuweb/judge/data/" . $this->id ;
+        $path = Yii::$app->params['judgeProblemDataPath'] . $this->id ;
         $files = [];
         try {
             if ($handler = opendir($path)) {

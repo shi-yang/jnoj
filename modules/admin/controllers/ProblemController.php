@@ -103,15 +103,39 @@ class ProblemController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Problem();
+        if (Yii::$app->request->isPost) {
+            $id = intval(Yii::$app->request->post('polygon_problem_id'));
+            $polygonProblem = Yii::$app->db->createCommand('SELECT * FROM {{%polygon_problem}} WHERE id=:id', [':id' => $id])->queryOne();
+            if (!empty($polygonProblem)) {
+                $in = Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE polygon_problem_id=:id', [':id' => $id])->queryColumn();
+                $problem = new Problem();
+                if (!empty($in)) {
+                    $problem = Problem::findOne(['polygon_problem_id' => $id]);
+                }
+                $problem->title = $polygonProblem['title'];
+                $problem->description = $polygonProblem['description'];
+                $problem->input = $polygonProblem['input'];
+                $problem->output = $polygonProblem['output'];
+                $problem->sample_input = $polygonProblem['sample_input'];
+                $problem->sample_output = $polygonProblem['sample_output'];
+                $problem->spj = $polygonProblem['spj'];
+                $problem->hint = $polygonProblem['hint'];
+                $problem->memory_limit = $polygonProblem['memory_limit'];
+                $problem->time_limit = $polygonProblem['time_limit'];
+                $problem->created_by = $polygonProblem['created_by'];
+                $problem->tags = $polygonProblem['tags'];
+                $problem->status = Problem::STATUS_HIDDEN;
+                $problem->polygon_problem_id = $id;
+                $problem->save();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+                $this->copyDir(Yii::$app->params['polygonProblemDataPath'] . $polygonProblem['id'], Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Create Successfully'));
+                return $this->redirect(['view', 'id' => $problem->id]);
+            } else {
+                Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
+            }
         }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->render('create');
     }
 
     /**
@@ -288,5 +312,17 @@ class ProblemController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function copyDir($src, $dst)
+    {
+        $dir = opendir($src);
+        @mkdir($dst);
+        while ( false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
+                copy($src . '/' . $file, $dst . '/' . $file);
+            }
+        }
+        closedir($dir);
     }
 }

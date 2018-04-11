@@ -79,6 +79,13 @@ $this->title = Yii::t('app', 'Problems');
                 },
                 'format' => 'raw'
             ],
+            [
+                'attribute' => 'polygon_problem_id',
+                'value' => function ($model, $key, $index, $column) {
+                    return Html::a($model->polygon_problem_id, ['/polygon/problem/view', 'id' => $model->polygon_problem_id]);
+                },
+                'format' => 'raw',
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

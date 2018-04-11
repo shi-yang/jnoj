@@ -9,4 +9,6 @@ return [
     'components.setting' => [
         'class' => app\components\Setting::class,
     ],
+    'judgeProblemDataPath' => dirname(__FILE__) . '/../judge/data/',
+    'polygonProblemDataPath' => dirname(__FILE__) . '/../polygon/data/',
 ];

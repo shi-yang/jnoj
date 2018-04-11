@@ -17,6 +17,7 @@ return [
     'QQ' => 'ＱＱ号',
     'Standing' => '榜单',
     'Contests' => '比赛',
+    'Run' => '运行',
     'Register »' => '参赛 >>',
     'Registration completed' => '已注册',
     'Created By' => '创建人',

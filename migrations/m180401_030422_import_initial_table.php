@@ -151,7 +151,9 @@ class m180401_030422_import_initial_table extends BaseMigration
             'solved' => $this->integer()->defaultValue(0),
             'tags' => $this->text(),
             'created_at' => $this->dateTime(),
-            'updated_at' => $this->dateTime()
+            'created_by' => $this->integer(),
+            'updated_at' => $this->dateTime(),
+            'polygon_problem_id' => $this->integer()
         ], $this->tableOptions);
 
         $this->createTable('{{%setting}}', [
@@ -208,6 +210,15 @@ class m180401_030422_import_initial_table extends BaseMigration
             'created_by' => $this->integer(),
             'updated_at' => $this->dateTime(),
         ], $this->tableOptions);
+
+        $this->createTable('{{%polygon_status}}', [
+            'problem_id' => $this->integer(),
+            'result' => $this->smallInteger()->notNull()->defaultValue(0),
+            'time' => $this->integer(),
+            'memory' => $this->integer(),
+            'info' => $this->text(),
+            'created_at' => $this->dateTime()->notNull(),
+        ], $this->tableOptions);
     }
 
     public function down()
@@ -221,6 +232,7 @@ class m180401_030422_import_initial_table extends BaseMigration
         $this->dropTable('{{%solution}}');
         $this->dropTable('{{%contest}}');
         $this->dropTable('{{%problem}}');
+        $this->dropTable('{{%polygon_status}}');
         $this->dropTable('{{%polygon_problem}}');
         $this->dropTable('{{%user_profile}}');
         $this->dropTable('{{%user}}');
