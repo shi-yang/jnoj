@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-    <span><?= date('Y:m:d h:i', $model->created_at) ?></span>
+    <span><?= $model->created_at ?></span>
 
     <?= Markdown::process($model->content, 'gfm') ?>
 </div>
