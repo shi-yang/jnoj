@@ -61,7 +61,7 @@ class Rejudge extends Model
             Solution::updateAll(['result' => 0], ['contest_id' => $this->contest_id]);
         }
         if (!empty($this->run_id)) {
-            Solution::updateAll(['result' => 0], ['solution_id' => $this->run_id]);
+            Solution::updateAll(['result' => 0], ['id' => $this->run_id]);
         }
     }
 }
