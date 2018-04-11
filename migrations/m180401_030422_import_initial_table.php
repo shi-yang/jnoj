@@ -212,6 +212,7 @@ class m180401_030422_import_initial_table extends BaseMigration
         ], $this->tableOptions);
 
         $this->createTable('{{%polygon_status}}', [
+            'id' => $this->primaryKey(),
             'problem_id' => $this->integer(),
             'result' => $this->smallInteger()->notNull()->defaultValue(0),
             'time' => $this->integer(),

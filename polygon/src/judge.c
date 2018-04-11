@@ -68,7 +68,6 @@
 
 struct problem_struct {
     int id;
-    int isspj;
     int spj_lang;
     int solution_lang;
     int memory_limit;
@@ -503,10 +502,6 @@ struct problem_struct get_problem_info(int p_id)
     res = mysql_store_result(conn);
     row = mysql_fetch_row(res);
 
-    // problem.isspj = (row[2][0] == 1);
-    // problem.spj_lang = atoi(row[2]);
-    // problem.solution_lang = atoi(row[3]);
-    problem.isspj = 1;
     problem.spj_lang = 1;
     problem.solution_lang = 1;
     //printf("_create_file\n%s\n", row[1]);
@@ -695,7 +690,6 @@ void watch_solution(struct problem_struct problem, pid_t pidApp,
                     char * work_dir, char * data_filename)
 {
     int mem_lmt = problem.memory_limit;
-    int isspj = problem.isspj;
     int lang = problem.solution_lang;
 
     if (DEBUG)
@@ -922,7 +916,6 @@ int main(int argc, char** argv)
         execute_cmd("/bin/chown judge %s ", work_dir);
         execute_cmd("chmod 777 %s ", work_dir);
     }
-    DEBUG = 1;
     clean_workdir(work_dir);
     if (shm_run)
         mk_shm_workdir(work_dir);

@@ -165,9 +165,9 @@ void init_mysql_conf()
         }
         sprintf(query,
                 "SELECT problem_id FROM polygon_status "
-                "WHERE language in (%s) and result<2 and MOD(id,%d)=%d "
+                "WHERE result<2 and MOD(id,%d)=%d "
                 "ORDER BY result ASC,id ASC limit %d",
-                oj_lang_set, oj_tot, oj_mod, max_running * 2);
+                oj_tot, oj_mod, max_running * 2);
         sleep_tmp = sleep_time;
         fclose(fp);
     } else {
@@ -323,16 +323,16 @@ int get_jobs(int *jobs)
     }
 }
 
-bool check_out(int solution_id, int result)
+bool check_out(int problem_id, int result)
 {
     if (oj_redis || oj_tot > 1)
         return true;
 
     char sql[BUFFER_SIZE];
     sprintf(sql,
-            "UPDATE polygon_status SET result=%d,time=0,memory=0"
-            "WHERE id=%d and result<2 LIMIT 1",
-            result, solution_id);
+            "UPDATE polygon_status SET result=%d,time=0,memory=0 "
+            "WHERE problem_id=%d and result<2 LIMIT 1",
+            result, problem_id);
     if (mysql_real_query(conn, sql, strlen(sql))) {
         syslog(LOG_ERR | LOG_DAEMON, "%s", mysql_error(conn));
         return false;

@@ -86,7 +86,7 @@ class ProblemController extends Controller
     public function actionRun($id)
     {
         $model = $this->findModel($id);
-        if (empty($model->solution_lang) || empty($model->solution_source)) {
+        if ($model->solution_lang === null || empty($model->solution_source)) {
             Yii::$app->session->setFlash('error', '请提供解决方案');
             return $this->redirect(['tests', 'id' => $id]);
         }
