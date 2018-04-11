@@ -29,13 +29,13 @@ use app\models\Solution;
             <?php foreach ($solutions as $solution): ?>
                 <tr>
                     <th>
-                        <?= date('Y-m-d h:i', $solution['created_at']) ?>
+                        <?= $solution['created_at'] ?>
                     </th>
                     <th>
-                        <?= Html::a(Solution::getResultList($solution['result']), ['problem/result', 'id' => $solution['solution_id']], ['target' => '_blank']); ?>
+                        <?= Html::a(Solution::getResultList($solution['result']), ['problem/result', 'id' => $model->id, 'solution_id' => $solution['id']], ['target' => '_blank']); ?>
                     </th>
                     <th>
-                        <?= Html::a(Solution::getLanguageList($solution['language']), ['problem/source', 'id' => $solution['solution_id']], ['target' => '_blank']) ?>
+                        <?= Html::a(Solution::getLanguageList($solution['language']), ['problem/source', 'id' => $model->id, 'solution_id' => $solution['id']], ['target' => '_blank']) ?>
                     </th>
                     <th>
                         <?= $solution['time'] ?>

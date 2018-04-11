@@ -1,0 +1,3 @@
+<pre>
+    <?= $solution['source'] ?>
+</pre>

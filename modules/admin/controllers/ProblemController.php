@@ -173,14 +173,12 @@ class ProblemController extends Controller
      * @return mixed
      * @throws ForbiddenHttpException if the model cannot be viewed.
      */
-    public function actionSource($id)
+    public function actionSource($id, $solution_id)
     {
-        if (!Yii::$app->request->isAjax) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
-        $this->layout = false;
-        return $this->render('source', [
+        $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution}} WHERE id=:id', [':id' => intval($solution_id)])->queryOne();
+        return $this->render('result', [
             'model' => $this->findModel($id),
+            'solution' => $solution
         ]);
     }
 
@@ -189,11 +187,12 @@ class ProblemController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionResult($id)
+    public function actionResult($id, $solution_id)
     {
-        $this->layout = false;
+        $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution}} WHERE id=:id', [':id' => intval($solution_id)])->queryOne();
         return $this->render('result', [
             'model' => $this->findModel($id),
+            'solution' => $solution
         ]);
     }
 
@@ -230,26 +229,21 @@ class ProblemController extends Controller
     /**
      * @param $id
      * @return mixed
-     * @throws ForbiddenHttpException if the model cannot be viewed
      */
     public function actionTestStatus($id)
     {
-        if (Yii::$app->request->isAjax) {
-            $this->layout = false;
-            $model = $this->findModel($id);
-            $solutions = (new Query())->select('solution_id, result, created_at, memory, time, language, code_length')
-                ->from('{{%solution}}')
-                ->where(['problem_id' => $id, 'status' => 0])
-                ->limit(10)
-                ->orderBy(['solution_id' => SORT_DESC])
-                ->all();
-            return $this->render('test_status', [
-                'solutions' => $solutions,
-                'model' => $model
-            ]);
-        }
-
-        throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        $this->layout = false;
+        $model = $this->findModel($id);
+        $solutions = (new Query())->select('id, result, created_at, memory, time, language, code_length')
+            ->from('{{%solution}}')
+            ->where(['problem_id' => $id, 'status' => 0])
+            ->limit(10)
+            ->orderBy(['id' => SORT_DESC])
+            ->all();
+        return $this->render('test_status', [
+            'solutions' => $solutions,
+            'model' => $model
+        ]);
     }
 
     /**
