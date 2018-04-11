@@ -36,8 +36,8 @@ tests/_support/_generated
 /judge/data/*
 
 #polygon
-/judge/run/*
-/judge/data/*
+/polygon/run/*
+/polygon/data/*
 
 #db
 /config/db.php
