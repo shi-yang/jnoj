@@ -68,9 +68,9 @@ class Problem extends ActiveRecord
     {
         return [
             [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'test_status', 'tags'], 'string'],
-            [['sample_input_2', 'sample_output_2', 'sample_input_3', 'sample_output_3'], 'string'],
-            [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_at',
-              'updated_at', 'created_by', 'polygon_problem_id'], 'integer'],
+            [['sample_input_2', 'sample_output_2', 'sample_input_3', 'sample_output_3', 'created_at',
+              'updated_at', ], 'string'],
+            [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_by', 'polygon_problem_id'], 'integer'],
             [['title'], 'string', 'max' => 200],
             [['spj'], 'string', 'max' => 1],
             [['source'], 'string', 'max' => 100],
