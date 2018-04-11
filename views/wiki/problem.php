@@ -42,10 +42,24 @@ use yii\helpers\Html;
 
 </pre>
 
-<h3>如何快速生成输入输出文件</h3>
-<p>以下只是提供一种示范</p>
+<h3>如何快速生成输入文件</h3>
+<p>以下只是提供 C 语言一种示范</p>
 <pre>
-
+#include &lt;bits/stdc++.h&gt;
+int main()
+{
+    // 生成 20 组数据
+    for (int test = 1; test <= 20; test++) {
+        char name[100];
+        sprintf(name, "%d.in", test);
+        FILE * fp = fopen(name, "w");
+        int a = rand() % 100 + 1; // 随机生成在一个在 [1, 100]　数
+        int b = rand() % 100 + 1;　// 随机生成在一个在 [1, 100]　数
+        fprintf(fp, "%d %d\n", a, b);　// 输出到文件中
+        fclose(fp);
+    }
+    return 0;
+}
 </pre>
 
 <hr>
