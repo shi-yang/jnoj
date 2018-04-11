@@ -187,6 +187,8 @@ class ProblemController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+        $model->setSamples();
+
         return $this->render('update', [
             'model' => $model,
         ]);

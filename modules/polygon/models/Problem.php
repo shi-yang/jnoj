@@ -65,7 +65,8 @@ class Problem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'tags', 'spj_source', 'solution_source'], 'string'],
+            [['description', 'input', 'output', 'sample_input', 'sample_output', 'sample_input_2', 'sample_output_2',
+              'sample_input_3', 'sample_output_3', 'hint', 'tags', 'spj_source', 'solution_source'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'required'],
             [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_lang', 'spj_lang', 'spj'], 'integer'],
