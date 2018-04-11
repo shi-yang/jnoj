@@ -84,10 +84,9 @@ class SolutionController extends Controller
 
         // 验证是否有权限查看
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
+            $role = true;
             if (!Yii::$app->user->isGuest) {
                 $role = (Yii::$app->user->identity->role != User::ROLE_MODERATOR || Yii::$app->user->identity->role != User::ROLE_ADMIN);
-            } else {
-                $role = true;
             }
             if (Yii::$app->user->isGuest
                 || ($model->created_by != Yii::$app->user->id && $role)
@@ -113,10 +112,9 @@ class SolutionController extends Controller
 
         // 验证是否有权限查看
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
+            $role = true;
             if (!Yii::$app->user->isGuest) {
                 $role = (Yii::$app->user->identity->role != User::ROLE_MODERATOR || Yii::$app->user->identity->role != User::ROLE_ADMIN);
-            } else {
-                $role = true;
             }
             if (Yii::$app->user->isGuest
                 || ($model->created_by != Yii::$app->user->id && $role)
