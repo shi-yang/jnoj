@@ -657,9 +657,9 @@ struct problem_struct get_problem_info(int p_id)
     row = mysql_fetch_row(res);
     problem.time_limit = atoi(row[0]);
     problem.memory_limit = atoi(row[1]);
-    problem.isspj = (row[2][0] == 1);
+    problem.isspj = (atoi(row[2][0]) == 1);
     if(res != NULL) {
-        mysql_free_result(res);                         // free the memory
+        mysql_free_result(res); // free the memory
         res = NULL;
     }
     return problem;
