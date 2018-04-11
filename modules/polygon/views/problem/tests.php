@@ -45,14 +45,15 @@ $files = $model->getDataFiles();
 <div class="row">
     <div class="col-md-4">
         <p>
-            测试的输入文件需自行制作，然后在下边表格上传。为文本文件，文件名称必须以 in 最为后缀。例如 "apple.in"</p>
+            测试的输入文件需自行制作(<a href="<?= Url::toRoute(['/wiki/problem']) ?>#infile" target="_blank">如何快速生成？</a>)，
+            然后在下边表格上传。为文本文件，文件名称必须以 in 最为后缀。例如 "apple.in"</p>
         <p>
             测试的输出文件在上传输入文件后，点击此处
             <?= Html::a(Yii::t('app', 'Run'), ['/polygon/problem/run', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
             按钮，
             会根据提供的“<?= Html::a(Yii::t('app', 'Solution'), ['/polygon/problem/solution', 'id' => $model->id]) ?>”自行生成。
         </p>
-        <p>
+        <p class="text-info">
             上传完成后刷新页面查看结果
         </p>
         <hr>
