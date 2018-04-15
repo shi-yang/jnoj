@@ -94,6 +94,7 @@
             chmod 777 runtime
             chmod 777 web/assets
             chmod 777 web/uploads
+            chmod 777 polygon/data
             ```
         
     3. 导入数据库信息
@@ -118,6 +119,12 @@
     3. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
     4. 运行 `sudo ./dispatcher` 命令
 
+4. 配置配置多边形出题系统
+    1. 在 `polygon/config.ini` 文件中配置数据库信息
+    2. 将控制台切换到 `polygon` 目录（即运行 `cd polygon`命令），然后运行 `make` 命令
+    3. 运行 `sudo ./polygon` 命令
+
+5. Web 端默认是开发者模式，如需部署到生产环境，请注释 `web/index.php` 文件的头两行代码
 
 开发者支持
 ---------
