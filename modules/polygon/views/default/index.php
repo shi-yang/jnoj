@@ -37,7 +37,10 @@ $this->title = Yii::t('app', 'Polygon System');
                 },
                 'format' => 'raw',
             ],
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'controller' => 'problem'
+            ],
         ],
     ]); ?>
 </div>

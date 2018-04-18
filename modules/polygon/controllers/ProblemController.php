@@ -37,7 +37,7 @@ class ProblemController extends Controller
                 'rules' => [
                     [
                         'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj',
-                                      'img_upload', 'run', 'deletefile'],
+                                      'img_upload', 'run', 'deletefile', 'viewfile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -152,6 +152,12 @@ class ProblemController extends Controller
         return $this->redirect(['tests', 'id' => $model->id]);
     }
 
+    public function actionViewfile($id, $name)
+    {
+        $model = $this->findModel($id);
+        return file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+    }
+
     /**
      * Creates a new Problem model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -219,8 +225,8 @@ class ProblemController extends Controller
     protected function findModel($id)
     {
         if (($model = Problem::findOne($id)) !== null) {
-            if (Yii::$app->user->id === $model->created_by || (Yii::$app->user->identity->role == User::ROLE_MODERATOR &&
-                    Yii::$app->user->identity->role == User::ROLE_ADMIN)) {
+            if (Yii::$app->user->id === $model->created_by || (Yii::$app->user->identity->role === User::ROLE_MODERATOR ||
+                    Yii::$app->user->identity->role === User::ROLE_ADMIN)) {
                 return $model;
             } else {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');

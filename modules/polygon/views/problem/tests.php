@@ -46,7 +46,7 @@ $files = $model->getDataFiles();
     <div class="col-md-4">
         <p>
             测试的输入文件需自行制作(<a href="<?= Url::toRoute(['/wiki/problem']) ?>#infile" target="_blank">如何快速生成？</a>)，
-            然后在下边表格上传。为文本文件，文件名称必须以 in 最为后缀。例如 "apple.in"</p>
+            然后在下边表格上传。为文本文件，文件名称必须以 <code>in</code> 最为后缀，例如 <code>apple.in</code>。</p>
         <p>
             测试的输出文件在上传输入文件后，点击此处
             <?= Html::a(Yii::t('app', 'Run'), ['/polygon/problem/run', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
@@ -80,6 +80,10 @@ $files = $model->getDataFiles();
                             <th><?= $file['size'] ?></th>
                             <th><?= date('Y-m-d H:i', $file['time']) ?></th>
                             <th>
+                                <a href="<?= Url::toRoute(['/polygon/problem/viewfile', 'id' => $model->id,'name' => $file['name']]) ?>" target="_blank">
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                    <?= Yii::t('app', 'View') ?>
+                                </a>
                                 <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>">
                                     <span class="glyphicon glyphicon-remove"></span>
                                     <?= Yii::t('app', 'Delete') ?>
@@ -108,7 +112,11 @@ $files = $model->getDataFiles();
                             <th><?= $file['size'] ?></th>
                             <th><?= date('Y-m-d H:i', $file['time']) ?></th>
                             <th>
-                                <a href="">
+                                <a href="<?= Url::toRoute(['/polygon/problem/viewfile', 'id' => $model->id,'name' => $file['name']]) ?>" target="_blank">
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                    <?= Yii::t('app', 'View') ?>
+                                </a>
+                                <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>">
                                     <span class="glyphicon glyphicon-remove"></span>
                                     <?= Yii::t('app', 'Delete') ?>
                                 </a>

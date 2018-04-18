@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $stats = $model->getStatisticsData();
 ?>
-<h1><?= Html::a(Html::encode($model->title), ['/problem/view', 'id' => $model->problem_id]) ?></h1>
+<h1><?= Html::a(Html::encode($model->title), ['/problem/view', 'id' => $model->id]) ?></h1>
 <hr>
 <div class="stats-content" style="padding: 0 50px">
     <h2>Problem statistics</h2>
@@ -69,7 +69,7 @@ $stats = $model->getStatisticsData();
             [
                 'attribute' => 'who',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->username, ['/user/view', 'id' => $model->user_id]);
+                    return Html::a($model->username, ['/user/view', 'id' => $model->created_by]);
                 },
                 'format' => 'raw'
             ],
@@ -113,8 +113,7 @@ $stats = $model->getStatisticsData();
             [
                 'attribute' => 'created_at',
                 'value' => function ($model, $key, $index, $column) {
-                    $at = date('Y-m-d h:i', $model->created_at);
-                    return Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['title' => $at]);
+                    return Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['title' => $model->created_at]);
                 },
                 'format' => 'raw'
             ]

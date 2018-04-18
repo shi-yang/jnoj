@@ -543,7 +543,7 @@ void prepare_files(char * filename, int p_id,
     fname0[namelen] = 0;
     escape(fname, fname0);
     sprintf(infile, "%sdata/%d/%s", oj_home, p_id, fname);
-    execute_cmd("/bin/cp '%s' %s/%s.in", infile, work_dir, fname);
+    execute_cmd("/bin/cp '%s' %s/%s", infile, work_dir, fname);
 }
 
 void run_solution(struct problem_struct problem, char * work_dir,
@@ -552,11 +552,12 @@ void run_solution(struct problem_struct problem, char * work_dir,
     int lang = problem.solution_lang;
     char infile[BUFFER_SIZE];
     char outfile[BUFFER_SIZE];
-    sprintf(infile, "%s.in", data_filename);
-    sprintf(outfile, "%s.out", data_filename);
     nice(19);
     // now the user is "judge"
     chdir(work_dir);
+    sprintf(infile, "%s.in", data_filename);
+    sprintf(outfile, "%s.out", data_filename);
+
     // open the files
     freopen(infile, "r", stdin);
     freopen(outfile, "w", stdout);
@@ -930,7 +931,6 @@ int main(int argc, char** argv)
         execute_cmd("chmod 755 %s/java.policy", work_dir);
         execute_cmd("chown judge %s/java.policy", work_dir);
     }
-
     // compile
     // set the result to compiling
     if (compile(problem.solution_lang, work_dir) != 0) {
@@ -958,6 +958,8 @@ int main(int argc, char** argv)
         write_log("No such test data dir:%s!\n", fullpath);
         mysql_close(conn);
         exit(-1);
+    } else {
+        execute_cmd("/bin/rm -rf %s/*.out", fullpath);
     }
 
     int run_result = OJ_AC;
@@ -968,6 +970,8 @@ int main(int argc, char** argv)
         if (!is_input_file(dirp->d_name))
             continue;
         memcpy(data_filename, dirp->d_name, strlen(dirp->d_name) - 3);
+        data_filename[strlen(dirp->d_name) - 3] = '\0';
+
         prepare_files(dirp->d_name, problem_id, work_dir, runner_id);
         init_syscalls_limits(problem.solution_lang);
 

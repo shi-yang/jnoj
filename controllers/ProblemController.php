@@ -82,7 +82,7 @@ class ProblemController extends Controller
                 ->where(['problem_id' => $model->id, 'result' => Solution::OJ_AC])
                 ->orderBy(['time' => SORT_ASC, 'memory' => SORT_ASC, 'code_length' => SORT_ASC]),
             'pagination' => [
-                'pageSize' => 20,
+                'pageSize' => 10,
             ],
         ]);
 

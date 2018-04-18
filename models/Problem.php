@@ -192,7 +192,9 @@ class Problem extends ActiveRecord
 
     public function getStatisticsData()
     {
-        $data = Yii::$app->db->createCommand('SELECT user_id, result FROM {{%solution}} WHERE problem_id=:pid AND contest_id is null', [':pid' => $this->id])->queryAll();
+        $data = Yii::$app->db->createCommand(
+            'SELECT created_by, result FROM {{%solution}} WHERE problem_id=:pid AND contest_id is null',
+            [':pid' => $this->id])->queryAll();
         $users = [];
         $accepted_submission = 0;
         $tle_submission = 0;
@@ -201,9 +203,9 @@ class Problem extends ActiveRecord
         $user_count = 0;
         $submission_count = count($data);
         foreach ($data as $v) {
-            if (!isset($users[$v['user_id']])) {
+            if (!isset($users[$v['created_by']])) {
                 $user_count++;
-                $users[$v['user_id']] = 1;
+                $users[$v['created_by']] = 1;
             }
             if ($v['result'] == Solution::OJ_WA) {
                 $wa_submission++;

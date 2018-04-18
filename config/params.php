@@ -4,6 +4,8 @@ return [
     'components.formatter' => [
         'class' => app\components\Formatter::class,
         'defaultTimeZone' => 'Asia/Shanghai',
+        'locale' => 'zh-CN',
+        'dateFormat'=>'yyyy年MM月dd日',
         'thousandSeparator' => '&thinsp;',
     ],
     'components.setting' => [

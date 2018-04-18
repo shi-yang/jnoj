@@ -19,7 +19,8 @@ $this->title = '江南 Online Judge';
             <?php foreach ($news as $v): ?>
                 <div class="blog-post">
                     <h2 class="blog-post-title"><?= Html::a(Html::encode($v['title']), ['/site/news', 'id' => $v['id']]) ?></h2>
-                    <p class="blog-post-meta"><span class="glyphicon glyphicon-time"></span> <?= $v['created_at'] ?></p>
+                    <p class="blog-post-meta">
+                        <span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asDate($v['created_at']) ?></p>
                 </div>
             <?php endforeach; ?>
         </div>

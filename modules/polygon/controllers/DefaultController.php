@@ -2,6 +2,7 @@
 
 namespace app\modules\polygon\controllers;
 
+use app\models\User;
 use Yii;
 use yii\web\Controller;
 use app\modules\polygon\models\Problem;
@@ -18,9 +19,16 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Problem::find()->where(['created_by' => Yii::$app->user->id]),
-        ]);
+        if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->role === User::ROLE_ADMIN ||
+            Yii::$app->user->identity->role === User::ROLE_MODERATOR)) {
+            $dataProvider = new ActiveDataProvider([
+                'query' => Problem::find(),
+            ]);
+        } else {
+            $dataProvider = new ActiveDataProvider([
+                'query' => Problem::find()->where(['created_by' => Yii::$app->user->id]),
+            ]);
+        }
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,

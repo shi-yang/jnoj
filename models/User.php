@@ -71,8 +71,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['language', 'integer'],
             [['username', 'nickname'], 'required'],
-            [['nickname', 'username'], 'string', 'max' => 16],
-            ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{5,32}$)[a-z\d_]{5,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 5 - 32 位之间'],
+            [['nickname'], 'string', 'max' => 16],
+            ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
 
