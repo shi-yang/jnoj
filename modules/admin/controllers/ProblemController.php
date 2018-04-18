@@ -83,6 +83,19 @@ class ProblemController extends Controller
         ]);
     }
 
+    public function actionDeletefile($id, $name)
+    {
+        $model = $this->findModel($id);
+        @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+        return $this->redirect(['testData', 'id' => $model->id]);
+    }
+
+    public function actionViewfile($id, $name)
+    {
+        $model = $this->findModel($id);
+        return file_get_contents(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+    }
+
     /**
      * Displays a single Problem model.
      * @param integer $id
@@ -91,6 +104,7 @@ class ProblemController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+
         return $this->render('view', [
             'model' => $model,
         ]);
@@ -111,6 +125,7 @@ class ProblemController extends Controller
                 $problem = new Problem();
                 if (!empty($in)) {
                     $problem = Problem::findOne(['polygon_problem_id' => $id]);
+                    $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $problem->id);
                 }
                 $problem->title = $polygonProblem['title'];
                 $problem->description = $polygonProblem['description'];
@@ -147,7 +162,12 @@ class ProblemController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $sample_input = [$model->sample_input, $model->sample_input_2, $model->sample_input_3];
+            $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_input_3];
+            $model->sample_input = serialize($sample_input);
+            $model->sample_output = serialize($sample_output);
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
         $model->setSamples();
@@ -176,7 +196,7 @@ class ProblemController extends Controller
     public function actionSource($id, $solution_id)
     {
         $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution}} WHERE id=:id', [':id' => intval($solution_id)])->queryOne();
-        return $this->render('result', [
+        return $this->render('source', [
             'model' => $this->findModel($id),
             'solution' => $solution
         ]);
@@ -189,40 +209,10 @@ class ProblemController extends Controller
      */
     public function actionResult($id, $solution_id)
     {
-        $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution}} WHERE id=:id', [':id' => intval($solution_id)])->queryOne();
+        $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution_info}} WHERE solution_id=:id', [':id' => intval($solution_id)])->queryOne();
         return $this->render('result', [
             'model' => $this->findModel($id),
             'solution' => $solution
-        ]);
-    }
-
-    public function actionTestUpload($id)
-    {
-        $model = $this->findModel($id);
-        $this->layout = false;
-
-        $upload = new UploadForm();
-
-        if (Yii::$app->request->isPost) {
-            $upload->file = UploadedFile::getInstances($model, 'file');
-
-            if ($upload->file && $upload->validate()) {
-                $ok = false;
-                foreach ($upload->file as $file) {
-                    $ok = $file->saveAs(Yii::$app->setting->problem_data_path . $file->baseName . '.' . $file->extension);
-                }
-                if ($ok) {
-                    Yii::$app->session->setFlash('success', 'Submit Successfully');
-                } else {
-                    Yii::$app->session->setFlash('error', 'Something error');
-                }
-            }
-            return $this->refresh();
-        }
-
-        return $this->render('test_upload', [
-            'model' => $model,
-            'upload' => $upload
         ]);
     }
 
@@ -308,6 +298,11 @@ class ProblemController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /**
+     * 将一个文件夹复制为另一个文件夹
+     * @param $src string 源文件夹
+     * @param $dst string 目标文件夹
+     */
     protected function copyDir($src, $dst)
     {
         $dir = opendir($src);
@@ -318,5 +313,25 @@ class ProblemController extends Controller
             }
         }
         closedir($dir);
+    }
+
+    /**
+     * 删除文件夹下的所有文件
+     * @param $dir string
+     */
+    protected function makeDirEmpty($dir)
+    {
+        $dh = opendir($dir);
+        while ($file = readdir($dh)) {
+            if($file != "." && $file != "..") {
+                $fullpath = $dir . "/" . $file;
+                if(!is_dir($fullpath)) {
+                    @unlink($fullpath);
+                } else {
+                    $this->makeDirEmpty($fullpath);
+                }
+            }
+        }
+        closedir($dh);
     }
 }

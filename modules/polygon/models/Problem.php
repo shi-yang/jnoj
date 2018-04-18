@@ -110,13 +110,15 @@ class Problem extends \yii\db\ActiveRecord
     {
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
+                $this->memory_limit = 128;
+                $this->time_limit = 1;
                 $this->created_by = Yii::$app->user->id;
                 $this->created_at = new Expression('NOW()');
             }
             $this->updated_at = new Expression('NOW()');
 
             $sample_input = [$this->sample_input, $this->sample_input_2, $this->sample_input_3];
-            $sample_output = [$this->sample_output, $this->sample_output_2, $this->sample_input_3];
+            $sample_output = [$this->sample_output, $this->sample_output_2, $this->sample_output_3];
             $this->sample_input = serialize($sample_input);
             $this->sample_output = serialize($sample_output);
             return true;

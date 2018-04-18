@@ -1,4 +1,1 @@
-<?php
-use yii\helpers\Html;
-?>
-<pre><?= Html::encode($solution['source']) ?></pre>
+<pre><?= $solution['error'] ?></pre>
