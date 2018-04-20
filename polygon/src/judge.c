@@ -437,24 +437,6 @@ int compile(int lang, char * work_dir)
     }
 }
 
-int get_proc_status(int pid, const char * mark)
-{
-    char fn[BUFFER_SIZE], buf[BUFFER_SIZE];
-    int ret = 0;
-    FILE * pf = fopen(fn, "re");
-    int m = strlen(mark);
-    sprintf(fn, "/proc/%d/status", pid);
-    while (pf && fgets(buf, BUFFER_SIZE - 1, pf)) {
-        buf[strlen(buf) - 1] = 0;
-        if (strncmp(buf, mark, m) == 0) {
-            sscanf(buf + m + 1, "%d", &ret);
-        }
-    }
-    if (pf)
-        fclose(pf);
-    return ret;
-}
-
 // 连接 mysql 数据库
 int init_mysql_conn()
 {
@@ -703,9 +685,6 @@ void watch_solution(struct problem_struct problem, pid_t pidApp,
     struct user_regs_struct reg;
     struct rusage ruse;
     bool first_run = true;
-    if(*topmemory == 0) {
-        *topmemory = get_proc_status(pidApp, "VmRSS:") << 10;
-    } 
     for (;;) {
         // check the usage
         wait4(pidApp, &status, __WALL, &ruse);
