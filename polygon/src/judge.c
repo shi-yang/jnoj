@@ -154,7 +154,9 @@ int execute_cmd(const char * fmt, ...)
 }
 
 #define CALL_ARRAY_SIZE 512
-int call_counter[CALL_ARRAY_SIZE];
+unsigned int call_id = 0;
+unsigned int call_counter[CALL_ARRAY_SIZE];
+
 void init_syscalls_limits(int lang)
 {
     int i;
@@ -821,15 +823,16 @@ void watch_solution(struct problem_struct problem, pid_t pidApp,
 
         // check the system calls
         ptrace(PTRACE_GETREGS, pidApp, NULL, &reg);
-        if (call_counter[reg.REG_SYSCALL]) {
+        call_id = (unsigned int)reg.REG_SYSCALL % CALL_ARRAY_SIZE;
+        if (call_counter[call_id]) {
             //call_counter[reg.REG_SYSCALL]--;
         } else if (record_call) {
-            call_counter[reg.REG_SYSCALL] = 1;
+            call_counter[call_id] = 1;
         } else { //do not limit JVM syscall for using different JVM
             *ACflg = OJ_RE;
             char error[BUFFER_SIZE];
-            sprintf(error, "[ERROR] A not allowed system call.\nCall ID:%ld",
-                (long)reg.REG_SYSCALL);
+            sprintf(error, "[ERROR] A not allowed system call.\nCall ID:%u",
+                call_id);
             write_log(error);
             print_runtimeerror(error);
             ptrace(PTRACE_KILL, pidApp, NULL, NULL);
