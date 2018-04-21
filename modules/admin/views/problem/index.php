@@ -34,23 +34,6 @@ $this->title = Yii::t('app', 'Problems');
                 },
                 'format' => 'raw'
             ],
-//            [
-//                'attribute' => 'problem_data',
-//                'value' => function ($model, $key, $index, $column) {
-//                    $res = Html::a(
-//                        '<span class="glyphicon glyphicon-eye-open"></span> '.Yii::t('app', 'View'),
-//                        ['problem/test-data', 'id' => $model->problem_id],
-//                        ['onclick' => 'return false', 'data-click' => "test"]
-//                    );
-//                    $res .= ' ' . Html::a(
-//                        '<span class="glyphicon glyphicon-upload"></span> '.Yii::t('app', 'Upload'),
-//                        ['problem/test-upload', 'id' => $model->problem_id],
-//                        ['onclick' => 'return false', 'data-click' => "test"]
-//                    );
-//                    return $res;
-//                },
-//                'format' => 'raw',
-//            ],
             [
                 'attribute' => 'status',
                 'value' => function ($model, $key, $index, $column) {
@@ -78,6 +61,16 @@ $this->title = Yii::t('app', 'Problems');
                     return $res;
                 },
                 'format' => 'raw'
+            ],
+            [
+                'attribute' => 'created_by',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->user) {
+                        return Html::a($model->user->nickname, ['/user/view', 'id' => $model->user->id]);
+                    }
+                    return '';
+                },
+                'format' => 'raw',
             ],
             [
                 'attribute' => 'polygon_problem_id',

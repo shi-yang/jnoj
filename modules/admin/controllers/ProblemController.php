@@ -72,7 +72,7 @@ class ProblemController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Problem::find()->orderBy(['id' => SORT_DESC]),
+            'query' => Problem::find()->orderBy(['id' => SORT_DESC])->with('user'),
             'pagination' => [
                 'pageSize' => 50
             ]
@@ -104,6 +104,7 @@ class ProblemController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        $model->setSamples();
 
         return $this->render('view', [
             'model' => $model,
@@ -164,7 +165,7 @@ class ProblemController extends Controller
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             $sample_input = [$model->sample_input, $model->sample_input_2, $model->sample_input_3];
-            $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_input_3];
+            $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_output_3];
             $model->sample_input = serialize($sample_input);
             $model->sample_output = serialize($sample_output);
             $model->save();
@@ -180,7 +181,6 @@ class ProblemController extends Controller
     public function actionTestData($id)
     {
         $model = $this->findModel($id);
-        //$this->layout = false;
 
         return $this->render('test_data', [
             'model' => $model

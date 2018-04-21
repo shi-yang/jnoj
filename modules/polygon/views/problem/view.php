@@ -10,8 +10,6 @@ $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Problems'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['model'] = $model;
-
-$model->setSamples();
 ?>
 <div class="row">
     <div class="col-md-9 problem-view">

@@ -5,6 +5,7 @@ namespace app\modules\polygon\models;
 
 use Yii;
 use yii\db\Expression;
+use app\models\User;
 
 /**
  * This is the model class for table "{{%polygon_problem}}".
@@ -125,6 +126,11 @@ class Problem extends \yii\db\ActiveRecord
         } else {
             return false;
         }
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
 
     public static function getResultList($res = '')

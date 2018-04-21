@@ -8,7 +8,6 @@ use yii\helpers\Html;
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Problems'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-$model->setSamples();
 ?>
 <div class="problem-header">
     <?= \yii\bootstrap\Nav::widget([

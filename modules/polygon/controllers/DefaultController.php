@@ -19,16 +19,14 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        if (!Yii::$app->user->isGuest && (Yii::$app->user->identity->role === User::ROLE_ADMIN ||
-            Yii::$app->user->identity->role === User::ROLE_MODERATOR)) {
-            $dataProvider = new ActiveDataProvider([
-                'query' => Problem::find(),
-            ]);
-        } else {
-            $dataProvider = new ActiveDataProvider([
-                'query' => Problem::find()->where(['created_by' => Yii::$app->user->id]),
-            ]);
+        $query = Problem::find()->with('user');
+        if (Yii::$app->user->isGuest || (Yii::$app->user->identity->role != User::ROLE_MODERATOR &&
+            Yii::$app->user->identity->role != User::ROLE_ADMIN)) {
+            $query->andWhere(['created_by' => Yii::$app->user->id]);
         }
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query
+        ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,

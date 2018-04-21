@@ -33,7 +33,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     if (!Yii::$app->user->isGuest && $model->isUserInContest()) {
                         $link = '<span class="well-done">' . Yii::t('app', 'Registration completed') . '</span>';
                     }
-                    $column = $model->getRunStatus(true) . ' ' . $link;
+                    if ($model->getRunStatus() != Contest::STATUS_ENDED && $model->scenario == Contest::SCENARIO_ONLINE) {
+                        $column = $model->getRunStatus(true) . ' ' . $link;
+                    } else {
+                        $column = $model->getRunStatus(true);
+                    }
                     $userCount = $model->getContestUserCount();
                     return $column . ' ' . Html::a(' <span class="glyphicon glyphicon-user"></span>x'. $userCount, ['/homework/user', 'id' => $model->id]);
                 },

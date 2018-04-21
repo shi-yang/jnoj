@@ -62,8 +62,13 @@ class ProblemController extends Controller
     public function actionIndex()
     {
         $this->layout = '/main';
+        $query = Problem::find()->with('user');
+        if (Yii::$app->user->isGuest || (Yii::$app->user->identity->role != User::ROLE_MODERATOR &&
+                Yii::$app->user->identity->role != User::ROLE_ADMIN)) {
+            $query->andWhere(['created_by' => Yii::$app->user->id]);
+        }
         $dataProvider = new ActiveDataProvider([
-            'query' => Problem::find()->where(['created_by' => Yii::$app->user->id]),
+            'query' => $query
         ]);
 
         return $this->render('index', [
@@ -79,8 +84,10 @@ class ProblemController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        $model->setSamples();
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 

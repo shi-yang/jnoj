@@ -35,6 +35,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'format' => 'raw',
             ],
+            [
+                'attribute' => 'created_by',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->user) {
+                        return Html::a($model->user->nickname, ['/user/view', 'id' => $model->user->id]);
+                    }
+                    return '';
+                },
+                'format' => 'raw'
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
