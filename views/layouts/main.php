@@ -102,22 +102,25 @@ AppAsset::register($this);
 </footer>
 
 <?php $this->endBody() ?>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    showProcessingMessages: false,
-    messageStyle: "none",
-    extensions: ["tex2jax.js"],
-    jax: ["input/TeX", "output/HTML-CSS"],
-    tex2jax: {
-        inlineMath:  [ ["$", "$"] ],
-        displayMath: [ ["$$","$$"] ],
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
-    },
-    "HTML-CSS": {
-        showMathMenu: false
-    }
-});
-MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $(".katex.math.inline").each(function () {
+                var parent = $(this).parent()[0];
+                if (parent.localName !== "code") {
+                    var texTxt = $(this).text();
+                    var el = $(this).get(0);
+                    try {
+                        katex.render(texTxt, el);
+                    } catch (err) {
+                        $(this).html("<span class=\'err\'>" + err);
+                    }
+                } else {
+                    $(this).parent().text($(this).parent().text());
+                }
+            });
+        })
+    })(jQuery);
 </script>
 </body>
 </html>

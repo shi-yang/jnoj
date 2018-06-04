@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\bootstrap\Modal;
-use yii\helpers\Markdown;
 use app\models\Solution;
 
 /* @var $this yii\web\View */

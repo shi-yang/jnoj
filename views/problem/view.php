@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\Modal;
-use yii\helpers\Markdown;
 use app\models\Solution;
 
 /* @var $this yii\web\View */
@@ -26,17 +25,17 @@ $model->setSamples();
         <h1><?= Html::encode($this->title) ?></h1>
 
         <div class="content-wrapper">
-            <?= Markdown::process($model->description, 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($model->description) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Input') ?></h3>
         <div class="content-wrapper">
-            <?= Markdown::process($model->input, 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($model->input) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Output') ?></h3>
         <div class="content-wrapper">
-            <?= Markdown::process($model->output, 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($model->output) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Examples') ?></h3>
@@ -78,7 +77,7 @@ $model->setSamples();
         <?php if (!empty($model->hint)): ?>
             <h3><?= Yii::t('app', 'Hint') ?></h3>
             <div class="content-wrapper">
-                <?= Markdown::process($model->hint, 'gfm') ?>
+                <?= Yii::$app->formatter->asMarkdown($model->hint) ?>
             </div>
         <?php endif; ?>
     </div>

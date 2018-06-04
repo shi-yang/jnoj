@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Markdown;
 
 /* @var $model app\models\Contest */
 
@@ -28,15 +27,15 @@ $this->title = $model->title;
         <h2>Problem.<?= Html::encode(chr(65 + $problem['num']) . ' ' . $problem['title']) ?></h2>
 
         <div class="content-wrapper">
-            <?= Markdown::process($problem['description'], 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($problem['description']) ?>
         </div>
         <h3><?= Yii::t('app', 'Input') ?></h3>
         <div class="content-wrapper">
-            <?= Markdown::process($problem['input'], 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($problem['input']) ?>
         </div>
         <h3><?= Yii::t('app', 'Output') ?></h3>
         <div class="content-wrapper">
-            <?= Markdown::process($problem['output'], 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($problem['output']) ?>
         </div>
         <h3><?= Yii::t('app', 'Sample') ?></h3>
         <?php
@@ -92,7 +91,7 @@ $this->title = $model->title;
         <?php if (!empty($problem['hint'])): ?>
             <h3><?= Yii::t('app', 'Hint') ?></h3>
             <div class="content-wrapper">
-                <?= Markdown::process($problem['hint'], 'gfm') ?>
+                <?= Yii::$app->formatter->asMarkdown($problem['hint']) ?>
             </div>
         <?php endif; ?>
         <div class="next-page"></div>

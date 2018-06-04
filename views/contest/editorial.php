@@ -1,6 +1,5 @@
 <?php
 
-use yii\helpers\Markdown;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -15,7 +14,7 @@ $this->params['model'] = $model;
     <div style="padding: 50px">
         <?php
         if ($model->editorial != NULL) {
-            echo Markdown::process($model->editorial, 'gfm');
+            echo Yii::$app->formatter->asMarkdown($model->editorial);
         } else {
             echo '出题人去火星旅游了，这里什么也没有～';
         }

@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Markdown;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\polygon\models\Problem */
@@ -17,17 +16,17 @@ $this->params['model'] = $model;
         <h1><?= Html::encode($this->title) ?></h1>
 
         <div class="content-wrapper">
-            <?= Markdown::process($model->description, 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($model->description) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Input') ?></h3>
         <div class="content-wrapper">
-            <?= Markdown::process($model->input, 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($model->input) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Output') ?></h3>
         <div class="content-wrapper">
-            <?= Markdown::process($model->output, 'gfm') ?>
+            <?= Yii::$app->formatter->asMarkdown($model->output) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Examples') ?></h3>
@@ -69,7 +68,7 @@ $this->params['model'] = $model;
         <?php if (!empty($model->hint)): ?>
             <h3><?= Yii::t('app', 'Hint') ?></h3>
             <div class="content-wrapper">
-                <?= Markdown::process($model->hint, 'gfm') ?>
+                <?= Yii::$app->formatter->asMarkdown($model->hint) ?>
             </div>
         <?php endif; ?>
     </div>

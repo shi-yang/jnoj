@@ -5,7 +5,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\Modal;
 use yii\bootstrap\Nav;
-use yii\helpers\Markdown;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contest */
@@ -49,17 +48,17 @@ $sample_output = unserialize($problem['sample_output']);
 
             <h3><?= Yii::t('app', 'Description') ?></h3>
             <div class="content-wrapper">
-                <?= Markdown::process($problem['description'], 'gfm') ?>
+                <?= Yii::$app->formatter->asMarkdown($problem['description']) ?>
             </div>
 
             <h3><?= Yii::t('app', 'Input') ?></h3>
             <div class="content-wrapper">
-                <?= Markdown::process($problem['input'], 'gfm') ?>
+                <?= Yii::$app->formatter->asMarkdown($problem['input']) ?>
             </div>
 
             <h3><?= Yii::t('app', 'Output') ?></h3>
             <div class="content-wrapper">
-                <?= Markdown::process($problem['output'], 'gfm') ?>
+                <?= Yii::$app->formatter->asMarkdown($problem['output']) ?>
             </div>
 
             <h3><?= Yii::t('app', 'Examples') ?></h3>
@@ -101,7 +100,7 @@ $sample_output = unserialize($problem['sample_output']);
             <?php if (!empty($problem['hint'])): ?>
                 <h3><?= Yii::t('app', 'Hint') ?></h3>
                 <div class="content-wrapper">
-                    <?= Markdown::process($problem['hint'], 'gfm') ?>
+                    <?= Yii::$app->formatter->asMarkdown($problem['hint']) ?>
                 </div>
             <?php endif; ?>
         </div>

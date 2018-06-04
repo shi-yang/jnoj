@@ -19,9 +19,11 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'js/katex/katex.min.css'
     ];
     public $js = [
-        'js/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
+        //'js/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
+        'js/katex/katex.min.js',
         'js/socket.io.js'
     ];
     public $depends = [

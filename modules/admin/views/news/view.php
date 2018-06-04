@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Markdown;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Discuss */
@@ -26,5 +25,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <span><?= $model->created_at ?></span>
 
-    <?= Markdown::process($model->content, 'gfm') ?>
+    <?= Yii::$app->formatter->asMarkdown($model->content) ?>
 </div>
