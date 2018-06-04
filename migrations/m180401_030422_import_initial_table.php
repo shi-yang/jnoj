@@ -127,7 +127,7 @@ class m180401_030422_import_initial_table extends BaseMigration
             'content' => $this->text(),
             'created_at' => $this->dateTime()->notNull(),
             'updated_at' => $this->dateTime()->notNull(),
-            'status' => $this->smallInteger()->notNull(),
+            'status' => $this->smallInteger()->notNull()->defaultValue(0),
             'entity' => $this->string(32),
             'entity_id' => $this->integer()
         ], $this->tableOptions);
