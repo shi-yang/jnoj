@@ -37,7 +37,7 @@ tests/_support/_generated
 
 #polygon
 /polygon/run/*
-/polygon/data/*
+#/polygon/data/*
 
 #db
 /config/db.php

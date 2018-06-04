@@ -52,11 +52,19 @@ class HomeworkController extends ContestController
     {
         $this->layout = 'main';
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => Homework::find()->where([
+        $query = Homework::find()->with('user')->where([
+            'type' => Homework::TYPE_HOMEWORK,
+            'status' => Homework::STATUS_PUBLISHED
+        ])->orderBy(['id' => SORT_DESC]);
+
+        if (!Yii::$app->user->isGuest) {
+            $query->orWhere([
                 'type' => Homework::TYPE_HOMEWORK,
-                'status' => Homework::STATUS_PUBLISHED
-            ])->with('user')->orderBy(['id' => SORT_DESC]),
+                'created_by' => Yii::$app->user->id
+            ]);
+        }
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
         ]);
 
         return $this->render('index', [
