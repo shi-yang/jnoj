@@ -30,12 +30,14 @@ tests/_output/*
 tests/_support/_generated
 
 #judge
+/judge/?
 /judge/run
 /judge/etc/*
 /judge/log/*
 /judge/data/*
 
 #polygon
+/polygon/?
 /polygon/run/*
 /polygon/data/*
 
