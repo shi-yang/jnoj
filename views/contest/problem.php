@@ -201,33 +201,24 @@ $sample_output = unserialize($problem['sample_output']);
 
 <?php
 $js = "
-$('[data-click=solution_info]').click(function() {
-    $.ajax({
-        url: $(this).attr('href'),
-        type:'post',
-        error: function(){alert('error');},
-        success:function(html){
-            $('#solution-content').html(html);
-            $('#solution-info').modal('show');
-        }
-    });
-});
-
-MathJax.Hub.Config({
-    showProcessingMessages: false,
-    messageStyle: \"none\",
-    extensions: [\"tex2jax.js\"],
-    jax: [\"input/TeX\", \"output/HTML-CSS\"],
-    tex2jax: {
-        inlineMath:  [ [\"$\", \"$\"] ],
-        displayMath: [ [\"$$\",\"$$\"] ],
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
-    },
-    \"HTML-CSS\": {
-        showMathMenu: false
-    }
-});
-MathJax.Hub.Queue([\"Typeset\",MathJax.Hub]);
+    (function ($) {
+        $(document).ready(function () {
+            $(\".katex.math.inline\").each(function () {
+                var parent = $(this).parent()[0];
+                if (parent.localName !== \"code\") {
+                    var texTxt = $(this).text();
+                    var el = $(this).get(0);
+                    try {
+                        katex.render(texTxt, el);
+                    } catch (err) {
+                        $(this).html(\"<span class=\'err\'>\" + err);
+                    }
+                } else {
+                    $(this).parent().text($(this).parent().text());
+                }
+            });
+        })
+    })(jQuery);
 ";
 $this->registerJs($js);
 ?>
