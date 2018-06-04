@@ -264,19 +264,19 @@ class ContestController extends Controller
         $this->layout = 'basic';
 
         if ($json) {
-            $data = (new Query())->select('s.solution_id, u.username, u.nickname, s.result, s.created_at, p.num')
+            $data = (new Query())->select('s.id, u.username, u.nickname, s.result, s.created_at, p.num')
                 ->from('{{%solution}} as s')
-                ->leftJoin('{{%user}} as u', 'u.id=s.user_id')
+                ->leftJoin('{{%user}} as u', 'u.id=s.created_by')
                 ->leftJoin('{{%contest_problem}} as p', 'p.problem_id=s.problem_id')
                 ->where(['s.contest_id' => $model->id])
                 ->all();
 
             foreach ($data as &$v) {
-                $v['submitId'] = $v['solution_id'];
-                $v['subTime'] = date("Y-m-d H:i:s", $v['created_at']);
+                $v['submitId'] = $v['id'];
+                $v['subTime'] = $v['created_at'];
                 $v['alphabetId'] = chr(65 + $v['num']);
                 $v['resultId'] = $v['result'];
-                unset($v['solution_id']);
+                unset($v['id']);
                 unset($v['created_at']);
                 unset($v['num']);
                 unset($v['result']);
