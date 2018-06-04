@@ -164,8 +164,8 @@ class m180401_030422_import_initial_table extends BaseMigration
         $this->createTable('{{%solution}}', [
             'id' => $this->primaryKey(),
             'problem_id' => $this->integer()->notNull(),
-            'time' => $this->integer()->notNull(),
-            'memory' => $this->integer()->notNull(),
+            'time' => $this->integer()->notNull()->defaultValue(0),
+            'memory' => $this->integer()->notNull()->defaultValue(0),
             'created_at' => $this->dateTime()->notNull(),
             'source' => $this->text()->notNull(),
             'result' => $this->smallInteger()->notNull()->defaultValue(0),
