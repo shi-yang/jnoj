@@ -57,12 +57,10 @@
 安装过程
 ------------
 1. 下载　`jnoj`
-    提供两种方法下载：
-    1. 运行命令：
-        ~~~
-        git clone https://github.com/shi-yang/jnoj.git
-        ~~~
-    2. 到　[https://github.com/shi-yang/jnoj/releases](https://github.com/shi-yang/jnoj/releases) 选择最新版本下载。
+    运行命令：
+    ~~~
+    git clone https://github.com/shi-yang/jnoj.git
+    ~~~
 
 2. 配置 Web 端
     1. 配置数据库信息
@@ -80,32 +78,11 @@
         ```
         
         **注意：** Web 程序不会为你创建数据库，需要你自己手动创建该数据库。
-        
-    2. 安装 Web 相关依赖
-        这里提供两种安装方法。一种是用 `composer` 来安装，另一种是通过压缩包来安装。
-        1. 使用 `composer` 来安装。这种方法因国内网络问题，安装时间漫长或无法安装。需要先下载安装 `composer`。然后执行
-        
-            ```bash
-            php composer.phar update
-            ```
-        2. 通过安装包来安装。到 [https://github.com/shi-yang/jnoj/releases](https://github.com/shi-yang/jnoj/releases)
-        下载最新版的 `vendor.zip` 后，放在 `jnoj` 目录下，直接解压即可。然后依次运行下列命令修改目录权限：
-            ```bash
-            chmod 777 runtime
-            chmod 777 web/assets
-            chmod 777 web/uploads
-            chmod 777 polygon/data
-            ```
-        
-    3. 导入数据库信息
-        
-        运行 `./yii migrate`。根据提示输入管理员账号密码邮箱。
 
-    4. 启动 Socket 功能 (启动该功能是为了在发布公告时给前台用户弹窗提醒)
+    2. 执行安装命令
+        进入 jnoj 目录，在命令行运行 `./yii install` 来安装。安装过程会自动导入所需的 SQL 数据，并且需要你根据提示输入管理员的账号密码。
     
-        运行 `php socket.php start -d`
-    
-    做好以上步骤后便使用 Web 端：
+    做好以上步骤后便可以使用 Web 端：
     
     ~~~
     http://localhost/jnoj/web/
@@ -123,8 +100,6 @@
     1. 在 `polygon/config.ini` 文件中配置数据库信息
     2. 将控制台切换到 `polygon` 目录（即运行 `cd polygon`命令），然后运行 `make` 命令
     3. 运行 `sudo ./polygon` 命令
-
-5. Web 端默认是开发者模式，如需部署到生产环境，请注释 `web/index.php` 文件的头两行代码
 
 开发者支持
 ---------

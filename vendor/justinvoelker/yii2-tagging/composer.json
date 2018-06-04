@@ -1,0 +1,21 @@
+{
+    "name": "justinvoelker/yii2-tagging",
+    "description": "Turn delimited data into tags",
+    "type": "yii2-extension",
+    "keywords": ["yii2","tag"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Justin Voelker",
+            "email": "justin@justinvoelker.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "justinvoelker\\tagging\\": ""
+        }
+    }
+}

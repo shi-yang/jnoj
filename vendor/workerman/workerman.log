@@ -1,0 +1,31 @@
+2018-06-04 19:03:05 pid:18230 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:04:54 pid:18426 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:04:54 pid:18426 Workerman[socket.php] already running
+2018-06-04 19:05:12 pid:18441 Workerman[socket.php] stop 
+2018-06-04 19:05:12 pid:18441 Workerman[socket.php] is stopping ...
+2018-06-04 19:05:12 pid:18232 Workerman[socket.php] stopping ...
+2018-06-04 19:05:12 pid:18232 Workerman[socket.php] has been stopped
+2018-06-04 19:05:12 pid:18441 Workerman[socket.php] stop success
+2018-06-04 19:05:15 pid:18445 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:05:28 pid:18466 Workerman[socket.php] stop 
+2018-06-04 19:05:28 pid:18466 Workerman[socket.php] is stopping ...
+2018-06-04 19:05:28 pid:18447 Workerman[socket.php] stopping ...
+2018-06-04 19:05:28 pid:18447 Workerman[socket.php] has been stopped
+2018-06-04 19:05:28 pid:18466 Workerman[socket.php] stop success
+2018-06-04 19:05:29 pid:18469 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:06:45 pid:18533 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:06:45 pid:18533 Workerman[socket.php] already running
+2018-06-04 19:06:51 pid:18544 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:06:51 pid:18544 Workerman[socket.php] already running
+2018-06-04 19:08:56 pid:18677 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:08:56 pid:18677 Workerman[socket.php] already running
+2018-06-04 19:12:06 pid:18884 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:12:06 pid:18884 Workerman[socket.php] already running
+2018-06-04 19:12:14 pid:18898 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:12:14 pid:18898 Workerman[socket.php] already running
+2018-06-04 19:12:52 pid:18929 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:12:52 pid:18929 Workerman[socket.php] already running
+2018-06-04 19:12:59 pid:18943 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:12:59 pid:18943 Workerman[socket.php] already running
+2018-06-04 19:19:59 pid:20077 Workerman[socket.php] start in DAEMON mode
+2018-06-04 19:19:59 pid:20077 Workerman[socket.php] already running
