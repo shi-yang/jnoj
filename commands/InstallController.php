@@ -17,8 +17,10 @@ class InstallController extends Controller
                 'runtime',
                 'web/assets',
                 'web/uploads',
+                'polygon/log',
                 'polygon/data',
-                'judge/data'
+                'judge/data',
+                'judge/log',
             ],
             'setCookieValidationKey' => [
                 'config/web.php',
