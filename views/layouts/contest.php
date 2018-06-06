@@ -34,23 +34,6 @@ $status = $model->getRunStatus();
 <?php $this->beginBody() ?>
 
 <div class="wrap">
-    <header id="header" class="hidden-xs">
-        <div class="container">
-            <div class="page-header">
-                <div class="logo pull-left">
-                    <div class="pull-left">
-                        <a class="navbar-brand" href="<?= Yii::$app->request->baseUrl ?>">
-                            <img src="<?= Yii::getAlias('@web') ?>/images/logo.png"/>
-                        </a>
-                    </div>
-                    <div class="brand">
-                        Online Judge
-                    </div>
-                </div>
-                <div class="clearfix"></div>
-            </div>
-        </div>
-    </header>
     <?php
     NavBar::begin([
         'brandLabel' => Yii::t('app', 'Jiangnan') . ' OJ',
@@ -91,7 +74,7 @@ $status = $model->getRunStatus();
     NavBar::end();
     ?>
 
-    <div class="container" id="contest-anchor">
+    <div class="container">
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
@@ -158,16 +141,16 @@ $status = $model->getRunStatus();
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-signal"></span> ' . Yii::t('app' , 'Status'),
-                        'url' => ['contest/status', 'id' => $model->id, '#' => 'contest-anchor'],
+                        'url' => ['contest/status', 'id' => $model->id],
                         'linkOptions' => ['data-pjax' => 0]
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-glass"></span> ' . Yii::t('app', 'Standing'),
-                        'url' => ['contest/standing', 'id' => $model->id, '#' => 'contest-anchor'],
+                        'url' => ['contest/standing', 'id' => $model->id],
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-comment"></span> ' . Yii::t('app', 'Clarification'),
-                        'url' => ['contest/clarify', 'id' => $model->id, '#' => 'contest-anchor'],
+                        'url' => ['contest/clarify', 'id' => $model->id],
                     ],
                 ];
                 if ($model->scenario == $model::SCENARIO_OFFLINE) {

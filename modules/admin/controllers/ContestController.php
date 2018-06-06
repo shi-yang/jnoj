@@ -314,7 +314,8 @@ class ContestController extends Controller
 
         $this->layout = 'basic';
 
-        $problems = (new Query())->select('p.title, p.description, p.input, p.output, p.sample_input, p.sample_output, p.hint, c.num')
+        $problems = (new Query())->select('p.title, p.description, p.input, p.output, p.sample_input,
+                                          p.sample_output, p.hint, c.num, p.time_limit, p.memory_limit')
             ->from('{{%problem}} as p')
             ->leftJoin('{{%contest_problem}} as c', ['c.contest_id' => $model->id])
             ->where('p.id=c.problem_id')

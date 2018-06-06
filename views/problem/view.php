@@ -88,7 +88,9 @@ $model->setSamples();
                 <tbody>
                 <tr>
                     <td>Time limit</td>
-                    <td><?= $model->time_limit ?> Second</td>
+                    <td>
+                        <?= Yii::t('app', '{t, plural, =1{# second} other{# seconds}}', ['t' => intval($model->time_limit)]); ?>
+                    </td>
                 </tr>
                 <tr>
                     <td>Memory limit</td>

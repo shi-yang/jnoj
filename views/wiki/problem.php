@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\bootstrap\Modal;
 ?>
 <h3>题目内容</h3>
 <p>
@@ -39,10 +40,70 @@ use yii\helpers\Html;
 
 <h3>Special Judge</h3>
 <p>简称 SPJ，这是针对用户输出的特判。比如，根据题面求解出来的答案可能存在多个，这样就无法定义一个准确的输出文件来判断用户是否正确，这时就需要 SPJ。或者允许用户的输出在某一精度范围内是正确的。</p>
-<p>下面提供一种写法</p>
+<?php Modal::begin([
+    'header' => '<h2>SPJ 模板示例</h2>',
+    'toggleButton' => ['label' => 'SPJ 模板示例', 'class' => 'btn btn-success'],
+]) ?>
 <pre>
+#include &lt;stdio.h&gt;
 
+#define AC 0
+#define WA 1
+#define ERROR -1
+
+int spj(FILE *input, FILE *user_output){
+    /*
+      parameter:
+        - input，your input file pointer
+        - user_output，user output file pointer
+      return:
+        - if the answer is correct, return AC else return WA
+        - if something unexpected happened in your judge function, you can return ERROR
+
+      demo:
+
+      int a, b;
+      while(fscanf(user_output, "%d %d", &a, &b) != EOF){
+          if(a -b != 3){
+              return WA;
+          }
+      }
+      return AC;
+     */
+}
+
+void close_file(FILE *f){
+    if(f != NULL){
+        fclose(f);
+    }
+}
+
+int main(int argc, char *args[]){
+    FILE *input = NULL, *user_output = NULL;
+    int result;
+    if(argc != 4){
+        printf("Usage: spj x.in x.out\n");
+        return ERROR;
+    }
+    input = fopen(args[1], "r");
+    user_output = fopen(args[2], "r");
+    if(input == NULL || user_output == NULL){
+        printf("Failed to open output file\n");
+        close_file(input);
+        close_file(user_output);
+        return ERROR;
+    }
+
+    result = spj(input, user_output);
+    printf("result: %d\n", result);
+
+    close_file(input);
+    close_file(user_output);
+    return result;
+}
 </pre>
+<?php Modal::end() ?>
+
 
 <h3 id="infile">如何快速生成输入文件</h3>
 <p>以下只是提供 C 语言一种示范</p>

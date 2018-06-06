@@ -18,7 +18,10 @@ $this->params['model'] = $model;
 if (!Yii::$app->user->isGuest) {
     $solution->language = Yii::$app->user->identity->language;
 }
-
+if (empty($model->problems)) {
+    echo 'Please add question';
+    return;
+}
 $problems = $model->problems;
 
 $nav = [];
@@ -111,7 +114,9 @@ $sample_output = unserialize($problem['sample_output']);
                     <tbody>
                     <tr>
                         <td>Time limit</td>
-                        <td><?= $problem['time_limit'] ?> Second (Java:<?= $problem['time_limit'] + 2 ?> Second)</td>
+                        <td>
+                            <?= Yii::t('app', '{t, plural, =1{# second} other{# seconds}}', ['t' => intval($problem['time_limit'])]); ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>Memory limit</td>

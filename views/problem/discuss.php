@@ -28,11 +28,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
         <?= $form->field($newDiscuss, 'content')->widget('app\widgets\editormd\Editormd', [
             'clientOptions' => [
-                'placeholder' => 'description',
+                'placeholder' => '可不填',
                 'height' => 300,
                 'tex' => true,
                 'flowChart' => true,
-                'sequenceDiagram' => true
+                'sequenceDiagram' => true,
+                'autoFocus' => false
             ]
         ])->label(false); ?>
 

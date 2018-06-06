@@ -10,7 +10,6 @@ use justinvoelker\tagging\TaggingWidget;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Problems');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
 
@@ -67,11 +66,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel panel-default">
             <div class="panel-body">
                 <?= Html::beginForm('', 'post', ['class' => 'form-inline']) ?>
-                    <div class="form-group">
-                        <?= Html::label(Yii::t('app', 'Search'), 'q', ['class' => 'sr-only']) ?>
-                        <?= Html::textInput('q', '', ['class' => 'form-control', 'placeholder' => 'Problem ID or Title']) ?>
-                    </div>
-                    <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>
+                <div class="input-group">
+                    <?= Html::label(Yii::t('app', 'Search'), 'q', ['class' => 'sr-only']) ?>
+                    <?= Html::textInput('q', '', ['class' => 'form-control', 'placeholder' => 'Problem ID or Title']) ?>
+                    <span class="input-group-btn">
+                    <?= Html::submitButton('<span class="glyphicon glyphicon-search"></span>', ['class' => 'btn btn-default']) ?>
+                    </span>
+                </div>
                 <?= Html::endForm() ?>
             </div>
         </div>

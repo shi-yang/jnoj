@@ -9,7 +9,6 @@ use app\models\Contest;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Contests');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="contest-index">
 

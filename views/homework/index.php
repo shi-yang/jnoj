@@ -9,7 +9,6 @@ use app\models\Contest;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Homework');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="contest-index">
     <p><?= Html::a(Yii::t('app', 'Create'), ['/homework/create'], ['class' => 'btn btn-success']) ?></p>

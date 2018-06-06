@@ -9,7 +9,6 @@ use yii\bootstrap\Modal;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Status');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="solution-index">
     <?php Pjax::begin() ?>

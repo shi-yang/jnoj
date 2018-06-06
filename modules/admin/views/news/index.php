@@ -7,7 +7,6 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'News');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="discuss-index">
 
