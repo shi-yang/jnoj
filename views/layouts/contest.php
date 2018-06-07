@@ -44,11 +44,7 @@ $status = $model->getRunStatus();
     ]);
     $menuItems = [
         ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index']],
-        ['label' => Yii::t('app', 'Problem'), 'url' => ['/problem/index']],
-        ['label' => Yii::t('app', 'Status'), 'url' => ['/solution/index']],
-        ['label' => Yii::t('app', 'Homework'), 'url' => ['/homework/index']],
         ['label' => Yii::t('app', 'Contest'), 'url' => ['/contest/index']],
-        ['label' => 'Wiki', 'url' => ['/wiki/index']],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup']];

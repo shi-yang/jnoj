@@ -45,7 +45,7 @@
 
 ![Problem View](docs/images/problem_view.png)
 
-安装需求
+环境需求
 ------------
 
 在 Linux 环境下安装。判题机是在 Linux 环境下写的，Windows 下无法运行判题机。
@@ -101,6 +101,23 @@
     1. 在 `polygon/config.ini` 文件中配置数据库信息
     2. 将控制台切换到 `polygon` 目录（即运行 `cd polygon`命令），然后运行 `make` 命令
     3. 运行 `sudo ./polygon` 命令
+
+安装过程执行命令如下：
+~~~
+$ git clone https://github.com/shi-yang/jnoj.git
+$ cd jnoj
+$ vim config/db.php
+$ ./yii install
+$ sudo useradd -m -u 1536 judge
+$ vim judge/config.ini
+$ cd judge
+$ make
+$ sudo ./dispatcher
+$ cd ../polygon
+$ vim config.ini
+$ make
+$ sudo ./polygon
+~~~
 
 开发者支持
 ---------
