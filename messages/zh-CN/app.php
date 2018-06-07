@@ -16,6 +16,7 @@ return [
     'Clarification' => '答疑',
     'QQ' => 'ＱＱ号',
     'Standing' => '榜单',
+    'Rating' => '排行榜',
     'Contests' => '比赛',
     'Run' => '运行',
     'Register »' => '参赛 >>',

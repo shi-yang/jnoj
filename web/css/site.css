@@ -329,6 +329,47 @@ a.desc:after {
     text-align: left;
 }
 
+.rating-index tr td:nth-child(1),
+.rating-index tr th:nth-child(1),
+.rating-index tr td:nth-child(3),
+.rating-index tr th:nth-child(3) {
+    text-align: center;
+    width: 60px;
+}
+
+
+.rating-index tr td:nth-child(4),
+.rating-index tr th:nth-child(4) {
+    text-align: center;
+    width: 100px;
+}
+.rating-top {
+    text-align: center;
+}
+.rating-one {
+    font-size: 120px;
+    color: gold;
+}
+.rating-two {
+    margin-top: 20px;
+    font-size: 100px;
+    color: silver;
+}
+.rating-three {
+    margin-top: 40px;
+    font-size: 80px;
+    color: #B87333
+}
+.rating-one-name {
+    margin-top: 0;
+}
+.rating-two-name {
+    margin-top: 9px;
+}
+.rating-three-name {
+    margin-top: 17px;
+}
+
 .problem-index-list tr td:nth-child(1),
 .problem-index-list tr th:nth-child(1),
 .problem-index-list tr td:nth-child(3),
