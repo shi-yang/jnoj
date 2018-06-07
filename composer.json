@@ -18,7 +18,6 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "conquer/codemirror": "*",
         "russ666/yii2-countdown": "dev-master",
-        "rmrevin/yii2-minify-view": "dev-master",
         "workerman/workerman": "dev-master",
         "workerman/phpsocket.io": "dev-master",
         "justinvoelker/yii2-tagging": "*"

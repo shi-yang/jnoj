@@ -12,15 +12,6 @@ return array (
       '@russ666/widgets' => $vendorDir . '/russ666/yii2-countdown',
     ),
   ),
-  'rmrevin/yii2-minify-view' => 
-  array (
-    'name' => 'rmrevin/yii2-minify-view',
-    'version' => '9999999-dev',
-    'alias' => 
-    array (
-      '@rmrevin/yii/minify' => $vendorDir . '/rmrevin/yii2-minify-view',
-    ),
-  ),
   'yiisoft/yii2-swiftmailer' => 
   array (
     'name' => 'yiisoft/yii2-swiftmailer',
