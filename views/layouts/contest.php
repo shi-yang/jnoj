@@ -29,6 +29,11 @@ $status = $model->getRunStatus();
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
     <link rel="shortcut icon" href="<?= Yii::getAlias('@web') ?>/favicon.ico">
+    <style>
+        .progress-bar {
+            transition: none !important;
+        }
+    </style>
 </head>
 <body>
 <?php $this->beginBody() ?>

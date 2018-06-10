@@ -198,7 +198,7 @@ class ContestController extends Controller
                     ':cid' => $model->id
                 ])->queryScalar();
                 if ($in_contest) {
-                    ContestUser::findOne(['user_id' => $uid, 'contest_id' => $model->contest_id])->delete();
+                    ContestUser::findOne(['user_id' => $uid, 'contest_id' => $model->id])->delete();
                     Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
                 }
             } else {

@@ -87,7 +87,8 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
                     return '线上赛无法提供密码';
                 }
             },
-            'format' => 'raw'
+            'format' => 'raw',
+            'visible' => $model->scenario == Contest::SCENARIO_OFFLINE
         ],
         [
             'class' => 'yii\grid\ActionColumn',
