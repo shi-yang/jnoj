@@ -17,7 +17,8 @@ $this->title = 'Wiki';
                 ['label' => Yii::t('app', 'Contest'), 'url' => ['wiki/contest']],
                 ['label' => 'OJ设计与实现', 'url' => ['wiki/design']],
                 ['label' => '出题要求', 'url' => ['wiki/problem']]
-            ]
+            ],
+            'options' => ['class' => 'nav nav-pills nav-stacked']
         ]) ?>
     </div>
     <div class="col-md-9">

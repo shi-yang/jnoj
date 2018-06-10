@@ -7,10 +7,11 @@ use Yii;
 /**
  * This is the model class for table "{{%contest_user}}".
  *
- * @property int $id
- * @property int $user_id
- * @property int $contest_id
+ * @property integer $id
+ * @property integer $user_id
+ * @property integer $contest_id
  * @property string $user_password
+ * @property integer $rating_change
  */
 class ContestUser extends \yii\db\ActiveRecord
 {
@@ -29,7 +30,7 @@ class ContestUser extends \yii\db\ActiveRecord
     {
         return [
             [['user_id', 'contest_id'], 'required'],
-            [['user_id', 'contest_id'], 'integer'],
+            [['user_id', 'contest_id', 'rating_change'], 'integer'],
             [['user_password'], 'string']
         ];
     }

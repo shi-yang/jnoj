@@ -23,6 +23,7 @@ use yii\web\IdentityInterface;
  * @property string $created_at
  * @property string $updated_at
  * @property string $password write-only password
+ * @property integer $rating
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -69,7 +70,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['language', 'integer'],
+            [['language', 'rating'], 'integer'],
             [['username', 'nickname'], 'required'],
             [['nickname'], 'string', 'max' => 16],
             ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
@@ -111,6 +112,7 @@ class User extends ActiveRecord implements IdentityInterface
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
             'avatar' => Yii::t('app', 'User Icon'),
+            'rating' => Yii::t('app', 'Rating')
         ];
     }
 
@@ -325,5 +327,26 @@ class User extends ActiveRecord implements IdentityInterface
             'solved_problem' => $solved_problem,
             'unsolved_problem' => $unsolved_problem
         ];
+    }
+
+    public function getRatingLevel()
+    {
+        if ($this->rating == NULL) {
+            return '';
+        } else if ($this->rating < 1150) {
+            return Yii::t('app', 'Bronze');
+        } else if ($this->rating < 1400) {
+            return Yii::t('app', 'Silver');
+        } else if ($this->rating < 1650) {
+            return Yii::t('app', 'Gold');
+        } else if ($this->rating < 1900) {
+            return Yii::t('app', 'Platinum');
+        } else if ($this->rating < 2150) {
+            return Yii::t('app', 'Diamond');
+        } else if ($this->rating < 2400) {
+            return Yii::t('app', 'Master');
+        } else {
+            return Yii::t('app', 'Challenger');
+        }
     }
 }

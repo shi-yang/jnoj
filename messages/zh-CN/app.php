@@ -66,8 +66,8 @@ return [
     'Not started yet' => '尚未开始',
     'Ended' => '已结束',
     'Educational' => '教育场',
-    'Ranked' => '单人排位赛',
-    'Group Ranked' => '队伍排位赛',
+    'Single Ranked' => '单人排位赛',
+    'Group Ranked' => '队伍排位赛(ACM-ICPC榜)',
     'Active' => '激活',
     'New announcement: ' => '新公告：',
     'Inactive' => '未激活',
@@ -110,5 +110,13 @@ return [
     'Created At' => '创建时间',
     'Last reply time' => '最后回复时间',
 
-    'Agree above and register' => '同意以上并参加'
+    'Agree above and register' => '同意以上并参加',
+
+    'Bronze' => '青铜',
+    'Silver' => '白银',
+    'Gold' => '黄金',
+    'Platinum' => '铂金',
+    'Diamond' => '钻石',
+    'Master' => '王者',
+    'Challenger' => '大师'
 ];

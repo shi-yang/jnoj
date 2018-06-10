@@ -60,14 +60,22 @@ AppAsset::register($this);
         ['label' => '<span class="glyphicon glyphicon-king"></span> ' . Yii::t('app', 'Rating'), 'url' => ['/rating/index']],
         ['label' => '<span class="glyphicon glyphicon-book"></span> ' . Yii::t('app', 'Homework'), 'url' => ['/homework/index']],
         ['label' => '<span class="glyphicon glyphicon-knight"></span> ' . Yii::t('app', 'Contests'), 'url' => ['/contest/index']],
-        ['label' => '<span class="glyphicon glyphicon-info-sign"></span> Wiki', 'url' => ['/wiki/index']],
+        [
+            'label' => '<span class="glyphicon glyphicon-info-sign"></span> Wiki',
+            'url' => ['/wiki/index'],
+            'active' => Yii::$app->controller->id == 'wiki'
+        ],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => '<span class="glyphicon glyphicon-new-window"></span> ' . Yii::t('app', 'Signup'), 'url' => ['/site/signup']];
         $menuItems[] = ['label' => '<span class="glyphicon glyphicon-log-in"></span> ' . Yii::t('app', 'Login'), 'url' => ['/site/login']];
     } else {
         if (Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN) {
-            $menuItems[] = ['label' => '<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Backend'), 'url' => ['/admin']];
+            $menuItems[] = [
+                'label' => '<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Backend'),
+                'url' => ['/admin'],
+                'active' => Yii::$app->controller->module->id == 'admin'
+            ];
         }
         $menuItems[] =  [
             'label' => '<span class="glyphicon glyphicon-user"></span> ' . Yii::$app->user->identity->nickname,
@@ -82,7 +90,8 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
-        'encodeLabels' => false
+        'encodeLabels' => false,
+        'activateParents' => true
     ]);
     NavBar::end();
     ?>

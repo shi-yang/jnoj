@@ -6,6 +6,8 @@ use app\models\UserProfile;
 use Yii;
 use app\models\User;
 use yii\base\Model;
+use yii\helpers\Json;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
@@ -50,8 +52,25 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+
+        $contests = Yii::$app->db->createCommand('
+                SELECT `cu`.`rating_change`, `cu`.`rank`, `cu`.`contest_id`, `c`.`start_time`, `c`.title
+                FROM `contest_user` `cu`
+                LEFT JOIN `contest` `c` ON `c`.`id`=`cu`.`contest_id`
+                WHERE `cu`.`user_id`=:uid AND `cu`.`rank` IS NOT NULL ORDER BY `c`.`id`
+            ', [':uid' => $model->id])->queryAll();
+
+        foreach ($contests as &$contest) {
+            $contest['total'] = $model->rating;
+            $contest['url'] = Url::toRoute(['/contest/view', 'id' => $contest['contest_id']]);
+            $contest['level'] = $model->getRatingLevel();
+            $contest['start_time'] = strtotime($contest['start_time']);
+        }
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'contests' => Json::encode($contests)
         ]);
     }
 

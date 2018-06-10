@@ -45,11 +45,11 @@ use yii\widgets\ActiveForm;
         $model::SCENARIO_OFFLINE => Yii::t('app', 'Offline'),
     ])->hint('线下场景会有额外的功能：滚榜；在该比赛的页面开放打印链接；限定参赛账号') ?>
 
-<?php //echo $form->field($model, 'type')->radioList([
-//        $model::TYPE_EDUCATIONAL => Yii::t('app', 'Educational'),
-//        $model::TYPE_RANK_SINGLE => Yii::t('app', 'Ranked'),
-//        $model::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
-//    ]) ?>
+    <?= $form->field($model, 'type')->radioList([
+        $model::TYPE_EDUCATIONAL => Yii::t('app', 'Educational'),
+        $model::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
+        $model::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
+    ])->hint('不同类型的区别只在于榜单的排名方式。详见：' . Html::a('比赛类型', ['/wiki/contest'], ['target' => '_blank'])) ?>
 
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 

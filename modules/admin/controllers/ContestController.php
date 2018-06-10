@@ -52,7 +52,7 @@ class ContestController extends Controller
                     [
                         'actions' => ['index', 'board', 'rank', 'print', 'status', 'view', 'create', 'update',
                             'clarify', 'newproblem', 'addproblem', 'deleteproblem', 'updateproblem', 'register',
-                            'editorial', 'delete', 'printuser'
+                            'editorial', 'delete', 'printuser', 'rated'
                         ],
                         'allow' => true,
                         // Allow users, moderators and admins to create
@@ -115,6 +115,30 @@ class ContestController extends Controller
             }
             return $this->redirect(['contest/view', 'id' => $id]);
         }
+    }
+
+    /**
+     * 比赛积分计算
+     * @param $id
+     */
+    public function actionRated($id)
+    {
+        $model = $this->findModel($id);
+        if (Yii::$app->request->get('cal')) {
+            $model->calRating();
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Done'));
+            return $this->redirect(['rated', 'id' => $model->id]);
+        }
+        $dataProvider = new ActiveDataProvider([
+            'query' => ContestUser::find()
+                ->where(['contest_id' => $model->id])
+                ->with('user')
+                ->orderBy(['rating_change' => SORT_DESC]),
+        ]);
+        return $this->render('rated', [
+            'model' => $model,
+            'dataProvider' => $dataProvider
+        ]);
     }
 
     /**

@@ -23,20 +23,40 @@ use yii\db\Query;
  */
 class Contest extends \yii\db\ActiveRecord
 {
+    /**
+     * 单人赛榜单中一道题基础分数
+     */
     const BASIC_SCORE = 500;
 
+    /**
+     * 第一次参加排位赛的初始分数
+     */
+    const RATING_INIT_SCORE = 1149;
+
+    /**
+     * 比赛的状态信息
+     */
     const STATUS_NOT_START = 0;
     const STATUS_RUNNING = 1;
     const STATUS_ENDED = 2;
 
+    /**
+     * 比赛的类型
+     */
     const TYPE_EDUCATIONAL = 0;
     const TYPE_RANK_SINGLE = 1;
     const TYPE_RANK_GROUP  = 2;
     const TYPE_HOMEWORK    = 3;
 
+    /**
+     * 是否可见
+     */
     const STATUS_HIDDEN = 0;
     const STATUS_VISIBLE = 1;
 
+    /**
+     * 线上线下场景
+     */
     const SCENARIO_ONLINE = 0;
     const SCENARIO_OFFLINE = 1;
 
@@ -104,7 +124,6 @@ class Contest extends \yii\db\ActiveRecord
 
     public function getType()
     {
-        $res = "null";
         switch ($this->type) {
             case Contest::TYPE_EDUCATIONAL:
                 $res = Yii::t('app', 'Educational');
@@ -331,7 +350,6 @@ class Contest extends \yii\db\ActiveRecord
         $start_time = $this->start_time;
         $end_time = $this->end_time;
         $lock_time = 0x7fffffff;
-        $current_time = new Expression("NOW()");
 
         foreach ($users as $user) {
             $result[$user['username']]['time'] = 0;
@@ -353,7 +371,7 @@ class Contest extends \yii\db\ActiveRecord
             $created_at = $row['created_at'];
 
             // 封榜，比赛结束 120 分钟后解榜
-            if ($lock && $lock_time <= $created_at && $current_time <= $end_time + 120 * 60)
+            if ($lock && strtotime($lock_time) <= strtotime($created_at) && time() <= strtotime($end_time) + 120 * 60)
                 break;
 
             // 初始化数据信息
@@ -445,16 +463,92 @@ class Contest extends \yii\db\ActiveRecord
      */
     public function getProblemById($id)
     {
-        return Yii::$app->db->createCommand("SELECT `cp`.`num`, `p`.`title`, `p`.`id`, `p`.`description`, 
-                `p`.`input`, `p`.`output`, `p`.`sample_input`, `p`.`sample_output`, `p`.`hint`, `p`.`time_limit`, 
-                `p`.`memory_limit` 
-                FROM `problem` `p` 
-                LEFT JOIN `contest_problem` `cp` ON cp.problem_id=p.id 
-                WHERE (`cp`.`num`={$id}) AND (`cp`.`contest_id`={$this->id})")->queryOne();
+        return Yii::$app->db->createCommand(
+            "SELECT `cp`.`num`, `p`.`title`, `p`.`id`, `p`.`description`, 
+            `p`.`input`, `p`.`output`, `p`.`sample_input`, `p`.`sample_output`, `p`.`hint`, `p`.`time_limit`, 
+            `p`.`memory_limit` 
+            FROM `problem` `p` 
+            LEFT JOIN `contest_problem` `cp` ON cp.problem_id=p.id 
+            WHERE (`cp`.`num`={$id}) AND (`cp`.`contest_id`={$this->id})"
+        )->queryOne();
     }
 
     public function getClarifies()
     {
         return $this->hasMany(Discuss::className(), ['contest_id' => 'id']);
+    }
+
+    /**
+     * 计算某个比赛的Rating
+     *
+     * @see https://en.wikipedia.org/wiki/Elo_rating_system
+     */
+    public function calRating()
+    {
+        $users = Yii::$app->db->createCommand('
+            SELECT `u`.`id` as `user_id`, `rating`, `rating_change`
+            FROM `user` `u`
+            LEFT JOIN `contest_user` `c` ON `c`.`contest_id`=:cid
+            WHERE u.id=c.user_id ORDER BY `c`.`id`
+        ', [':cid' => $this->id])->queryAll();
+
+        $rankResult = $this->getRankData()['rank_result'];
+        $tmp = [];
+        foreach ($rankResult as $k => $user) {
+            $tmp[$user['user_id']] = ['solved' => $user['solved'], 'rank' => $k];
+        }
+        $rankResult = $tmp;
+
+        $userCount = 0;
+        foreach ($users as $user) {
+            if ($rankResult[$user['user_id']]['solved'] != 0) {
+                //如果该场比赛已经计算过了，就不再计算
+                if ($user['rating_change'] != NULL) {
+                    return;
+                }
+                $userCount++;
+            }
+        }
+
+        foreach ($users as $user) {
+            // 解题数为 0 的用户不参与计算
+            if ($rankResult[$user['user_id']]['solved'] == 0) {
+                continue;
+            }
+            $old = $user['rating'] == NULL ? self::RATING_INIT_SCORE : $user['rating'];
+            $exp = 0;
+            if ($user['rating']) {
+                foreach ($users as $u) {
+                    if ($user['user_id'] != $u['user_id'] && $rankResult[$u['user_id']]['solved'] > 0) {
+                        $exp += 1.0 / (1.0 + pow(10, ($u['rating'] ? $u['rating'] : self::RATING_INIT_SCORE) - $old) / 400.0);
+                    }
+                }
+            } else {
+                $exp = intval($userCount / 2);
+            }
+
+            // 此处 ELO 算法中 K 的合理性有待改进
+            if ($old < 1150) {
+                $eloK = 2;
+            } else if ($old < 1400) {
+                $eloK = 3;
+            } else if ($old < 1650) {
+                $eloK = 4;
+            } else if ($old < 1900) {
+                $eloK = 5;
+            } else if ($old < 2150) {
+                $eloK = 6;
+            } else {
+                $eloK = 7;
+            }
+            $newRating = intval($old + $eloK * (($userCount - $rankResult[$user['user_id']]['rank'] - 1) - $exp));
+            Yii::$app->db->createCommand()->update('{{%user}}', [
+                'rating' => $newRating
+            ], ['id' => $user['user_id']])->execute();
+            Yii::$app->db->createCommand()->update('{{contest_user}}', [
+                'rating_change' => $newRating - $old,
+                'rank' => $rankResult[$user['user_id']]['rank'] + 1
+            ], ['user_id' => $user['user_id'], 'contest_id' => $this->id])->execute();
+        }
     }
 }

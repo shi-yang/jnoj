@@ -32,6 +32,7 @@ $problems = $model->problems;
         <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
         <?= Html::a(Yii::t('app', 'Scroll Board'), ['board', 'id' => $model->id], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
         <?php endif; ?>
+        <?= Html::a(Yii::t('app', 'Rated'), ['rated', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
         <?= Html::a(Yii::t('app', 'Contest User'), ['register', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Editorial'), ['editorial', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
@@ -160,7 +161,7 @@ $problems = $model->problems;
                 <th></th>
                 <th>
                     <?php Modal::begin([
-                        'header' => '<h3>'.Yii::t('app','Information').'</h3>',
+                        'header' => '<h3>'.Yii::t('app','Add a problem').'</h3>',
                         'toggleButton' => ['label' => 'Add a problem', 'class' => 'btn btn-success'],
                     ]); ?>
 
