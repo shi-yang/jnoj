@@ -26,6 +26,7 @@ class m180401_030422_import_initial_table extends BaseMigration
             'language' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
             'created_at' => $this->dateTime()->notNull(),
             'updated_at' => $this->dateTime(),
+            'rating' => $this->integer()->null(),
         ], $this->tableOptions);
 
         $this->createIndex('idx-user-username-unique', '{{%user}}', 'username', true);
@@ -75,7 +76,6 @@ class m180401_030422_import_initial_table extends BaseMigration
             'user_id' => self::USER_AUTO_INCREMENT_NUM,
         ]);
 
-
         $this->createTable('{{%contest}}', [
             'id' => $this->primaryKey(),
             'title' => $this->string(),
@@ -116,7 +116,9 @@ class m180401_030422_import_initial_table extends BaseMigration
             'id' => $this->primaryKey(),
             'user_id' => $this->integer()->notNull(),
             'contest_id' => $this->integer()->notNull(),
-            'user_password' => $this->string(32)
+            'user_password' => $this->string(32),
+            'rank' => $this->integer()->null(),
+            'rating_change' => $this->integer()->null()
         ], $this->tableOptions);
 
         $this->createTable('{{%discuss}}', [

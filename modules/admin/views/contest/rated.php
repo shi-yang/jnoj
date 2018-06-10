@@ -15,7 +15,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
 <div class="contest-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
     <hr>
     <p>
         点击下方按钮将计算参加该场比赛的用户在该场比赛所的积分。计算出来的积分用于在排行榜排名。重复点击只会计算一次。
