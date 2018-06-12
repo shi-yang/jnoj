@@ -253,88 +253,6 @@ class Contest extends \yii\db\ActiveRecord
     }
 
     /**
-     * 获取单人比赛排名数据
-     * @return array
-     */
-    public function getRankSingleData()
-    {
-        $users_solution_data = $this->getUsersSolution();
-        $result = [];
-        $first_blood = [];
-        $problem_solved_count = [];
-        $count = count($users_solution_data);
-        $current_time = new Expression("NOW()");
-        $start_time = $this->start_time;
-        for ($i = 0; $i < $count; $i++) {
-            $row = $users_solution_data[$i];
-            $user = $row['username'];
-            $pid = $row['problem_id'];
-            $created_at = $row['created_at'];
-
-            // 初始化数据信息
-            // AC 时间
-            if (!isset($result[$user]['ac_time'][$pid]))
-                $result[$user]['ac_time'][$pid] = 0;
-            // 分数
-            if (!isset($result[$user]['score']))
-                $result[$user]['score'] = 0;
-            // 解题数
-            if (!isset($result[$user]['solved']))
-                $result[$user]['solved'] = 0;
-            // 没 AC 的次数
-            if (!isset($result[$user]['wa_count'][$pid]))
-                $result[$user]['wa_count'][$pid] = 0;
-            // 最快解题
-            if (!isset($first_blood[$pid]))
-                $first_blood[$pid] = '';
-            if (!isset($problem_solved_count[$pid]))
-                $problem_solved_count[$pid] = 0;
-
-            // 已经 Accepted
-            if ($result[$user]['ac_time'][$pid] > 0) {
-                continue;
-            }
-
-            // Accept
-            if ($row['result'] == Solution::OJ_AC) {
-                $problem_solved_count[$pid]++;
-
-                $score = 0.2 * Contest::BASIC_SCORE;
-                if (empty($first_blood[$pid])) {
-                    $first_blood[$pid] = $user;
-                    $score += 0.1 * Contest::BASIC_SCORE;
-                }
-
-                $sec = $created_at - $start_time;
-
-                $score += max(0, Contest::BASIC_SCORE - intval(2 * $sec / 60) - 50 * $result[$user]['wa_count'][$pid]);
-                $result[$user]['ac_time'][$pid] = $sec;
-
-                ++$result[$user]['solved'];
-
-                $result[$user]['score'] += $score;
-                //Other cases
-            } else {
-                ++$result[$user]['wa_count'][$pid];
-            }
-        }
-        foreach ($result as $k => &$v) {
-            $v['username'] = $k;
-        }
-        usort($result, function($a, $b) {
-            if ($a['score'] != $b['score'])
-                return $a['score'] < $b['score'];
-            else
-                return $a['solved'] > $b['solved'];
-        });
-
-        return [
-            'rank_result' => $result,
-            'first_blood' => $first_blood
-        ];
-    }
-
-    /**
      * 获取比赛排名数据
      * @param $lock bool
      * @return array
@@ -404,15 +322,22 @@ class Contest extends \yii\db\ActiveRecord
             if ($row['result'] == Solution::OJ_AC) {
                 $submit_count[$pid]['solved']++;
 
-                if (empty($first_blood[$pid]))
+                if (empty($first_blood[$pid])) {
+                    if ($this->type == self::TYPE_RANK_SINGLE) {
+                        $result[$user]['time'] += 0.1 * self::BASIC_SCORE;
+                    }
                     $first_blood[$pid] = $user;
-
+                }
                 $sec = strtotime($created_at) - strtotime($start_time);
                 $result[$user]['ac_time'][$pid] = $sec;
 
                 ++$result[$user]['solved'];
 
-                $result[$user]['time'] += $sec + $result[$user]['wa_count'][$pid] * 60 * 20;
+                if ($this->type == self::TYPE_RANK_SINGLE) {
+                    $result[$user]['time'] += 0.5 * self::BASIC_SCORE + max(0, self::BASIC_SCORE - 2 * $sec - $result[$user]['wa_count'][$pid] * 50);
+                } else {
+                    $result[$user]['time'] += $sec + $result[$user]['wa_count'][$pid] * 60 * 20;
+                }
                 //Other cases
             } else {
                 if ($row['result'] <= 3) {
