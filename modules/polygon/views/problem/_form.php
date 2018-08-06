@@ -63,6 +63,7 @@ use yii\helpers\Url;
         ]
     ])->label(); ?>
 
+    <hr>
     <div class="row">
         <div class="col-md-6">
             <?= $form->field($model, 'sample_input')->textarea(['rows' => 6]) ?>
@@ -85,6 +86,7 @@ use yii\helpers\Url;
             <?= $form->field($model, 'sample_output_3')->textarea(['rows' => 6]) ?>
         </div>
     </div>
+    <hr>
 
     <?= $form->field($model, 'spj')->radioList([
         '1' => Yii::t('app', 'Yes'),
@@ -93,7 +95,7 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'hint')->widget('app\widgets\editormd\Editormd', [
         'clientOptions' => [
-            'placeholder' => 'hint',
+            'placeholder' => '可不填',
             'height' => 300,
             'imageUpload' => true,
             'tex' => true,
@@ -104,7 +106,8 @@ use yii\helpers\Url;
         ]
     ])->label(); ?>
 
-    <?= $form->field($model, 'tags')->textarea(['maxlength' => true]) ?>
+    <?= $form->field($model, 'tags')->textarea(['maxlength' => true, 'placeholder' => '可不填'])
+        ->hint('多标签用逗号隔开。如：dfs, bfs, dp, 暴力，贪心，最短路') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
