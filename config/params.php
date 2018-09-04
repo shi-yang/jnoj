@@ -1,6 +1,7 @@
 <?php
 return [
-    'adminEmail' => 'admin@example.com',
+    'schoolName' => '江南大学',  // 学校名称
+    'ojName' => '江南',  // OJ名称，这里填写 ‘江南’ 则表示 `江南OJ` 或者 `江南Online Judge`
     'components.formatter' => [
         'class' => app\components\Formatter::class,
         'defaultTimeZone' => 'Asia/Shanghai',

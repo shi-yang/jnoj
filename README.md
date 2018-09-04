@@ -54,7 +54,7 @@
 
 搭建 LAMP (或 LANP) 环境：PHP 7.x、MySQL、Apache2 / Nginx
 
-安装额外的依赖：php-mbstring
+可以参考：[LAMP 环境搭建](docs/environment.md)
 
 安装过程
 ------------
@@ -94,10 +94,11 @@
     此时还不能进行判题，需配置判题机才能判题。
     
 3. 配置判题机
-    1. 创建一个用于判题的用户，运行命令：`useradd -m -u 1536 judge`
-    2. 在 `judge/config.ini` 文件中配置数据库信息
-    3. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
-    4. 运行 `sudo ./dispatcher` 命令
+    1. 安装编译的依赖，运行命令：`sudo apt install libmysqlclient-dev libmysql++-dev`
+    2. 创建一个用于判题的用户，运行命令：`sudo useradd -m -u 1536 judge`
+    3. 在 `judge/config.ini` 文件中配置数据库信息
+    4. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
+    5. 运行 `sudo ./dispatcher` 命令
 
 4. 配置配置多边形出题系统
     1. 在 `polygon/config.ini` 文件中配置数据库信息
@@ -106,6 +107,7 @@
 
 安装过程执行命令如下：
 ~~~
+$ cd /var/www/html
 $ git clone https://github.com/shi-yang/jnoj.git
 $ cd jnoj
 $ vim config/db.php

@@ -6,13 +6,13 @@ use yii\helpers\Html;
 /* @var $contests array */
 /* @var $news app\models\Discuss */
 
-$this->title = '江南 Online Judge';
+$this->title = Yii::$app->params['ojName'] . ' Online Judge';
 ?>
 <div class="row blog">
     <div class="col-md-8">
         <div class="jumbotron">
             <h1>Hello, world!</h1>
-            <p>欢迎来到江南大学在线判题系统——江南 Online Judge</p>
+            <p>欢迎来到<?= Yii::$app->params['schoolName'] ?>在线判题系统——<?= Yii::$app->params['ojName'] ?> Online Judge</p>
         </div>
         <hr>
         <div class="blog-main">

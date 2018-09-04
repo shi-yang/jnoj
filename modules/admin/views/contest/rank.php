@@ -111,6 +111,6 @@ $submit_count = $rank_result['submit_count'];
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Jiangnan OJ <?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= Yii::$app->params['ojName'] ?> OJ <?= date('Y') ?></p>
     </div>
 </footer>

@@ -53,7 +53,7 @@ $status = $model->getRunStatus();
     </header>
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::t('app', 'Jiangnan') . ' OJ',
+        'brandLabel' => Yii::$app->params['ojName'] . ' OJ',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-default',
@@ -198,7 +198,7 @@ $status = $model->getRunStatus();
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Jiangnan OJ <?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= Yii::$app->params['ojName'] ?> OJ <?= date('Y') ?></p>
     </div>
 </footer>
 <?php $this->endBody() ?>
