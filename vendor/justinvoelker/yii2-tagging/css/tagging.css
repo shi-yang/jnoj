@@ -1,0 +1,6 @@
+ul.tagging_cloud {
+    padding-left:0;
+}
+ul.tagging_cloud li {
+    display:inline;
+}

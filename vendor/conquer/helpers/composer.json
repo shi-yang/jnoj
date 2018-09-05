@@ -1,0 +1,37 @@
+{
+  "name": "conquer/helpers",
+  "description": "Yii2 helpers",
+  "keywords": [
+    "yii2",
+    "extension",
+    "widget",
+    "helpers"
+  ],
+  "homepage": "https://github.com/borodulin/yii2-helpers",
+  "type": "yii2-extension",
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/borodulin/yii2-helpers/issues",
+    "source": "https://github.com/borodulin/yii2-helpers"
+  },
+  "authors": [
+    {
+      "name": "Andrey Borodulin",
+      "email": "borodulin@gmail.com"
+    }
+  ],
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0.13.x-dev"
+    }
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "yiisoft/yii2": ">=2.0.13"
+  },
+  "autoload": {
+    "psr-4": {
+      "conquer\\helpers\\": ""
+    }
+  }
+}
