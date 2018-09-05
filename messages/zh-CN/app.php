@@ -60,6 +60,7 @@ return [
     'Scroll Board' => '滚榜',
     'Contest User' => '参赛用户',
     'Print Problem' => '打印题目',
+    'Create Problem' => '创建题目',
     'Print Rank' => '打印榜单',
     'Running' => '正在进行',
     'Show the submissions in frontend' => '在前台展示提交记录',

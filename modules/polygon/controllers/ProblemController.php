@@ -197,10 +197,10 @@ class ProblemController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            $sample_input = [$this->sample_input, $this->sample_input_2, $this->sample_input_3];
-            $sample_output = [$this->sample_output, $this->sample_output_2, $this->sample_output_3];
-            $this->sample_input = serialize($sample_input);
-            $this->sample_output = serialize($sample_output);
+            $sample_input = [$model->sample_input, $model->sample_input_2, $model->sample_input_3];
+            $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_output_3];
+            $model->sample_input = serialize($sample_input);
+            $model->sample_output = serialize($sample_output);
             $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
