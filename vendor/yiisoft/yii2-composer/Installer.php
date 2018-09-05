@@ -158,7 +158,7 @@ class Installer extends LibraryInstaller
         }
         // invalidate opcache of extensions.php if exists
         if (function_exists('opcache_invalidate')) {
-            opcache_invalidate($file, true);
+            @opcache_invalidate($file, true);
         }
         $extensions = require($file);
 

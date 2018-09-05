@@ -5,7 +5,7 @@ use Workerman\Connection\AsyncTcpConnection;
 
 /**
  * Channel/Client
- * @version 1.0.4
+ * @version 1.0.5
  */
 class Client
 {
@@ -225,7 +225,7 @@ class Client
         if (!self::$_isWorkermanEnv) {
             throw new \Exception('Channel\\Client not support subscribe method when it is not in the workerman environment.');
         }
-        self::connect();
+        self::connect(self::$_remoteIp, self::$_remotePort);
         $events = (array)$events;
         foreach($events as $event)
         {
@@ -247,7 +247,7 @@ class Client
         if (!self::$_isWorkermanEnv) {
             throw new \Exception('Channel\\Client not support unsubscribe method when it is not in the workerman environment.');
         }
-        self::connect();
+        self::connect(self::$_remoteIp, self::$_remotePort);
         $events = (array)$events;
         foreach($events as $event)
         {
@@ -263,7 +263,7 @@ class Client
      */
     public static function publish($events, $data)
     {
-        self::connect();
+        self::connect(self::$_remoteIp, self::$_remotePort);
         if (self::$_isWorkermanEnv) {
             self::$_remoteConnection->send(serialize(array('type' => 'publish', 'channels' => (array)$events, 'data' => $data)));
         } else {

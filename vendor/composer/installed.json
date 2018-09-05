@@ -1,61 +1,5 @@
 [
     {
-        "name": "yiisoft/yii2-composer",
-        "version": "2.0.6",
-        "version_normalized": "2.0.6.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-composer.git",
-            "reference": "163419f1f197e02f015713b0d4f85598d8f8aa80"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://files.phpcomposer.com/files/yiisoft/yii2-composer/163419f1f197e02f015713b0d4f85598d8f8aa80.zip",
-            "reference": "163419f1f197e02f015713b0d4f85598d8f8aa80",
-            "shasum": ""
-        },
-        "require": {
-            "composer-plugin-api": "^1.0"
-        },
-        "require-dev": {
-            "composer/composer": "^1.0"
-        },
-        "time": "2018-03-21T16:15:55+00:00",
-        "type": "composer-plugin",
-        "extra": {
-            "class": "yii\\composer\\Plugin",
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "yii\\composer\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Qiang Xue",
-                "email": "qiang.xue@gmail.com"
-            },
-            {
-                "name": "Carsten Brandt",
-                "email": "mail@cebe.cc"
-            }
-        ],
-        "description": "The composer plugin for Yii extension installer",
-        "keywords": [
-            "composer",
-            "extension installer",
-            "yii2"
-        ]
-    },
-    {
         "name": "bower-asset/jquery",
         "version": "3.2.1",
         "version_normalized": "3.2.1.0",
@@ -133,7 +77,7 @@
         "version_normalized": "1.3.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/bestiejs/punycode.js.git",
+            "url": "git@github.com:bestiejs/punycode.js.git",
             "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3"
         },
         "dist": {
@@ -156,7 +100,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/cebe/markdown/25b28bae8a6f185b5030673af77b32e1163d5c6e.zip",
+            "url": "https://api.github.com/repos/cebe/markdown/zipball/25b28bae8a6f185b5030673af77b32e1163d5c6e",
             "reference": "25b28bae8a6f185b5030673af77b32e1163d5c6e",
             "shasum": ""
         },
@@ -218,7 +162,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/ezyang/htmlpurifier/d85d39da4576a6934b72480be6978fb10c860021.zip",
+            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/d85d39da4576a6934b72480be6978fb10c860021",
             "reference": "d85d39da4576a6934b72480be6978fb10c860021",
             "shasum": ""
         },
@@ -291,7 +235,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/yiisoft/yii2-framework/ed3a9e1c4abe206e1c3ce48a6b3624119b79850d.zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/ed3a9e1c4abe206e1c3ce48a6b3624119b79850d",
             "reference": "ed3a9e1c4abe206e1c3ce48a6b3624119b79850d",
             "shasum": ""
         },
@@ -383,125 +327,6 @@
         ]
     },
     {
-        "name": "russ666/yii2-countdown",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/russ666/yii2-countdown.git",
-            "reference": "0438d14870b9a7f58b523a0ad0cb5aab40f20e49"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://files.phpcomposer.com/files/russ666/yii2-countdown/0438d14870b9a7f58b523a0ad0cb5aab40f20e49.zip",
-            "reference": "0438d14870b9a7f58b523a0ad0cb5aab40f20e49",
-            "shasum": ""
-        },
-        "require": {
-            "bower-asset/jquery.countdown": "*",
-            "yiisoft/yii2": "*"
-        },
-        "time": "2017-05-31T14:46:43+00:00",
-        "type": "yii2-extension",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "russ666\\widgets\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "description": "jQuery countdown widget for Yii2",
-        "keywords": [
-            "countdown",
-            "jquery",
-            "widget",
-            "yii2"
-        ]
-    },
-    {
-        "name": "workerman/workerman",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/walkor/Workerman.git",
-            "reference": "0bf5cf018912286a26bd14e1981dfc060fd98bb0"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://files.phpcomposer.com/files/walkor/Workerman/0bf5cf018912286a26bd14e1981dfc060fd98bb0.zip",
-            "reference": "0bf5cf018912286a26bd14e1981dfc060fd98bb0",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3"
-        },
-        "suggest": {
-            "ext-event": "For better performance. "
-        },
-        "time": "2018-05-29T05:40:06+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "Workerman\\": "./"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "walkor",
-                "email": "walkor@workerman.net",
-                "homepage": "http://www.workerman.net",
-                "role": "Developer"
-            }
-        ],
-        "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
-        "homepage": "http://www.workerman.net",
-        "keywords": [
-            "asynchronous",
-            "event-loop"
-        ]
-    },
-    {
-        "name": "workerman/channel",
-        "version": "v1.0.4",
-        "version_normalized": "1.0.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/walkor/Channel.git",
-            "reference": "73def8e86fe8912b0822b9ffc6b28647ace94172"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://files.phpcomposer.com/files/walkor/Channel/73def8e86fe8912b0822b9ffc6b28647ace94172.zip",
-            "reference": "73def8e86fe8912b0822b9ffc6b28647ace94172",
-            "shasum": ""
-        },
-        "require": {
-            "workerman/workerman": ">=3.3.0"
-        },
-        "time": "2018-04-28T05:31:12+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Channel\\": "./src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "homepage": "http://www.workerman.net"
-    },
-    {
         "name": "workerman/phpsocket.io",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -512,7 +337,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/walkor/phpsocket.io/894a474cda904238173ab8e8d8336438dbfba586.zip",
+            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/894a474cda904238173ab8e8d8336438dbfba586",
             "reference": "894a474cda904238173ab8e8d8336438dbfba586",
             "shasum": ""
         },
@@ -548,7 +373,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/swiftmailer/swiftmailer/7ffc1ea296ed14bf8260b6ef11b80208dbadba91.zip",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
             "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
             "shasum": ""
         },
@@ -604,7 +429,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/yiisoft/yii2-swiftmailer/8a03a62cbcb82e7697d3002eb43a8d2637f566ec.zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
             "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
             "shasum": ""
         },
@@ -646,24 +471,6 @@
         ]
     },
     {
-        "name": "bower-asset/codemirror",
-        "version": "5.38.0",
-        "version_normalized": "5.38.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/components/codemirror.git",
-            "reference": "1352279f1a103af38e3033743745310ee94b4530"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/components/codemirror/zipball/1352279f1a103af38e3033743745310ee94b4530",
-            "reference": "1352279f1a103af38e3033743745310ee94b4530",
-            "shasum": null
-        },
-        "type": "bower-asset",
-        "installation-source": "dist"
-    },
-    {
         "name": "conquer/helpers",
         "version": "2.0.13",
         "version_normalized": "2.0.13.0",
@@ -674,7 +481,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/borodulin/yii2-helpers/fce7205b0e7f9d2673ddb21702ad858287ab8fa3.zip",
+            "url": "https://api.github.com/repos/borodulin/yii2-helpers/zipball/fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
             "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
             "shasum": ""
         },
@@ -725,7 +532,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/borodulin/yii2-codemirror/84bc4328eb3ec737867f503a95972cd611c94300.zip",
+            "url": "https://api.github.com/repos/borodulin/yii2-codemirror/zipball/84bc4328eb3ec737867f503a95972cd611c94300",
             "reference": "84bc4328eb3ec737867f503a95972cd611c94300",
             "shasum": ""
         },
@@ -778,7 +585,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/justinvoelker/yii2-tagging/1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2.zip",
+            "url": "https://api.github.com/repos/justinvoelker/yii2-tagging/zipball/1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2",
             "reference": "1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2",
             "shasum": ""
         },
@@ -844,7 +651,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/yiisoft/yii2-bootstrap/3f49c47924bb9fa5363c3fc7b073d954168cf438.zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/3f49c47924bb9fa5363c3fc7b073d954168cf438",
             "reference": "3f49c47924bb9fa5363c3fc7b073d954168cf438",
             "shasum": ""
         },
@@ -893,6 +700,199 @@
         "keywords": [
             "bootstrap",
             "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-composer",
+        "version": "2.0.7",
+        "version_normalized": "2.0.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-composer.git",
+            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/1439e78be1218c492e6cde251ed87d3f128b9534",
+            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.0"
+        },
+        "require-dev": {
+            "composer/composer": "^1.0"
+        },
+        "time": "2018-07-05T15:44:47+00:00",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "yii\\composer\\Plugin",
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "yii\\composer\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Qiang Xue",
+                "email": "qiang.xue@gmail.com"
+            },
+            {
+                "name": "Carsten Brandt",
+                "email": "mail@cebe.cc"
+            }
+        ],
+        "description": "The composer plugin for Yii extension installer",
+        "keywords": [
+            "composer",
+            "extension installer",
+            "yii2"
+        ]
+    },
+    {
+        "name": "workerman/channel",
+        "version": "v1.0.5",
+        "version_normalized": "1.0.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/walkor/Channel.git",
+            "reference": "0836a9a413c6e8425ee36307d95e2e49cc380f50"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/walkor/Channel/zipball/0836a9a413c6e8425ee36307d95e2e49cc380f50",
+            "reference": "0836a9a413c6e8425ee36307d95e2e49cc380f50",
+            "shasum": ""
+        },
+        "require": {
+            "workerman/workerman": ">=3.3.0"
+        },
+        "time": "2018-07-02T02:42:37+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Channel\\": "./src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "homepage": "http://www.workerman.net"
+    },
+    {
+        "name": "bower-asset/codemirror",
+        "version": "5.40.0",
+        "version_normalized": "5.40.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/components/codemirror.git",
+            "reference": "21e642c519b6595101c47f1854c33cded43e5267"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/components/codemirror/zipball/21e642c519b6595101c47f1854c33cded43e5267",
+            "reference": "21e642c519b6595101c47f1854c33cded43e5267",
+            "shasum": null
+        },
+        "type": "bower-asset",
+        "installation-source": "dist"
+    },
+    {
+        "name": "russ666/yii2-countdown",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/russ666/yii2-countdown.git",
+            "reference": "ce7b41b9c09c78a63f2cfb96eeb41c8f2262b028"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/russ666/yii2-countdown/zipball/ce7b41b9c09c78a63f2cfb96eeb41c8f2262b028",
+            "reference": "ce7b41b9c09c78a63f2cfb96eeb41c8f2262b028",
+            "shasum": ""
+        },
+        "require": {
+            "bower-asset/jquery.countdown": "*",
+            "yiisoft/yii2": "*"
+        },
+        "time": "2018-06-19T07:34:32+00:00",
+        "type": "yii2-extension",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "russ666\\widgets\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "jQuery countdown widget for Yii2",
+        "keywords": [
+            "countdown",
+            "jquery",
+            "widget",
+            "yii2"
+        ]
+    },
+    {
+        "name": "workerman/workerman",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/walkor/Workerman.git",
+            "reference": "cf2538169af989fbba4d55be1bfc8c8d80fa71e9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/walkor/Workerman/zipball/cf2538169af989fbba4d55be1bfc8c8d80fa71e9",
+            "reference": "cf2538169af989fbba4d55be1bfc8c8d80fa71e9",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "suggest": {
+            "ext-event": "For better performance. "
+        },
+        "time": "2018-07-16T02:11:10+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Workerman\\": "./"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "walkor",
+                "email": "walkor@workerman.net",
+                "homepage": "http://www.workerman.net",
+                "role": "Developer"
+            }
+        ],
+        "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
+        "homepage": "http://www.workerman.net",
+        "keywords": [
+            "asynchronous",
+            "event-loop"
         ]
     }
 ]
