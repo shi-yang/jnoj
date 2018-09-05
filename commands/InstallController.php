@@ -34,6 +34,7 @@ class InstallController extends Controller
         }
 
         echo "\n================================================";
+        echo "\n正在导入数据库...";
         echo "\nRun: ./yii migrate";
         echo "\n================================================\n";
         passthru("./yii migrate");
