@@ -24,6 +24,7 @@ $this->title = Yii::t('app', 'Rating');
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="row rating-top">
+                <?php if (isset($top3users[1])): ?>
                 <div class="col-md-4 col-xs-4">
                     <div class="rating-two">
                         2
@@ -32,6 +33,7 @@ $this->title = Yii::t('app', 'Rating');
                     <span><?= $top3users[1]->getRatingLevel() ?></span>
                     <span><?= $top3users[1]->rating ?></span>
                 </div>
+                <?php endif; ?>
                 <div class="col-md-4 col-xs-4">
                     <div class="rating-one">
                         1
@@ -40,6 +42,7 @@ $this->title = Yii::t('app', 'Rating');
                     <span><?= $top3users[0]->getRatingLevel() ?></span>
                     <span><?= $top3users[0]->rating ?></span>
                 </div>
+                <?php if (isset($top3users[2])): ?>
                 <div class="col-md-4 col-xs-4">
                     <div class="rating-three">
                         3
@@ -48,6 +51,7 @@ $this->title = Yii::t('app', 'Rating');
                     <span><?= $top3users[2]->getRatingLevel() ?></span>
                     <span><?= $top3users[2]->rating ?></span>
                 </div>
+                <?php endif; ?>
             </div>
             <hr>
             <div class="table-responsive">
