@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use Yii;
 use yii\console\Controller;
 
 class InstallController extends Controller
@@ -35,6 +36,20 @@ class InstallController extends Controller
 
         echo "\n================================================";
         echo "\n正在导入数据库...";
+        $dsn = Yii::$app->db->dsn;
+        preg_match_all("/=[a-zA-Z0-9\.]*/", $dsn, $matches);
+        $host = substr($matches[0][0], 1);
+        $dbname = substr($matches[0][1], 1);
+        //根据 config\db.php 文件修改judge、polygon的数据库信息
+        $this->setConfig('judge/config.ini', 'OJ_HOST_NAME', $host);
+        $this->setConfig('judge/config.ini', 'OJ_USER_NAME', Yii::$app->db->username);
+        $this->setConfig('judge/config.ini', 'OJ_PASSWORD', Yii::$app->db->password);
+        $this->setConfig('judge/config.ini', 'OJ_DB_NAME', $dbname);
+        $this->setConfig('polygon/config.ini', 'OJ_HOST_NAME', $host);
+        $this->setConfig('polygon/config.ini', 'OJ_USER_NAME', Yii::$app->db->username);
+        $this->setConfig('polygon/config.ini', 'OJ_PASSWORD', Yii::$app->db->password);
+        $this->setConfig('polygon/config.ini', 'OJ_DB_NAME', $dbname);
+
         echo "\nRun: ./yii migrate";
         echo "\n================================================\n";
         passthru("./yii migrate");
@@ -44,6 +59,13 @@ class InstallController extends Controller
         echo "\n================================================\n";
         passthru("php socket.php start -d");
         echo "\nInitialization completed.\n\n";
+    }
+
+    private function setConfig($file, $key, $value)
+    {
+        $str = file_get_contents($file);
+        $str2 = preg_replace("/" . $key . "=(.*)/", $key . "=" . $value, $str);
+        file_put_contents($file, $str2);
     }
 
     private function setWritable($root, $paths)

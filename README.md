@@ -80,7 +80,7 @@
         ];
         ```
         
-        **注意：** Web 程序不会为你创建数据库，需要你自己手动创建该数据库。
+        **注意：** Web 程序不会为你创建数据库，需要你自己手动创建该数据库（创建方法：运行`mysql -u root -p`登录MySQL，然后 `create database jnoj;`,执行`quit;`可退出MySQL）。
 
     2. 执行安装命令
     
@@ -97,14 +97,13 @@
 3. 配置判题机
     1. 安装编译的依赖，运行命令：`sudo apt install libmysqlclient-dev libmysql++-dev`
     2. 创建一个用于判题的用户，运行命令：`sudo useradd -m -u 1536 judge`
-    3. 在 `judge/config.ini` 文件中配置数据库信息
-    4. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
-    5. 运行 `sudo ./dispatcher` 命令
+    3. 将控制台切换到 `judge` 目录（即运行 `cd judge`命令），然后运行 `make` 命令
+    4. 运行 `sudo ./dispatcher` 命令
 
 4. 配置配置多边形出题系统
-    1. 在 `polygon/config.ini` 文件中配置数据库信息
-    2. 将控制台切换到 `polygon` 目录（即运行 `cd polygon`命令），然后运行 `make` 命令
-    3. 运行 `sudo ./polygon` 命令
+    
+    1. 将控制台切换到 `polygon` 目录（即运行 `cd polygon`命令），然后运行 `make` 命令
+    2. 运行 `sudo ./polygon` 命令
 
 安装过程执行命令如下：
 ~~~
@@ -116,6 +115,7 @@ $ ./yii install
 $ sudo useradd -m -u 1536 judge
 $ vim judge/config.ini
 $ cd judge
+$ sudo apt install libmysqlclient-dev libmysql++-dev
 $ make
 $ sudo ./dispatcher
 $ cd ../polygon
