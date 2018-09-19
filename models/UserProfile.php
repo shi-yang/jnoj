@@ -35,11 +35,11 @@ class UserProfile extends \yii\db\ActiveRecord
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'gender', 'qq_number'], 'integer'],
+            [['user_id', 'gender', 'qq_number', 'student_number'], 'integer'],
             [['birthdate'], 'safe'],
             [['address', 'description', 'major'], 'string'],
             [['signature', 'school'], 'string', 'max' => 128],
-            [['student_number', 'major'], 'string', 'max' => 64],
+            [['major'], 'string', 'max' => 64],
             [['user_id'], 'unique'],
         ];
     }

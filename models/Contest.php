@@ -131,7 +131,7 @@ class Contest extends \yii\db\ActiveRecord
             case Contest::TYPE_RANK_SINGLE:
                 $res = Yii::t('app', 'Single Ranked');
                 break;
-            case Contest::TYPE_HOMEWORK;
+            case Contest::TYPE_HOMEWORK:
                 $res = Yii::t('app', 'Homework');
                 break;
             default:
@@ -436,12 +436,11 @@ class Contest extends \yii\db\ActiveRecord
         }
 
         foreach ($users as $user) {
-            // 解题数为 0 的用户不参与计算
-            if ($rankResult[$user['user_id']]['solved'] == 0) {
-                continue;
-            }
             $old = $user['rating'] == NULL ? self::RATING_INIT_SCORE : $user['rating'];
             $exp = 0;
+            if (!isset($rankResult[$user['user_id']])) {
+                continue;
+            }
             if ($user['rating']) {
                 foreach ($users as $u) {
                     if ($user['user_id'] != $u['user_id'] && $rankResult[$u['user_id']]['solved'] > 0) {

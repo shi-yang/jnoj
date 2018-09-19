@@ -60,7 +60,7 @@ class m180401_030422_import_initial_table extends BaseMigration
         $this->createTable('{{%user_profile}}', [
             'user_id' => $this->integer(),
             'gender' => $this->smallInteger()->defaultValue(0),
-            'qq_number' => $this->integer(),
+            'qq_number' => $this->string(),
             'birthdate' => $this->date(),
             'signature' => $this->string(),
             'address' => $this->string(),

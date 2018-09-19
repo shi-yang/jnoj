@@ -16,6 +16,7 @@ class SignupForm extends Model
     public $email;
     public $password;
     public $captcha;
+    public $studentNumber;
 
     /**
      * @inheritdoc
@@ -25,6 +26,7 @@ class SignupForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
+            ['studentNumber', 'integer'],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'max' => 32, 'min' => 4],
             ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
@@ -50,7 +52,8 @@ class SignupForm extends Model
             'username' => Yii::t('app', 'Username'),
             'password' => Yii::t('app', 'Password'),
             'email' => Yii::t('app', 'Email'),
-            'captcha' => Yii::t('app', 'Captcha')
+            'captcha' => Yii::t('app', 'Captcha'),
+            'studentNumber' => Yii::t('app', 'Student Number')
         ];
     }
 
@@ -71,6 +74,7 @@ class SignupForm extends Model
             $user->save();
             Yii::$app->db->createCommand()->insert('{{%user_profile}}', [
                 'user_id' => $user->id,
+                'student_number' => $this->studentNumber
             ])->execute();
             return $user;
         }

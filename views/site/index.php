@@ -42,19 +42,5 @@ $this->title = Yii::$app->params['ojName'] . ' Online Judge';
             </ol>
         </div>
         <?php endif; ?>
-        <div class="sidebar-module">
-            <h4>ACM-ICPC竞赛</h4>
-            <ol class="list-unstyled">
-                <li>
-                    <?= Html::a('校队介绍', ['/site/construction']) ?>
-                </li>
-                <li>
-                    <?= Html::a('竞赛成绩', ['/site/construction']) ?>
-                </li>
-                <li>
-                    <?= Html::a('赛场照片', ['/site/construction']) ?>
-                </li>
-            </ol>
-        </div>
     </div>
 </div>

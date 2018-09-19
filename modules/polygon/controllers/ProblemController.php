@@ -62,7 +62,7 @@ class ProblemController extends Controller
     public function actionIndex()
     {
         $this->layout = '/main';
-        $query = Problem::find()->with('user');
+        $query = Problem::find()->with('user')->orderBy(['id' => SORT_DESC]);
         if (Yii::$app->user->isGuest || (Yii::$app->user->identity->role != User::ROLE_MODERATOR &&
                 Yii::$app->user->identity->role != User::ROLE_ADMIN)) {
             $query->andWhere(['created_by' => Yii::$app->user->id]);
