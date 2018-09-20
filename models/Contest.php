@@ -131,6 +131,9 @@ class Contest extends \yii\db\ActiveRecord
             case Contest::TYPE_RANK_SINGLE:
                 $res = Yii::t('app', 'Single Ranked');
                 break;
+            case Contest::TYPE_RANK_GROUP:
+                $res = Yii::t('app', 'Group Ranked');
+                break;
             case Contest::TYPE_HOMEWORK:
                 $res = Yii::t('app', 'Homework');
                 break;
