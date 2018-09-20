@@ -68,7 +68,7 @@ return [
     'Ended' => '已结束',
     'Educational' => '教育场',
     'Single Ranked' => '单人排位赛',
-    'Group Ranked' => '队伍排位赛(ACM-ICPC榜)',
+    'Group Ranked' => '队伍排位赛',
     'Active' => '激活',
     'New announcement: ' => '新公告：',
     'Inactive' => '未激活',
