@@ -334,7 +334,7 @@ class Contest extends \yii\db\ActiveRecord
                 ++$result[$user]['solved'];
 
                 if ($this->type == self::TYPE_RANK_SINGLE) {
-                    $result[$user]['time'] += 0.5 * self::BASIC_SCORE + max(0, self::BASIC_SCORE - 2 * $sec - $result[$user]['wa_count'][$pid] * 50);
+                    $result[$user]['time'] += 0.5 * self::BASIC_SCORE + max(0, self::BASIC_SCORE - 2 * $sec / 60 - $result[$user]['wa_count'][$pid] * 50);
                 } else {
                     $result[$user]['time'] += $sec + $result[$user]['wa_count'][$pid] * 60 * 20;
                 }
@@ -354,12 +354,17 @@ class Contest extends \yii\db\ActiveRecord
         }
 
         usort($result, function($a, $b) {
-            if ($a['solved'] != $b['solved'])
+            if ($a['solved'] != $b['solved']) { //优先解题数
                 return $a['solved'] < $b['solved'];
-            else if ($a['time'] != $b['time'])
-                return $a['time'] > $b['time'];
-            else
+            } else if ($a['time'] != $b['time']) { //按时间或分数
+                if ($this->type == self::TYPE_RANK_SINGLE) {
+                    return $a['time'] < $b['time'];
+                } else {
+                    return $a['time'] > $b['time'];
+                }
+            } else {
                 return $a['submit'] < $b['submit'];
+            }
         });
 
         return [
