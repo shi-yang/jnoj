@@ -67,9 +67,21 @@ class ProblemController extends Controller
             ->displaySort(['freq' => SORT_DESC])
             ->getTags();
 
+        $solvedProblem = [];
+        if (!Yii::$app->user->isGuest) {
+            $solved = (new Query())->select('problem_id')
+                ->from('{{%solution}}')
+                ->where(['created_by' => Yii::$app->user->id, 'result' => Solution::OJ_AC])
+                ->all();
+            foreach ($solved as $k) {
+                $solvedProblem[$k['problem_id']] = true;
+            }
+        }
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'tags' => $tags
+            'tags' => $tags,
+            'solvedProblem' => $solvedProblem
         ]);
     }
 

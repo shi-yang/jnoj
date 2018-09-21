@@ -8,6 +8,7 @@ use justinvoelker\tagging\TaggingWidget;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ProblemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $solvedProblem array */
 
 $this->title = Yii::t('app', 'Problems');
 ?>
@@ -22,8 +23,12 @@ $this->title = Yii::t('app', 'Problems');
             'columns' => [
                 [
                     'attribute' => 'problem_id',
-                    'value' => function ($model, $key, $index, $column) {
-                        return Html::a($model->id, ['/problem/view', 'id' => $key]);
+                    'value' => function ($model, $key, $index, $column) use ($solvedProblem) {
+                        $solve = '';
+                        if (isset($solvedProblem[$model->id])) {
+                            $solve = '<span class="glyphicon glyphicon-ok text-success" style="float:left"></span>';
+                        }
+                        return $solve . Html::a($model->id, ['/problem/view', 'id' => $key]);
                     },
                     'format' => 'raw',
                     'options' => ['width' => '100px']
@@ -49,7 +54,7 @@ $this->title = Yii::t('app', 'Problems');
                 ],
                 [
                     'attribute' => 'solved',
-                    'value' => function ($model, $key, $index, $column) {
+                    'value' => function ($model, $key, $index, $column) use ($solvedProblem) {
                         return Html::a($model->accepted, [
                             '/solution/index',
                             'SolutionSearch[problem_id]' => $model->id,

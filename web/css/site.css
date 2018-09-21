@@ -371,7 +371,9 @@ a.desc:after {
 }
 
 .problem-index-list tr td:nth-child(1),
-.problem-index-list tr th:nth-child(1),
+.problem-index-list tr th:nth-child(1) {
+    text-align: right;
+}
 .problem-index-list tr td:nth-child(3),
 .problem-index-list tr th:nth-child(3) {
     text-align:center;
