@@ -36,15 +36,11 @@ class RatingController extends Controller
 
     public function actionProblem()
     {
-        $submissions = Yii::$app->db->createCommand('
-            SELECT * FROM {{%solution}}
-            WHERE result=:r
-        ', [':r' => Solution::OJ_AC])->queryAll();
-        $submissions = (new Query())->select('*')
-            ->from('{{%solution}}')
-            ->where(['result' => Solution::OJ_AC]);
-
-        $query = User::find()->orderBy('rating DESC');
+        $query = (new Query())->select('u.id, u.nickname, s.solved')
+            ->from('{{%user}} AS u')
+            ->innerJoin('(SELECT COUNT(DISTINCT problem_id) AS solved, created_by FROM {{%solution}} WHERE result=4 GROUP BY created_by ORDER BY solved DESC) as s',
+                'u.id=s.created_by')
+            ->orderBy('solved DESC, id');
         $top3users = $query->limit(3)->all();
         $defaultPageSize = 50;
         $countQuery = clone $query;
