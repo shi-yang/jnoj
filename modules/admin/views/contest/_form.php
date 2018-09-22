@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -51,7 +52,18 @@ use yii\widgets\ActiveForm;
         $model::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
     ])->hint('不同类型的区别只在于榜单的排名方式。详见：' . Html::a('比赛类型', ['/wiki/contest'], ['target' => '_blank'])) ?>
 
-    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'description')->widget('app\widgets\editormd\Editormd', [
+        'clientOptions' => [
+            'placeholder' => '可不填',
+            'height' => 300,
+            'imageUpload' => true,
+            'tex' => true,
+            'flowChart' => true,
+            'sequenceDiagram' => true,
+            'imageUploadURL' => Url::to(['img_upload']),
+            'autoFocus' => false,
+        ]
+    ])->label(); ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>

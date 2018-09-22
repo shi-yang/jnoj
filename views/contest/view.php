@@ -16,7 +16,6 @@ $problems = $model->problems;
 ?>
 <div class="contest-overview text-center center-block">
     <div class="table-responsive well">
-        <p><?= Html::encode($model->description) ?></p>
         <table class="table table-overview">
             <tbody>
             <tr>
@@ -34,6 +33,10 @@ $problems = $model->problems;
             </tbody>
         </table>
     </div>
+    <div class="contest-desc">
+        <?= Yii::$app->formatter->asMarkdown($model->description) ?>
+    </div>
+    <hr>
     <div class="table-responsive">
         <table class="table table-bordered table-problem-list">
             <thead>

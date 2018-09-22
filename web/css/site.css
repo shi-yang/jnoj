@@ -382,7 +382,11 @@ a.desc:after {
     padding: 20px;
     font-size: 100px;
 }
-
+.contest-desc {
+    text-align: left;
+    background-color: #fff;
+    margin: 0 25%;
+}
 .solved {
     background-color: #AAE2AB;
 }
