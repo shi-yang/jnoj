@@ -78,6 +78,17 @@ class ProblemController extends Controller
             ]
         ]);
 
+        if (Yii::$app->request->isPost) {
+            $keys = Yii::$app->request->post('keylist');
+            $action = Yii::$app->request->get('action');
+            foreach ($keys as $key) {
+                Yii::$app->db->createCommand()->update('{{%problem}}', [
+                    'status' => $action
+                ], ['id' => $key])->execute();
+            }
+            return $this->refresh();
+        }
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
@@ -112,11 +123,63 @@ class ProblemController extends Controller
     }
 
     /**
-     * Creates a new Problem model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * Import Problem.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionImport()
+    {
+        $model = new UploadForm();
+
+        if (Yii::$app->request->isPost) {
+            $model->problemFile = UploadedFile::getInstance($model, 'problemFile');
+            if ($model->upload()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Import Successfully'));
+            }
+        }
+
+        return $this->render('import', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Create Problem model.
+     * If update is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
+    {
+        $model = new Problem();
+
+        // 配置默认的题目要求
+        $model->time_limit = 1;
+        $model->memory_limit = 128;
+        $model->status = $model::STATUS_HIDDEN;
+        $model->spj = 0;
+
+        if ($model->load(Yii::$app->request->post())) {
+            $sample_input = [$model->sample_input, $model->sample_input_2, $model->sample_input_3];
+            $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_output_3];
+            $model->sample_input = serialize($sample_input);
+            $model->sample_output = serialize($sample_output);
+            $model->created_by = Yii::$app->user->id;
+            $model->save();
+            mkdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+        $model->setSamples();
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * 从Polygon系统中同步题目到题库中
+     * @return mixed
+     */
+    public function actionCreateFromPolygon()
     {
         if (Yii::$app->request->isPost) {
             $id = intval(Yii::$app->request->post('polygon_problem_id'));
@@ -151,7 +214,7 @@ class ProblemController extends Controller
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
         }
-        return $this->render('create');
+        return $this->render('create_from_polygon');
     }
 
     /**

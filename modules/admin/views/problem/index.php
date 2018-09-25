@@ -15,11 +15,22 @@ $this->title = Yii::t('app', 'Problems');
 
     <p>
         <?= Html::a(Yii::t('app', 'Create Problem'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Polygon Problem'), ['create-from-polygon'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Import Problem'), ['import'], ['class' => 'btn btn-success']) ?>
     </p>
-
+    <hr>
+    <p>
+        选中项：<?= Html::a('设为可见', "javascript:void(0);", ['id' => 'available', 'class' => 'btn btn-success']) ?>
+        <?= Html::a('设为隐藏', "javascript:void(0);", ['id' => 'reserved', 'class' => 'btn btn-success']) ?>
+    </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'options' => ['id' => 'grid'],
         'columns' => [
+            [
+                'class' => 'yii\grid\CheckboxColumn',
+                'name' => 'id',
+            ],
             [
                 'attribute' => 'problem_id',
                 'value' => function ($model, $key, $index, $column) {
@@ -81,7 +92,26 @@ $this->title = Yii::t('app', 'Problems');
             ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]);
+    $this->registerJs('
+    $("#available").on("click", function () {
+        var keys = $("#grid").yiiGridView("getSelectedRows");
+        $.post({
+           url: "'.\yii\helpers\Url::to(['/admin/problem/index', 'action' => \app\models\Problem::STATUS_VISIBLE]).'", 
+           dataType: \'json\',
+           data: {keylist: keys}
+        });
+    });
+    $("#reserved").on("click", function () {
+        var keys = $("#grid").yiiGridView("getSelectedRows");
+        $.post({
+           url: "'.\yii\helpers\Url::to(['/admin/problem/index', 'action' => \app\models\Problem::STATUS_HIDDEN]).'", 
+           dataType: \'json\',
+           data: {keylist: keys}
+        });
+    });
+    ');
+    ?>
 </div>
 <?php Modal::begin([
     'header' => '<h3>'.Yii::t('app','Information').'</h3>',

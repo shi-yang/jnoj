@@ -111,7 +111,8 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'source')->textarea(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'tags')->textarea(['maxlength' => true]) ?>
+    <?= $form->field($model, 'tags')->textarea(['maxlength' => true, 'placeholder' => '可不填'])
+        ->hint('多标签用逗号隔开。如：dfs, bfs, dp, 暴力，贪心，最短路') ?>
 
     <?= $form->field($model, 'contest_id')->dropDownList(\app\models\Contest::getContestList()) ?>
 
