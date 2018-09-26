@@ -14,7 +14,7 @@ $this->params['model'] = $model;
     <div style="padding: 50px">
         <?php
         if ($model->editorial != NULL) {
-            echo Yii::$app->formatter->asMarkdown($model->editorial);
+            echo Yii::$app->formatter->asHtml($model->editorial);
         } else {
             echo '出题人去火星旅游了，这里什么也没有～';
         }

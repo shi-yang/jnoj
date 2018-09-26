@@ -38,6 +38,18 @@ class Formatter extends \yii\i18n\Formatter
         return '<div class="markdown">' . $this->katex($output) . '</div>';
     }
 
+    /**
+     * Format as normal content without class link extensions.
+     *
+     * @param $value string content
+     * @return string
+     */
+    public function asHtml($value, $config = NULL)
+    {
+        $output = HtmlPurifier::process($value, $this->purifierConfig);
+        return $this->katex($output);
+    }
+
     public function katex($content)
     {
         $textarr = preg_split($this->get_html_split_regex(), $content, -1, PREG_SPLIT_DELIM_CAPTURE);

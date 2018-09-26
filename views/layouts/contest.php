@@ -129,7 +129,7 @@ $status = $model->getRunStatus();
             </div>
             <?php if (!empty($model->description)): ?>
                 <div class="contest-desc">
-                    <?= Yii::$app->formatter->asMarkdown($model->description) ?>
+                    <?= Yii::$app->formatter->asHtml($model->description) ?>
                 </div>
             <?php endif; ?>
         <?php else: ?>

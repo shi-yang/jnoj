@@ -34,7 +34,7 @@ $problems = $model->problems;
         </table>
     </div>
     <div class="contest-desc">
-        <?= Yii::$app->formatter->asMarkdown($model->description) ?>
+        <?= Yii::$app->formatter->asHtml($model->description) ?>
     </div>
     <hr>
     <div class="table-responsive">

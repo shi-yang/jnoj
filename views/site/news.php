@@ -18,6 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <span class="glyphicon glyphicon-time icon-muted"></span> <?= Yii::$app->formatter->asDate($model->created_at) ?>
     </div>
     <div class="news-content">
-        <?= Yii::$app->formatter->asMarkdown($model->content, 'gfm') ?>
+        <?= Yii::$app->formatter->asHtml($model->content) ?>
     </div>
 </div>

@@ -51,17 +51,17 @@ $sample_output = unserialize($problem['sample_output']);
 
             <h3><?= Yii::t('app', 'Description') ?></h3>
             <div class="content-wrapper">
-                <?= Yii::$app->formatter->asMarkdown($problem['description']) ?>
+                <?= Yii::$app->formatter->asHtml($problem['description']) ?>
             </div>
 
             <h3><?= Yii::t('app', 'Input') ?></h3>
             <div class="content-wrapper">
-                <?= Yii::$app->formatter->asMarkdown($problem['input']) ?>
+                <?= Yii::$app->formatter->asHtml($problem['input']) ?>
             </div>
 
             <h3><?= Yii::t('app', 'Output') ?></h3>
             <div class="content-wrapper">
-                <?= Yii::$app->formatter->asMarkdown($problem['output']) ?>
+                <?= Yii::$app->formatter->asHtml($problem['output']) ?>
             </div>
 
             <h3><?= Yii::t('app', 'Examples') ?></h3>
@@ -103,7 +103,7 @@ $sample_output = unserialize($problem['sample_output']);
             <?php if (!empty($problem['hint'])): ?>
                 <h3><?= Yii::t('app', 'Hint') ?></h3>
                 <div class="content-wrapper">
-                    <?= Yii::$app->formatter->asMarkdown($problem['hint']) ?>
+                    <?= Yii::$app->formatter->asHtml($problem['hint']) ?>
                 </div>
             <?php endif; ?>
         </div>

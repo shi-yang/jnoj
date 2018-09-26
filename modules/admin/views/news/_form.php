@@ -15,17 +15,7 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'content')->widget('app\widgets\editormd\Editormd', [
-        'clientOptions' => [
-            'placeholder' => 'description',
-            'height' => 300,
-            'imageUpload' => true,
-            'tex' => true,
-            'flowChart' => true,
-            'sequenceDiagram' => true,
-            'imageUploadURL' => Url::to(['img_upload']),
-        ]
-    ])->label(); ?>
+    <?= $form->field($model, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
     <?= $form->field($model, 'status')->radioList([
         1 => Yii::t('app', 'Visible'),

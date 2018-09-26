@@ -26,17 +26,17 @@ $this->params['breadcrumbs'][] = $this->title;
         <h1><?= Html::encode($this->title) ?></h1>
 
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asMarkdown($model->description) ?>
+            <?= Yii::$app->formatter->asHtml($model->description) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Input') ?></h3>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asMarkdown($model->input) ?>
+            <?= Yii::$app->formatter->asHtml($model->input) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Output') ?></h3>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asMarkdown($model->output) ?>
+            <?= Yii::$app->formatter->asHtml($model->output) ?>
         </div>
 
         <h3><?= Yii::t('app', 'Examples') ?></h3>
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php if (!empty($model->hint)): ?>
             <h3><?= Yii::t('app', 'Hint') ?></h3>
             <div class="content-wrapper">
-                <?= Yii::$app->formatter->asMarkdown($model->hint) ?>
+                <?= Yii::$app->formatter->asHtml($model->hint) ?>
             </div>
         <?php endif; ?>
     </div>

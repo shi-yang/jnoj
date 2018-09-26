@@ -20,12 +20,12 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($model->problem->title
             <span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>
         </p>
         <hr>
-        <?= Yii::$app->formatter->asMarkdown($model->content) ?>
+        <?= Yii::$app->formatter->asHtml($model->content) ?>
         <hr>
         <p>Comments:</p>
         <?php foreach ($model->reply as $reply): ?>
             <div class="well">
-                <?= Yii::$app->formatter->asMarkdown($reply->content) ?>
+                <?= Yii::$app->formatter->asHtml($reply->content) ?>
                 <hr>
                 <span class="glyphicon glyphicon-user"></span> <?= Html::encode($reply->user->username) ?>
                 &nbsp;•&nbsp;

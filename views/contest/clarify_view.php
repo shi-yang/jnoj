@@ -14,7 +14,7 @@ $this->params['model'] = $model;
     <div class="well">
         <?= Html::encode($clarify->title) ?>
         <hr>
-        <?= Yii::$app->formatter->asMarkdown($clarify->content) ?>
+        <?= Yii::$app->formatter->asHtml($clarify->content) ?>
         <hr>
         <span class="glyphicon glyphicon-user"></span> <?= $clarify->user->username ?>
         &nbsp;•&nbsp;
@@ -22,7 +22,7 @@ $this->params['model'] = $model;
     </div>
     <?php foreach ($clarify->reply as $reply): ?>
         <div class="well">
-            <?= Yii::$app->formatter->asMarkdown($reply->content) ?>
+            <?= Yii::$app->formatter->asHtml($reply->content) ?>
             <hr>
             <span class="glyphicon glyphicon-user"></span> <?= Html::encode($reply->user->username) ?>
             &nbsp;•&nbsp;
