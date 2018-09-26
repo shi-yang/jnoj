@@ -56,9 +56,13 @@ class UploadForm extends Model
     {
         $xmlDoc = simplexml_load_file($tempFile);
         $searchNodes = $xmlDoc->xpath("/fps/item");
+        set_time_limit(0);
+        ob_end_clean();
         foreach ($searchNodes as $searchNode) {
             $title = (string)$searchNode->title;
             if (!self::hasProblem($title)) {
+                $spjCode = self::getValue($searchNode, 'spj');
+                $spj = trim($spjCode) ? 1 : 0;
                 $time_limit = $searchNode->time_limit;
                 $unit = self::getAttribute($searchNode,'time_limit','unit');
                 if ($unit == 'ms')
@@ -78,13 +82,51 @@ class UploadForm extends Model
                 $newProblem->source = self::getValue($searchNode, 'source');
                 $newProblem->sample_input = self::getValue($searchNode, 'sample_input');
                 $newProblem->sample_output = self::getValue($searchNode, 'sample_output');
+                $newProblem->spj = $spj;
                 $newProblem->created_by = Yii::$app->user->id;
                 $newProblem->save();
-                $spjcode = self::getValue($searchNode, 'spj');
-                $spj = trim($spjcode) ? 1 : 0;
+                $pid = $newProblem->id;
+
+                //创建输入文件
+                $testInputs = $searchNode->children()->test_input;
+                $testCnt = 0;
+                foreach($testInputs as $testNode){
+                    self::importTestData($pid, $testCnt++ . ".in", $testNode);
+                }
+                //创建输出文件
+                $testOutputs = $searchNode->children()->test_output;
+                $testCnt = 0;
+                foreach($testOutputs as $testNode){
+                    self::importTestData($pid, $testCnt++ . ".out", $testNode);
+                }
+
+                //SPJ 特判程序
+                if ($spj) {
+                    $basedir = Yii::$app->params['judgeProblemDataPath'] . $pid;
+                    $fp = fopen("$basedir/spj.cc","w");
+                    fputs($fp, $spjCode);
+                    fclose($fp);
+                    ////system( " g++ -o $basedir/spj $basedir/spj.cc  ");
+                    if(!file_exists("$basedir/spj") ){
+                        $fp = fopen("$basedir/spj.c","w");
+                        fputs($fp, $spjCode);
+                        fclose($fp);
+                        ////system( " gcc -o $basedir/spj $basedir/spj.c  ");
+                        if(!file_exists("$basedir/spj")){
+                            echo "you need to compile $basedir/spj.cc for spj[  g++ -o $basedir/spj $basedir/spj.cc   ]<br> and rejudge $pid";
+                        } else {
+                            unlink("$basedir/spj.cc");
+                        }
+                    }
+                }
+
+                echo "$title 导入成功<br>";
+            } else {
+                echo "$title 已经存在<br>";
             }
+            flush();
         }
-        die;
+        exit;
     }
 
     public static function hasProblem($title)
@@ -103,5 +145,18 @@ class UploadForm extends Model
     public static function getValue($Node, $TagName)
     {
         return (string)$Node->$TagName;
+    }
+
+    public static function importTestData($pid, $filename, $fileContent)
+    {
+        $basedir = Yii::$app->params['judgeProblemDataPath'] . $pid;
+        @mkdir($basedir);
+        $fp = @fopen($basedir . "/$filename", "w");
+        if ($fp) {
+            fputs($fp, preg_replace("(\r\n)", "\n", $fileContent));
+            fclose($fp);
+        } else {
+            echo "Error while opening ".$basedir . "/$filename.";
+        }
     }
 }

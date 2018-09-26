@@ -56,15 +56,6 @@ class ProblemController extends Controller
         ];
     }
 
-    public function actions()
-    {
-        return [
-            'img_upload' => [
-                'class' => 'app\widgets\editormd\EditormdAction',
-            ],
-        ];
-    }
-
     /**
      * Lists all Problem models.
      * @return mixed
@@ -98,7 +89,7 @@ class ProblemController extends Controller
     {
         $model = $this->findModel($id);
         @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
-        return $this->redirect(['testData', 'id' => $model->id]);
+        return $this->redirect(['test-data', 'id' => $model->id]);
     }
 
     public function actionViewfile($id, $name)
@@ -136,6 +127,7 @@ class ProblemController extends Controller
             if ($model->upload()) {
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Import Successfully'));
             }
+            return $this->refresh();
         }
 
         return $this->render('import', [
