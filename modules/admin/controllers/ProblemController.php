@@ -236,7 +236,9 @@ class ProblemController extends Controller
     public function actionTestData($id)
     {
         $model = $this->findModel($id);
-
+        if (Yii::$app->request->isPost) {
+            @move_uploaded_file($_FILES["file"]["tmp_name"], Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $_FILES["file"]["name"]);
+        }
         return $this->render('test_data', [
             'model' => $model
         ]);

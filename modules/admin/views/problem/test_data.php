@@ -32,6 +32,8 @@ $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'i
         如有多个测试点，可以分开不同的文件上传
     </p>
 
+    <?= \app\widgets\webuploader\MultiImage::widget() ?>
+
     <div class="row table-responsive">
         <div class="col-md-6">
             <table class="table table-bordered table-rank">
