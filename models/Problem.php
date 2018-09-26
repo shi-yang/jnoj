@@ -72,7 +72,7 @@ class Problem extends ActiveRecord
               'updated_at', ], 'string'],
             [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_by', 'polygon_problem_id'], 'integer'],
             [['title'], 'string', 'max' => 200],
-            [['spj'], 'string', 'max' => 1],
+            [['spj'], 'integer', 'max' => 1],
             [['source'], 'string', 'max' => 100],
         ];
     }
