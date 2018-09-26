@@ -129,6 +129,15 @@ AppAsset::register($this);
                     $(this).parent().text($(this).parent().text());
                 }
             });
+            $(".katex.math.multi-line").each(function () {
+                var texTxt = $(this).text();
+                var el = $(this).get(0);
+                try {
+                    katex.render(texTxt, el, {displayMode: true})
+                } catch (err) {
+                    $(this).html("<span class=\'err\'>" + err)
+                }
+            });
         })
     })(jQuery);
 </script>
