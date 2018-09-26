@@ -82,17 +82,7 @@ if ($discuss != null) {
             'template' => "{label}\n<div class=\"input-group\"><span class=\"input-group-addon\">" . Yii::t('app', 'Title') . "</span>{input}</div>{error}",
         ])->textInput(['maxlength' => 128, 'autocomplete'=>'off'])->label(false) ?>
 
-        <?= $form->field($newClarify, 'content')->widget('app\widgets\editormd\Editormd', [
-            'clientOptions' => [
-                'placeholder' => '可不填',
-                'height' => 300,
-                'imageUpload' => true,
-                'tex' => true,
-                'flowChart' => true,
-                'sequenceDiagram' => true,
-                'autoFocus' => false
-            ]
-        ])->label(); ?>
+        <?= $form->field($newClarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>

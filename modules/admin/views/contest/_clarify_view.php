@@ -25,7 +25,7 @@ use yii\bootstrap\Modal;
     <div class="well">
         <?= Html::encode($clarify->title) ?>
         <hr>
-        <?= Yii::$app->formatter->asMarkdown($clarify->content) ?>
+        <?= Yii::$app->formatter->asHtml($clarify->content) ?>
         <hr>
         <span class="glyphicon glyphicon-user"></span> <?= $clarify->user->username ?>
         &nbsp;•&nbsp;
@@ -43,16 +43,7 @@ use yii\bootstrap\Modal;
     <div class="well">
         <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($new_clarify, 'content')->widget('app\widgets\editormd\Editormd', [
-            'clientOptions' => [
-                'placeholder' => 'description',
-                'height' => 300,
-                'imageUpload' => true,
-                'tex' => true,
-                'flowChart' => true,
-                'sequenceDiagram' => true
-            ]
-        ])->label(); ?>
+        <?= $form->field($new_clarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>

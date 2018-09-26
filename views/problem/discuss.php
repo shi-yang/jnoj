@@ -26,16 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'template' => "<div class=\"input-group\"><span class=\"input-group-addon\">". Yii::t('app', 'Title') ."</span>{input}</div>",
         ])->textInput(['maxlength' => 128, 'autocomplete'=>'off'])
         ?>
-        <?= $form->field($newDiscuss, 'content')->widget('app\widgets\editormd\Editormd', [
-            'clientOptions' => [
-                'placeholder' => '可不填',
-                'height' => 300,
-                'tex' => true,
-                'flowChart' => true,
-                'sequenceDiagram' => true,
-                'autoFocus' => false
-            ]
-        ])->label(false); ?>
+
+        <?= $form->field($newDiscuss, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
         <div class="form-group">
             <?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?>

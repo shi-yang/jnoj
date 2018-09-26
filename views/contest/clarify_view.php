@@ -32,16 +32,9 @@ $this->params['model'] = $model;
     <div class="well">
         <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($newClarify, 'content')->widget('app\widgets\editormd\Editormd', [
-            'clientOptions' => [
-                'placeholder' => 'description',
-                'height' => 300,
-                'imageUpload' => true,
-                'tex' => true,
-                'flowChart' => true,
-                'sequenceDiagram' => true
-            ]
-        ])->label(); ?>
+        <?= $form->field($newClarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
+
+        <?= $form->field($newClarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>

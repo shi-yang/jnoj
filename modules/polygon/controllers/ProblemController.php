@@ -46,15 +46,6 @@ class ProblemController extends Controller
         ];
     }
 
-    public function actions()
-    {
-        return [
-            'img_upload' => [
-                'class' => 'app\widgets\editormd\EditormdAction',
-            ],
-        ];
-    }
-
     /**
      * Lists all Problem models.
      * @return mixed

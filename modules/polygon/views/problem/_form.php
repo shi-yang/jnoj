@@ -24,44 +24,11 @@ use yii\helpers\Url;
         'template' => "{label}\n<div class=\"input-group\">{input}<span class=\"input-group-addon\">MByte</span></div>",
     ])->textInput(['maxlength' => 128, 'autocomplete'=>'off']) ?>
 
-    <?= $form->field($model, 'description')->widget('app\widgets\editormd\Editormd', [
-        'clientOptions' => [
-            'placeholder' => 'description',
-            'height' => 300,
-            'imageUpload' => true,
-            'tex' => true,
-            'flowChart' => true,
-            'sequenceDiagram' => true,
-            'autoFocus' => false,
-            'imageUploadURL' => Url::to(['img_upload']),
-        ]
-    ])->label(); ?>
+    <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor') ?>
 
-    <?= $form->field($model, 'input')->widget('app\widgets\editormd\Editormd', [
-        'clientOptions' => [
-            'placeholder' => 'input',
-            'height' => 300,
-            'imageUpload' => true,
-            'tex' => true,
-            'flowChart' => true,
-            'sequenceDiagram' => true,
-            'autoFocus' => false,
-            'imageUploadURL' => Url::to(['img_upload']),
-        ]
-    ])->label(); ?>
+    <?= $form->field($model, 'input')->widget('app\widgets\ckeditor\CKeditor') ?>
 
-    <?= $form->field($model, 'output')->widget('app\widgets\editormd\Editormd', [
-        'clientOptions' => [
-            'placeholder' => 'output',
-            'height' => 300,
-            'imageUpload' => true,
-            'tex' => true,
-            'flowChart' => true,
-            'sequenceDiagram' => true,
-            'autoFocus' => false,
-            'imageUploadURL' => Url::to(['img_upload']),
-        ]
-    ])->label(); ?>
+    <?= $form->field($model, 'output')->widget('app\widgets\ckeditor\CKeditor') ?>
 
     <hr>
     <div class="row">
@@ -93,18 +60,7 @@ use yii\helpers\Url;
         '0' => Yii::t('app', 'No')
     ])?>
 
-    <?= $form->field($model, 'hint')->widget('app\widgets\editormd\Editormd', [
-        'clientOptions' => [
-            'placeholder' => '可不填',
-            'height' => 300,
-            'imageUpload' => true,
-            'tex' => true,
-            'flowChart' => true,
-            'sequenceDiagram' => true,
-            'autoFocus' => false,
-            'imageUploadURL' => Url::to(['img_upload']),
-        ]
-    ])->label(); ?>
+    <?= $form->field($model, 'hint')->widget('app\widgets\ckeditor\CKeditor') ?>
 
     <?= $form->field($model, 'tags')->textarea(['maxlength' => true, 'placeholder' => '可不填'])
         ->hint('多标签用逗号隔开。如：dfs, bfs, dp, 暴力，贪心，最短路') ?>

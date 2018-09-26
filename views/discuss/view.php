@@ -35,17 +35,7 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($model->problem->title
         <div class="well">
             <?php $form = ActiveForm::begin(); ?>
 
-            <?= $form->field($newDiscuss, 'content')->widget('app\widgets\editormd\Editormd', [
-                'clientOptions' => [
-                    'autoFocus' => false,
-                    'placeholder' => 'description',
-                    'height' => 300,
-                    'imageUpload' => true,
-                    'tex' => true,
-                    'flowChart' => true,
-                    'sequenceDiagram' => true
-                ]
-            ])->label(); ?>
+            <?= $form->field($newDiscuss, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
             <div class="form-group">
                 <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>
