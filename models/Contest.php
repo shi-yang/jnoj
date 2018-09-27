@@ -237,6 +237,10 @@ class Contest extends \yii\db\ActiveRecord
      */
     public function getContestUser()
     {
+        $dependency = new \yii\caching\DbDependency([
+            'sql'=>'SELECT COUNT(1) FROM {{%contest_user}} WHERE contest_id=:cid',
+            'params' => [':cid' => $this->id]
+        ]);
         return Yii::$app->db->cache(function ($db) {
             return $db->createCommand('
                 SELECT `u`.`username`, `u`.`nickname`, `p`.`student_number`, `u`.`id` as `user_id`
@@ -245,7 +249,7 @@ class Contest extends \yii\db\ActiveRecord
                 LEFT JOIN `user_profile` `p` ON `p`.`user_id`=`c`.`user_id`
                 WHERE u.id=c.user_id ORDER BY `c`.`id`
             ', [':cid' => $this->id])->queryAll();
-        }, 60);
+        }, 3600, $dependency);
     }
 
     public function getContestUserCount()
