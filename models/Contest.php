@@ -446,7 +446,7 @@ class Contest extends \yii\db\ActiveRecord
         foreach ($users as $user) {
             $old = $user['rating'] == NULL ? self::RATING_INIT_SCORE : $user['rating'];
             $exp = 0;
-            if (!isset($rankResult[$user['user_id']])) {
+            if ($rankResult[$user['user_id']]['solved'] == 0) {
                 continue;
             }
             if ($user['rating']) {
