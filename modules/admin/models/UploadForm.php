@@ -80,8 +80,8 @@ class UploadForm extends Model
                 $newProblem->output = self::getValue($searchNode, 'output');
                 $newProblem->hint = self::getValue($searchNode, 'hint');
                 $newProblem->source = self::getValue($searchNode, 'source');
-                $newProblem->sample_input = self::getValue($searchNode, 'sample_input');
-                $newProblem->sample_output = self::getValue($searchNode, 'sample_output');
+                $newProblem->sample_input = serialize([self::getValue($searchNode, 'sample_input'), '', '']);
+                $newProblem->sample_output = serialize([self::getValue($searchNode, 'sample_output'), '', '']);
                 $newProblem->spj = $spj;
                 $newProblem->created_by = Yii::$app->user->id;
                 $newProblem->save();
