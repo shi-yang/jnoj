@@ -14,7 +14,7 @@ $this->params['model'] = $model;
 $model->spj_lang = Yii::$app->user->identity->language;
 ?>
 <p>
-    该页面用于验证测试数据。
+    该页面用于验证测试数据。该功能尚在开发中。。。
 </p>
 <hr>
 <?php $form = ActiveForm::begin(); ?>
