@@ -2,8 +2,10 @@
 
 namespace app\modules\polygon\controllers;
 
+use app\modules\polygon\models\PolygonStatus;
 use Yii;
 use app\models\User;
+use app\models\Solution;
 use app\modules\polygon\models\Problem;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
@@ -37,7 +39,7 @@ class ProblemController extends Controller
                 'rules' => [
                     [
                         'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj',
-                                      'img_upload', 'run', 'deletefile', 'viewfile'],
+                                      'img_upload', 'run', 'deletefile', 'viewfile', 'verify'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -127,6 +129,28 @@ class ProblemController extends Controller
         }
         return $this->render('solution', [
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * 验题页面
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionVerify($id)
+    {
+        $model = $this->findModel($id);
+        $solution = new PolygonStatus();
+
+        if ($solution->load(Yii::$app->request->post())) {
+            $solution->problem_id = $id;
+            //$solution->save();
+            Yii::$app->session->setFlash('success', '该功能尚在开发中。。。');
+            return $this->refresh();
+        }
+        return $this->render('verify', [
+            'model' => $model,
+            'solution' => $solution
         ]);
     }
 

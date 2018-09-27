@@ -65,6 +65,7 @@ return [
     'Import Problem' => '导入题目',
     'Export Problem' => '导出题目',
     'Polygon Problem' => 'Polygon题目',
+    'Verify Data' => '验题',
     'Print Rank' => '打印榜单',
     'Running' => '正在进行',
     'Show the submissions in frontend' => '在前台展示提交记录',
