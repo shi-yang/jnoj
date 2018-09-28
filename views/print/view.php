@@ -26,6 +26,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <hr>
     <p><span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></p>
-    <pre><?= Html::encode($model->source) ?></pre>
+    <pre><p><?= Html::encode($model->source) ?></p></pre>
 
 </div>

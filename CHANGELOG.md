@@ -14,3 +14,4 @@ JNOJ Change Log
 - Enh: 在问题列表页面，对已解决问题增加个提示标签
 - Bug: 修复rating计算
 - Bug: 调整缓存依赖
+- Enh: 代码高亮

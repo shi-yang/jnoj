@@ -12,5 +12,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="solution-view">
     <h3>Run id: <?= Html::encode($this->title) ?></h3>
-    <pre><?= Html::encode($model->source) ?></pre>
+    <pre><p><?= Html::encode($model->source) ?></p></pre>
 </div>
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $('pre p').each(function(i, block) {  // use <pre><p>
+                hljs.highlightBlock(block);
+            });
+        })
+    })(jQuery);
+</script>

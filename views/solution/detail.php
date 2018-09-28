@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <hr>
 <h3>Source:</h3>
-<pre><?= Html::encode($model->source) ?></pre>
+<pre><p><?= Html::encode($model->source) ?></p></pre>
 
 <?php if ($model->solutionInfo != null): ?>
     <hr>
