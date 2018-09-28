@@ -256,6 +256,10 @@ $status = $model->getRunStatus();
                 $(this).html("<span class=\'err\'>" + err)
             }
         });
+
+        $('.pre p').each(function(i, block) {  // use <pre><p>
+            hljs.highlightBlock(block);
+        });
     });
 </script>
 </body>
