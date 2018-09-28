@@ -41,8 +41,7 @@ use yii\bootstrap\ActiveForm;
     ])->dropDownList([
         '' => '所有用户',
         User::ROLE_USER => '普通用户',
-        User::ROLE_MODERATOR => '管理员',
-        User::ROLE_ADMIN => '超级管理员'
+        User::ROLE_ADMIN => '管理员'
     ])->label(false) ?>
 
     <div class="form-group">

@@ -56,8 +56,7 @@ class ProblemController extends Controller
     {
         $this->layout = '/main';
         $query = Problem::find()->with('user')->orderBy(['id' => SORT_DESC]);
-        if (Yii::$app->user->isGuest || (Yii::$app->user->identity->role != User::ROLE_MODERATOR &&
-                Yii::$app->user->identity->role != User::ROLE_ADMIN)) {
+        if (Yii::$app->user->isGuest ||Yii::$app->user->identity->role != User::ROLE_ADMIN) {
             $query->andWhere(['created_by' => Yii::$app->user->id]);
         }
         $dataProvider = new ActiveDataProvider([
@@ -252,8 +251,8 @@ class ProblemController extends Controller
     protected function findModel($id)
     {
         if (($model = Problem::findOne($id)) !== null) {
-            if (Yii::$app->user->id === $model->created_by || (Yii::$app->user->identity->role === User::ROLE_MODERATOR ||
-                    Yii::$app->user->identity->role === User::ROLE_ADMIN)) {
+            if (Yii::$app->user->id === $model->created_by ||
+                Yii::$app->user->identity->role === User::ROLE_ADMIN) {
                 return $model;
             } else {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');

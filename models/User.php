@@ -38,7 +38,6 @@ class User extends ActiveRecord implements IdentityInterface
      */
     const ROLE_PLAYER = 0;
     const ROLE_USER = 10;
-    const ROLE_MODERATOR = 20;
     const ROLE_ADMIN = 30;
 
     public $oldPassword;

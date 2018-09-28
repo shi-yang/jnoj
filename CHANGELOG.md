@@ -16,3 +16,4 @@ JNOJ Change Log
 - Bug: 调整缓存依赖
 - Enh: 代码高亮
 - Enh: 代码编辑器
+- Chg: 删除多余的管理员权限

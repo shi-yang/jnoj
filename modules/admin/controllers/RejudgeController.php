@@ -35,7 +35,6 @@ class RejudgeController extends Controller
                         'allow' => true,
                         // Allow users, moderators and admins to create
                         'roles' => [
-                            User::ROLE_MODERATOR,
                             User::ROLE_ADMIN
                         ],
                     ],

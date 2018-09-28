@@ -60,8 +60,7 @@ class SolutionController extends Controller
         // 验证是否有权限查看
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
             if (Yii::$app->user->isGuest
-                || ($model->created_by != Yii::$app->user->id &&
-                    (Yii::$app->user->identity->role != User::ROLE_MODERATOR && Yii::$app->user->identity->role != User::ROLE_ADMIN))) {
+                || ($model->created_by != Yii::$app->user->id && Yii::$app->user->identity->role != User::ROLE_ADMIN)) {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
         }
@@ -86,7 +85,7 @@ class SolutionController extends Controller
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
             $role = true;
             if (!Yii::$app->user->isGuest) {
-                $role = (Yii::$app->user->identity->role != User::ROLE_MODERATOR && Yii::$app->user->identity->role != User::ROLE_ADMIN);
+                $role =Yii::$app->user->identity->role != User::ROLE_ADMIN;
             }
             if (Yii::$app->user->isGuest
                 || ($model->created_by != Yii::$app->user->id && $role)
@@ -114,7 +113,7 @@ class SolutionController extends Controller
         if ($model->contest_id != null && $model->status == Solution::STATUS_HIDDEN) {
             $role = true;
             if (!Yii::$app->user->isGuest) {
-                $role = (Yii::$app->user->identity->role != User::ROLE_MODERATOR && Yii::$app->user->identity->role != User::ROLE_ADMIN);
+                $role = Yii::$app->user->identity->role != User::ROLE_ADMIN;
             }
             if (Yii::$app->user->isGuest
                 || ($model->created_by != Yii::$app->user->id && $role)
