@@ -138,7 +138,7 @@ AppAsset::register($this);
                     $(this).html("<span class=\'err\'>" + err)
                 }
             });
-            $('.pre p').each(function(i, block) {  // use <pre><p>
+            $('.pre').each(function(i, block) {  // use <pre><p>
                 hljs.highlightBlock(block);
             });
         })
