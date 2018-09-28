@@ -21,7 +21,7 @@ $model->setSamples();
 
 <?= $form->field($model, 'spj_lang')->dropDownList(Solution::getLanguageList()) ?>
 
-<?= $form->field($model, 'spj_source')->textarea(['rows' => 20, 'autocomplete'=>'off']) ?>
+<?= $form->field($model, 'spj_source')->widget('app\widgets\codemirror\CodeMirror'); ?>
 
 <div class="form-group">
     <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-primary']) ?>

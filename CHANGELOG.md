@@ -15,3 +15,4 @@ JNOJ Change Log
 - Bug: 修复rating计算
 - Bug: 调整缓存依赖
 - Enh: 代码高亮
+- Enh: 代码编辑器

@@ -117,7 +117,7 @@ $model->setSamples();
 
                 <?= $form->field($solution, 'language')->dropDownList($solution::getLanguageList()) ?>
 
-                <?= $form->field($solution, 'source')->textarea(['rows' => 20, 'autocomplete'=>'off']) ?>
+                <?= $form->field($solution, 'source')->widget('app\widgets\codemirror\CodeMirror'); ?>
 
                 <div class="form-group">
                     <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
