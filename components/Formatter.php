@@ -10,6 +10,7 @@ class Formatter extends \yii\i18n\Formatter
     public $purifierConfig = [
         'HTML' => [
             'AllowedElements' => [
+                'div',
                 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
                 'strong', 'em', 'b', 'i', 'u', 's', 'span',
                 'pre', 'code',
@@ -46,8 +47,9 @@ class Formatter extends \yii\i18n\Formatter
      */
     public function asHtml($value, $config = NULL)
     {
-        $output = HtmlPurifier::process($value, $this->purifierConfig);
-        return $this->katex($output);
+        $value = str_replace(array("<pre>", "</pre>"), array("<div class='pre'>", "</div>"), $value);
+        $value = HtmlPurifier::process($value, $this->purifierConfig);
+        return $this->katex($value);
     }
 
     public function katex($content)
