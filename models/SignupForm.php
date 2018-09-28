@@ -30,6 +30,7 @@ class SignupForm extends Model
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'max' => 32, 'min' => 4],
             ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
+            ['username', 'match', 'pattern' => '/^(?!user[\d])/', 'message' => '以user+数字作为账户名系统保留'],
 
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'required'],

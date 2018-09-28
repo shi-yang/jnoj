@@ -12,7 +12,6 @@ $solutionStats = $model->getSolutionStats();
 
 $this->registerJsFile("https://cdn.bootcss.com/flot/0.8.3/jquery.flot.min.js", ['depends' => 'yii\web\JqueryAsset']);
 $this->registerJsFile("https://cdn.bootcss.com/flot/0.8.3/jquery.flot.time.js", ['depends' => 'yii\web\JqueryAsset']);
-
 $plotJS = <<<EOT
 var contests_json = {$contests};
 var data1 = new Array();
@@ -115,7 +114,8 @@ $this->registerJs($plotJS);
 
     <h1><?= Html::encode($this->title) ?></h1>
     <hr>
-    <div class="row">
+    <?php if ($model->role != \app\models\User::ROLE_PLAYER): ?>
+        <div class="row">
         <div class="col-md-3">
             <?= DetailView::widget([
                 'model' => $model,
@@ -150,7 +150,10 @@ $this->registerJs($plotJS);
             <div id="placeholder" style="width:100%;height:300px;"></div>
         </div>
     </div>
-    <hr>
+        <hr>
+    <?php else: ?>
+        参赛账户:
+    <?php endif; ?>
     <h3><?= Yii::t('app', 'Solved Problem') ?> <small>(<?= count($solutionStats['solved_problem']) ?>)</small></h3>
     <ul>
         <?php foreach ($solutionStats['solved_problem'] as $p): ?>

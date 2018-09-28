@@ -79,9 +79,6 @@ class GenerateUserForm extends Model
             $user->setPassword($password);
             $user->generateAuthKey();
             $user->save();
-            Yii::$app->db->createCommand()->insert('{{%user_profile}}', [
-                'user_id' => $user->id,
-            ])->execute();
 
             Yii::$app->db->createCommand()->insert('{{%contest_user}}', [
                 'user_id' => $user->id,

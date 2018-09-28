@@ -44,7 +44,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
         <p class="text-danger">注意：在同一场比赛中，重复使用此功能会删除之前已经生成的帐号，请勿在比赛开始后进行此操作。</p>
         <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($generatorForm, 'prefix')->textInput(['maxlength' => true, 'value' => 't' . $model->id, 'disabled' => true]) ?>
+        <?= $form->field($generatorForm, 'prefix')->textInput([
+                'maxlength' => true, 'value' => 'user' . $model->id, 'disabled' => true
+        ])->hint('前缀不应更改，不同比赛的前缀都不一样，是为了可以一直保留比赛榜单。') ?>
 
         <?= $form->field($generatorForm, 'team_number')->textInput(['maxlength' => true, 'value' => '50']) ?>
 
