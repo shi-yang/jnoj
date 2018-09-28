@@ -141,9 +141,6 @@ AppAsset::register($this);
             $('.pre p').each(function(i, block) {  // use <pre><p>
                 hljs.highlightBlock(block);
             });
-            $('pre p').each(function(i, block) {  // use <pre><p>
-                hljs.highlightBlock(block);
-            });
         })
     })(jQuery);
 </script>

@@ -44,7 +44,7 @@ use yii\bootstrap\Modal;
     'header' => '<h2>SPJ 模板示例</h2>',
     'toggleButton' => ['label' => 'SPJ 模板示例', 'class' => 'btn btn-success'],
 ]) ?>
-<pre><p>#include &lt;stdio.h&gt;
+<div class="pre"><p>#include &lt;stdio.h&gt;
 
 #define AC 0
 #define WA 1
@@ -100,13 +100,13 @@ int main(int argc, char *args[]){
     close_file(user_output);
     return result;
 }
-</p></pre>
+</p></div>
 <?php Modal::end() ?>
 
 
 <h3 id="infile">如何快速生成输入文件</h3>
 <p>以下只是提供 C 语言一种示范</p>
-<pre><p>#include &lt;bits/stdc++.h&gt;
+<div class="pre"><p>#include &lt;bits/stdc++.h&gt;
 int main()
 {
     // 生成 20 组数据
@@ -121,7 +121,7 @@ int main()
     }
     return 0;
 }
-</p></pre>
+</p></div>
 
 <hr>
 <h2>出题请使用：<?= Html::a(Yii::t('app', 'Polygon System'), ['/polygon']) ?></h2>
