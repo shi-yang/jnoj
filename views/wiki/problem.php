@@ -36,7 +36,10 @@ use yii\bootstrap\Modal;
     <li>不建议在中文题面中用英文名或汉语拼音（此处只是不建议，如需使用英文名，建议使用某队员的网络英文ID）。特别是不建议采用中文人物名称汉语拼音的缩写。人物取名建议优先考虑人物的外号。</li>
 </ol>
 <h3>题面规范示例</h3>
-<img src="<?= Yii::getAlias('@web') ?>/images/problem_example.png" align="problem example" width="100%">
+<img src="<?= Yii::getAlias('@web') ?>/images/problem_edit.png" align="problem edit" width="100%">
+<br>
+效果图：
+<img src="<?= Yii::getAlias('@web') ?>/images/problem_preview.png" align="problem edit" width="100%">
 
 <h3>Special Judge</h3>
 <p>简称 SPJ，这是针对用户输出的特判。比如，根据题面求解出来的答案可能存在多个，这样就无法定义一个准确的输出文件来判断用户是否正确，这时就需要 SPJ。或者允许用户的输出在某一精度范围内是正确的。</p>
