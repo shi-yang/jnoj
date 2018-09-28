@@ -10,12 +10,6 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'Rating');
 ?>
-<div id="tests">
-    <p style="text-align: center">
-        该功能正在开发测试中，仅供示例。参见：<?= Html::a('排名', ['/wiki/contest']) ?>
-    </p>
-    <hr>
-</div>
 <p style="text-align: center">
     <?= Html::a('段位排行', ['index']) ?>
     <?= Html::a('题数排行', ['problem']) ?>
