@@ -2,6 +2,7 @@
 
 namespace app\modules\polygon\controllers;
 
+use app\models\Solution;
 use app\modules\polygon\models\PolygonStatus;
 use Yii;
 use app\models\User;
@@ -108,7 +109,9 @@ class ProblemController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $model->spj_lang = Solution::CPPLANG;
+            $model->save();
             return $this->redirect(['spj', 'id' => $model->id]);
         }
         return $this->render('spj', [

@@ -16,6 +16,12 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->params['model'] = $model;
 $solution->language = Yii::$app->user->identity->language;
 ?>
+<p>
+    该页面用于给验题人验证题目数据的准确性，验题前需在
+    <?= Html::a(Yii::t('app', 'Tests Data'), ['/polygon/problem/tests', 'id' => $model->id]) ?>
+    页面中生成标程的标准输出文件。
+</p>
+<hr>
 <?= GridView::widget([
     'layout' => '{items}{pager}',
     'dataProvider' => $dataProvider,
@@ -78,13 +84,19 @@ $solution->language = Yii::$app->user->identity->language;
     ],
 ]); ?>
 <hr>
-<?php $form = ActiveForm::begin(); ?>
+<?php if (!$model->spj): ?>
+    <?php $form = ActiveForm::begin(); ?>
 
-<?= $form->field($solution, 'language')->dropDownList(Solution::getLanguageList()) ?>
+    <?= $form->field($solution, 'language')->dropDownList(Solution::getLanguageList()) ?>
 
-<?= $form->field($solution, 'source')->widget('app\widgets\codemirror\CodeMirror'); ?>
+    <?= $form->field($solution, 'source')->widget('app\widgets\codemirror\CodeMirror'); ?>
 
-<div class="form-group">
-    <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
-</div>
-<?php ActiveForm::end(); ?>
+    <div class="form-group">
+        <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+    </div>
+    <?php ActiveForm::end(); ?>
+<?php else: ?>
+    <p>
+        当前验题功能尚未支持用SPJ来进行验证的题目。
+    </p>
+<?php endif; ?>
