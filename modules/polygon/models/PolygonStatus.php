@@ -2,7 +2,10 @@
 
 namespace app\modules\polygon\models;
 
+use app\models\Solution;
 use Yii;
+use yii\db\Expression;
+
 
 /**
  * This is the model class for table "{{%polygon_status}}".
@@ -14,8 +17,11 @@ use Yii;
  * @property int $memory
  * @property string $info
  * @property string $created_at
+ * @property int $created_by
+ * @property int $language
+ * @property string $source
  */
-class PolygonStatus extends \yii\db\ActiveRecord
+class PolygonStatus extends Solution
 {
     /**
      * {@inheritdoc}
@@ -31,8 +37,8 @@ class PolygonStatus extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['problem_id', 'result', 'time', 'memory'], 'integer'],
-            [['info'], 'string'],
+            [['problem_id', 'result', 'time', 'memory', 'language', 'created_by'], 'integer'],
+            [['info', 'source'], 'string'],
             [['created_at'], 'required'],
             [['created_at'], 'safe'],
         ];
@@ -52,5 +58,14 @@ class PolygonStatus extends \yii\db\ActiveRecord
             'info' => Yii::t('app', 'Info'),
             'created_at' => Yii::t('app', 'Created At'),
         ];
+    }
+
+    /**
+     * 屏蔽父类的 beforeSave()
+     * This is invoked before the record is saved.
+     */
+    public function beforeSave($insert)
+    {
+        return true;
     }
 }

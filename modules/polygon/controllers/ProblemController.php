@@ -5,7 +5,6 @@ namespace app\modules\polygon\controllers;
 use app\modules\polygon\models\PolygonStatus;
 use Yii;
 use app\models\User;
-use app\models\Solution;
 use app\modules\polygon\models\Problem;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
@@ -56,7 +55,7 @@ class ProblemController extends Controller
     {
         $this->layout = '/main';
         $query = Problem::find()->with('user')->orderBy(['id' => SORT_DESC]);
-        if (Yii::$app->user->isGuest ||Yii::$app->user->identity->role != User::ROLE_ADMIN) {
+        if (Yii::$app->user->identity->role != User::ROLE_ADMIN) {
             $query->andWhere(['created_by' => Yii::$app->user->id]);
         }
         $dataProvider = new ActiveDataProvider([
@@ -91,7 +90,11 @@ class ProblemController extends Controller
             return $this->redirect(['tests', 'id' => $id]);
         }
         Yii::$app->db->createCommand()->delete('{{%polygon_status}}', ['problem_id' => $model->id])->execute();
-        Yii::$app->db->createCommand()->insert('{{%polygon_status}}', ['problem_id' => $model->id, 'created_at' => new Expression('NOW()')])->execute();
+        Yii::$app->db->createCommand()->insert('{{%polygon_status}}', [
+            'problem_id' => $model->id,
+            'created_at' => new Expression('NOW()'),
+            'created_by' => Yii::$app->user->id
+        ])->execute();
         return $this->redirect(['tests', 'id' => $id]);
     }
 
@@ -140,16 +143,24 @@ class ProblemController extends Controller
     {
         $model = $this->findModel($id);
         $solution = new PolygonStatus();
+        $dataProvider = new ActiveDataProvider([
+            'query' => PolygonStatus::find()->where(['problem_id' => $solution]),
+            'pagination' => [
+                'pageSize' => 10
+            ]
+        ]);
 
         if ($solution->load(Yii::$app->request->post())) {
             $solution->problem_id = $id;
-            //$solution->save();
-            Yii::$app->session->setFlash('success', '该功能尚在开发中。。。');
+            $solution->created_by = Yii::$app->user->id;
+            $solution->created_at = new Expression('NOW()');
+            $a = $solution->save();
             return $this->refresh();
         }
         return $this->render('verify', [
             'model' => $model,
-            'solution' => $solution
+            'solution' => $solution,
+            'dataProvider' => $dataProvider
         ]);
     }
 

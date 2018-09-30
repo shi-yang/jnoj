@@ -164,7 +164,7 @@ void init_mysql_conf()
             read_buf(buf, "OJ_REDISQNAME", oj_redisqname);
         }
         sprintf(query,
-                "SELECT problem_id FROM polygon_status "
+                "SELECT id FROM polygon_status "
                 "WHERE result<2 and MOD(id,%d)=%d "
                 "ORDER BY result ASC,id ASC limit %d",
                 oj_tot, oj_mod, max_running * 2);

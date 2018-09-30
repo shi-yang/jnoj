@@ -149,7 +149,7 @@ class ContestController extends Controller
                 'user_id' => Yii::$app->user->id
             ])->execute();
             Yii::$app->session->setFlash('success', '成功注册');
-            return $this->redirect(['/site/index']);
+            return $this->redirect(['/contest/view', 'id' => $model->id]);
         }
         return $this->render('register', [
             'model' => $model

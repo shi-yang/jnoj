@@ -1,6 +1,8 @@
 JNOJ Change Log
 ===============
 
+该文件显示了各版本间的改变。`Enh`表示添加新功能，`Chg`表示修改功能，`Bug`表示修复Bug。
+
 0.3.0 under development
 ---------------------
 
@@ -17,3 +19,4 @@ JNOJ Change Log
 - Enh: 代码高亮
 - Enh: 代码编辑器
 - Chg: 删除多余的管理员权限
+- Enh: 在Polygon中添加验题的功能

@@ -56,7 +56,6 @@ class Solution extends ActiveRecord
         return '{{%solution}}';
     }
 
-
     /**
      * @inheritdoc
      */
