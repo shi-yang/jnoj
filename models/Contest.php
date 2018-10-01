@@ -432,7 +432,7 @@ class Contest extends \yii\db\ActiveRecord
         $rankResult = $this->getRankData()['rank_result'];
         $tmp = [];
         foreach ($rankResult as $k => $user) {
-            $tmp[$user['user_id']] = ['solved' => $user['solved'], 'rank' => $k];
+            $tmp[$user['user_id']] = ['solved' => $user['solved'], 'rank' => $k, 'submit' => $user['submit']];
         }
         $rankResult = $tmp;
 
@@ -450,7 +450,7 @@ class Contest extends \yii\db\ActiveRecord
         foreach ($users as $user) {
             $old = $user['rating'] == NULL ? self::RATING_INIT_SCORE : $user['rating'];
             $exp = 0;
-            if ($rankResult[$user['user_id']]['solved'] == 0) {
+            if ($rankResult[$user['user_id']]['submit'] == 0) {
                 continue;
             }
             if ($user['rating']) {
