@@ -35,15 +35,15 @@ $this->title = $model->title;
             Memory limit: <?= $problem['memory_limit'] ?> MB
         </p>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asMarkdown($problem['description']) ?>
+            <?= Yii::$app->formatter->asHtml($problem['description']) ?>
         </div>
         <h4><?= Yii::t('app', 'Input') ?></h4>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asMarkdown($problem['input']) ?>
+            <?= Yii::$app->formatter->asHtml($problem['input']) ?>
         </div>
         <h4><?= Yii::t('app', 'Output') ?></h4>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asMarkdown($problem['output']) ?>
+            <?= Yii::$app->formatter->asHtml($problem['output']) ?>
         </div>
         <h4><?= Yii::t('app', 'Sample') ?></h4>
         <?php
@@ -99,7 +99,7 @@ $this->title = $model->title;
         <?php if (!empty($problem['hint'])): ?>
             <h4><?= Yii::t('app', 'Hint') ?></h4>
             <div class="content-wrapper">
-                <?= Yii::$app->formatter->asMarkdown($problem['hint']) ?>
+                <?= Yii::$app->formatter->asHtml($problem['hint']) ?>
             </div>
         <?php endif; ?>
         <div class="next-page"></div>
