@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $model app\models\Contest */
+/* @var $this \yii\web\View */
 
 $this->title = $model->title;
 
@@ -11,9 +12,6 @@ $this->title = $model->title;
     html, body {
         background-color: #fff !important;
         padding: 0 20px;
-    }
-    @media print {
-        .next-page {page-break-after:always;}
     }
     pre {
         padding: 0;
@@ -102,7 +100,34 @@ $this->title = $model->title;
                 <?= Yii::$app->formatter->asHtml($problem['hint']) ?>
             </div>
         <?php endif; ?>
-        <div class="next-page"></div>
+        <br><br><br>
     <?php endforeach; ?>
     </div>
 </div>
+<?php
+$this->registerJs('
+$(".katex.math.inline").each(function () {
+    var parent = $(this).parent()[0];
+    if (parent.localName !== "code") {
+        var texTxt = $(this).text();
+        var el = $(this).get(0);
+        try {
+            katex.render(texTxt, el);
+        } catch (err) {
+            $(this).html("<span class=\'err\'>" + err);
+        }
+    } else {
+        $(this).parent().text($(this).parent().text());
+    }
+});
+$(".katex.math.multi-line").each(function () {
+    var texTxt = $(this).text();
+    var el = $(this).get(0);
+    try {
+        katex.render(texTxt, el, {displayMode: true})
+    } catch (err) {
+        $(this).html("<span class=\'err\'>" + err)
+    }
+});
+');
+?>
