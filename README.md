@@ -7,7 +7,7 @@
 </p>
 
 江南在线评测系统（Jiangnan Online Judge），是一个在线的判题系统。
-用户可以在线提交程序多种程序（如C、C++、Java）源代码，系统对源代码进行编译和执行， 并通过预先设计的测试数据来检验程序源代码的正确性。
+用户可以在线提交程序多种程序（如C、C++、Java）源代码，系统对源代码进行编译和执行，并通过预先设计的测试数据来检验程序源代码的正确性。
 
 功能特性
 ----------
@@ -36,17 +36,9 @@
 - [ ] 代码查重
 
 
-界面预览
+在线体验
 ---------
-![Home page](docs/images/index.png)
-
-![Problems](docs/images/problems.png)
-
-![Contest](docs/images/contest_rank.png)
-
-![Admin View](docs/images/admin.png)
-
-![Problem View](docs/images/problem_view.png)
+[JNOJ Demo](https://demo.jnoj.org)
 
 文档
 --------
