@@ -11,7 +11,7 @@ JNOJ 分为三部分：`web`，`judge`, `polygon`。
 
 是指网页前端，即用户打开浏览器访问看到的。
 
-目前是用PHP语言、Yii 2框架编写。
+目前是用PHP语言、Yii 2框架编写。WEB 程序的入口目录在 web 目录下，
 
 ### judge
 
