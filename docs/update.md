@@ -8,6 +8,7 @@ JNOJ 更新
 ```bash
 git pull                  # 获取GitHub上最新代码
 ./yii migrate             # 数据库迁移工具，用于更新数据库的变化情况
+sudo rm -rf runtime/*     # 清空缓存文件
 cd judge                  # 进入 judge 目录
 sudo pkill -9 dispatcher  # 结束判题机进程
 make                      # 重新编译 judge
