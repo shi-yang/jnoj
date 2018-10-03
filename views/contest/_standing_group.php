@@ -12,7 +12,7 @@ $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];
 ?>
-<?php if (!empty($model->lock_board_time) && strtotime($model->lock_board_time) <= time() && strtotime($model->lock_board_time) >= time() - 120 * 60) :?>
+<?php if (!empty($model->lock_board_time) && strtotime($model->lock_board_time) <= time() && strtotime($model->end_time) >= time() - 120 * 60) :?>
     <p>现已是封榜状态，榜单将不再实时更新，待赛后再揭晓</p>
 <?php endif; ?>
 <table class="table table-bordered table-rank">
