@@ -216,7 +216,7 @@ class Contest extends \yii\db\ActiveRecord
     public function getUsersSolution()
     {
         return Yii::$app->db->createCommand('
-            SELECT `username`, `nickname`, `result`, `s`.`problem_id`, `s`.`created_at`, `s`.`id`
+            SELECT `u`.`id` as `user_id`, `username`, `nickname`, `result`, `s`.`problem_id`, `s`.`created_at`, `s`.`id`
             FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id AND `s`.`created_at` <= :endtime ORDER BY `s`.`id`
         ', [':id' => $this->id, ':endtime' => $this->end_time])->queryAll();
@@ -277,12 +277,13 @@ class Contest extends \yii\db\ActiveRecord
         $lock_time = 0x7fffffff;
 
         foreach ($users as $user) {
-            $result[$user['username']]['time'] = 0;
-            $result[$user['username']]['solved'] = 0;
-            $result[$user['username']]['submit'] = 0;
-            $result[$user['username']]['nickname'] = $user['nickname'];
-            $result[$user['username']]['student_number'] = $user['student_number'];
-            $result[$user['username']]['user_id'] = $user['user_id'];
+            $result[$user['user_id']]['username'] = $user['username'];
+            $result[$user['user_id']]['time'] = 0;
+            $result[$user['user_id']]['solved'] = 0;
+            $result[$user['user_id']]['submit'] = 0;
+            $result[$user['user_id']]['nickname'] = $user['nickname'];
+            $result[$user['user_id']]['student_number'] = $user['student_number'];
+            $result[$user['user_id']]['user_id'] = $user['user_id'];
         }
 
         if (!empty($this->lock_board_time)) {
@@ -291,7 +292,7 @@ class Contest extends \yii\db\ActiveRecord
 
         for ($i = 0; $i < $count; $i++) {
             $row = $users_solution_data[$i];
-            $user = $row['username'];
+            $user = $row['user_id'];
             $pid = $row['problem_id'];
             $created_at = $row['created_at'];
 
@@ -354,10 +355,6 @@ class Contest extends \yii\db\ActiveRecord
                 }
                 ++$result[$user]['wa_count'][$pid];
             }
-        }
-
-        foreach ($result as $k => &$v) {
-            $v['username'] = $k;
         }
 
         usort($result, function($a, $b) {

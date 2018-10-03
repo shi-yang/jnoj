@@ -19,7 +19,7 @@ $submit_count = $rank_result['submit_count'];
     <thead>
     <tr>
         <th width="60px">Rank</th>
-        <th width="150px">Team</th>
+        <th width="150px">Who</th>
         <th width="70px">Solved</th>
         <th width="80px">Time</th>
         <?php foreach($problems as $key => $p): ?>
@@ -52,7 +52,7 @@ $submit_count = $rank_result['submit_count'];
                 <?= $i + 1 ?>
             </th>
             <th>
-                <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['username']]) ?>
+                <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['user_id']]) ?>
             </th>
             <th>
                 <?= $rank['solved'] ?>
