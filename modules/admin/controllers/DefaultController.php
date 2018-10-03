@@ -63,12 +63,7 @@ class DefaultController extends Controller
         return $this->render('index', [
             'time_start' => microtime(true),
             'stat' => SystemInfo::getStat(),
-            'LC_CTYPE' => setlocale(LC_CTYPE, 0),
-            'uname' => php_uname(),
             'stime' => date('Y-m-d H:i:s'),
-            'distname' => SystemInfo::getDistName(),
-            'server_addr' => SystemInfo::getServerAddr(),
-            'remote_addr' => SystemInfo::getRemoteAddr(),
             'uptime' => SystemInfo::getUpTime(),
             'cpuinfo' => SystemInfo::getCpuInfo(),
             'tempinfo' => SystemInfo::getTempInfo(),

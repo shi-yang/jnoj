@@ -20,26 +20,6 @@ class SystemInfo
         return $size;
     }
 
-    public static function getRemoteAddr()
-    {
-        if (isset($_SERVER["HTTP_X_REAL_IP"])) {
-            return $_SERVER["HTTP_X_REAL_IP"];
-        } else if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
-            return preg_replace('/^.+,\s*/', '', $_SERVER["HTTP_X_FORWARDED_FOR"]);
-        } else {
-            return $_SERVER["REMOTE_ADDR"];
-        }
-    }
-
-    public static function getServerAddr()
-    {
-        if ($_SERVER["SERVER_ADDR"] != "127.0.0.1") {
-            return $_SERVER["SERVER_ADDR"];
-        } else {
-            return gethostbyname(php_uname('n'));
-        }
-    }
-
     public static function getStat()
     {
         $content = file('/proc/stat');
@@ -174,25 +154,6 @@ class SystemInfo
         $loadavg = implode(' ', $str[0]);
 
         return $loadavg;
-    }
-
-    public static function getDistName()
-    {
-        foreach (glob('/etc/*release') as $name) {
-            if ($name == '/etc/centos-release' || $name == '/etc/redhat-release' || $name == '/etc/system-release') {
-                return array_shift(file($name));
-            }
-
-            $release_info = @parse_ini_file($name);
-
-            if (isset($release_info['DISTRIB_DESCRIPTION']))
-                return $release_info['DISTRIB_DESCRIPTION'];
-
-            if (isset($release_info['PRETTY_NAME']))
-                return $release_info['PRETTY_NAME'];
-        }
-
-        return php_uname('s') . ' ' . php_uname('r');
     }
 
     public static function getDiskInfo()

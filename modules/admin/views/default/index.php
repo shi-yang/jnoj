@@ -1,14 +1,5 @@
 <?php
 $this->title = "Admin";
-?>
-<div class="admin-default-index">
-    <h1>Hello, <?= Yii::$app->user->identity->nickname ?></h1>
-</div>
-
-<hr>
-
-<?php
-
 function __($message)
 {
     $messages = array(
@@ -17,15 +8,8 @@ function __($message)
         'Monitor' => '性能监控',
         'Server Information' => '服务器参数',
         'IP Address' => 'IP 地址',
-        'your ip is:' => '你的 IP 地址是：',
-        'Uname' => '内核标识',
-        'OS' => '操作系统',
-        'Server Software' => '服务器软件',
-        'Language' => '语言',
         'Port' => '端口',
         'User' => '用户',
-        'Hostname' => '主机名称',
-        'Server Port' => '服务器端口',
         'Server Realtime Data' => '服务器实时数据',
         'Time' => '当前时间',
         'Uptime' => '已运行时间',
@@ -73,35 +57,11 @@ function __($message)
     }
 }
 ?>
+<div class="admin-default-index">
+    <h1>Hello, <?= Yii::$app->user->identity->nickname ?></h1>
+</div>
+<hr>
 <div class="table-responsive">
-    <table class="table table-bordered">
-        <tr>
-            <th colspan="4"><?php __('Server Information'); ?></th>
-        </tr>
-        <tr>
-            <td><?php __('Hostname'); ?></td>
-            <td colspan="3"><?php $os = explode(' ', $uname);
-                echo $os[1]; ?>(<?= $server_addr; ?>
-                )&nbsp;&nbsp;<?php __('your ip is:'); ?><?= $remote_addr; ?></td>
-        </tr>
-        <tr>
-            <td><?php __('Uname'); ?></td>
-            <td colspan="3"><?= $uname; ?></td>
-        </tr>
-        <tr>
-            <td><?php __('OS'); ?></td>
-            <td><?= $distname; ?></td>
-            <td><?php __('Server Software'); ?></td>
-            <td><?= $_SERVER['SERVER_SOFTWARE']; ?></td>
-        </tr>
-        <tr>
-            <td><?php __('Language'); ?></td>
-            <td><?= $LC_CTYPE == 'C' ? 'POSIX' : $LC_CTYPE; ?></td>
-            <td><?php __('Server Port'); ?></td>
-            <td><?= $_SERVER['SERVER_PORT']; ?></td>
-        </tr>
-    </table>
-
     <table class="table table-bordered">
         <tr>
             <th colspan="4"><?php __('Server Realtime Data'); ?></th>
