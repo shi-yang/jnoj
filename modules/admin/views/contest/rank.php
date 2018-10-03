@@ -87,7 +87,7 @@ $submit_count = $rank_result['submit_count'];
                         $num = 0;
                         $time = "";
                         if (isset($rank['ac_time'][$p['problem_id']]) && $rank['ac_time'][$p['problem_id']] > 0) {
-                            if ($first_blood[$p['problem_id']] == $rank['username']) {
+                            if ($first_blood[$p['problem_id']] == $rank['user_id']) {
                                 $css_class = 'solved-first';
                             } else {
                                 $css_class = 'solved';
