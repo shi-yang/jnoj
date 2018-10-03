@@ -127,6 +127,10 @@ class Problem extends ActiveRecord
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
+            $hint = preg_replace("/(\s|\&nbsp\;|　|\xc2\xa0)/", '', strip_tags($this->hint));
+            if (empty($hint)) {
+                $this->hint = $hint;
+            }
             //标签分割
             $tags = trim($this->tags);
             $explodeTags = array_unique(explode(',', str_replace('，', ',', $tags)));

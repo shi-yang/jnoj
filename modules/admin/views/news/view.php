@@ -25,5 +25,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <span><?= $model->created_at ?></span>
 
-    <?= Yii::$app->formatter->asMarkdown($model->content) ?>
+    <?= Yii::$app->formatter->asHtml($model->content) ?>
 </div>

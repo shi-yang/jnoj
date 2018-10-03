@@ -117,6 +117,16 @@ class Problem extends \yii\db\ActiveRecord
                 $this->created_at = new Expression('NOW()');
             }
             $this->updated_at = new Expression('NOW()');
+
+            $hint = preg_replace("/(\s|\&nbsp\;|　|\xc2\xa0)/", '', strip_tags($this->hint));
+            if (empty($hint)) {
+                $this->hint = $hint;
+            }
+            //标签分割
+            $tags = trim($this->tags);
+            $explodeTags = array_unique(explode(',', str_replace('，', ',', $tags)));
+            $explodeTags = array_slice($explodeTags, 0, 10);
+            $this->tags = implode(',', $explodeTags);
             return true;
         } else {
             return false;

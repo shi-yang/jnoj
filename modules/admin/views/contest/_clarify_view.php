@@ -33,7 +33,7 @@ use yii\bootstrap\Modal;
     </div>
     <?php foreach ($clarify->reply as $reply): ?>
         <div class="well">
-            <?= Yii::$app->formatter->asMarkdown($reply->content) ?>
+            <?= Yii::$app->formatter->asHtml($reply->content) ?>
             <hr>
             <span class="glyphicon glyphicon-user"></span> <?= Html::encode($reply->user->username) ?>
             &nbsp;•&nbsp;
