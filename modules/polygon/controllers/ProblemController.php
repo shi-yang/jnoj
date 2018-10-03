@@ -165,7 +165,7 @@ class ProblemController extends Controller
             $solution->problem_id = $id;
             $solution->created_by = Yii::$app->user->id;
             $solution->created_at = new Expression('NOW()');
-            $a = $solution->save();
+            $solution->save();
             return $this->refresh();
         }
         return $this->render('verify', [
@@ -180,6 +180,8 @@ class ProblemController extends Controller
         $model = $this->findModel($id);
         $solutionStatus = Yii::$app->db->createCommand("SELECT * FROM {{%polygon_status}} WHERE problem_id=:pid", [':pid' => $model->id])->queryOne();
         if (Yii::$app->request->isPost) {
+            $inputFile = file_get_contents($_FILES["file"]["tmp_name"]);
+            file_put_contents($_FILES["file"]["tmp_name"], preg_replace("(\r\n)","\n", $inputFile));
             @move_uploaded_file($_FILES["file"]["tmp_name"], Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $_FILES["file"]["name"]);
         }
         return $this->render('tests', [
