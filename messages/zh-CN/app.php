@@ -118,6 +118,8 @@ return [
 
     'Agree above and register' => '同意以上并参加',
 
+    'Headquarters' => '司令部',
+    'Unrated' => '未评级',
     'Bronze' => '青铜',
     'Silver' => '白银',
     'Gold' => '黄金',

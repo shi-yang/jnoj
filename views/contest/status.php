@@ -37,7 +37,7 @@ foreach ($problems as $key => $p) {
             [
                 'attribute' => 'who',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a(Html::encode($model->user->nickname), ['/user/view', 'id' => $model->created_by]);
+                    return Html::a($model->user->colorname, ['/user/view', 'id' => $model->created_by]);
                 },
                 'format' => 'raw'
             ],

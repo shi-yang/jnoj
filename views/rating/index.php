@@ -23,7 +23,7 @@ $this->title = Yii::t('app', 'Rating');
                     <div class="rating-two">
                         2
                     </div>
-                    <h3 class="rating-two-name"><?= Html::a(Html::encode($top3users[1]->nickname), ['/user/view', 'id' => $top3users[1]->id]) ?></h3>
+                    <h3 class="rating-two-name"><?= Html::a($top3users[1]->colorName, ['/user/view', 'id' => $top3users[1]->id]) ?></h3>
                     <span><?= $top3users[1]->getRatingLevel() ?></span>
                     <span><?= $top3users[1]->rating ?></span>
                 </div>
@@ -32,7 +32,7 @@ $this->title = Yii::t('app', 'Rating');
                     <div class="rating-one">
                         1
                     </div>
-                    <h3 class="rating-one-name"><?= Html::a(Html::encode($top3users[0]->nickname), ['/user/view', 'id' => $top3users[0]->id]) ?></h3>
+                    <h3 class="rating-one-name"><?= Html::a($top3users[0]->colorName, ['/user/view', 'id' => $top3users[0]->id]) ?></h3>
                     <span><?= $top3users[0]->getRatingLevel() ?></span>
                     <span><?= $top3users[0]->rating ?></span>
                 </div>
@@ -41,7 +41,7 @@ $this->title = Yii::t('app', 'Rating');
                     <div class="rating-three">
                         3
                     </div>
-                    <h3 class="rating-three-name"><?= Html::a(Html::encode($top3users[2]->nickname), ['/user/view', 'id' => $top3users[2]->id]) ?></h3>
+                    <h3 class="rating-three-name"><?= Html::a($top3users[2]->colorName, ['/user/view', 'id' => $top3users[2]->id]) ?></h3>
                     <span><?= $top3users[2]->getRatingLevel() ?></span>
                     <span><?= $top3users[2]->rating ?></span>
                 </div>
@@ -64,7 +64,7 @@ $this->title = Yii::t('app', 'Rating');
                         <tr>
                             <th scope="row"><?= $num ?></th>
                             <td>
-                                <?= Html::a(Html::encode($user->nickname), ['/user/view', 'id' => $user->id]) ?>
+                                <?= Html::a($user->colorName, ['/user/view', 'id' => $user->id]) ?>
                             </td>
                             <td>
                                 <?= $user->rating ?>

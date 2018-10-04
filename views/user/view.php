@@ -112,7 +112,7 @@ $this->registerJs($plotJS);
 ?>
 <div class="user-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= $model->getColorName() ?> <small><?= $model->getRatingLevel() ?></small></h1>
     <hr>
     <?php if ($model->role != \app\models\User::ROLE_PLAYER): ?>
         <div class="row">

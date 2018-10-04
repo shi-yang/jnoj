@@ -8,6 +8,7 @@ JNOJ Change Log
 
 - Bug: 封榜后不再显示别人的提交
 - Enh: 通过修改配置文件 `config/params.php` 的 `isShareCode` 参数来确定用户是否公开自己的代码
+- Enh: 完善积分段位
 
 0.3.0 2018.10.3
 ----------------
