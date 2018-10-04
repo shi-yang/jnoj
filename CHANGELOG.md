@@ -3,6 +3,12 @@ JNOJ Change Log
 
 该文件显示了各版本间的改变。`Enh`表示添加新功能，`Chg`表示修改功能，`Bug`表示修复Bug。
 
+0.4.0 under development
+-----------------------
+
+- Bug: 封榜后不再显示别人的提交
+- Enh: 通过修改配置文件 `config/params.php` 的 `isShareCode` 参数来确定用户是否公开自己的代码
+
 0.3.0 2018.10.3
 ----------------
 

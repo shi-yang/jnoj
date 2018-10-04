@@ -44,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <hr>
 
 <h3>Tests(<?= $model->getPassedTestCount() ?>/<?= $model->getTestCount() ?>):</h3>
+
 <h3>
 <?php for ($i = 1; $i <= $model->getPassedTestCount(); $i++): ?>
     <?php if ($i <= $model->getTestCount()) :?>
@@ -57,12 +58,16 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
 </h3>
 
-<hr>
-<h3>Source:</h3>
-<div class="pre"><p><?= Html::encode($model->source) ?></p></div>
-
-<?php if ($model->solutionInfo != null): ?>
+<?php if (Yii::$app->params['isShareCode'] ||
+          (!Yii::$app->user->isGuest &&
+              ($model->created_by == Yii::$app->user->id || Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN))): ?>
     <hr>
-    <h3>Run Info:</h3>
-    <pre><?= \yii\helpers\HtmlPurifier::process($model->solutionInfo->error) ?></pre>
+    <h3>Source:</h3>
+    <div class="pre"><p><?= Html::encode($model->source) ?></p></div>
+
+    <?php if ($model->solutionInfo != null): ?>
+        <hr>
+        <h3>Run Info:</h3>
+        <pre><?= \yii\helpers\HtmlPurifier::process($model->solutionInfo->error) ?></pre>
+    <?php endif; ?>
 <?php endif; ?>

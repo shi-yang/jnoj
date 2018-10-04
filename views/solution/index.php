@@ -43,8 +43,10 @@ $this->title = Yii::t('app', 'Status');
             [
                 'attribute' => 'result',
                 'value' => function ($model, $key, $index, $column) {
-                    if ($model->result == $model::OJ_CE || $model->result == $model::OJ_WA
-                        || $model->result == $model::OJ_RE) {
+                    if (($model->result == $model::OJ_CE || $model->result == $model::OJ_WA
+                        || $model->result == $model::OJ_RE) &&
+                        (Yii::$app->params['isShareCode'] || (!Yii::$app->user->isGuest &&
+                                ($model->created_by == Yii::$app->user->id || Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN)))) {
                         return Html::a($model->getResult(),
                             ['/solution/result', 'id' => $model->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info"]
@@ -72,10 +74,15 @@ $this->title = Yii::t('app', 'Status');
             [
                 'attribute' => 'language',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->getLang(),
-                        ['/solution/source', 'id' => $model->id],
-                        ['onclick' => 'return false', 'data-click' => "solution_info"]
-                    );
+                    if (Yii::$app->params['isShareCode'] || (!Yii::$app->user->isGuest &&
+                            ($model->created_by == Yii::$app->user->id || Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN))) {
+                        return Html::a($model->getLang(),
+                            ['/solution/source', 'id' => $model->id],
+                            ['onclick' => 'return false', 'data-click' => "solution_info"]
+                        );
+                    } else {
+                        return $model->getLang();
+                    }
                 },
                 'format' => 'raw'
             ],
