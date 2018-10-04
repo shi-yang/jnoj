@@ -331,21 +331,23 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    public function getRatingLevel()
+    public function getRatingLevel($rating = -1)
     {
-        if ($this->rating == NULL) {
+        if ($rating == -1)
+            $rating = $this->rating;
+        if ($rating == NULL) {
             return '';
-        } else if ($this->rating < 1150) {
+        } else if ($rating < 1150) {
             return Yii::t('app', 'Bronze');
-        } else if ($this->rating < 1400) {
+        } else if ($rating < 1400) {
             return Yii::t('app', 'Silver');
-        } else if ($this->rating < 1650) {
+        } else if ($rating < 1650) {
             return Yii::t('app', 'Gold');
-        } else if ($this->rating < 1900) {
+        } else if ($rating < 1900) {
             return Yii::t('app', 'Platinum');
-        } else if ($this->rating < 2150) {
+        } else if ($rating < 2150) {
             return Yii::t('app', 'Diamond');
-        } else if ($this->rating < 2400) {
+        } else if ($rating < 2400) {
             return Yii::t('app', 'Master');
         } else {
             return Yii::t('app', 'Challenger');

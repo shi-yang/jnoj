@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Contest;
 use app\models\UserProfile;
 use Yii;
 use app\models\User;
@@ -61,10 +62,13 @@ class UserController extends Controller
                 WHERE `cu`.`user_id`=:uid AND `cu`.`rank` IS NOT NULL ORDER BY `c`.`id`
             ', [':uid' => $model->id])->queryAll();
 
+        $totalScore = Contest::RATING_INIT_SCORE;
+
         foreach ($contests as &$contest) {
-            $contest['total'] = $model->rating;
+            $totalScore += $contest['rating_change'];
+            $contest['total'] = $totalScore;
             $contest['url'] = Url::toRoute(['/contest/view', 'id' => $contest['contest_id']]);
-            $contest['level'] = $model->getRatingLevel();
+            $contest['level'] = $model->getRatingLevel($totalScore);
             $contest['start_time'] = strtotime($contest['start_time']);
         }
 
