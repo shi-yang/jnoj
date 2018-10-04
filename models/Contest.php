@@ -243,7 +243,7 @@ class Contest extends \yii\db\ActiveRecord
         ]);
         return Yii::$app->db->cache(function ($db) {
             return $db->createCommand('
-                SELECT `u`.`username`, `u`.`nickname`, `p`.`student_number`, `u`.`id` as `user_id`
+                SELECT `u`.`username`, `u`.`nickname`, `p`.`student_number`, `u`.`id` as `user_id`, `u`.`role`
                 FROM `user` `u`
                 LEFT JOIN `contest_user` `c` ON `c`.`contest_id`=:cid
                 LEFT JOIN `user_profile` `p` ON `p`.`user_id`=`c`.`user_id`
@@ -278,6 +278,7 @@ class Contest extends \yii\db\ActiveRecord
 
         foreach ($users as $user) {
             $result[$user['user_id']]['username'] = $user['username'];
+            $result[$user['user_id']]['role'] = $user['role'];
             $result[$user['user_id']]['time'] = 0;
             $result[$user['user_id']]['solved'] = 0;
             $result[$user['user_id']]['submit'] = 0;

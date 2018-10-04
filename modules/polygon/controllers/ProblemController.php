@@ -200,7 +200,9 @@ class ProblemController extends Controller
     public function actionViewfile($id, $name)
     {
         $model = $this->findModel($id);
-        return file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+        echo '<pre>';
+        echo file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+        echo '</pre>';
     }
 
     /**
@@ -213,8 +215,8 @@ class ProblemController extends Controller
         $this->layout = '/main';
         $model = new Problem();
 
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                @mkdir(Yii::$app->params['polygonProblemDataPath'] . $model->id);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            @mkdir(Yii::$app->params['polygonProblemDataPath'] . $model->id);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

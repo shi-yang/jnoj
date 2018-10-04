@@ -18,11 +18,11 @@ $this->params['model'] = $model;
 if (!Yii::$app->user->isGuest) {
     $solution->language = Yii::$app->user->identity->language;
 }
-if (empty($model->problems)) {
+$problems = $model->problems;
+if (empty($problems)) {
     echo 'Please add question';
     return;
 }
-$problems = $model->problems;
 
 $nav = [];
 foreach ($problems as $key => $p) {

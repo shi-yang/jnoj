@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 
 /* @var $model app\models\Contest */
-/* @var $who integer */
 
 $this->title = $model->title;
 $problems = $model->problems;
@@ -32,7 +31,8 @@ $submit_count = $rank_result['submit_count'];
             <thead>
             <tr>
                 <th width="60px">Rank</th>
-                <th width="150px">Who</th>
+                <th width="120px">Username</th>
+                <th width="120px">Nickname</th>
                 <th width="70px">Solved</th>
                 <th width="80px">Time</th>
                 <?php foreach($problems as $key => $p): ?>
@@ -59,21 +59,25 @@ $submit_count = $rank_result['submit_count'];
             </tr>
             </thead>
             <tbody>
-            <?php for ($i = 0; $i < count($result); $i++): $rank = $result[$i]; ?>
+            <?php for ($i = 0, $ranking = 1; $i < count($result); $i++): ?>
+                <?php $rank = $result[$i]; ?>
                 <tr>
                     <th>
-                        <?= $i + 1 ?>
-                    </th>
-                    <th>
                         <?php
-                        if ($who == 0) {
-                            echo Html::encode($rank['username']);
-                        } else if ($who == 1) {
-                            echo Html::encode($rank['nickname']);
+                        //线下赛，参加比赛但不参加排名的处理
+                        if ($model->scenario == \app\models\Contest::SCENARIO_OFFLINE && $rank['role'] != \app\models\User::ROLE_PLAYER) {
+                            echo '*';
                         } else {
-                            echo Html::encode($rank['nickname'] . '[' . $rank['username'] . ']');
+                            echo $ranking;
+                            $ranking++;
                         }
                         ?>
+                    </th>
+                    <th>
+                        <?= Html::encode($rank['username']); ?>
+                    </th>
+                    <th>
+                        <?= Html::encode($rank['nickname']); ?>
                     </th>
                     <th>
                         <?= $rank['solved'] ?>

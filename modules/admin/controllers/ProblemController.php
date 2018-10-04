@@ -94,7 +94,9 @@ class ProblemController extends Controller
     public function actionViewfile($id, $name)
     {
         $model = $this->findModel($id);
-        return file_get_contents(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+        echo '<pre>';
+        echo file_get_contents(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+        echo '</pre>';
     }
 
     /**

@@ -316,10 +316,9 @@ class ContestController extends Controller
     /**
      * 显示榜单
      * @param integer $id 比赛 ID
-     * @param integer $who 显示方式： 为 0 时只显示用户名，为 1 时只显示昵称， 为 2 时显示用户名跟昵称
      * @return string
      */
-    public function actionRank($id, $who = 0)
+    public function actionRank($id)
     {
         $model = $this->findModel($id);
 
@@ -327,7 +326,6 @@ class ContestController extends Controller
 
         return $this->render('rank', [
             'model' => $model,
-            'who' => $who
         ]);
     }
 

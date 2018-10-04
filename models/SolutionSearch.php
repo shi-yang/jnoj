@@ -53,16 +53,18 @@ class SolutionSearch extends Solution
                     $query->andWhere(['contest_id' => $contest_id]);
                 }
             ]);
-            $time = Yii::$app->db->createCommand('SELECT lock_board_time, end_time FROM {{%contest}} WHERE id = :id', [
-                ':id' => $contest_id
-            ])->queryOne();
-            $lockTime = strtotime($time['lock_board_time']);
-            $endTime = strtotime($time['end_time']);
-            if (!empty($lockTime) && $lockTime <= time() && time() <= $endTime + 120 * 60) {
-                $query->andWhere('created_by=:uid OR created_at <= :end_time', [
-                    ':uid' => Yii::$app->user->id,
-                    ':end_time' => $time['end_time']
-                ]);
+            if (Yii::$app->user->identity->role != User::ROLE_ADMIN) {
+                $time = Yii::$app->db->createCommand('SELECT lock_board_time, end_time FROM {{%contest}} WHERE id = :id', [
+                    ':id' => $contest_id
+                ])->queryOne();
+                $lockTime = strtotime($time['lock_board_time']);
+                $endTime = strtotime($time['end_time']);
+                if (!empty($lockTime) && $lockTime <= time() && time() <= $endTime + 120 * 60) {
+                    $query->andWhere('created_by=:uid OR created_at < :lock_board_time', [
+                        ':uid' => Yii::$app->user->id,
+                        ':lock_board_time' => $time['lock_board_time']
+                    ]);
+                }
             }
         } else {
             $query = $query->where(['status' => Solution::STATUS_VISIBLE]);

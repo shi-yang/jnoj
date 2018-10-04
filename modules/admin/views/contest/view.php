@@ -45,11 +45,9 @@ $problems = $model->problems;
     </p>
     <p>
         <?= Html::a(Yii::t('app', 'Print Problem'), ['print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?>
-        <?= Html::a(Yii::t('app', 'Print Rank') . '[用户名]', ['rank', 'id' => $model->id, 'who' => 0], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
-        <?= Html::a(Yii::t('app', 'Print Rank') . '[昵称]', ['rank', 'id' => $model->id, 'who' => 1], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
-        <?= Html::a(Yii::t('app', 'Print Rank') . '[用户名 & 昵称]', ['rank', 'id' => $model->id, 'who' => 2], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
+        <?= Html::a(Yii::t('app', 'Print Rank'), ['rank', 'id' => $model->id], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
     </p>
-    <p>打印使用方法：打开链接后，在页面上鼠标“右键”-“打印”，可以导出为 PDF 格式后打印，注意可能存在空白页</p>
+    <p class="help-block">打印使用方法：打开链接后，在页面上鼠标“右键”-“打印”，可以导出为 PDF 格式后打印</p>
     <hr>
     <h3>
         <?= Yii::t('app', 'Information') ?>

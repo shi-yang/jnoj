@@ -46,10 +46,19 @@ $submit_count = $rank_result['submit_count'];
     </tr>
     </thead>
     <tbody>
-    <?php for ($i = 0; $i < count($result); $i++): $rank = $result[$i]; ?>
+    <?php for ($i = 0, $ranking = 1; $i < count($result); $i++): ?>
+    <?php $rank = $result[$i]; ?>
         <tr>
             <th>
-                <?= $i + 1 ?>
+                <?php
+                //线下赛，参加比赛但不参加排名的处理
+                if ($model->scenario == \app\models\Contest::SCENARIO_OFFLINE && $rank['role'] != \app\models\User::ROLE_PLAYER) {
+                    echo '*';
+                } else {
+                    echo $ranking;
+                    $ranking++;
+                }
+                ?>
             </th>
             <th>
                 <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['user_id']]) ?>
