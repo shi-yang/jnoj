@@ -338,13 +338,13 @@ class Contest extends \yii\db\ActiveRecord
                     $first_blood[$pid] = $user;
                 }
                 $sec = strtotime($created_at) - strtotime($start_time);
-                $result[$user]['ac_time'][$pid] = $sec;
-
                 ++$result[$user]['solved'];
-
                 if ($this->type == self::TYPE_RANK_SINGLE) {
-                    $result[$user]['time'] += 0.5 * self::BASIC_SCORE + max(0, self::BASIC_SCORE - 2 * $sec / 60 - $result[$user]['wa_count'][$pid] * 50);
+                    $score = 0.5 * self::BASIC_SCORE + max(0, self::BASIC_SCORE - 2 * $sec / 60 - $result[$user]['wa_count'][$pid] * 50);
+                    $result[$user]['ac_time'][$pid] = $score;
+                    $result[$user]['time'] += $score;
                 } else {
+                    $result[$user]['ac_time'][$pid] = $sec / 60;
                     $result[$user]['time'] += $sec + $result[$user]['wa_count'][$pid] * 60 * 20;
                 }
                 //Other cases
