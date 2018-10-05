@@ -34,8 +34,6 @@ $this->params['model'] = $model;
 
         <?= $form->field($newClarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
-        <?= $form->field($newClarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
-
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>
         </div>

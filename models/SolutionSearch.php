@@ -53,7 +53,7 @@ class SolutionSearch extends Solution
                     $query->andWhere(['contest_id' => $contest_id]);
                 }
             ]);
-            if (Yii::$app->user->identity->role != User::ROLE_ADMIN) {
+            if (Yii::$app->user->isGuest || Yii::$app->user->identity->role != User::ROLE_ADMIN) {
                 $time = Yii::$app->db->createCommand('SELECT lock_board_time, end_time FROM {{%contest}} WHERE id = :id', [
                     ':id' => $contest_id
                 ])->queryOne();

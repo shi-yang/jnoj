@@ -55,7 +55,7 @@ if ($discuss != null) {
             [
                 'attribute' => 'Who',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a(Html::encode($model->user->nickname), ['/user/view', 'id' => $model->user->id]);
+                    return Html::a($model->user->colorname, ['/user/view', 'id' => $model->user->id]);
                 },
                 'format' => 'raw'
             ],
@@ -76,6 +76,7 @@ if ($discuss != null) {
     ]); ?>
 
     <div class="well">
+        <?php if ($model->getRunStatus() == \app\models\Contest::STATUS_RUNNING): ?>
         <?php $form = ActiveForm::begin(); ?>
 
         <?= $form->field($newClarify, 'title', [
@@ -88,5 +89,8 @@ if ($discuss != null) {
             <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
         </div>
         <?php ActiveForm::end(); ?>
+        <?php else: ?>
+        <p>比赛已经结束</p>
+        <?php endif; ?>
     </div>
 </div>
