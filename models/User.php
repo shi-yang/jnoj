@@ -359,6 +359,48 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * 根据段位返回颜色
+     * 该方法在榜单显示时调用
+     *
+     * @param string $nickname
+     * @param integer $rating
+     * @return string 含有颜色的HTML昵称
+     */
+    public static function getColorNameByRating($nickname, $rating)
+    {
+        $nickname = Html::encode($nickname);
+        $colors = [
+            'user-black',
+            'user-gray',
+            'user-green',
+            'user-cyan',
+            'user-blue',
+            'user-orange',
+            'user-violet',
+            'user-yellow',
+            'user-fire',
+            'user-red',
+            'user-admin'
+        ];
+        if (empty($rating)) {
+            $tmp = $colors[0];
+        } else if ($rating < 1150) {
+            $tmp = $colors[1];
+        } else if ($rating < 1400) {
+            $tmp = $colors[2];
+        } else if ($rating < 1650) {
+            $tmp = $colors[3];
+        } else if ($rating < 1900) {
+            $tmp = $colors[4];
+        } else if ($rating < 2150) {
+            $tmp = $colors[5];
+        } else {
+            $tmp = $colors[6];
+        }
+        return "<span class=\"{$tmp} rated-user\">{$nickname}</span>";
+    }
+
+    /**
+     * 根据段位返回颜色
      */
     public function getColorName()
     {
