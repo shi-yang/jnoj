@@ -14,7 +14,7 @@ class ImageController extends Controller
     public $enableCsrfValidation = false;
     public function actionUpload()
     {
-        if (!Yii::$app->request->isAjax && !Yii::$app->user->isGuest) {
+        if (Yii::$app->request->isPost && !Yii::$app->user->isGuest) {
             $up = new Uploader('upload');
             $info = $up->getFileInfo();
             if ($info['state'] == 'SUCCESS') {
