@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use app\components\Uploader;
 
 /**
@@ -24,6 +25,8 @@ class ImageController extends Controller
                 $info['uploaded'] = false;
             }
             echo json_encode($info);
+        } else {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
     }
 }
