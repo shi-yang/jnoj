@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\Modal;
+use app\models\User;
 
 /* @var $model app\models\Contest */
 
@@ -52,7 +53,7 @@ $submit_count = $rank_result['submit_count'];
                 <?= $i + 1 ?>
             </th>
             <th>
-                <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['user_id']]) ?>
+                <?= Html::a(User::getColorNameByRating($rank['nickname'], $rank['rating']), ['/user/view', 'id' => $rank['user_id']]) ?>
             </th>
             <th>
                 <?= $rank['solved'] ?>

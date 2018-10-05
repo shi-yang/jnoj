@@ -36,7 +36,7 @@ class RatingController extends Controller
 
     public function actionProblem()
     {
-        $query = (new Query())->select('u.id, u.nickname, s.solved')
+        $query = (new Query())->select('u.id, u.nickname, u.rating, s.solved')
             ->from('{{%user}} AS u')
             ->innerJoin('(SELECT COUNT(DISTINCT problem_id) AS solved, created_by FROM {{%solution}} WHERE result=4 GROUP BY created_by ORDER BY solved DESC) as s',
                 'u.id=s.created_by')
