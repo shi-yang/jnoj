@@ -44,9 +44,16 @@ class Uploader
      * @param array $config  配置项
      * @param bool $base64  是否解析base64编码，可省略。若开启，则$fileField代表的是base64编码的字符串表单名
      */
-    public function __construct( $fileField , $config , $base64 = false )
+    public function __construct( $fileField , $config = [], $base64 = false )
     {
         $this->fileField = $fileField;
+        if (empty($config)) {
+            $config = [
+                'savePath' => 'uploads/' ,             //存储文件夹
+                'maxSize' => 2048 ,//允许的文件最大尺寸，单位KB
+                'allowFiles' => ['.gif' , '.png' , '.jpg' , '.jpeg' , '.bmp'],  //允许的文件格式
+            ];
+        }
         $this->config = $config;
         $this->stateInfo = $this->stateMap[ 0 ];
         $this->upFile( $base64 );
