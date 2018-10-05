@@ -178,6 +178,9 @@ a.desc:after {
     padding-bottom: 20px;
 }
 
+.html-output img {
+    max-width: 100%;
+}
 /*
  * Blog posts
  */

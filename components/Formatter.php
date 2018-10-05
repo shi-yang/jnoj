@@ -49,7 +49,7 @@ class Formatter extends \yii\i18n\Formatter
     {
         $value = str_replace(array("<pre>", "</pre>"), array("<div class='pre'>", "</div>"), $value);
         $value = HtmlPurifier::process($value, $this->purifierConfig);
-        return $this->katex($value);
+        return '<div class="html-output">' . $this->katex($value) . '</div>';
     }
 
     public function katex($content)
