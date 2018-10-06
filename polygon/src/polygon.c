@@ -331,7 +331,7 @@ bool check_out(int problem_id, int result)
     char sql[BUFFER_SIZE];
     sprintf(sql,
             "UPDATE polygon_status SET result=%d,time=0,memory=0 "
-            "WHERE problem_id=%d and result<2 LIMIT 1",
+            "WHERE id=%d and result<2 LIMIT 1",
             result, problem_id);
     if (mysql_real_query(conn, sql, strlen(sql))) {
         syslog(LOG_ERR | LOG_DAEMON, "%s", mysql_error(conn));
