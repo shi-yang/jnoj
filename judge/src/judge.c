@@ -73,8 +73,6 @@ struct problem_struct {
     bool isspj;
 };
 
-static int DEBUG = 0;
-
 static char oj_home[BUFFER_SIZE];
 
 static int max_running;
@@ -159,48 +157,6 @@ void init_syscalls_limits(int lang)
     }
 }
 
-int after_equal(char * c)
-{
-    int i = 0;
-    for (; c[i] != '\0' && c[i] != '='; i++)
-        ;
-    return ++i;
-}
-
-void trim(char * c)
-{
-    char buf[BUFFER_SIZE];
-    char * start, *end;
-    strcpy(buf, c);
-    start = buf;
-    while (isspace(*start))
-        start++;
-    end = start;
-    while (!isspace(*end))
-        end++;
-    *end = '\0';
-    strcpy(c, start);
-}
-
-bool read_buf(char * buf, const char * key, char * value)
-{
-    if (strncmp(buf, key, strlen(key)) == 0) {
-        strcpy(value, buf + after_equal(buf));
-        trim(value);
-        if (DEBUG)
-            printf("%s\n", value);
-        return 1;
-    }
-    return 0;
-}
-
-void read_int(char * buf, const char * key, int * value)
-{
-    char buf2[BUFFER_SIZE];
-    if (read_buf(buf, key, buf2))
-        sscanf(buf2, "%d", value);
-}
-
 FILE * read_cmd_output(const char * fmt, ...)
 {
     char cmd[BUFFER_SIZE];
@@ -236,15 +192,14 @@ void init_mysql_conf()
             read_buf(buf, "OJ_USER_NAME", db.user_name);
             read_buf(buf, "OJ_PASSWORD", db.password);
             read_buf(buf, "OJ_DB_NAME", db.db_name);
+            read_buf(buf, "OJ_MYSQL_UNIX_PORT", db.mysql_unix_port);
             read_int(buf, "OJ_PORT_NUMBER", &db.port_number);
             read_int(buf, "OJ_JAVA_TIME_BONUS", &java_time_bonus);
             read_int(buf, "OJ_JAVA_MEMORY_BONUS", &java_memory_bonus);
             read_buf(buf, "OJ_JAVA_XMS", java_xms);
             read_buf(buf, "OJ_JAVA_XMX", java_xmx);
-            read_int(buf, "OJ_OI_MODE", &oi_mode);
             read_int(buf, "OJ_FULL_DIFF", &full_diff);
             read_int(buf, "OJ_SHM_RUN", &shm_run);
-            read_int(buf, "OJ_USE_PTRACE", &use_ptrace);
             read_int(buf, "OJ_COMPILE_CHROOT", &compile_chroot);
         }
         fclose(fp);
@@ -379,8 +334,8 @@ void update_solution(int solution_id, int result, int time, int memory,
 
     sprintf(sql,
             "UPDATE %s SET result=%d,time=%d,memory=%d,pass_info='%s',"
-            "judge='%s',judgetime=now() WHERE id=%d LIMIT 1%c",
-            tbname, result, time, memory, pass_info, "local", solution_id, 0);
+            "judge='%s',judgetime=now() WHERE id=%d LIMIT 1",
+            tbname, result, time, memory, pass_info, "local", solution_id);
 
     // printf("sql= %s\n",sql);
     if (mysql_real_query(conn, sql, strlen(sql))) {
@@ -475,13 +430,13 @@ void update_problem_stat(int pid)
     char sql[BUFFER_SIZE];
     sprintf(sql,
             "UPDATE `problem` SET `accepted`=(SELECT count(*) FROM `solution` "
-            "WHERE `problem_id`=\'%d\' AND `result`=\'4\') WHERE `id`=\'%d\'",
+            "WHERE `problem_id`=%d AND `result`=4) WHERE `id`=%d",
             pid, pid);
     if (mysql_real_query(conn, sql, strlen(sql)))
         write_log(mysql_error(conn));
     sprintf(sql,
             "UPDATE `problem` SET `submit`=(SELECT count(*) FROM `solution` "
-            "WHERE `problem_id`=\'%d\') WHERE `id`=\'%d\'",
+            "WHERE `problem_id`=%d) WHERE `id`=%d",
             pid, pid);
     if (mysql_real_query(conn, sql, strlen(sql)))
         write_log(mysql_error(conn));
@@ -573,12 +528,16 @@ int compile(int lang, char * work_dir)
 // 连接 mysql 数据库
 int init_mysql_conn()
 {
+    char * mysql_unix_port = db.mysql_unix_port;
+    if (strlen(mysql_unix_port) == 0) {
+        mysql_unix_port = NULL;
+    }
     conn = mysql_init(NULL);
     const char timeout = 30;
     mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
 
     if (!mysql_real_connect(conn, db.host_name, db.user_name, db.password,
-                            db.db_name, db.port_number, 0, 0)) {
+                            db.db_name, db.port_number, mysql_unix_port, 0)) {
         write_log("%s", mysql_error(conn));
         return 0;
     }

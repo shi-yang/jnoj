@@ -51,14 +51,7 @@ static int sleep_tmp;
 static int oj_tot;
 static int oj_mod;
 
-static int oj_redis = 0;
-static char oj_redisserver[BUFFER_SIZE];
-static int oj_redisport;
-static char oj_redisauth[BUFFER_SIZE];
-static char oj_redisqname[BUFFER_SIZE];
-
 static bool STOP = false;
-static int DEBUG = 0;
 static MYSQL *conn;
 static MYSQL_RES *res;
 static MYSQL_ROW row;
@@ -92,47 +85,6 @@ void write_log(const char *fmt, ...)
     fclose(fp);
 }
 
-int after_equal(char *c)
-{
-    int i = 0;
-    for (; c[i] != '\0' && c[i] != '='; i++);
-    return ++i;
-}
-
-void trim(char *c)
-{
-    char buf[BUFFER_SIZE];
-    char *start, *end;
-    strcpy(buf, c);
-    start = buf;
-    while (isspace(*start))
-        start++;
-    end = start;
-    while (!isspace(*end))
-        end++;
-    *end = '\0';
-    strcpy(c, start);
-}
-
-bool read_buf(char *buf, const char *key, char *value)
-{
-    if (strncmp(buf, key, strlen(key)) == 0) {
-        strcpy(value, buf + after_equal(buf));
-        trim(value);
-        if (DEBUG)
-            printf("%s\n", value);
-        return 1;
-    }
-    return 0;
-}
-
-void read_int(char *buf, const char *key, int *value)
-{
-    char buf2[BUFFER_SIZE];
-    if (read_buf(buf, key, buf2))
-        sscanf(buf2, "%d", value);
-}
-
 // read the configue file
 void init_mysql_conf()
 {
@@ -151,17 +103,13 @@ void init_mysql_conf()
             read_buf(buf, "OJ_USER_NAME", db.user_name);
             read_buf(buf, "OJ_PASSWORD", db.password);
             read_buf(buf, "OJ_DB_NAME", db.db_name);
+            read_buf(buf, "OJ_MYSQL_UNIX_PORT", db.mysql_unix_port);
             read_int(buf, "OJ_PORT_NUMBER", &db.port_number);
             read_int(buf, "OJ_RUNNING", &max_running);
             read_int(buf, "OJ_SLEEP_TIME", &sleep_time);
             read_int(buf, "OJ_TOTAL", &oj_tot);
             read_int(buf, "OJ_MOD", &oj_mod);
             read_buf(buf, "OJ_LANG_SET", oj_lang_set);
-            read_int(buf, "OJ_REDISENABLE", &oj_redis);
-            read_buf(buf, "OJ_REDISSERVER", oj_redisserver);
-            read_int(buf, "OJ_REDISPORT", &oj_redisport);
-            read_buf(buf, "OJ_REDISAUTH", oj_redisauth);
-            read_buf(buf, "OJ_REDISQNAME", oj_redisqname);
         }
         sprintf(query,
                 "SELECT id FROM solution "
@@ -231,11 +179,16 @@ int init_mysql()
     if (conn == NULL) {
         // init the database connection
         conn = mysql_init(NULL);
-        //connect the database
+        // connect the database
         const char timeout = 30;
+        // set mysql unix socket
+        char * mysql_unix_port = db.mysql_unix_port;
+        if (strlen(mysql_unix_port) == 0) {
+            mysql_unix_port = NULL;
+        }
         mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
         if (!mysql_real_connect(conn, db.host_name, db.user_name, db.password,
-                                db.db_name, db.port_number, 0, 0)) {
+                                db.db_name, db.port_number, mysql_unix_port, 0)) {
             if (DEBUG)
                 write_log("%s", mysql_error(conn));
             sleep(2);
@@ -290,42 +243,14 @@ int _get_jobs_mysql(int *jobs)
     return ret;
 }
 
-int _get_jobs_redis(int *jobs)
-{
-    int ret = 0;
-    const char *cmd = "redis-cli -h %s -p %d -a %s --raw rpop %s";
-    while (ret <= max_running) {
-        FILE *fjobs = read_cmd_output(cmd, oj_redisserver, oj_redisport,
-                                      oj_redisauth, oj_redisqname);
-        if (fscanf(fjobs, "%d", &jobs[ret]) == 1) {
-            ret++;
-            pclose(fjobs);
-        } else {
-            pclose(fjobs);
-            break;
-        }
-    }
-    int i = ret;
-    while (i <= max_running * 2)
-        jobs[i++] = 0;
-    if (DEBUG) {
-        printf("redis return %d jobs", ret);
-    }
-    return ret;
-}
-
 int get_jobs(int *jobs)
 {
-    if (oj_redis) {
-        return _get_jobs_redis(jobs);
-    } else {
-        return _get_jobs_mysql(jobs);
-    }
+    return _get_jobs_mysql(jobs);
 }
 
 bool check_out(int solution_id, int result)
 {
-    if (oj_redis || oj_tot > 1)
+    if (oj_tot > 1)
         return true;
 
     char sql[BUFFER_SIZE];

@@ -58,7 +58,6 @@ static char oj_redisauth[BUFFER_SIZE];
 static char oj_redisqname[BUFFER_SIZE];
 
 static bool STOP = false;
-static int DEBUG = 0;
 static MYSQL *conn;
 static MYSQL_RES *res;
 static MYSQL_ROW row;
@@ -90,47 +89,6 @@ void write_log(const char *fmt, ...)
         printf("%s\n", buffer);
     va_end(ap);
     fclose(fp);
-}
-
-int after_equal(char *c)
-{
-    int i = 0;
-    for (; c[i] != '\0' && c[i] != '='; i++);
-    return ++i;
-}
-
-void trim(char *c)
-{
-    char buf[BUFFER_SIZE];
-    char *start, *end;
-    strcpy(buf, c);
-    start = buf;
-    while (isspace(*start))
-        start++;
-    end = start;
-    while (!isspace(*end))
-        end++;
-    *end = '\0';
-    strcpy(c, start);
-}
-
-bool read_buf(char *buf, const char *key, char *value)
-{
-    if (strncmp(buf, key, strlen(key)) == 0) {
-        strcpy(value, buf + after_equal(buf));
-        trim(value);
-        if (DEBUG)
-            printf("%s\n", value);
-        return 1;
-    }
-    return 0;
-}
-
-void read_int(char *buf, const char *key, int *value)
-{
-    char buf2[BUFFER_SIZE];
-    if (read_buf(buf, key, buf2))
-        sscanf(buf2, "%d", value);
 }
 
 // read the configue file
@@ -233,9 +191,14 @@ int init_mysql()
         conn = mysql_init(NULL);
         //connect the database
         const char timeout = 30;
+        // set mysql unix socket
+        char * mysql_unix_port = db.mysql_unix_port;
+        if (strlen(mysql_unix_port) == 0) {
+            mysql_unix_port = NULL;
+        }
         mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
         if (!mysql_real_connect(conn, db.host_name, db.user_name, db.password,
-                                db.db_name, db.port_number, 0, 0)) {
+                                db.db_name, db.port_number, mysql_unix_port, 0)) {
             if (DEBUG)
                 write_log("%s", mysql_error(conn));
             sleep(2);

@@ -75,8 +75,6 @@ struct problem_struct {
     int time_limit;
 };
 
-static int DEBUG = 0;
-
 static char oj_home[BUFFER_SIZE];
 
 static int max_running;
@@ -163,48 +161,6 @@ void init_syscalls_limits(int lang)
     }
 }
 
-int after_equal(char * c)
-{
-    int i = 0;
-    for (; c[i] != '\0' && c[i] != '='; i++)
-        ;
-    return ++i;
-}
-
-void trim(char * c)
-{
-    char buf[BUFFER_SIZE];
-    char * start, *end;
-    strcpy(buf, c);
-    start = buf;
-    while (isspace(*start))
-        start++;
-    end = start;
-    while (!isspace(*end))
-        end++;
-    *end = '\0';
-    strcpy(c, start);
-}
-
-bool read_buf(char * buf, const char * key, char * value)
-{
-    if (strncmp(buf, key, strlen(key)) == 0) {
-        strcpy(value, buf + after_equal(buf));
-        trim(value);
-        if (DEBUG)
-            printf("%s\n", value);
-        return 1;
-    }
-    return 0;
-}
-
-void read_int(char * buf, const char * key, int * value)
-{
-    char buf2[BUFFER_SIZE];
-    if (read_buf(buf, key, buf2))
-        sscanf(buf2, "%d", value);
-}
-
 FILE * read_cmd_output(const char * fmt, ...)
 {
     char cmd[BUFFER_SIZE];
@@ -240,12 +196,12 @@ void init_mysql_conf()
             read_buf(buf, "OJ_USER_NAME", db.user_name);
             read_buf(buf, "OJ_PASSWORD", db.password);
             read_buf(buf, "OJ_DB_NAME", db.db_name);
+            read_buf(buf, "OJ_MYSQL_UNIX_PORT", db.mysql_unix_port);
             read_int(buf, "OJ_PORT_NUMBER", &db.port_number);
             read_int(buf, "OJ_JAVA_TIME_BONUS", &java_time_bonus);
             read_int(buf, "OJ_JAVA_MEMORY_BONUS", &java_memory_bonus);
             read_buf(buf, "OJ_JAVA_XMS", java_xms);
             read_buf(buf, "OJ_JAVA_XMX", java_xmx);
-            read_int(buf, "OJ_OI_MODE", &oi_mode);
             read_int(buf, "OJ_FULL_DIFF", &full_diff);
             read_int(buf, "OJ_SHM_RUN", &shm_run);
             read_int(buf, "OJ_USE_PTRACE", &use_ptrace);
@@ -556,8 +512,13 @@ int init_mysql_conn()
     const char timeout = 30;
     mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
 
+    // set mysql unix socket
+    char * mysql_unix_port = db.mysql_unix_port;
+    if (strlen(mysql_unix_port) == 0) {
+        mysql_unix_port = NULL;
+    }
     if (!mysql_real_connect(conn, db.host_name, db.user_name, db.password,
-                            db.db_name, db.port_number, 0, 0)) {
+                            db.db_name, db.port_number, mysql_unix_port, 0)) {
         write_log("%s", mysql_error(conn));
         return 0;
     }
