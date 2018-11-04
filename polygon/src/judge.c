@@ -897,7 +897,7 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
             break;
         }
 
-        if (!isspj && get_file_size(userfile) > get_file_size(outfile) * 2 + 1024) {
+        if (!is_verify && !isspj && get_file_size(userfile) > get_file_size(outfile) * 2 + 1024) {
             *ACflg = OJ_OL;
             ptrace(PTRACE_KILL, pidApp, NULL, NULL);
             break;
