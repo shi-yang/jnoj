@@ -39,7 +39,7 @@ class ProblemController extends Controller
                 'rules' => [
                     [
                         'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj',
-                                      'img_upload', 'run', 'deletefile', 'viewfile', 'verify'],
+                                      'img_upload', 'run', 'deletefile', 'viewfile', 'verify', 'solution-detail'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -65,6 +65,21 @@ class ProblemController extends Controller
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * 显示某个解决方案的详细信息
+     * @param $id
+     * @param $sid
+     */
+    public function actionSolutionDetail($id, $sid)
+    {
+        $model = $this->findModel($id);
+        $status = PolygonStatus::findOne(['id' => $sid, 'problem_id' => $id]);
+        return $this->render('detail', [
+            'model' => $model,
+            'status' => $status
         ]);
     }
 

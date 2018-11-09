@@ -27,7 +27,17 @@ $solution->language = Yii::$app->user->identity->language;
     'dataProvider' => $dataProvider,
     'options' => ['class' => 'table-responsive problem-index-list'],
     'columns' => [
-        'id',
+        [
+            'attribute' => 'id',
+            'value' => function ($solution, $key, $index, $column) use ($model) {
+                return Html::a($solution->id, [
+                    '/polygon/problem/solution-detail',
+                    'id' => $model->id,
+                    'sid' => $solution->id
+                ], ['target' => '_blank']);
+            },
+            'format' => 'raw'
+        ],
         [
             'attribute' => 'who',
             'value' => function ($model, $key, $index, $column) {
@@ -66,11 +76,12 @@ $solution->language = Yii::$app->user->identity->language;
         ],
         [
             'attribute' => 'language',
-            'value' => function ($model, $key, $index, $column) {
-                return Html::a($model->getLang(),
-                    ['/solution/source', 'id' => $model->id],
-                    ['onclick' => 'return false', 'data-click' => "solution_info"]
-                );
+            'value' => function ($solution, $key, $index, $column) use ($model) {
+                return Html::a($solution->getLang(), [
+                '/polygon/problem/solution-detail',
+                    'id' => $model->id,
+                    'sid' => $solution->id
+                ], ['target' => '_blank']);
             },
             'format' => 'raw'
         ],
