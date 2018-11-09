@@ -353,7 +353,8 @@ class ContestController extends Controller
             $isVisible = ($model->status == Contest::STATUS_VISIBLE);
             $isAuthor = !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by;
             if ($isVisible || $isAuthor) {
-                if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->isUserInContest()) {
+                if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->getRunStatus() == Contest::STATUS_ENDED ||
+                    $model->isUserInContest()) {
                     return $model;
                 } else {
                     throw new ForbiddenHttpException('You are not allowed to perform this action.');
