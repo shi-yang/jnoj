@@ -159,7 +159,7 @@ $status = $model->getRunStatus();
                         'url' => ['contest/clarify', 'id' => $model->id],
                     ],
                 ];
-                if ($model->scenario == $model::SCENARIO_OFFLINE) {
+                if ($model->scenario == $model::SCENARIO_OFFLINE && $model->getRunStatus() == $model::STATUS_RUNNING) {
                     $menuItems[] = [
                         'label' => '<span class="glyphicon glyphicon-print"></span> 打印服务',
                         'url' => ['/print/index', 'id' => $model->id],
