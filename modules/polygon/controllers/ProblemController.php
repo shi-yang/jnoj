@@ -77,6 +77,10 @@ class ProblemController extends Controller
     {
         $model = $this->findModel($id);
         $status = PolygonStatus::findOne(['id' => $sid, 'problem_id' => $id]);
+        if ($status === null) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+
         return $this->render('detail', [
             'model' => $model,
             'status' => $status
