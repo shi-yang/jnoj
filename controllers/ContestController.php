@@ -350,8 +350,14 @@ class ContestController extends Controller
     protected function findModel($id)
     {
         if (($model = Contest::findOne($id)) !== null) {
-            if ($model->status == Contest::STATUS_VISIBLE || !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by) {
-                return $model;
+            $isVisible = ($model->status == Contest::STATUS_VISIBLE);
+            $isAuthor = !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by;
+            if ($isVisible || $isAuthor) {
+                if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->isUserInContest()) {
+                    return $model;
+                } else {
+                    throw new ForbiddenHttpException('You are not allowed to perform this action.');
+                }
             } else {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
