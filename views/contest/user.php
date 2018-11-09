@@ -8,7 +8,9 @@ use yii\grid\GridView;
 /* @var $provider yii\data\ActiveDataProvider */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contests'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = Yii::t('app', 'User');
 ?>
 
 <div class="contest-index">
