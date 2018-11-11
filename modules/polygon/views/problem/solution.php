@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->params['model'] = $model;
 
 $model->setSamples();
-$model->solution_lang = Yii::$app->user->identity->language;
 ?>
 <p>
     请在此页面提供一个“标程”（即解答该问题的正确代码程序）。它将被用来生成测试数据的标准输出。
