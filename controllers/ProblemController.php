@@ -63,6 +63,7 @@ class ProblemController extends Controller
 
         $tags = (new TaggingQuery())->select('tags')
             ->from('{{%problem}}')
+            ->where(['status' => Problem::STATUS_VISIBLE])
             ->limit(20)
             ->displaySort(['freq' => SORT_DESC])
             ->getTags();
