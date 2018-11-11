@@ -81,7 +81,7 @@ $submit_count = $rank_result['submit_count'];
                         $css_class = 'solved';
                     }
                     $num = $rank['wa_count'][$p['problem_id']] + 1;
-                    $time = round($rank['ac_time'][$p['problem_id']] / 60);
+                    $time = round($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                     $css_class = 'pending';
                     $num = $rank['wa_count'][$p['problem_id']];
