@@ -30,7 +30,7 @@ int LANG_JV[256] = {0,2,3,4,5,9,10,11,12,13,14,21,56,59,89,97,104,158,202,218,23
 		SYS_getuid, SYS_getgid, SYS_geteuid, SYS_getegid, SYS_set_thread_area,
 		SYS_set_tid_address, SYS_set_robust_list, SYS_exit_group, 158, 0 };
 //python
-int LANG_YV[256] = {0,2,3,4,5,6,8,9,10,11,12,13,14,16,21,32,59,72,78,79,89,97,99,102,104,107,108,131,158,218,228,231,273,318,39,99,302,99,32,72,131,1,202,257,41, 42, 146, SYS_mremap, 158, 117, 60, 39, 102, 191,
+int LANG_YV[256] = {0,2,3,4,5,6,8,9,10,11,12,13,14,16,21,32,59,72,78,79,89,97,99,102,104,107,108,131,158,218,228,231,272,273,318,39,99,302,99,32,72,131,1,202,257,41, 42, 146, SYS_mremap, 158, 117, 60, 39, 102, 191,
                     		SYS_access, SYS_arch_prctl, SYS_brk, SYS_close, SYS_execve,
                     		SYS_exit_group, SYS_fcntl, SYS_fstat, SYS_futex, SYS_getcwd,
                     		SYS_getdents, SYS_getegid, SYS_geteuid, SYS_getgid, SYS_getrlimit,
