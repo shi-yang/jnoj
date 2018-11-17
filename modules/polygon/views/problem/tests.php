@@ -24,7 +24,7 @@ $files = $model->getDataFiles();
     <table class="table table-bordered table-rank">
         <thead>
         <tr>
-            <th width="80px">Lang</th>
+            <th width="80px">ID</th>
             <th>Verdict</th>
             <th>Time</th>
             <th>Memory</th>
@@ -33,7 +33,7 @@ $files = $model->getDataFiles();
         </thead>
         <tbody>
         <tr>
-            <th><?= $model->solution_lang ?></th>
+            <th><?= Html::a($solutionStatus['id'], ['/polygon/problem/solution-detail', 'id' => $model->id, 'sid' => $solutionStatus['id']]) ?></th>
             <th><?= Problem::getResultList($solutionStatus['result']) ?></th>
             <th><?= $solutionStatus['time'] ?>MS</th>
             <th><?= $solutionStatus['memory'] ?>KB</th>
