@@ -49,10 +49,6 @@ class ContestController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['index', 'board', 'rank', 'print', 'status', 'view', 'create', 'update',
-                            'clarify', 'newproblem', 'addproblem', 'deleteproblem', 'updateproblem', 'register',
-                            'editorial', 'delete', 'printuser', 'rated'
-                        ],
                         'allow' => true,
                         // Allow users, moderators and admins to create
                         'roles' => [

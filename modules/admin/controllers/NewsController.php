@@ -32,7 +32,6 @@ class NewsController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'view', 'update', 'delete', 'img_upload'],
                         'allow' => true,
                         // Allow users, moderators and admins to create
                         'roles' => [

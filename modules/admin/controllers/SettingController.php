@@ -30,7 +30,6 @@ class SettingController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
                         'allow' => true,
                         // Allow users, moderators and admins to create
                         'roles' => [

@@ -29,7 +29,6 @@ class DefaultController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['index'],
                         'allow' => true,
                         // Allow users, moderators and admins to create
                         'roles' => [
