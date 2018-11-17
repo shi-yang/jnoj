@@ -47,7 +47,6 @@ class ContestController extends Controller
                 'ruleConfig' => [
                     'class' => AccessRule::className(),
                 ],
-                //'only' => ['index', 'create', 'update', 'delete'],
                 'rules' => [
                     [
                         'actions' => ['index', 'board', 'rank', 'print', 'status', 'view', 'create', 'update',

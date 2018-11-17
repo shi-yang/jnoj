@@ -27,7 +27,6 @@ class DefaultController extends Controller
                 'ruleConfig' => [
                     'class' => AccessRule::className(),
                 ],
-                'only' => ['index'],
                 'rules' => [
                     [
                         'actions' => ['index'],

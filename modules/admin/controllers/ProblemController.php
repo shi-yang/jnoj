@@ -40,7 +40,6 @@ class ProblemController extends Controller
                 'ruleConfig' => [
                     'class' => AccessRule::className(),
                 ],
-                'only' => ['index', 'create', 'update', 'delete'],
                 'rules' => [
                     [
                         'actions' => ['index', 'view', 'create', 'update', 'testData', 'source', 'result', 'delete', 'img_upload'],
