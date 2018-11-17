@@ -35,7 +35,7 @@ class UserController extends Controller
                 'ruleConfig' => [
                     'class' => AccessRule::className(),
                 ],
-                'only' => ['index', 'create', 'update', 'delete'],
+                'only' => ['index', 'create', 'update', 'delete', 'view'],
                 'rules' => [
                     [
                         'actions' => ['index', 'view', 'create', 'update', 'delete'],
