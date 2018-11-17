@@ -15,7 +15,7 @@ class SignupForm extends Model
     public $username;
     public $email;
     public $password;
-    public $captcha;
+    public $verifyCode;
     public $studentNumber;
 
     /**
@@ -40,7 +40,7 @@ class SignupForm extends Model
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
 
-            //['captcha', 'captcha']
+            ['verifyCode', 'captcha']
         ];
     }
 
@@ -53,7 +53,7 @@ class SignupForm extends Model
             'username' => Yii::t('app', 'Username'),
             'password' => Yii::t('app', 'Password'),
             'email' => Yii::t('app', 'Email'),
-            'captcha' => Yii::t('app', 'Captcha'),
+            'verifyCode' => Yii::t('app', 'Verify Code'),
             'studentNumber' => Yii::t('app', 'Student Number')
         ];
     }

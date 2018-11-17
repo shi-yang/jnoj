@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\captcha\Captcha;
 
 /**
  * LoginForm is the model behind the login form.
@@ -16,6 +17,7 @@ class LoginForm extends Model
     public $username;
     public $password;
     public $rememberMe = true;
+    public $verifyCode;
 
     private $_user = false;
 
@@ -32,6 +34,7 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
+            ['verifyCode', 'captcha', 'on' => 'withCaptcha']
         ];
     }
 
@@ -43,7 +46,8 @@ class LoginForm extends Model
         return [
             'username' => Yii::t('app', 'Username Or Email'),
             'password' => Yii::t('app', 'Password'),
-            'rememberMe' => Yii::t('app', 'Remember Me')
+            'rememberMe' => Yii::t('app', 'Remember Me'),
+            'verifyCode' => Yii::t('app', 'Verify Code')
         ];
     }
 

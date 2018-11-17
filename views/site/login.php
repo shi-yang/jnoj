@@ -32,6 +32,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ])->passwordInput()->label(false);
         ?>
+
+        <?php if ($model->scenario == 'withCaptcha'): ?>
+            <?= $form->field($model, 'verifyCode')->widget(\yii\captcha\Captcha::className()); ?>
+        <?php endif; ?>
         <?= $form->field($model, 'rememberMe')->checkbox() ?>
 
         <div class="form-group">

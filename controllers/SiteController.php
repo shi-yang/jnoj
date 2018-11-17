@@ -28,6 +28,8 @@ class SiteController extends Controller
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'fontFile' => '@webroot/fonts/Astarisborn.TTF',
+                'width' => 140
             ],
         ];
     }
@@ -97,8 +99,18 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+        if (Yii::$app->session->get('attempts-login') > 2) {
+            $model->scenario = 'withCaptcha';
+        }
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->login()) {
+                return $this->goBack();
+            } else {
+                Yii::$app->session->set('attempts-login', Yii::$app->session->get('attempts-login', 0) + 1);
+                if (Yii::$app->session->get('attempts-login') > 2) {
+                    $model->scenario = 'withCaptcha';
+                }
+            }
         }
         return $this->render('login', [
             'model' => $model,
