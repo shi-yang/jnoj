@@ -42,7 +42,6 @@ class ProblemController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'testData', 'source', 'result', 'delete', 'img_upload'],
                         'allow' => true,
                         // Allow users, moderators and admins to create
                         'roles' => [
