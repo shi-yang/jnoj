@@ -27,10 +27,10 @@ sudo apt install mysql-server mysql-client
 
 #### PHP 脚本语言的安装
 
-这里选择安装 PHP 7.2 版本
+这里选择安装 PHP 7.2 版本，并不一定 7.2 版本，建议 7.0 或以上都可以。
 
 ```bash
-sudo apt install php7.2-mysql php7.2-curl php7.2-json php7.2-cgi php7.2 libapache2-mod-php7.2 php7.2-mbstring
+sudo apt install php7.2-mysql php7.2-curl php7.2-json php7.2-cgi php7.2 libapache2-mod-php7.2 php7.2-mbstring php7.2-gb
 ```
 
 安装完后，需要开启Apache Rewrite功能

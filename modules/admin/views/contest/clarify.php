@@ -12,6 +12,7 @@ $this->title = Html::encode($model->title);
 $this->params['model'] = $model;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contests'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Clarification'), 'url' => ['clarify', 'id' => $model->id]];
 
 if ($discuss != null) {
     echo $this->render('_clarify_view', [

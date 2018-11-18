@@ -2,6 +2,7 @@
 
 namespace app\modules\admin\controllers;
 
+use app\models\ContestProblem;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -335,6 +336,8 @@ class ProblemController extends Controller
      */
     public function actionDelete($id)
     {
+        Solution::deleteAll(['problem_id' => $id]);
+        ContestProblem::deleteAll(['problem_id' => $id]);
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
