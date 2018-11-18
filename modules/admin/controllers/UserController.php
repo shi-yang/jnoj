@@ -2,6 +2,9 @@
 
 namespace app\modules\admin\controllers;
 
+use app\models\Solution;
+use app\modules\polygon\models\PolygonStatus;
+use app\modules\polygon\models\Problem;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -125,7 +128,7 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('error', '暂不支持删除用户');
 
         return $this->redirect(['index']);
     }

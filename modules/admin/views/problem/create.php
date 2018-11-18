@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Problems'), 'url' =>
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="problem-create">
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?><small><?= Html::a('建议使用Polygon来出题', ['create-from-polygon']) ?></small></h1>
     <hr>
     <?= $this->render('_form', [
         'model' => $model,
