@@ -100,7 +100,7 @@ $this->title = $model->title;
                 <?= Yii::$app->formatter->asHtml($problem['hint']) ?>
             </div>
         <?php endif; ?>
-        <br><br><br>
+        <div style="page-break-after: always"></div>
     <?php endforeach; ?>
     </div>
 </div>
