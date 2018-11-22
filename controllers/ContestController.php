@@ -359,7 +359,7 @@ class ContestController extends Controller
                     $model->isUserInContest() || $isAdmin) {
                     return $model;
                 } else {
-                    throw new ForbiddenHttpException('You are not allowed to perform this action.');
+                    throw new ForbiddenHttpException('您未报名参加该比赛，请等待比赛结束后再查看。');
                 }
             } else {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');

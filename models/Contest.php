@@ -238,7 +238,7 @@ class Contest extends \yii\db\ActiveRecord
     public function getContestUser()
     {
         $dependency = new \yii\caching\DbDependency([
-            'sql'=>'SELECT COUNT(1) FROM {{%contest_user}} WHERE contest_id=:cid',
+            'sql'=>'SELECT COUNT(*) FROM {{%contest_user}} WHERE contest_id=:cid',
             'params' => [':cid' => $this->id]
         ]);
         return Yii::$app->db->cache(function ($db) {
@@ -255,7 +255,7 @@ class Contest extends \yii\db\ActiveRecord
     public function getContestUserCount()
     {
         return Yii::$app->db->createCommand('
-            SELECT COUNT(1) FROM {{%contest_user}} WHERE contest_id=:cid
+            SELECT COUNT(*) FROM {{%contest_user}} WHERE contest_id=:cid
         ', [':cid' => $this->id])->queryScalar();
     }
 
@@ -386,7 +386,7 @@ class Contest extends \yii\db\ActiveRecord
      */
     public function isUserInContest()
     {
-        return Yii::$app->db->createCommand('SELECT count(1) FROM {{%contest_user}} WHERE user_id=:uid AND contest_id=:cid', [
+        return Yii::$app->db->createCommand('SELECT count(*) FROM {{%contest_user}} WHERE user_id=:uid AND contest_id=:cid', [
             ':uid' => Yii::$app->user->id,
             ':cid' => $this->id
         ])->queryScalar();
