@@ -5,12 +5,13 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "{{%print_source}}".
+ * This is the model class for table "{{%contest_print}}".
  *
  * @property int $id
  * @property int $user_id
  * @property int $source
  * @property string $created_at
+ * @property int $contest_id
  * @property int $status
  */
 class ContestPrint extends ActiveRecord
@@ -38,7 +39,7 @@ class ContestPrint extends ActiveRecord
         return [
             [['source', 'created_at'], 'string'],
             [['source'], 'required'],
-            [['id', 'user_id', 'contest_id', 'status'], 'integer'],
+            [['id', 'user_id', 'contest_id', 'status', 'contest_id'], 'integer'],
         ];
     }
 
@@ -80,6 +81,6 @@ class ContestPrint extends ActiveRecord
 
     public function getContest()
     {
-        return $this->hasOne(Contest::className(), ['contest_id' => 'contest_id']);
+        return $this->hasOne(Contest::className(), ['id' => 'contest_id']);
     }
 }

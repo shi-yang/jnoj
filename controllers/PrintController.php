@@ -51,7 +51,7 @@ class PrintController extends Controller
     public function actionIndex($id)
     {
         $contest = Contest::findOne($id);
-        if ($contest === null) {
+        if ($contest === null || $contest->scenario != Contest::SCENARIO_OFFLINE) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
         if (Yii::$app->user->identity->role == User::ROLE_ADMIN) {
@@ -94,7 +94,7 @@ class PrintController extends Controller
     {
         $model = new ContestPrint();
         $contest = Contest::findOne($id);
-        if ($contest === null) {
+        if ($contest === null || $contest->scenario != Contest::SCENARIO_OFFLINE) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 

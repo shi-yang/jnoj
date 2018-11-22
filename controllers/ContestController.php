@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use yii\db\Expression;
 use yii\db\Query;
@@ -352,9 +353,10 @@ class ContestController extends Controller
         if (($model = Contest::findOne($id)) !== null) {
             $isVisible = ($model->status == Contest::STATUS_VISIBLE);
             $isAuthor = !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by;
+            $isAdmin = !Yii::$app->user->isGuest && Yii::$app->user->identity->role === User::ROLE_ADMIN;
             if ($isVisible || $isAuthor) {
                 if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->getRunStatus() == Contest::STATUS_ENDED ||
-                    $model->isUserInContest()) {
+                    $model->isUserInContest() || $isAdmin) {
                     return $model;
                 } else {
                     throw new ForbiddenHttpException('You are not allowed to perform this action.');
