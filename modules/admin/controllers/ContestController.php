@@ -472,7 +472,7 @@ class ContestController extends Controller
                 // 给前台用户提醒
                 $client = stream_socket_client('tcp://0.0.0.0:2121', $errno, $errmsg, 1);
                 fwrite($client, json_encode([
-                    'uid' => $discuss->user_id,
+                    'uid' => $discuss->created_by,
                     'content' => Yii::t('app', 'New reply') . ': '. $new_clarify->content
                 ])."\n");
             } catch (\Exception $e) {
