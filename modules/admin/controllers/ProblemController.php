@@ -174,37 +174,26 @@ class ProblemController extends Controller
     public function actionCreateFromPolygon()
     {
         if (Yii::$app->request->isPost) {
-            $id = intval(Yii::$app->request->post('polygon_problem_id'));
-            $polygonProblem = Yii::$app->db->createCommand('SELECT * FROM {{%polygon_problem}} WHERE id=:id', [':id' => $id])->queryOne();
-            if (!empty($polygonProblem)) {
-                $in = Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE polygon_problem_id=:id', [':id' => $id])->queryColumn();
-                $problem = new Problem();
-                if (!empty($in)) {
-                    $problem = Problem::findOne(['polygon_problem_id' => $id]);
-                    $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+            $id = Yii::$app->request->post('polygon_problem_id');
+            $fromId = Yii::$app->request->post('polygon_problem_id_from');
+            $toId = Yii::$app->request->post('polygon_problem_id_to');
+            if (!empty($id)) {
+                if ($this->synchronizeProblemFromPolygon($id)) {
+                    Yii::$app->session->setFlash('success', $id . ' created Successfully.');
+                } else {
+                    Yii::$app->session->setFlash('error', $id . ' no such problem.');
                 }
-                $problem->title = $polygonProblem['title'];
-                $problem->description = $polygonProblem['description'];
-                $problem->input = $polygonProblem['input'];
-                $problem->output = $polygonProblem['output'];
-                $problem->sample_input = $polygonProblem['sample_input'];
-                $problem->sample_output = $polygonProblem['sample_output'];
-                $problem->spj = $polygonProblem['spj'];
-                $problem->hint = $polygonProblem['hint'];
-                $problem->memory_limit = $polygonProblem['memory_limit'];
-                $problem->time_limit = $polygonProblem['time_limit'];
-                $problem->created_by = $polygonProblem['created_by'];
-                $problem->tags = $polygonProblem['tags'];
-                $problem->status = Problem::STATUS_HIDDEN;
-                $problem->polygon_problem_id = $id;
-                $problem->save();
-
-                $this->copyDir(Yii::$app->params['polygonProblemDataPath'] . $polygonProblem['id'], Yii::$app->params['judgeProblemDataPath'] . $problem->id);
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Create Successfully'));
-                return $this->redirect(['view', 'id' => $problem->id]);
+            } else if (!empty($fromId) && !empty($toId)) {
+                $fromId = intval($fromId);
+                $toId = intval($toId);
+                for ($i = $fromId; $i <= $toId; $i++) {
+                    $this->synchronizeProblemFromPolygon($i);
+                }
+                Yii::$app->session->setFlash('success', 'Created Successfully.');
             } else {
-                Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
+                Yii::$app->session->setFlash('error', '请填好表单');
             }
+            return $this->redirect(['index']);
         }
         return $this->render('create_from_polygon');
     }
@@ -394,5 +383,42 @@ class ProblemController extends Controller
             }
         }
         closedir($dh);
+    }
+
+    /**
+     * 根据 id 来同步 polygon 的题目到题库中
+     * @param $id integer
+     */
+    protected function synchronizeProblemFromPolygon($id)
+    {
+        $id = intval($id);
+        $polygonProblem = Yii::$app->db->createCommand('SELECT * FROM {{%polygon_problem}} WHERE id=:id', [':id' => $id])->queryOne();
+        if (!empty($polygonProblem)) {
+            $in = Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE polygon_problem_id=:id', [':id' => $id])->queryColumn();
+            $problem = new Problem();
+            if (!empty($in)) {
+                $problem = Problem::findOne(['polygon_problem_id' => $id]);
+                $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+            }
+            $problem->title = $polygonProblem['title'];
+            $problem->description = $polygonProblem['description'];
+            $problem->input = $polygonProblem['input'];
+            $problem->output = $polygonProblem['output'];
+            $problem->sample_input = $polygonProblem['sample_input'];
+            $problem->sample_output = $polygonProblem['sample_output'];
+            $problem->spj = $polygonProblem['spj'];
+            $problem->hint = $polygonProblem['hint'];
+            $problem->memory_limit = $polygonProblem['memory_limit'];
+            $problem->time_limit = $polygonProblem['time_limit'];
+            $problem->created_by = $polygonProblem['created_by'];
+            $problem->tags = $polygonProblem['tags'];
+            $problem->status = Problem::STATUS_HIDDEN;
+            $problem->polygon_problem_id = $id;
+            $problem->save();
+
+            $this->copyDir(Yii::$app->params['polygonProblemDataPath'] . $polygonProblem['id'], Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+            return true;
+        }
+        return false;
     }
 }
