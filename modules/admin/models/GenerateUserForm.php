@@ -65,7 +65,7 @@ class GenerateUserForm extends Model
 
         for ($i = 1; $i <= $this->team_number; ++$i) {
 
-            if(isset($pieces[$i - 1]))
+            if(isset($pieces[$i - 1]) && !empty($pieces[$i - 1]))
                 $nick = $pieces[$i - 1];
             else
                 $nick = $this->prefix . $i;
