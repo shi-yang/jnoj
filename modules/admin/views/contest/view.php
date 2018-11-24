@@ -47,7 +47,6 @@ $problems = $model->problems;
         <?= Html::a(Yii::t('app', 'Print Problem'), ['print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?>
         <?= Html::a(Yii::t('app', 'Print Rank'), ['rank', 'id' => $model->id], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
     </p>
-    <p class="help-block">打印使用方法：打开链接后，在页面上鼠标“右键”-“打印”，可以导出为 PDF 格式后打印</p>
     <hr>
     <h3>
         <?= Yii::t('app', 'Information') ?>

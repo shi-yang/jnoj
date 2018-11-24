@@ -39,7 +39,6 @@ foreach ($problems as $key => $p) {
         <?= Html::a('已阅读上述内容，并将提交记录展示在前台', ['/admin/contest/status', 'id' => $model->id, 'active' => 1], ['class' => 'btn btn-danger']) ?>
         <?php Modal::end(); ?>
 
-
         <?= Html::a('在前台隐藏提交记录', ['/admin/contest/status', 'id' => $model->id, 'active' => 2], ['class' => 'btn btn-default']) ?>
 
         <?php Pjax::begin() ?>
@@ -51,7 +50,13 @@ foreach ($problems as $key => $p) {
                 'dataProvider' => $dataProvider,
                 'options' => ['class' => 'table-responsive'],
                 'columns' => [
-                    'id',
+                    [
+                        'attribute' => 'id',
+                        'value' => function ($model, $key, $index, $column) {
+                            return Html::a($model->id, ['/solution/detail', 'id' => $model->id], ['target' => '_blank']);
+                        },
+                        'format' => 'raw'
+                    ],
                     [
                         'attribute' => 'who',
                         'value' => function ($model, $key, $index, $column) {

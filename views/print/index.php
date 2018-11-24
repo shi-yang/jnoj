@@ -22,23 +22,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            'id',
             [
-                'attribute' => 'username',
+                'attribute' => 'id',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->user->username, ['/user/view', 'id' => $model->user->id]);
+                    return Html::a($model->id, ['/print/view', 'id' => $model->id], ['target' => '_blank']);
                 },
                 'format' => 'raw'
             ],
             [
-                'attribute' => 'nickname',
+                'attribute' => 'who',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->user->nickname, ['/user/view', 'id' => $model->user->id]);
+                    return Html::a(Html::encode($model->user->username) . ' [' . Html::encode($model->user->nickname) . ']', ['/user/view', 'id' => $model->user->id]);
                 },
                 'format' => 'raw'
             ],
             'created_at:datetime',
-            'status',
             [
                 'class' => 'yii\grid\ActionColumn'
             ],

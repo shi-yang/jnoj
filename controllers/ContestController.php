@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\ContestPrint;
 use app\models\User;
 use Yii;
 use yii\db\Expression;
@@ -154,6 +155,42 @@ class ContestController extends Controller
         }
         return $this->render('register', [
             'model' => $model
+        ]);
+    }
+
+    /**
+     * 代码打印页面
+     * @param $id
+     * @return string
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     */
+    public function actionPrint($id)
+    {
+        $model = $this->findModel($id);
+        $newContestPrint = new ContestPrint();
+
+        // 只能在线下赛未结束时访问
+        if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->getRunStatus() == Contest::STATUS_ENDED) {
+            throw new ForbiddenHttpException('该比赛现不提供打印服务功能。');
+        }
+
+        if ($newContestPrint->load(Yii::$app->request->post())) {
+            $newContestPrint->contest_id = $model->id;
+            $newContestPrint->save();
+            return $this->redirect(['print', 'id' => $model->id]);
+        }
+
+        $query = ContestPrint::find()->where(['contest_id' => $model->id, 'user_id' => Yii::$app->user->id])->with('user');
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('print', [
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+            'newContestPrint' => $newContestPrint
         ]);
     }
 

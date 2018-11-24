@@ -10,10 +10,18 @@ $rank_result = $model->getRankData(false);
 $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];
+
+$this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
 ?>
 
 <div class="wrap">
     <div class="container">
+        <div class="alert alert-warning alert-dismissible fade in hidden-print" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <p>提示：如需打印该榜单或将榜单导出为PDF文件，可以使用浏览器自带的打印功能
+                （Chrome 浏览器可在页面上鼠标“右键”-“打印”，其它浏览器请自行利用搜索引擎获取使用方法），从中选择将此页面导出为 PDF 格式后再打印。</p>
+            <p>此提示信息不会出现在浏览器的打印窗口中。</p>
+        </div>
         <div class="row">
             <div class="col-md-3 text-left">
                 <strong>Start </strong>

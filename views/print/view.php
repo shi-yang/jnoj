@@ -34,9 +34,11 @@ $this->registerCss('
         ]) ?>
     </p>
     <?php if (Yii::$app->user->identity->role === \app\models\User::ROLE_ADMIN): ?>
-        <h3 class="hidden-print text-muted">
-            注：可以使用浏览器打印功能来快速打印（对于 Chrome 浏览器：页面上右键-打印。对于火狐浏览器：点击在右上角菜单按钮，然后选择打印）。
-        </h3>
+        <div class="alert alert-warning alert-dismissible fade in hidden-print" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <p>提示：可以使用浏览器打印功能来快速打印
+                （Chrome 浏览器可在页面上用鼠标“右键”-“打印”，其它浏览器请自行利用搜索引擎获取使用方法）。</p>
+        </div>
     <?php endif; ?>
     <hr>
     <p><span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></p>

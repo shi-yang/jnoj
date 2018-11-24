@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $this \yii\web\View */
 
 $this->title = $model->title;
-
+$this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
 ?>
 <style>
     html, body {
@@ -24,7 +24,12 @@ $this->title = $model->title;
 </style>
 <div class="row">
     <div class="col-md-8 problem-view">
-    <?php foreach ($problems as $key => $problem): ?>
+        <div class="alert alert-warning alert-dismissible fade in hidden-print" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <p>提示：建议使用浏览器自带的打印功能（Chrome 浏览器可在页面上鼠标“右键”-“打印”，其它浏览器请自行利用搜索引擎获取使用方法），从中选择将此页面导出为 PDF 格式后再打印。</p>
+            <p>此提示信息不会出现在浏览器的打印窗口中。</p>
+        </div>
+        <?php foreach ($problems as $key => $problem): ?>
         <h3><?= Html::encode(chr(65 + $problem['num']) . '. ' . $problem['title']) ?></h3>
         <p class="limit">
             Time limit: <?= Yii::t('app', '{t, plural, =1{# second} other{# seconds}}', ['t' => intval($problem['time_limit'])]); ?>

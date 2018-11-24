@@ -20,7 +20,7 @@ if ($discuss != null) {
     ]);
 }
 ?>
-<div style="padding-top: 20px">
+<div style="margin-top: 20px">
     <?php
     if ($dataProvider->count > 0) {
         echo GridView::widget([
