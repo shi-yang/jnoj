@@ -28,11 +28,6 @@ class WikiController extends Controller
         return $this->render('contest');
     }
 
-    public function actionDesign()
-    {
-        return $this->render('design');
-    }
-
     public function actionProblem()
     {
         return $this->render('problem');

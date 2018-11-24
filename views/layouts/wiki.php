@@ -14,7 +14,6 @@ $this->title = 'Wiki';
             'items' => [
                 ['label' => Yii::t('app', 'OJ 信息'), 'url' => ['wiki/index']],
                 ['label' => Yii::t('app', 'Contest'), 'url' => ['wiki/contest']],
-                ['label' => 'OJ设计与实现', 'url' => ['wiki/design']],
                 ['label' => '出题要求', 'url' => ['wiki/problem']],
                 ['label' => Yii::t('app', 'About'), 'url' => ['wiki/about']]
             ],

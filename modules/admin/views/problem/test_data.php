@@ -56,13 +56,15 @@ $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'i
                         <th><?= $file['size'] ?></th>
                         <th><?= date('Y-m-d H:i', $file['time']) ?></th>
                         <th>
-                            <a href="<?= Url::toRoute(['/admin/problem/viewfile', 'id' => $model->id, 'name' => $file['name']]) ?>" target="_blank">
+                            <a href="<?= Url::toRoute(['/admin/problem/viewfile', 'id' => $model->id,'name' => $file['name']]) ?>"
+                               target="_blank"
+                               title="<?= Yii::t('app', 'View') ?>">
                                 <span class="glyphicon glyphicon-eye-open"></span>
-                                <?= Yii::t('app', 'View') ?>
                             </a>
-                            <a href="<?= Url::toRoute(['/admin/problem/deletefile', 'id' => $model->id, 'name' => $file['name']]) ?>">
+                            &nbsp;
+                            <a href="<?= Url::toRoute(['/admin/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>"
+                               title="<?= Yii::t('app', 'Delete') ?>">
                                 <span class="glyphicon glyphicon-remove"></span>
-                                <?= Yii::t('app', 'Delete') ?>
                             </a>
                         </th>
                     </tr>
@@ -88,13 +90,15 @@ $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'i
                         <th><?= $file['size'] ?></th>
                         <th><?= date('Y-m-d H:i', $file['time']) ?></th>
                         <th>
-                            <a href="<?= Url::toRoute(['/admin/problem/viewfile', 'id' => $model->id, 'name' => $file['name']]) ?>" target="_blank">
+                            <a href="<?= Url::toRoute(['/admin/problem/viewfile', 'id' => $model->id,'name' => $file['name']]) ?>"
+                               target="_blank"
+                               title="<?= Yii::t('app', 'View') ?>">
                                 <span class="glyphicon glyphicon-eye-open"></span>
-                                <?= Yii::t('app', 'View') ?>
                             </a>
-                            <a href="<?= Url::toRoute(['/admin/problem/deletefile', 'id' => $model->id, 'name' => $file['name']]) ?>">
+                            &nbsp;
+                            <a href="<?= Url::toRoute(['/admin/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>"
+                               title="<?= Yii::t('app', 'Delete') ?>">
                                 <span class="glyphicon glyphicon-remove"></span>
-                                <?= Yii::t('app', 'Delete') ?>
                             </a>
                         </th>
                     </tr>

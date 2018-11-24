@@ -85,6 +85,7 @@ $files = $model->getDataFiles();
                                    title="<?= Yii::t('app', 'View') ?>">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
+                                &nbsp;
                                 <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>"
                                    title="<?= Yii::t('app', 'Delete') ?>">
                                     <span class="glyphicon glyphicon-remove"></span>
@@ -118,6 +119,7 @@ $files = $model->getDataFiles();
                                    title="<?= Yii::t('app', 'View') ?>">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
+                                &nbsp;
                                 <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => $file['name']]) ?>"
                                    title="<?= Yii::t('app', 'Delete') ?>">
                                     <span class="glyphicon glyphicon-remove"></span>
