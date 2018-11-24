@@ -3,13 +3,7 @@
 并通过预先设计的测试数据来检验程序源代码的正确性。
 </p>
 
-<p>
-    开发 & 维护：师阳 <a href="mailto:&#100;&#114;&#64;&#115;&#104;&#105;&#121;&#97;&#110;&#103;&#46;&#109;&#101;">&#100;&#114;&#64;&#115;&#104;&#105;&#121;&#97;&#110;&#103;&#46;&#109;&#101;</a>
-</p>
-
 <p id="version">
     Version <?= Yii::$app->setting->getVersion() ?> Alpha &nbsp;&nbsp;·&nbsp;&nbsp;
-    <a href="https://github.com/shi-yang/jnoj" target="_blank">
-        GitHub Project</a> &nbsp;&nbsp;·&nbsp;&nbsp;
-    Created by <a href="http://www.shiyang.me" target="_blank">师阳</a>
+    <a href="https://github.com/shi-yang/jnoj" target="_blank">GitHub Project</a>
 </p>
