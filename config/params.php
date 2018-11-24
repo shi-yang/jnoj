@@ -12,6 +12,7 @@ return [
     'isShareCode' => false,
 
     // 封榜时间。单位：秒
+    // 这个时间是从比赛结束后开始计算，如值为 2 * 60 * 60 时，表示比赛结束 2 个小时后不再封榜。
     'scoreboardFrozenTime' => 2 * 60 * 60,
 
     // judge 数据所在目录
