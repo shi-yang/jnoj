@@ -22,7 +22,7 @@ $this->title = Yii::t('app', 'Problems');
             'options' => ['class' => 'table-responsive problem-index-list'],
             'columns' => [
                 [
-                    'attribute' => 'problem_id',
+                    'attribute' => 'id',
                     'value' => function ($model, $key, $index, $column) use ($solvedProblem) {
                         $solve = '';
                         if (isset($solvedProblem[$model->id])) {
@@ -31,7 +31,7 @@ $this->title = Yii::t('app', 'Problems');
                         return $solve . Html::a($model->id, ['/problem/view', 'id' => $key]);
                     },
                     'format' => 'raw',
-                    'options' => ['width' => '100px']
+                    'options' => ['width' => '110px']
                 ],
                 [
                     'attribute' => 'title',

@@ -32,7 +32,7 @@ $this->title = Yii::t('app', 'Problems');
                 'name' => 'id',
             ],
             [
-                'attribute' => 'problem_id',
+                'attribute' => 'id',
                 'value' => function ($model, $key, $index, $column) {
                     return Html::a($model->id, ['problem/view', 'id' => $key]);
                 },
