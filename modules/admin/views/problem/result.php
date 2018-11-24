@@ -1,1 +1,0 @@
-<pre><?= $solution['error'] ?></pre>

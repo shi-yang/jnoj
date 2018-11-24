@@ -99,7 +99,7 @@ class ProblemController extends Controller
     }
 
     /**
-     * Displays a single Problem model.
+     * 预览问题页面
      * @param integer $id
      * @return mixed
      */
@@ -114,7 +114,7 @@ class ProblemController extends Controller
     }
 
     /**
-     * Import Problem.
+     * 导入问题页面
      * If update is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
@@ -136,7 +136,7 @@ class ProblemController extends Controller
     }
 
     /**
-     * Create Problem model.
+     * 创建问题页面
      * If update is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
@@ -199,10 +199,11 @@ class ProblemController extends Controller
     }
 
     /**
-     * Updates an existing Problem model.
+     * 修改问题页面
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
@@ -222,6 +223,12 @@ class ProblemController extends Controller
         ]);
     }
 
+    /**
+     * 查看测试数据
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionTestData($id)
     {
         $model = $this->findModel($id);
@@ -236,41 +243,13 @@ class ProblemController extends Controller
     }
 
     /**
-     * Displays source of a single Solution model.
-     * @param integer $id
-     * @return mixed
-     * @throws ForbiddenHttpException if the model cannot be viewed.
-     */
-    public function actionSource($id, $solution_id)
-    {
-        $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution}} WHERE id=:id', [':id' => intval($solution_id)])->queryOne();
-        return $this->render('source', [
-            'model' => $this->findModel($id),
-            'solution' => $solution
-        ]);
-    }
-
-    /**
-     * Displays result of a single Solution model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionResult($id, $solution_id)
-    {
-        $solution = Yii::$app->db->createCommand('SELECT * FROM {{%solution_info}} WHERE solution_id=:id', [':id' => intval($solution_id)])->queryOne();
-        return $this->render('result', [
-            'model' => $this->findModel($id),
-            'solution' => $solution
-        ]);
-    }
-
-    /**
+     * 验证数据
      * @param $id
-     * @return mixed
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
      */
-    public function actionTestStatus($id)
+    public function actionVerify($id)
     {
-        $this->layout = false;
         $model = $this->findModel($id);
         $solutions = (new Query())->select('id, result, created_at, memory, time, language, code_length')
             ->from('{{%solution}}')
@@ -278,43 +257,24 @@ class ProblemController extends Controller
             ->limit(10)
             ->orderBy(['id' => SORT_DESC])
             ->all();
-        return $this->render('test_status', [
-            'solutions' => $solutions,
-            'model' => $model
-        ]);
-    }
+        $newSolution = new Solution();
+        $newSolution->language = Yii::$app->user->identity->language;
 
-    /**
-     * @param $id
-     * @return mixed
-     * @throws ForbiddenHttpException if the model cannot be viewed
-     */
-    public function actionTestSubmit($id)
-    {
-        $solution = new Solution();
-
-        if ($solution->load(Yii::$app->request->post())) {
-            $solution->problem_id = $id;
-            $solution->status = 0;
-            if ($solution->save()) {
+        if ($newSolution->load(Yii::$app->request->post())) {
+            $newSolution->problem_id = $id;
+            $newSolution->status = 0;
+            if ($newSolution->save()) {
                 Yii::$app->session->setFlash('success', 'Submit Successfully');
             } else {
                 Yii::$app->session->setFlash('error', 'Please select a language');
             }
-            return $this->redirect('index');
+            return $this->refresh();
         }
-
-        if (Yii::$app->request->isAjax) {
-            $this->layout = false;
-            $model = $this->findModel($id);
-
-            return $this->render('test_submit', [
-                'solution' => $solution,
-                'model' => $model
-            ]);
-        }
-
-        throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        return $this->render('verify', [
+            'solutions' => $solutions,
+            'newSolution' => $newSolution,
+            'model' => $model
+        ]);
     }
 
     /**
@@ -322,6 +282,7 @@ class ProblemController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionDelete($id)
     {

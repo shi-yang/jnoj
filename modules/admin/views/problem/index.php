@@ -57,23 +57,6 @@ $this->title = Yii::t('app', 'Problems');
                 'format' => 'raw',
             ],
             [
-                'attribute' => 'test_status',
-                'value' => function ($model, $kye, $index, $column) {
-                    $res = Html::a(
-                        '<span class="glyphicon glyphicon-eye-open"></span> '.Yii::t('app', 'View'),
-                        ['problem/test-status', 'id' => $model->id],
-                        ['onclick' => 'return false', 'data-click' => "test"]
-                    );
-                    $res .= ' '. Html::a(
-                        '<span class="glyphicon glyphicon-send"></span> '.Yii::t('app', 'Submit'),
-                        ['problem/test-submit', 'id' => $model->id],
-                        ['onclick' => 'return false', 'data-click' => "test"]
-                    );
-                    return $res;
-                },
-                'format' => 'raw'
-            ],
-            [
                 'attribute' => 'created_by',
                 'value' => function ($model, $key, $index, $column) {
                     if ($model->user) {
@@ -113,27 +96,3 @@ $this->title = Yii::t('app', 'Problems');
     ');
     ?>
 </div>
-<?php Modal::begin([
-    'header' => '<h3>'.Yii::t('app','Information').'</h3>',
-    'options' => ['id' => 'solution-info'],
-    'size' => Modal::SIZE_LARGE
-]); ?>
-<div id="solution-content">
-</div>
-<?php Modal::end(); ?>
-<?php
-$js = "
-$('[data-click=test]').click(function() {
-    $.ajax({
-        url: $(this).attr('href'),
-        type:'post',
-        error: function(){alert('error');},
-        success:function(html){
-            $('#solution-content').html(html);
-            $('#solution-info').modal('show');
-        }
-    });
-});
-";
-$this->registerJs($js);
-?>

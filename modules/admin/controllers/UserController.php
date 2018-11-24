@@ -2,11 +2,7 @@
 
 namespace app\modules\admin\controllers;
 
-use app\models\Solution;
-use app\modules\polygon\models\PolygonStatus;
-use app\modules\polygon\models\Problem;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
