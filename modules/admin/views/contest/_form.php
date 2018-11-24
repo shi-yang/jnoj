@@ -34,7 +34,8 @@ use yii\widgets\ActiveForm;
             'istoday' => true,
             'type' => 'datetime'
         ]
-    ])->hint('如果不需要封榜请留空，默认情况下会在比赛结束两小时后才能在前台页面解除封榜限制。使用封榜功能，后台比赛的榜单仍然处于实时榜单') ?>
+    ])->hint('如果不需要封榜请留空，默认情况下会在比赛结束两小时（如要修改该时长请编辑网站源码的 config/params.php 文件）
+             后才会自动在前台页面解除封榜限制。使用封榜功能，后台管理界面的比赛榜单仍然处于实时榜单。') ?>
 
     <?= $form->field($model, 'status')->radioList([
         1 => Yii::t('app', 'Visible'),
