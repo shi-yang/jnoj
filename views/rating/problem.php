@@ -14,6 +14,7 @@ $this->title = Yii::t('app', 'Rating');
 ?>
 <p style="text-align: center">
     <?= Html::a('段位排行', ['index']) ?>
+    &nbsp;&bull;&nbsp;
     <?= Html::a('题数排行', ['problem']) ?>
 </p>
 <div class="rating-index">
