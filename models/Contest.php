@@ -299,7 +299,8 @@ class Contest extends \yii\db\ActiveRecord
             $created_at = $row['created_at'];
 
             // 封榜，比赛结束 120 分钟后解榜
-            if ($lock && strtotime($lock_time) <= strtotime($created_at) && time() <= strtotime($end_time) + 120 * 60)
+            if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
+                time() <= strtotime($end_time) + Yii::$app->params['scoreboardFrozenTime'])
                 break;
 
             // 初始化数据信息
