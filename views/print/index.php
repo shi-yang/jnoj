@@ -36,6 +36,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'format' => 'raw'
             ],
+            [
+                'attribute' => 'status',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->status == \app\models\ContestPrint::STATUS_HAVE_READ) {
+                        $text = '<p class="text-success"><strong>' . Yii::t('app', 'Already processed') . '</strong></p>';
+                    } else {
+                        $text = '<p class="text-danger"><strong>' . Yii::t('app', 'Not processed yet') . '</strong></p>';
+                    }
+                    return Html::a($text, ['/print/view', 'id' => $model->id]);
+                },
+                'format' => 'raw'
+            ],
             'created_at:datetime',
             [
                 'class' => 'yii\grid\ActionColumn'

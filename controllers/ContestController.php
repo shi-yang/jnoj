@@ -278,6 +278,21 @@ class ContestController extends Controller
             }
             $newClarify->status = Discuss::STATUS_PRIVATE;
             $newClarify->save();
+
+            // 给所有管理员发送弹窗提醒
+            try {
+                $client = stream_socket_client('tcp://0.0.0.0:2121', $errno, $errmsg, 1);
+                $uids = Yii::$app->db->createCommand('SELECT id FROM user WHERE role=' . User::ROLE_ADMIN)->queryColumn();
+                $content = '比赛：' . $model->title .  ' - 有了新的答疑，请到后台查看并回复。';
+                foreach ($uids as $uid) {
+                    fwrite($client, json_encode([
+                        'uid' => $uid,
+                        'content' => $content
+                    ]) . "\n");
+                }
+            } catch (\Exception $e) {
+                echo 'Caught exception: ',  $e->getMessage(), "\n";
+            }
             Yii::$app->session->setFlash('success', 'Submit Successfully');
             return $this->refresh();
         }

@@ -25,3 +25,18 @@ use yii\bootstrap\Nav;
     <?= $content ?>
 </div>
 <?php $this->endContent(); ?>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // 连接服务端
+        var socket = io('http://' + document.domain + ':2120');
+        var uid = <?= Yii::$app->user->isGuest ? session_id() : Yii::$app->user->id ?>
+            // 连接后登录
+            socket.on('connect', function () {
+                socket.emit('login', uid);
+            });
+        // 后端推送来消息时
+        socket.on('msg', function (msg) {
+            alert(msg);
+        });
+    })
+</script>

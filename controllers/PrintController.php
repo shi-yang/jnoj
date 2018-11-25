@@ -60,7 +60,7 @@ class PrintController extends Controller
             $query = ContestPrint::find()->where(['contest_id' => $contest->id, 'user_id' => Yii::$app->user->id])->with('user');
         }
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->orderBy('id DESC'),
         ]);
 
         return $this->render('index', [
@@ -73,10 +73,18 @@ class PrintController extends Controller
      * Displays a single Contest Print model.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
+     * @throws ForbiddenHttpException
+     * @throws \Exception|\Throwable
      */
     public function actionView($id)
     {
         $model = $this->findModel($id);
+
+        if (Yii::$app->user->identity->role == User::ROLE_ADMIN) {
+            $model->status = ContestPrint::STATUS_HAVE_READ;
+            $model->update();
+        }
 
         return $this->render('view', [
             'model' => $model,
@@ -101,6 +109,7 @@ class PrintController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->contest_id = $contest->id;
             $model->save();
+            Yii::$app->session->setFlash('success', 'Submit Successfully');
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -154,12 +163,11 @@ class PrintController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = ContestPrint::findOne($id)) !== null) {
+        if (($model = ContestPrint::findOne($id)) !== null || !Yii::$app->user->isGuest) {
             if ($model->user_id == Yii::$app->user->id || Yii::$app->user->identity->role == User::ROLE_ADMIN) {
                 return $model;
-            } else {
-                throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
