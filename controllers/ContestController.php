@@ -8,6 +8,7 @@ use Yii;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
@@ -114,11 +115,15 @@ class ContestController extends Controller
      * 显示注册参赛的用户
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException if the contest cannot be found
      */
     public function actionUser($id)
     {
         $this->layout = 'main';
-        $model = $this->findModel($id);
+        $model = Contest::findOne($id);
+        if ($model == null) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
         $provider = new ActiveDataProvider([
             'query' => ContestUser::find()->where(['contest_id' => $model->id])->with('user')->with('userProfile'),
             'pagination' => [
@@ -138,7 +143,7 @@ class ContestController extends Controller
      * @param integer $register 等于 0 什么也不做，等于 1 就将当前用户注册到比赛列表中
      * @return mixed
      * @throws NotFoundHttpException if the contest cannot be found
-     * @throws ForbiddenHttpException if the contest if offline
+     * @throws ForbiddenHttpException
      */
     public function actionRegister($id, $register = 0)
     {
@@ -146,7 +151,10 @@ class ContestController extends Controller
         if (Yii::$app->user->isGuest) {
             return $this->redirect(['/site/login']);
         }
-        $model = $this->findModel($id);
+        $model = Contest::findOne($id);
+        if ($model == null) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
 
         // 线下赛只能在后台加入，在此处不给注册
         if ($model->scenario == Contest::SCENARIO_OFFLINE) {
@@ -410,21 +418,24 @@ class ContestController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Contest::findOne($id)) !== null) {
-            $isVisible = ($model->status == Contest::STATUS_VISIBLE);
-            $isAuthor = !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by;
-            $isAdmin = !Yii::$app->user->isGuest && Yii::$app->user->identity->role === User::ROLE_ADMIN;
-            if ($isVisible || $isAuthor) {
-                if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->getRunStatus() == Contest::STATUS_ENDED ||
-                    $model->isUserInContest() || $isAdmin) {
-                    return $model;
-                } else {
-                    throw new ForbiddenHttpException('您未报名参加该比赛，请等待比赛结束后再查看。');
-                }
-            } else {
-                throw new ForbiddenHttpException('You are not allowed to perform this action.');
-            }
+        $model = Contest::findOne($id);
+        if ($model == null) {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
-        throw new NotFoundHttpException('The requested page does not exist.');
+        if ($model->status != Contest::STATUS_VISIBLE) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
+        if (Yii::$app->user->isGuest) {
+            throw new ForbiddenHttpException('请先登录');
+        }
+        $isAuthor = $model->created_by == Yii::$app->user->id;
+        $isAdmin = Yii::$app->user->identity->role == User::ROLE_ADMIN;
+        if ($model->isUserInContest() || $isAuthor || $isAdmin || $model->getRunStatus() == Contest::STATUS_ENDED) {
+            return $model;
+        } else if ($model->scenario == Contest::SCENARIO_OFFLINE) {
+            throw new ForbiddenHttpException('您尚未报名参加该场比赛，请联系比赛负责人报名参加或等比赛结束后再进行查看。');
+        } else {
+            throw new ForbiddenHttpException('您尚未报名参加该场比赛，请先参赛或比赛结束后再进行查看。' );
+        }
     }
 }
