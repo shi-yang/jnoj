@@ -68,7 +68,7 @@ foreach ($problems as $key => $p) {
                         'label' => Yii::t('app', 'Problem'),
                         'value' => function ($model, $key, $index, $column) {
                             $res = $model->getProblemInContest();
-                            return Html::a(chr(65 + $res->num),
+                            return Html::a(chr(65 + $res->num) . ' - ' . $model->problem->title,
                                 ['/contest/problem', 'id' => $res->contest_id, 'pid' => $res->num]);
                         },
                         'format' => 'raw'

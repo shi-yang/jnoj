@@ -70,6 +70,13 @@ class ContestController extends Controller
         $model = $this->findModel($id);
         $searchModel = new SolutionSearch();
 
+        if (Yii::$app->request->isPjax) {
+            return $this->renderAjax('/contest/status', [
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model->id)
+            ]);
+        }
         return $this->render('/contest/status', [
             'model' => $model,
             'searchModel' => $searchModel,
@@ -83,20 +90,21 @@ class ContestController extends Controller
      * @param $cid
      * @return mixed
      * @throws ForbiddenHttpException if the model cannot be viewed
+     * @throws NotFoundHttpException
      */
     public function actionSubmission($pid, $cid, $uid)
     {
         $this->layout = false;
         $model = $this->findModel($cid);
 
-        if ($model->runStatus != Contest::STATUS_ENDED && !Yii::$app->user->isGuest && Yii::$app->user->id != $model->created_by) {
+        if ($model->getRunStatus() != Contest::STATUS_ENDED && !Yii::$app->user->isGuest && Yii::$app->user->id != $model->created_by) {
             throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
-        $submissions = Yii::$app->db
-            ->createCommand(
-                'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND created_by=:uid ORDER BY id DESC',
-                [':pid' => $pid, ':cid' => $model->id, ':uid' => $uid]
-            )->queryAll();
+        $submissions = Yii::$app->db->createCommand(
+            'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND created_by=:uid ORDER BY id DESC',
+            [':pid' => $pid, ':cid' => $model->id, ':uid' => $uid]
+        )->queryAll();
+
         return $this->render('submission', [
             'submissions' => $submissions
         ]);

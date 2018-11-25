@@ -59,7 +59,7 @@ $this->registerJs("
 ", \yii\web\View::POS_END);
 
 $this->registerJs("
-var board = new Board({$problem_count}, new Array(4, 4, 4), StringToDate(\"{$start_time}\"), StringToDate(\"{$lock_time}\"));
+var board = new Board({$problem_count}, new Array(5, 6, 10), StringToDate(\"{$start_time}\"), StringToDate(\"{$lock_time}\"));
 board.showInitBoard();
 $('html').keydown(function(e) {
     if (e.keyCode == 13) {

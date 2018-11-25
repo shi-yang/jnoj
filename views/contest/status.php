@@ -34,7 +34,13 @@ foreach ($problems as $key => $p) {
         'options' => ['class' => 'table-responsive'],
         'tableOptions' => ['class' => 'table table-striped table-bordered'],
         'columns' => [
-            'id',
+            [
+                'attribute' => 'id',
+                'value' => function ($model, $key, $index, $column) {
+                    return Html::a($model->id, ['/solution/detail', 'id' => $model->id], ['target' => '_blank']);
+                },
+                'format' => 'raw'
+            ],
             [
                 'attribute' => 'who',
                 'value' => function ($model, $key, $index, $column) {
@@ -46,7 +52,7 @@ foreach ($problems as $key => $p) {
                 'label' => Yii::t('app', 'Problem'),
                 'value' => function ($model, $key, $index, $column) {
                     $res = $model->getProblemInContest();
-                    return Html::a(chr(65 + $res->num),
+                    return Html::a(chr(65 + $res->num) . ' - ' . $model->problem->title,
                         ['/contest/problem', 'id' => $res->contest_id, 'pid' => $res->num]);
                 },
                 'format' => 'raw'
@@ -89,9 +95,7 @@ foreach ($problems as $key => $p) {
             [
                 'attribute' => 'language',
                 'value' => function ($solution, $key, $index, $column) use ($model) {
-                    if (($solution->status == 1 && Yii::$app->params['isShareCode'])
-                        || (!Yii::$app->user->isGuest &&
-                            ($model->created_by == Yii::$app->user->id || $solution->created_by == Yii::$app->user->id))) {
+                    if ($solution->canViewSource()) {
                         return Html::a($solution->getLang(),
                             ['/solution/source', 'id' => $solution->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]

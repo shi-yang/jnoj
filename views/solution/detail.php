@@ -43,31 +43,32 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <hr>
 
-<h3>Tests(<?= $model->getPassedTestCount() ?>/<?= $model->getTestCount() ?>):</h3>
+<?php if ($model->canViewErrorInfo()): ?>
+    <h3>Tests(<?= $model->getPassedTestCount() ?>/<?= $model->getTestCount() ?>):</h3>
 
-<h3>
-<?php for ($i = 1; $i <= $model->getPassedTestCount(); $i++): ?>
-    <?php if ($i <= $model->getTestCount()) :?>
-        <span class="glyphicon glyphicon-ok-circle text-success"></span>
-    <?php else: ?>
+    <h3>
+    <?php for ($i = 1; $i <= $model->getPassedTestCount(); $i++): ?>
+        <?php if ($i <= $model->getTestCount()) :?>
+            <span class="glyphicon glyphicon-ok-circle text-success"></span>
+        <?php else: ?>
+            <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+        <?php endif; ?>
+    <?php endfor; ?>
+    <?php if ($model->getPassedTestCount() < $model->getTestCount()) :?>
         <span class="glyphicon glyphicon-remove-circle text-danger"></span>
     <?php endif; ?>
-<?php endfor; ?>
-<?php if ($model->getPassedTestCount() < $model->getTestCount()) :?>
-    <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+    </h3>
 <?php endif; ?>
-</h3>
 
-<?php if (Yii::$app->params['isShareCode'] ||
-          (!Yii::$app->user->isGuest &&
-              ($model->created_by == Yii::$app->user->id || Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN))): ?>
+<?php if ($model->canViewSource()): ?>
     <hr>
     <h3>Source:</h3>
     <div class="pre"><p><?= Html::encode($model->source) ?></p></div>
 
-    <?php if ($model->solutionInfo != null): ?>
-        <hr>
-        <h3>Run Info:</h3>
-        <pre><?= \yii\helpers\HtmlPurifier::process($model->solutionInfo->error) ?></pre>
-    <?php endif; ?>
+<?php endif; ?>
+
+<?php if ($model->solutionInfo != null && $model->canViewErrorInfo()): ?>
+    <hr>
+    <h3>Run Info:</h3>
+    <pre><?= \yii\helpers\HtmlPurifier::process($model->solutionInfo->error) ?></pre>
 <?php endif; ?>

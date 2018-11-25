@@ -45,7 +45,7 @@ class SolutionSearch extends Solution
      */
     public function search($params, $contest_id = NULL)
     {
-        $query = Solution::find()->with('user');
+        $query = Solution::find()->with('user')->with('problem');
 
         if ($contest_id != NULL) {
             $query = $query->where(['contest_id' => $contest_id])->with([

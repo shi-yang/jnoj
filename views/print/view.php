@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\ContestPrint */
 
-$this->title = $model->user->nickname;
+$this->title = $model->user->nickname . ' [' . $model->user->username . ']';
 $this->params['breadcrumbs'][] = ['label' => $model->contest->title, 'url' => ['/contest/view', 'id' => $model->contest_id]];
 $this->params['breadcrumbs'][] = ['label' => 'Print Sources', 'url' => ['index', 'id' => $model->contest_id]];
 $this->params['breadcrumbs'][] = $this->title;
@@ -21,7 +21,7 @@ $this->registerCss('
 ?>
 <div class="print-source-view">
     <h1>
-        <span class="glyphicon glyphicon-user"></span> <?= Html::encode($this->title) ?>[<?= Html::encode($model->user->username) ?>]
+        <span class="glyphicon glyphicon-user"></span> <?= Html::encode($this->title) ?>
     </h1>
     <p class="hidden-print">
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

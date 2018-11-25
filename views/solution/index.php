@@ -36,7 +36,7 @@ $this->title = Yii::t('app', 'Status');
             [
                 'attribute' => 'problem_id',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->problem_id, ['/problem/view', 'id' => $model->problem_id]);
+                    return Html::a($model->problem_id . ' - ' . $model->problem->title, ['/problem/view', 'id' => $model->problem_id]);
                 },
                 'format' => 'raw'
             ],
@@ -74,8 +74,7 @@ $this->title = Yii::t('app', 'Status');
             [
                 'attribute' => 'language',
                 'value' => function ($model, $key, $index, $column) {
-                    if (Yii::$app->params['isShareCode'] || (!Yii::$app->user->isGuest &&
-                            ($model->created_by == Yii::$app->user->id || Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN))) {
+                    if ($model->canViewSource()) {
                         return Html::a($model->getLang(),
                             ['/solution/source', 'id' => $model->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info"]

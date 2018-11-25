@@ -244,4 +244,48 @@ class Solution extends ActiveRecord
     {
         return $this->contestProblem;
     }
+
+    /**
+     * 用户是否有权限查看代码
+     */
+    public function canViewSource()
+    {
+        // 提交代码的作者有权限查看
+        if ($this->created_by == Yii::$app->user->id) {
+            return true;
+        }
+        // 状态可见且设置了分享状态可以查看。以下代码中 isShareCode 的说明参见 config\params.php 文件。
+        // 对于比赛中的提交， status 的值默认为 STATUS_HIDDEN，比赛结束时可以在后台设为 STATUS_VISIBLE 以供普通用户查看
+        // 对于后台验题时的提交，status 的值为 STATUS_HIDDEN
+        if ($this->status == Solution::STATUS_VISIBLE && Yii::$app->params['isShareCode']) {
+            return true;
+        }
+        // 管理员有权限查看
+        if (!Yii::$app->user->isGuest && Yii::$app->user->identity->role == User::ROLE_ADMIN) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 用户是否有权限可以查看错误信息
+     */
+    public function canViewErrorInfo()
+    {
+        // 状态可见且设置了分享状态可以查看。以下代码中 isShareCode 的说明参见 config\params.php 文件。
+        // 对于比赛中的提交， status 的值默认为 STATUS_HIDDEN，比赛结束时可以在后台设为 STATUS_VISIBLE 以供普通用户查看
+        // 对于后台验题时的提交，status 的值为 STATUS_HIDDEN
+        if ($this->status == Solution::STATUS_VISIBLE && Yii::$app->params['isShareCode']) {
+            return true;
+        }
+        // 管理员有权限查看所有情况
+        if (!Yii::$app->user->isGuest && Yii::$app->user->identity->role == User::ROLE_ADMIN) {
+            return true;
+        }
+        // 对于比赛中的提交，普通用户只能查看 Compile Error 所记录的信息
+        if ($this->status == Solution::STATUS_HIDDEN && $this->created_by == Yii::$app->user->id && $this->result == self::OJ_CE) {
+            return true;
+        }
+        return false;
+    }
 }
