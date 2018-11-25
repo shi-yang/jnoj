@@ -391,7 +391,7 @@ class ContestController extends Controller
                 ->limit(10)
                 ->all();
         }
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isPjax) {
             return $this->renderAjax('/contest/problem', [
                 'model' => $model,
                 'solution' => $solution,
