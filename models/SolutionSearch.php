@@ -85,7 +85,7 @@ class SolutionSearch extends Solution
             return $dataProvider;
         }
         $created_by = '';
-        if (isset($this->username)) {
+        if (!empty($this->username)) {
             $created_by = (new Query())->select('id')
                 ->from('{{%user}}')
                 ->andWhere('nickname=:name', [':name' => $this->username])
