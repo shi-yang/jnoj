@@ -422,6 +422,9 @@ class ContestController extends Controller
         if ($model == null) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+        if ($model->getRunStatus() == Contest::STATUS_ENDED) {
+            return $model;
+        }
         if ($model->status != Contest::STATUS_VISIBLE) {
             throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
@@ -430,7 +433,7 @@ class ContestController extends Controller
         }
         $isAuthor = $model->created_by == Yii::$app->user->id;
         $isAdmin = Yii::$app->user->identity->role == User::ROLE_ADMIN;
-        if ($model->isUserInContest() || $isAuthor || $isAdmin || $model->getRunStatus() == Contest::STATUS_ENDED) {
+        if ($model->isUserInContest() || $isAuthor || $isAdmin) {
             return $model;
         } else if ($model->scenario == Contest::SCENARIO_OFFLINE) {
             throw new ForbiddenHttpException('您尚未报名参加该场比赛，请联系比赛负责人报名参加或等比赛结束后再进行查看。');
