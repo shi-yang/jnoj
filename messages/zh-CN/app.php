@@ -61,6 +61,8 @@ return [
     'Scroll Board' => '滚榜',
     'Contest User' => '参赛用户',
     'Print Problem' => '打印题目',
+    'Already processed' => '已经查看',
+    'Not processed yet' => '尚未查看',
     'Import Problem From Polygon System' => '从Polygon系统中同步题目到题库中',
     'Create Problem' => '创建题目',
     'Import Problem' => '导入题目',
