@@ -425,18 +425,21 @@ class ContestController extends Controller
         if ($model->getRunStatus() == Contest::STATUS_ENDED) {
             return $model;
         }
-        if ($model->status != Contest::STATUS_VISIBLE) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
         if (Yii::$app->user->isGuest) {
             throw new ForbiddenHttpException('请先登录');
         }
         $isAuthor = $model->created_by == Yii::$app->user->id;
         $isAdmin = Yii::$app->user->identity->role == User::ROLE_ADMIN;
-        if ($model->isUserInContest() || $isAuthor || $isAdmin) {
+        if ($isAdmin || $isAuthor) {
+            return $model;
+        }
+        if ($model->status != Contest::STATUS_VISIBLE) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
+        if ($model->isUserInContest()) {
             return $model;
         } else if ($model->scenario == Contest::SCENARIO_OFFLINE) {
-            throw new ForbiddenHttpException('您尚未报名参加该场比赛，请联系比赛负责人报名参加或等比赛结束后再进行查看。');
+            throw new ForbiddenHttpException('您尚未报名参加该场比赛，该场比赛为线下赛，请联系比赛负责人报名参加或等比赛结束后再进行查看。');
         } else {
             throw new ForbiddenHttpException('您尚未报名参加该场比赛，请先参赛或比赛结束后再进行查看。' );
         }
