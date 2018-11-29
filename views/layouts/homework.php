@@ -149,35 +149,28 @@ $status = $model->getRunStatus();
                 <?php
                 $menuItems = [
                     [
-                        'label' => '<span class="glyphicon glyphicon-home"></span> Information',
+                        'label' => '<span class="glyphicon glyphicon-home"></span> ' . Yii::t('app', 'Information'),
                         'url' => ['homework/view', 'id' => $model->id],
                     ],
                     [
-                        'label' => '<span class="glyphicon glyphicon-list"></span> Problem',
+                        'label' => '<span class="glyphicon glyphicon-list"></span> ' . Yii::t('app', 'Problem'),
                         'url' => ['homework/problem', 'id' => $model->id],
                         'linkOptions' => ['data-pjax' => 0]
                     ],
                     [
-                        'label' => '<span class="glyphicon glyphicon-signal"></span> Status',
-                        'url' => ['homework/status', 'id' => $model->id, '#' => 'contest-anchor'],
+                        'label' => '<span class="glyphicon glyphicon-signal"></span> ' . Yii::t('app' , 'Status'),
+                        'url' => ['homework/status', 'id' => $model->id],
                         'linkOptions' => ['data-pjax' => 0]
                     ],
                     [
-                        'label' => '<span class="glyphicon glyphicon-glass"></span> Standing',
-                        'url' => ['homework/standing', 'id' => $model->id, '#' => 'contest-anchor'],
+                        'label' => '<span class="glyphicon glyphicon-glass"></span> ' . Yii::t('app', 'Standing'),
+                        'url' => ['homework/standing', 'id' => $model->id],
                     ],
                     [
-                        'label' => '<span class="glyphicon glyphicon-comment"></span> Clarification',
-                        'url' => ['homework/clarify', 'id' => $model->id, '#' => 'contest-anchor'],
+                        'label' => '<span class="glyphicon glyphicon-comment"></span> ' . Yii::t('app', 'Clarification'),
+                        'url' => ['homework/clarify', 'id' => $model->id],
                     ],
                 ];
-                if ($model->scenario == $model::SCENARIO_OFFLINE) {
-                    $menuItems[] = [
-                        'label' => '<span class="glyphicon glyphicon-print"></span> 打印服务',
-                        'url' => ['/print/index', 'id' => $model->id],
-                        'linkOptions' => ['target' => '_blank']
-                    ];
-                }
                 if ($model->getRunStatus() == $model::STATUS_ENDED) {
                     $menuItems[] = [
                         'label' => '<span class="glyphicon glyphicon-info-sign"></span> ' . Yii::t('app', 'Editorial'),
