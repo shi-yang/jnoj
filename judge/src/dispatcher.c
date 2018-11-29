@@ -41,6 +41,7 @@
 #define BUFFER_SIZE 1024
 #define STD_MB 1048576
 
+extern int optind, opterr, optopt;
 static char lock_file[BUFFER_SIZE] = LOCKFILE;
 static char oj_home[BUFFER_SIZE];
 static char judge_path[BUFFER_SIZE];
