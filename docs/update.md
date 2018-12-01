@@ -17,7 +17,6 @@ cd ../polygon             # 进入 polygon 目录
 sudo pkill -9 polygon     # 结束Polygon进程
 make                      # 重新编译 Polygon
 sudo ./polygon            # 运行Polygon进程
-
 ```
 
 在执行 `git pull` 时，可能会因修改了本地文件而发生冲突，你可用搜索引擎搜索`git pull 冲突` 的解决办法。
