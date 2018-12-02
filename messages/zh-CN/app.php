@@ -68,6 +68,7 @@ return [
     'Import Problem' => '导入题目',
     'Export Problem' => '导出题目',
     'Polygon Problem' => 'Polygon题目',
+    'Source' => '来源',
     'Verify Data' => '验题',
     'Print Rank' => '打印榜单',
     'Running' => '正在进行',

@@ -73,7 +73,7 @@ $this->title = Yii::t('app', 'Problems');
                 <?= Html::beginForm('', 'post', ['class' => 'form-inline']) ?>
                 <div class="input-group">
                     <?= Html::label(Yii::t('app', 'Search'), 'q', ['class' => 'sr-only']) ?>
-                    <?= Html::textInput('q', '', ['class' => 'form-control', 'placeholder' => 'Problem ID or Title']) ?>
+                    <?= Html::textInput('q', '', ['class' => 'form-control', 'placeholder' => '输入 ID 或标题或来源']) ?>
                     <span class="input-group-btn">
                     <?= Html::submitButton('<span class="glyphicon glyphicon-search"></span>', ['class' => 'btn btn-default']) ?>
                     </span>
