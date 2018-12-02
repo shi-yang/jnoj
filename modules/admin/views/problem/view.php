@@ -82,6 +82,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Yii::$app->formatter->asHtml($model->hint) ?>
             </div>
         <?php endif; ?>
+
+        <?php if (!empty($model->source)): ?>
+            <h3><?= Yii::t('app', 'Source') ?></h3>
+            <div class="content-wrapper">
+                <?= Yii::$app->formatter->asHtml($model->source) ?>
+            </div>
+        <?php endif; ?>
     </div>
     <div class="col-md-3 problem-info">
         <div class="panel panel-default">
