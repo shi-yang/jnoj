@@ -96,7 +96,30 @@ $problems = $model->problems;
     ]) ?>
 
     <hr>
-    <h3><?= Yii::t('app', 'Problems') ?></h3>
+    <h3>
+        <?= Yii::t('app', 'Problems') ?>
+    </h3>
+    <?php Modal::begin([
+        'header' => '<h3>'.Yii::t('app','设置题目来源').'</h3>',
+        'toggleButton' => ['label' => '设置下列所有题目的来源', 'class' => 'btn btn-success'],
+    ]); ?>
+
+    <?= Html::beginForm(['contest/set-problem-source', 'id' => $model->id]) ?>
+
+    <div class="form-group">
+        <?= Html::label(Yii::t('app', 'Source'), 'problem_id') ?>
+        <?= Html::textInput('source', $model->title,['class' => 'form-control']) ?>
+        <p class="hint-block">
+            设置题目来源有利于在首页题库中根据题目来源来搜索题目。此操作会修改题目的“来源”信息。
+        </p>
+    </div>
+
+    <div class="form-group">
+        <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+    </div>
+    <?= Html::endForm(); ?>
+
+    <?php Modal::end(); ?>
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -110,9 +133,9 @@ $problems = $model->problems;
             <tbody>
             <?php foreach ($problems as $key => $p): ?>
                 <tr>
-                    <th><?= Html::a(chr(65 + $key), ['view', 'id' => $model->id, 'action' => 'problem', 'problem_id' => $key]) ?></th>
-                    <th><?= Html::a($p['problem_id'], '') ?></th>
-                    <td><?= Html::a(Html::encode($p['title']), ['view', 'id' => $model->id, 'action' => 'problem', 'problem_id' => $key]) ?></td>
+                    <th><?= Html::a(chr(65 + $key), ['/admin/problem/view', 'id' => $p['problem_id']]) ?></th>
+                    <th><?= Html::a($p['problem_id'], ['/admin/problem/view', 'id' => $p['problem_id']]) ?></th>
+                    <td><?= Html::a(Html::encode($p['title']), ['/admin/problem/view', 'id' => $p['problem_id']]) ?></td>
                     <th>
                         <?php Modal::begin([
                             'header' => '<h3>'.Yii::t('app','Update'). ' : ' . chr(65 + $key) . '</h3>',
