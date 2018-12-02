@@ -27,13 +27,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="form-group">
         <p>批量添加</p>
         <div class="input-group">
-            <div class="input-group-btn">
-                <button class="btn btn-default">From</button>
-            </div>
+            <span class="input-group-addon">From</span>
             <?= Html::textInput('polygon_problem_id_from', '', ['class' => 'form-control']) ?>
-            <div class="input-group-btn">
-                <button class="btn btn-default">to
-            </div>
+            <span class="input-group-addon">to</span>
             <?= Html::textInput('polygon_problem_id_to', '', ['class' => 'form-control']) ?>
         </div>
         <p class="help-block">请提供位于 <?= Html::a(Yii::t('app', 'Polygon System'), ['/polygon/problem']) ?> 问题对应 ID 的范围</p>

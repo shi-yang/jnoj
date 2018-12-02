@@ -11,7 +11,7 @@ $this->title = Yii::t('app', 'Polygon System');
 <h2><?= $this->title ?></h2>
 <p>Professional way to prepare programming contest problem</p>
 <hr>
-<p>受 <a href="https://polygon.codeforces.com/" target="_blank">Polygon of Codeforces</a> 的启发，为 OJ 开发了 Polygon System：</p>
+<p>受 <a href="https://polygon.codeforces.com/" target="_blank">Codeforces Polygon</a> 的启发，为 OJ 开发了 Polygon System：</p>
 <div class="well">
     <ul>
         <li>出题人填写问题基本信息</li>
