@@ -20,6 +20,9 @@ $files = $model->getDataFiles();
     该页面用于生成、编辑程序的测试数据。
 </p>
 <hr>
+<p>
+    <?= Html::a('下载全部数据', ['download-data', 'id' => $model->id], ['class' => 'btn btn-success']); ?>
+</p>
 <div class="table-responsive">
     <table class="table table-bordered table-rank">
         <thead>

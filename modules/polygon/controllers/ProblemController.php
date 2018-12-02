@@ -38,8 +38,6 @@ class ProblemController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'delete', 'update', 'solution', 'tests', 'spj',
-                                      'img_upload', 'run', 'deletefile', 'viewfile', 'verify', 'solution-detail'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -207,6 +205,34 @@ class ProblemController extends Controller
             'model' => $model,
             'solutionStatus' => $solutionStatus
         ]);
+    }
+
+
+    /**
+     * 下载测试数据
+     */
+    public function actionDownloadData($id)
+    {
+        $model = $this->findModel($id);
+        $filename = Yii::$app->params['polygonProblemDataPath'] . $model->id;
+        $zipName = '/tmp/' . time() . $id . '.zip';
+        if (!file_exists($filename)) {
+            return false;
+        }
+        $zipArc = new \ZipArchive();
+        if (!$zipArc->open($zipName, \ZipArchive::CREATE)) {
+            return false;
+        }
+        $res = $zipArc->addGlob("{$filename}/*", GLOB_BRACE, ['remove_all_path' => true]);
+        $zipArc->close();
+        if (!$res) {
+            return false;
+        }
+        if (!file_exists($zipName)) {
+            return false;
+        }
+        Yii::$app->response->on(\yii\web\Response::EVENT_AFTER_SEND, function($event) { unlink($event->data); }, $zipName);
+        return Yii::$app->response->sendFile($zipName, $model->id . '-' . $model->title . '.zip');
     }
 
     public function actionDeletefile($id, $name)

@@ -28,6 +28,10 @@ $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'i
         <?= Html::encode($model->title) ?>
     </h1>
 
+    <p>
+        <?= Html::a('下载全部数据', ['download-data', 'id' => $model->id], ['class' => 'btn btn-success']); ?>
+    </p>
+
     <p class="bg-danger">
         一个标准输入文件对应一个标准输出文件，输入文件以＂.in＂结尾，输出文件以＂.out＂结尾，文件名任意取，
         但输入文件跟输出文件的文件名必须一一对应．比如一组样例: 输入文件文件名"apple.in"，输出文件文件名"apple.out"．

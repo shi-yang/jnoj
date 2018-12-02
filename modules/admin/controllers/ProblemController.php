@@ -243,6 +243,33 @@ class ProblemController extends Controller
     }
 
     /**
+     * 下载测试数据
+     */
+    public function actionDownloadData($id)
+    {
+        $model = $this->findModel($id);
+        $filename = Yii::$app->params['judgeProblemDataPath'] . $model->id;
+        $zipName = '/tmp/' . time() . $id . '.zip';
+        if (!file_exists($filename)) {
+            return false;
+        }
+        $zipArc = new \ZipArchive();
+        if (!$zipArc->open($zipName, \ZipArchive::CREATE)) {
+            return false;
+        }
+        $res = $zipArc->addGlob("{$filename}/*", GLOB_BRACE, ['remove_all_path' => true]);
+        $zipArc->close();
+        if (!$res) {
+            return false;
+        }
+        if (!file_exists($zipName)) {
+            return false;
+        }
+        Yii::$app->response->on(\yii\web\Response::EVENT_AFTER_SEND, function($event) { unlink($event->data); }, $zipName);
+        return Yii::$app->response->sendFile($zipName, $model->id . '-' . $model->title . '.zip');
+    }
+
+    /**
      * 验证数据
      * @param $id
      * @return string|\yii\web\Response
