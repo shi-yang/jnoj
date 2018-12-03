@@ -128,6 +128,8 @@ $status = $model->getRunStatus();
                     <?= Yii::$app->formatter->asHtml($model->description) ?>
                 </div>
             <?php endif; ?>
+        <?php elseif (!$model->canView()): ?>
+            <?= $content ?>
         <?php else: ?>
             <div class="contest-view">
                 <?php

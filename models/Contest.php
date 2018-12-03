@@ -487,4 +487,30 @@ class Contest extends \yii\db\ActiveRecord
             ], ['user_id' => $user['user_id'], 'contest_id' => $this->id])->execute();
         }
     }
+
+    /**
+     * 是否有权限访问。用于限制比赛信息、问题、提交队列、榜单、答疑内容的访问，仅供管理员、参赛用户或比赛结束才能访问
+     */
+    public function canView()
+    {
+        // 比赛结束
+        if ($this->getRunStatus() == Contest::STATUS_ENDED) {
+            return true;
+        }
+        $isAdmin = !Yii::$app->user->isGuest && Yii::$app->user->identity->role == User::ROLE_ADMIN;
+        $isAuthor = !Yii::$app->user->isGuest && $this->created_by == Yii::$app->user->id;
+        // 管理员或者创建人
+        if ($isAdmin || $isAuthor) {
+            return true;
+        }
+        // 该比赛/作业不可见
+        if ($this->status != Contest::STATUS_VISIBLE) {
+            return false;
+        }
+        // 参赛用户
+        if ($this->isUserInContest()) {
+            return true;
+        }
+        return false;
+    }
 }
