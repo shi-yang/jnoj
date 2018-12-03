@@ -4,7 +4,9 @@ List of CodeMirror contributors. Updated before every release.
 4r2r
 Aaron Brooks
 Abdelouahab
+Abdussalam Abdurrahman
 Abe Fettig
+Abhishek Gahlot
 Adam Ahmed
 Adam King
 Adam Particka
@@ -84,7 +86,9 @@ AtomicPages LLC
 Atul Bhouraskar
 Aurelian Oancea
 Axel Lewenhaupt
+Baptiste Augrain
 Barret Rennie
+Bartosz Dziewoński
 Basarat Ali Syed
 Bastian Müller
 belhaj
@@ -130,6 +134,7 @@ Chad Jolly
 Chandra Sekhar Pydi
 Charles Skelton
 Cheah Chu Yeow
+Chris Colborne
 Chris Coyier
 Chris Ford
 Chris Granger
@@ -154,6 +159,7 @@ coderaiser
 Cole R Lawrence
 ComFreek
 Cristian Prieto
+Curran Kelleher
 Curtis Gagliardi
 dagsta
 daines
@@ -163,6 +169,7 @@ Dan Heberden
 Daniel, Dao Quang Minh
 Daniele Di Sarli
 Daniel Faust
+Daniel Hanggi
 Daniel Huigens
 Daniel Kesler
 Daniel KJ
@@ -175,11 +182,13 @@ darealshinji
 Darius Roberts
 databricks-david-lewis
 Dave Brondsema
+Dave MacLachlan
 Dave Myers
 David Barnett
 David H. Bronke
 David Mignot
 David Pathakjee
+David Santana
 David Vázquez
 David Whittington
 deebugger
@@ -189,10 +198,12 @@ Devon Carew
 Dick Choi
 dignifiedquire
 Dimage Sapelkin
+dmaclach
 Dmitry Kiselyov
 domagoj412
 Dominator008
 Domizio Demichelis
+Doug Blank
 Doug Wikle
 Drew Bratcher
 Drew Hintz
@@ -224,6 +235,7 @@ ficristo
 Filip Noetzel
 Filip Stollár
 Filype Pereira
+finalfantasia
 flack
 Florian Felten
 ForbesLindesay
@@ -252,7 +264,7 @@ Glenn Jorde
 Glenn Ruehle
 goldsmcb
 Golevka
-Google Inc.
+Google LLC
 Gordon Smith
 Grant Skinner
 greengiant
@@ -265,6 +277,7 @@ guraga
 Gustavo Rodrigues
 Hakan Tunc
 Hans Engel
+Harald Schilly
 Hardest
 Harshvardhan Gupta
 Hasan Karahan
@@ -304,6 +317,7 @@ James Howard
 James Thorne
 Jamie Hill
 Jamie Morris
+Janice Leung
 Jan Jongboom
 jankeromnes
 Jan Keromnes
@@ -347,6 +361,7 @@ John Van Der Loo
 Jon Ander Peñalba
 Jonas Döbertin
 Jonas Helfer
+Jonathan Dierksen
 Jonathan Hart
 Jonathan Malmaud
 Jon Gacnik
@@ -440,6 +455,7 @@ Marijn Haverbeke
 Mário Gonçalves
 Mario Pietsch
 Mark Anderson
+Mark Dalgleish
 Mark Lentczner
 Marko Bonaci
 Mark Peace
@@ -460,6 +476,7 @@ Matthew Bauer
 Matthew Beale
 matthewhayes
 Matthew Rathbone
+Matthew Suozzo
 Matthias Bussonnier
 Matthias BUSSONNIER
 Matt MacPherson
@@ -494,6 +511,7 @@ Miguel Castillo
 mihailik
 Mika Andrianarijaona
 Mike
+Mike Bostock
 Mike Brevoort
 Mike Diaz
 Mike Ivanov
@@ -543,6 +561,7 @@ Nisarg Jhaveri
 nlwillia
 noragrossman
 Norman Rzepka
+Oleksandr Yakovenko
 opl-
 Oreoluwa Onatemowo
 Oskar Segersvärd
@@ -574,6 +593,7 @@ Peter Flynn
 peterkroon
 Peter Kroon
 Philipp A
+Philipp Markovics
 Philip Stadermann
 Pi Delport
 Pierre Gerold
@@ -637,6 +657,7 @@ Scott Aikin
 Scott Goodhew
 Sebastian Wilzbach
 Sebastian Zaha
+Seren D
 Sergey Goder
 Sergey Tselovalnikov
 Se-Won Kim
@@ -729,6 +750,7 @@ Victor Bocharsky
 Vincent Woo
 Volker Mische
 vtripolitakis
+wdouglashall
 Weiyan Shao
 wenli
 Wes Cossick

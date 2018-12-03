@@ -1,28 +1,33 @@
 {
-  "_from": "codemirror@5.40.0",
-  "_id": "codemirror@5.40.0",
+  "_from": "codemirror@5.42.0",
+  "_id": "codemirror@5.42.0",
   "_inBundle": false,
-  "_integrity": "sha512-plTYonQ8SwbtS4m9n88mPDR+G7JwFrAL6774VjvoNH8wQJNSJOx5JdWmgRe3pCyuDI4s+vvi4CIuQnoduUTVug==",
+  "_integrity": "sha512-pbApC8zDzItP3HRphD6kQVwS976qB5Qi0hU3MZMixLk+AyugOW1RF+8XJEjeyl5yWsHNe88tDUxzeRh5AOxPRw==",
   "_location": "/codemirror",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "codemirror@5.40.0",
+    "raw": "codemirror@5.42.0",
     "name": "codemirror",
     "escapedName": "codemirror",
-    "rawSpec": "5.40.0",
+    "rawSpec": "5.42.0",
     "saveSpec": null,
-    "fetchSpec": "5.40.0"
+    "fetchSpec": "5.42.0"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/codemirror/-/codemirror-5.40.0.tgz",
-  "_shasum": "2f5ed47366e514f41349ba0fe34daaa39be4e257",
-  "_spec": "codemirror@5.40.0",
-  "_where": "/private/var/folders/9p/clj0fc754y35m01btd46043c0000gn/T/tmp.cvw9etoG",
+  "_resolved": "https://registry.npmjs.org/codemirror/-/codemirror-5.42.0.tgz",
+  "_shasum": "2d5b640ed009e89dee9ed8a2a778e2a25b65f9eb",
+  "_spec": "codemirror@5.42.0",
+  "_where": "/private/var/folders/9p/clj0fc754y35m01btd46043c0000gn/T/tmp.pN2XPNcK",
+  "author": {
+    "name": "Marijn Haverbeke",
+    "email": "marijnh@gmail.com",
+    "url": "http://marijnhaverbeke.nl"
+  },
   "bugs": {
     "url": "http://github.com/codemirror/CodeMirror/issues"
   },
@@ -44,7 +49,13 @@
       "name": "Abdelouahab"
     },
     {
+      "name": "Abdussalam Abdurrahman"
+    },
+    {
       "name": "Abe Fettig"
+    },
+    {
+      "name": "Abhishek Gahlot"
     },
     {
       "name": "Adam Ahmed"
@@ -284,7 +295,13 @@
       "name": "Axel Lewenhaupt"
     },
     {
+      "name": "Baptiste Augrain"
+    },
+    {
       "name": "Barret Rennie"
+    },
+    {
+      "name": "Bartosz Dziewoński"
     },
     {
       "name": "Basarat Ali Syed"
@@ -422,6 +439,9 @@
       "name": "Cheah Chu Yeow"
     },
     {
+      "name": "Chris Colborne"
+    },
+    {
       "name": "Chris Coyier"
     },
     {
@@ -494,6 +514,9 @@
       "name": "Cristian Prieto"
     },
     {
+      "name": "Curran Kelleher"
+    },
+    {
       "name": "Curtis Gagliardi"
     },
     {
@@ -519,6 +542,9 @@
     },
     {
       "name": "Daniel Faust"
+    },
+    {
+      "name": "Daniel Hanggi"
     },
     {
       "name": "Daniel Huigens"
@@ -557,6 +583,9 @@
       "name": "Dave Brondsema"
     },
     {
+      "name": "Dave MacLachlan"
+    },
+    {
       "name": "Dave Myers"
     },
     {
@@ -570,6 +599,9 @@
     },
     {
       "name": "David Pathakjee"
+    },
+    {
+      "name": "David Santana"
     },
     {
       "name": "David Vázquez"
@@ -599,6 +631,9 @@
       "name": "Dimage Sapelkin"
     },
     {
+      "name": "dmaclach"
+    },
+    {
       "name": "Dmitry Kiselyov"
     },
     {
@@ -609,6 +644,9 @@
     },
     {
       "name": "Domizio Demichelis"
+    },
+    {
+      "name": "Doug Blank"
     },
     {
       "name": "Doug Wikle"
@@ -704,6 +742,9 @@
       "name": "Filype Pereira"
     },
     {
+      "name": "finalfantasia"
+    },
+    {
       "name": "flack"
     },
     {
@@ -788,7 +829,7 @@
       "name": "Golevka"
     },
     {
-      "name": "Google Inc."
+      "name": "Google LLC"
     },
     {
       "name": "Gordon Smith"
@@ -825,6 +866,9 @@
     },
     {
       "name": "Hans Engel"
+    },
+    {
+      "name": "Harald Schilly"
     },
     {
       "name": "Hardest"
@@ -942,6 +986,9 @@
     },
     {
       "name": "Jamie Morris"
+    },
+    {
+      "name": "Janice Leung"
     },
     {
       "name": "Jan Jongboom"
@@ -1072,6 +1119,9 @@
     },
     {
       "name": "Jonas Helfer"
+    },
+    {
+      "name": "Jonathan Dierksen"
     },
     {
       "name": "Jonathan Hart"
@@ -1353,6 +1403,9 @@
       "name": "Mark Anderson"
     },
     {
+      "name": "Mark Dalgleish"
+    },
+    {
       "name": "Mark Lentczner"
     },
     {
@@ -1411,6 +1464,9 @@
     },
     {
       "name": "Matthew Rathbone"
+    },
+    {
+      "name": "Matthew Suozzo"
     },
     {
       "name": "Matthias Bussonnier"
@@ -1513,6 +1569,9 @@
     },
     {
       "name": "Mike"
+    },
+    {
+      "name": "Mike Bostock"
     },
     {
       "name": "Mike Brevoort"
@@ -1664,6 +1723,9 @@
       "name": "Norman Rzepka"
     },
     {
+      "name": "Oleksandr Yakovenko"
+    },
+    {
       "name": "opl-"
     },
     {
@@ -1755,6 +1817,9 @@
     },
     {
       "name": "Philipp A"
+    },
+    {
+      "name": "Philipp Markovics"
     },
     {
       "name": "Philip Stadermann"
@@ -1944,6 +2009,9 @@
     },
     {
       "name": "Sebastian Zaha"
+    },
+    {
+      "name": "Seren D"
     },
     {
       "name": "Sergey Goder"
@@ -2222,6 +2290,9 @@
       "name": "vtripolitakis"
     },
     {
+      "name": "wdouglashall"
+    },
+    {
       "name": "Weiyan Shao"
     },
     {
@@ -2304,11 +2375,11 @@
   "description": "Full-featured in-browser code editor",
   "devDependencies": {
     "blint": "^1",
-    "node-static": "0.6.0",
+    "node-static": "0.7.11",
     "phantomjs-prebuilt": "^2.1.12",
-    "rollup": "^0.41.0",
-    "rollup-plugin-buble": "^0.15.0",
-    "rollup-watch": "^3.2.0"
+    "rollup": "^0.66.2",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-watch": "^4.3.1"
   },
   "directories": {
     "lib": "./lib"
@@ -2326,13 +2397,6 @@
   ],
   "license": "MIT",
   "main": "lib/codemirror.js",
-  "maintainers": [
-    {
-      "name": "Marijn Haverbeke",
-      "email": "marijnh@gmail.com",
-      "url": "http://marijnhaverbeke.nl"
-    }
-  ],
   "name": "codemirror",
   "repository": {
     "type": "git",
@@ -2346,5 +2410,5 @@
     "watch": "rollup -w -c"
   },
   "style": "lib/codemirror.css",
-  "version": "5.40.0"
+  "version": "5.42.0"
 }

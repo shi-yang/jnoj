@@ -38,7 +38,7 @@ class Http
     {
         if (!strpos($recv_buffer, "\r\n\r\n")) {
             // Judge whether the package length exceeds the limit.
-            if (strlen($recv_buffer) >= TcpConnection::$maxPackageSize) {
+            if (strlen($recv_buffer) >= $connection->maxPackageSize) {
                 $connection->close();
                 return 0;
             }
@@ -73,7 +73,7 @@ class Http
             $content_length = isset($match[1]) ? $match[1] : 0;
             return $content_length + strlen($header) + 4;
         }
-        return 0;
+        return $method === 'DELETE' ? strlen($header) + 4 : 0;
     }
 
     /**
@@ -159,9 +159,17 @@ class Http
                 case 'CONTENT_LENGTH':
                     $_SERVER['CONTENT_LENGTH'] = $value;
                     break;
+                case 'UPGRADE':
+					if($value=='websocket'){
+						$connection->protocol = "\\Workerman\\Protocols\\Websocket";
+						return \Workerman\Protocols\Websocket::input($recv_buffer,$connection);
+					}
+                    break;
             }
         }
-
+		if(isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE){
+			HttpCache::$gzip = true;
+		}
         // Parse $_POST.
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_SERVER['CONTENT_TYPE'])) {
@@ -249,7 +257,10 @@ class Http
                 $header .= $item . "\r\n";
             }
         }
-
+		if(HttpCache::$gzip && isset($connection->gzip) && $connection->gzip){
+			$header .= "Content-Encoding: gzip\r\n";
+			$content = gzencode($content,$connection->gzip);
+		}
         // header
         $header .= "Server: workerman/" . Worker::VERSION . "\r\nContent-Length: " . strlen($content) . "\r\n\r\n";
 
@@ -554,7 +565,7 @@ class Http
                                 'file_data' => $boundary_value,
                                 'file_size' => strlen($boundary_value),
                             );
-                            continue;
+                            continue 2;
                         } // Is post field.
                         else {
                             // Parse $_POST.
@@ -650,6 +661,7 @@ class HttpCache
      */
     public static $instance             = null;
     public static $header               = array();
+    public static $gzip                 = false;
     public static $sessionPath          = '';
     public static $sessionName          = '';
     public static $sessionGcProbability = 1;

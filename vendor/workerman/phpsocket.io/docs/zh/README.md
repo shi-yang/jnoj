@@ -14,7 +14,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Workerman\Worker;
 use PHPSocketIO\SocketIO;
 
-// 创建socket.io服务端，监听2021端口
+// 创建socket.io服务端，监听3120端口
 $io = new SocketIO(3120);
 // 当有客户端连接时打印一行文字
 $io->on('connection', function($socket)use($io){
@@ -160,6 +160,18 @@ $io->on('connection', function($socket)use($io){
 ## 关闭链接
 ```php
 $socket->disconnect();
+```
+
+## 限制连接域名
+当我们想指定特定域名的页面才能连接，可以用$io->origins方法来设置域名白名单。
+```php
+$io = new SocketIO(2020);
+$io->origins('http://example.com:8080');
+```
+多个域名时用空格分隔，类似
+```php
+$io = new SocketIO(2020);
+$io->origins('http://workerman.net http://www.workerman.net');
 ```
 
 ## 支持SSL(https wss)

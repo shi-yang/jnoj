@@ -10,7 +10,6 @@ return array(
     'yii\\composer\\' => array($vendorDir . '/yiisoft/yii2-composer'),
     'yii\\bootstrap\\' => array($vendorDir . '/yiisoft/yii2-bootstrap/src'),
     'yii\\' => array($vendorDir . '/yiisoft/yii2'),
-    'russ666\\widgets\\' => array($vendorDir . '/russ666/yii2-countdown'),
     'justinvoelker\\tagging\\' => array($vendorDir . '/justinvoelker/yii2-tagging'),
     'conquer\\helpers\\' => array($vendorDir . '/conquer/helpers'),
     'conquer\\codemirror\\' => array($vendorDir . '/conquer/codemirror'),

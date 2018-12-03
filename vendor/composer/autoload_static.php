@@ -19,10 +19,6 @@ class ComposerStaticInit248c156de5c41d17b4bfccde9823c1ff
             'yii\\bootstrap\\' => 14,
             'yii\\' => 4,
         ),
-        'r' => 
-        array (
-            'russ666\\widgets\\' => 16,
-        ),
         'j' => 
         array (
             'justinvoelker\\tagging\\' => 22,
@@ -63,10 +59,6 @@ class ComposerStaticInit248c156de5c41d17b4bfccde9823c1ff
         'yii\\' => 
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2',
-        ),
-        'russ666\\widgets\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/russ666/yii2-countdown',
         ),
         'justinvoelker\\tagging\\' => 
         array (

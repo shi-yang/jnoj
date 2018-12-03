@@ -3,15 +3,6 @@
 $vendorDir = dirname(__DIR__);
 
 return array (
-  'russ666/yii2-countdown' => 
-  array (
-    'name' => 'russ666/yii2-countdown',
-    'version' => '9999999-dev',
-    'alias' => 
-    array (
-      '@russ666/widgets' => $vendorDir . '/russ666/yii2-countdown',
-    ),
-  ),
   'yiisoft/yii2-swiftmailer' => 
   array (
     'name' => 'yiisoft/yii2-swiftmailer',
@@ -30,15 +21,6 @@ return array (
       '@conquer/helpers' => $vendorDir . '/conquer/helpers',
     ),
   ),
-  'conquer/codemirror' => 
-  array (
-    'name' => 'conquer/codemirror',
-    'version' => '2.0.0.0',
-    'alias' => 
-    array (
-      '@conquer/codemirror' => $vendorDir . '/conquer/codemirror',
-    ),
-  ),
   'justinvoelker/yii2-tagging' => 
   array (
     'name' => 'justinvoelker/yii2-tagging',
@@ -55,6 +37,15 @@ return array (
     'alias' => 
     array (
       '@yii/bootstrap' => $vendorDir . '/yiisoft/yii2-bootstrap/src',
+    ),
+  ),
+  'conquer/codemirror' => 
+  array (
+    'name' => 'conquer/codemirror',
+    'version' => '2.0.1.0',
+    'alias' => 
+    array (
+      '@conquer/codemirror' => $vendorDir . '/conquer/codemirror',
     ),
   ),
 );

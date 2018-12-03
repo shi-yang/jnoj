@@ -15,11 +15,11 @@ use conquer\helpers\Json;
  */
 class CodemirrorWidget extends \yii\widgets\InputWidget
 {
-    
+
     public $presetsDir;
-    
+
     public $assets = [];
-    
+
     public $settings = [];
 
     /**
@@ -27,7 +27,7 @@ class CodemirrorWidget extends \yii\widgets\InputWidget
      * @var string
      */
     public $preset;
-    
+
     /**
      * @inheritdoc
      */
@@ -40,19 +40,19 @@ class CodemirrorWidget extends \yii\widgets\InputWidget
         }
         $this->registerAssets();
     }
-    
-    
+
+
     /**
      * Registers Assets
      */
     public function registerAssets()
     {
-        $view = $this->getView();        
+        $view = $this->getView();
         $id = $this->options['id'];
         $settings = $this->settings;
         $assets = $this->assets;
         if ($this->preset) {
-            $preset=$this->getPreset($this->preset);
+            $preset = $this->getPreset($this->preset);
             if (isset($preset['settings'])) {
                 $settings = ArrayHelper::merge($preset['settings'], $settings);
             }
@@ -61,17 +61,17 @@ class CodemirrorWidget extends \yii\widgets\InputWidget
             }
         }
         $settings = Json::encode($settings);
-        $js = "CodeMirror.fromTextArea(document.getElementById('$id'), $settings)";
+        $js = "CodeMirror.fromTextArea(document.getElementById('$id'), $settings);";
         $view->registerJs($js);
         CodemirrorAsset::register($this->view, $assets);
     }
-    
+
     public function getPreset($name)
     {
         if ($this->presetsDir) {
-            $filename = $this->presetsDir.DIRECTORY_SEPARATOR.ucfirst($name).'Preset.php';
+            $filename = $this->presetsDir . DIRECTORY_SEPARATOR . ucfirst($name) . 'Preset.php';
         } else {
-            $filename = dirname(__FILE__).DIRECTORY_SEPARATOR.'presets'.DIRECTORY_SEPARATOR.ucfirst($name).'Preset.php';
+            $filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'presets' . DIRECTORY_SEPARATOR . ucfirst($name) . 'Preset.php';
         }
         return require $filename;
     }

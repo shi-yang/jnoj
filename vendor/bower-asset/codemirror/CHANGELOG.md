@@ -1,3 +1,57 @@
+## 5.42.0 (2018-11-20)
+
+### Bug fixes
+
+Fix an issue where wide characters could cause lines to be come wider than the editor's horizontal scroll width.
+
+Optimize handling of window resize events.
+
+[show-hint addon](https://codemirror.net/doc/manual.html#addon_show-hint): Don't assume the hints are shown in the same document the library was loaded in.
+
+[python mode](https://codemirror.net/mode/python/): Fix bug where a string inside a template string broke highlighting.
+
+[swift mode](https://codemirror.net/mode/swift): Support multi-line strings.
+
+### New features
+
+The [`markText` method](https://codemirror.net/doc/manual.html#markText) now takes an [`attributes`](https://codemirror.net/doc/manual.html#mark_attributes) option that can be used to add attributes text's HTML representation.
+
+[vim bindings](https://codemirror.net/demo/vim.html): Add support for the `=` binding.
+
+## 5.41.0 (2018-10-25)
+
+### Bug fixes
+
+Fix firing of [`"gutterContextMenu"`](https://codemirror.net/doc/manual.html#event_gutterContextMenu) event on Firefox.
+
+Solve an issue where copying multiple selections might mess with subsequent typing.
+
+Don't crash when [`endOperation`](https://codemirror.net/doc/manual.html#endOperation) is called with no operation active.
+
+[vim bindings](https://codemirror.net/demo/vim.html): Fix insert mode repeat after visualBlock edits.
+
+[scheme mode](https://codemirror.net/mode/scheme/index.html): Improve highlighting of quoted expressions.
+
+[soy mode](https://codemirror.net/mode/soy/): Support injected data and `@param` in comments.
+
+[objective c mode](https://codemirror.net/mode/clike/): Improve conformance to the actual language.
+
+### New features
+
+A new [`selectionsMayTouch`](https://codemirror.net/doc/manual.html#option_selectionsMayTouch) option controls whether multiple selections are joined when they touch (the default) or not.
+
+[vim bindings](https://codemirror.net/demo/vim.html): Add `noremap` binding command.
+
+## 5.40.2 (2018-09-20)
+
+### Bug fixes
+
+Fix firing of `gutterContextMenu` event on Firefox.
+
+Add `hintWords` (basic completion) helper to [clojure](https://codemirror.net/mode/clojure/index.html), [mllike](https://codemirror.net/mode/mllike/index.html), [julia](https://codemirror.net/mode/julia/), [shell](https://codemirror.net/mode/shell/), and [r](https://codemirror.net/mode/r/) modes.
+
+[clojure mode](https://codemirror.net/mode/clojure/index.html): Clean up and improve.
+
 ## 5.40.0 (2018-08-25)
 
 ### Bug fixes

@@ -1,58 +1,68 @@
 [
     {
-        "name": "yiisoft/yii2-composer",
-        "version": "2.0.7",
-        "version_normalized": "2.0.7.0",
+        "name": "bower-asset/bootstrap",
+        "version": "v3.3.7",
+        "version_normalized": "3.3.7.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/yiisoft/yii2-composer.git",
-            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534"
+            "url": "https://github.com/twbs/bootstrap.git",
+            "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/1439e78be1218c492e6cde251ed87d3f128b9534",
-            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534",
-            "shasum": ""
+            "url": "https://api.github.com/repos/twbs/bootstrap/zipball/0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+            "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+            "shasum": null
         },
         "require": {
-            "composer-plugin-api": "^1.0"
+            "bower-asset/jquery": ">=1.9.1,<4.0"
         },
-        "require-dev": {
-            "composer/composer": "^1.0"
-        },
-        "time": "2018-07-05T15:44:47+00:00",
-        "type": "composer-plugin",
-        "extra": {
-            "class": "yii\\composer\\Plugin",
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
+        "type": "bower-asset",
         "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "yii\\composer\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Qiang Xue",
-                "email": "qiang.xue@gmail.com"
-            },
-            {
-                "name": "Carsten Brandt",
-                "email": "mail@cebe.cc"
-            }
-        ],
-        "description": "The composer plugin for Yii extension installer",
-        "keywords": [
-            "composer",
-            "extension installer",
-            "yii2"
+            "MIT"
+        ]
+    },
+    {
+        "name": "bower-asset/codemirror",
+        "version": "5.42.0",
+        "version_normalized": "5.42.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/components/codemirror.git",
+            "reference": "376375ef377f03cdcc9336cc7d25cef38e9eccf5"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/components/codemirror/zipball/376375ef377f03cdcc9336cc7d25cef38e9eccf5",
+            "reference": "376375ef377f03cdcc9336cc7d25cef38e9eccf5",
+            "shasum": null
+        },
+        "type": "bower-asset",
+        "installation-source": "dist"
+    },
+    {
+        "name": "bower-asset/inputmask",
+        "version": "3.3.11",
+        "version_normalized": "3.3.11.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/RobinHerbots/Inputmask.git",
+            "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/RobinHerbots/Inputmask/zipball/5e670ad62f50c738388d4dcec78d2888505ad77b",
+            "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b",
+            "shasum": null
+        },
+        "require": {
+            "bower-asset/jquery": ">=1.7"
+        },
+        "type": "bower-asset",
+        "installation-source": "dist",
+        "license": [
+            "http://opensource.org/licenses/mit-license.php"
         ]
     },
     {
@@ -77,31 +87,22 @@
         ]
     },
     {
-        "name": "bower-asset/jquery.countdown",
-        "version": "2.2.0",
-        "version_normalized": "2.2.0.0",
+        "name": "bower-asset/punycode",
+        "version": "v1.3.2",
+        "version_normalized": "1.3.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/hilios/jQuery.countdown.git",
-            "reference": "f4dd04b02be1e0504c03d886efe8a94de7f2da6b"
+            "url": "git@github.com:bestiejs/punycode.js.git",
+            "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/hilios/jQuery.countdown/zipball/f4dd04b02be1e0504c03d886efe8a94de7f2da6b",
-            "reference": "f4dd04b02be1e0504c03d886efe8a94de7f2da6b",
+            "url": "https://api.github.com/repos/bestiejs/punycode.js/zipball/38c8d3131a82567bfef18da09f7f4db68c84f8a3",
+            "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3",
             "shasum": null
         },
-        "require": {
-            "bower-asset/jquery": ">=1.7"
-        },
         "type": "bower-asset",
-        "installation-source": "dist",
-        "license": [
-            {
-                "type": "MIT",
-                "url": "https://github.com/hilios/jQuery.countdown/blob/2.0.4/LICENSE.md"
-            }
-        ]
+        "installation-source": "dist"
     },
     {
         "name": "bower-asset/yii2-pjax",
@@ -126,24 +127,6 @@
         "license": [
             "MIT"
         ]
-    },
-    {
-        "name": "bower-asset/punycode",
-        "version": "v1.3.2",
-        "version_normalized": "1.3.2.0",
-        "source": {
-            "type": "git",
-            "url": "git@github.com:bestiejs/punycode.js.git",
-            "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/bestiejs/punycode.js/zipball/38c8d3131a82567bfef18da09f7f4db68c84f8a3",
-            "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3",
-            "shasum": null
-        },
-        "type": "bower-asset",
-        "installation-source": "dist"
     },
     {
         "name": "cebe/markdown",
@@ -208,6 +191,110 @@
         ]
     },
     {
+        "name": "conquer/codemirror",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/borodulin/yii2-codemirror.git",
+            "reference": "427485df607720d44ddf964081ba3525b849ae4c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/borodulin/yii2-codemirror/zipball/427485df607720d44ddf964081ba3525b849ae4c",
+            "reference": "427485df607720d44ddf964081ba3525b849ae4c",
+            "shasum": ""
+        },
+        "require": {
+            "bower-asset/codemirror": "*",
+            "conquer/helpers": "~2.0.8",
+            "php": ">=5.4.0",
+            "yiisoft/yii2": "*"
+        },
+        "time": "2018-08-18T01:35:24+00:00",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.2.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "conquer\\codemirror\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Andrey Borodulin",
+                "email": "borodulin@gmail.com"
+            }
+        ],
+        "description": "Yii2 codemirror widget",
+        "homepage": "https://github.com/borodulin/yii2-codemirror",
+        "keywords": [
+            "codemirror",
+            "extension",
+            "widget",
+            "yii2"
+        ]
+    },
+    {
+        "name": "conquer/helpers",
+        "version": "2.0.13",
+        "version_normalized": "2.0.13.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/borodulin/yii2-helpers.git",
+            "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/borodulin/yii2-helpers/zipball/fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
+            "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0",
+            "yiisoft/yii2": ">=2.0.13"
+        },
+        "time": "2018-03-14T04:09:25+00:00",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.13.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "conquer\\helpers\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Andrey Borodulin",
+                "email": "borodulin@gmail.com"
+            }
+        ],
+        "description": "Yii2 helpers",
+        "homepage": "https://github.com/borodulin/yii2-helpers",
+        "keywords": [
+            "extension",
+            "helpers",
+            "widget",
+            "yii2"
+        ]
+    },
+    {
         "name": "ezyang/htmlpurifier",
         "version": "v4.10.0",
         "version_normalized": "4.10.0.0",
@@ -257,27 +344,217 @@
         ]
     },
     {
-        "name": "bower-asset/inputmask",
-        "version": "3.3.11",
-        "version_normalized": "3.3.11.0",
+        "name": "justinvoelker/yii2-tagging",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/RobinHerbots/Inputmask.git",
-            "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
+            "url": "https://github.com/justinvoelker/yii2-tagging.git",
+            "reference": "1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/RobinHerbots/Inputmask/zipball/5e670ad62f50c738388d4dcec78d2888505ad77b",
-            "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b",
-            "shasum": null
+            "url": "https://api.github.com/repos/justinvoelker/yii2-tagging/zipball/1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2",
+            "reference": "1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2",
+            "shasum": ""
         },
         "require": {
-            "bower-asset/jquery": ">=1.7"
+            "yiisoft/yii2": "*"
         },
-        "type": "bower-asset",
+        "time": "2015-08-03T16:26:25+00:00",
+        "type": "yii2-extension",
         "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "justinvoelker\\tagging\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "http://opensource.org/licenses/mit-license.php"
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Justin Voelker",
+                "email": "justin@justinvoelker.com"
+            }
+        ],
+        "description": "Turn delimited data into tags",
+        "keywords": [
+            "tag",
+            "yii2"
+        ]
+    },
+    {
+        "name": "swiftmailer/swiftmailer",
+        "version": "v5.4.12",
+        "version_normalized": "5.4.12.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "reference": "181b89f18a90f8925ef805f950d47a7190e9b950"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/181b89f18a90f8925ef805f950d47a7190e9b950",
+            "reference": "181b89f18a90f8925ef805f950d47a7190e9b950",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.1",
+            "symfony/phpunit-bridge": "~3.2"
+        },
+        "time": "2018-07-31T09:26:32+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "5.4-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/swift_required.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Corbyn"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Swiftmailer, free feature-rich PHP mailer",
+        "homepage": "https://swiftmailer.symfony.com",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer"
+        ]
+    },
+    {
+        "name": "workerman/channel",
+        "version": "v1.0.5",
+        "version_normalized": "1.0.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/walkor/Channel.git",
+            "reference": "0836a9a413c6e8425ee36307d95e2e49cc380f50"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/walkor/Channel/zipball/0836a9a413c6e8425ee36307d95e2e49cc380f50",
+            "reference": "0836a9a413c6e8425ee36307d95e2e49cc380f50",
+            "shasum": ""
+        },
+        "require": {
+            "workerman/workerman": ">=3.3.0"
+        },
+        "time": "2018-07-02T02:42:37+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Channel\\": "./src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "homepage": "http://www.workerman.net"
+    },
+    {
+        "name": "workerman/phpsocket.io",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/walkor/phpsocket.io.git",
+            "reference": "a80074f20c2e19b8cb3351ff718ae28e7df6bbea"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/a80074f20c2e19b8cb3351ff718ae28e7df6bbea",
+            "reference": "a80074f20c2e19b8cb3351ff718ae28e7df6bbea",
+            "shasum": ""
+        },
+        "require": {
+            "workerman/channel": ">=1.0.0",
+            "workerman/workerman": ">=3.5.16"
+        },
+        "time": "2018-11-22T08:30:21+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "PHPSocketIO\\": "./src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "homepage": "http://www.workerman.net",
+        "keywords": [
+            "Socket.io"
+        ]
+    },
+    {
+        "name": "workerman/workerman",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/walkor/Workerman.git",
+            "reference": "9893a3b26eb06f9d35a760e0dd049a5dacbfcb40"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/walkor/Workerman/zipball/9893a3b26eb06f9d35a760e0dd049a5dacbfcb40",
+            "reference": "9893a3b26eb06f9d35a760e0dd049a5dacbfcb40",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "suggest": {
+            "ext-event": "For better performance. "
+        },
+        "time": "2018-11-19T06:54:52+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Workerman\\": "./"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "walkor",
+                "email": "walkor@workerman.net",
+                "homepage": "http://www.workerman.net",
+                "role": "Developer"
+            }
+        ],
+        "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
+        "homepage": "http://www.workerman.net",
+        "keywords": [
+            "asynchronous",
+            "event-loop"
         ]
     },
     {
@@ -383,457 +660,6 @@
         ]
     },
     {
-        "name": "russ666/yii2-countdown",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/russ666/yii2-countdown.git",
-            "reference": "ce7b41b9c09c78a63f2cfb96eeb41c8f2262b028"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/russ666/yii2-countdown/zipball/ce7b41b9c09c78a63f2cfb96eeb41c8f2262b028",
-            "reference": "ce7b41b9c09c78a63f2cfb96eeb41c8f2262b028",
-            "shasum": ""
-        },
-        "require": {
-            "bower-asset/jquery.countdown": "*",
-            "yiisoft/yii2": "*"
-        },
-        "time": "2018-06-19T07:34:32+00:00",
-        "type": "yii2-extension",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "russ666\\widgets\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "description": "jQuery countdown widget for Yii2",
-        "keywords": [
-            "countdown",
-            "jquery",
-            "widget",
-            "yii2"
-        ]
-    },
-    {
-        "name": "workerman/workerman",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/walkor/Workerman.git",
-            "reference": "cf2538169af989fbba4d55be1bfc8c8d80fa71e9"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/walkor/Workerman/zipball/cf2538169af989fbba4d55be1bfc8c8d80fa71e9",
-            "reference": "cf2538169af989fbba4d55be1bfc8c8d80fa71e9",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3"
-        },
-        "suggest": {
-            "ext-event": "For better performance. "
-        },
-        "time": "2018-07-16T02:11:10+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Workerman\\": "./"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "walkor",
-                "email": "walkor@workerman.net",
-                "homepage": "http://www.workerman.net",
-                "role": "Developer"
-            }
-        ],
-        "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
-        "homepage": "http://www.workerman.net",
-        "keywords": [
-            "asynchronous",
-            "event-loop"
-        ]
-    },
-    {
-        "name": "workerman/channel",
-        "version": "v1.0.5",
-        "version_normalized": "1.0.5.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/walkor/Channel.git",
-            "reference": "0836a9a413c6e8425ee36307d95e2e49cc380f50"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/walkor/Channel/zipball/0836a9a413c6e8425ee36307d95e2e49cc380f50",
-            "reference": "0836a9a413c6e8425ee36307d95e2e49cc380f50",
-            "shasum": ""
-        },
-        "require": {
-            "workerman/workerman": ">=3.3.0"
-        },
-        "time": "2018-07-02T02:42:37+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Channel\\": "./src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "homepage": "http://www.workerman.net"
-    },
-    {
-        "name": "workerman/phpsocket.io",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/walkor/phpsocket.io.git",
-            "reference": "894a474cda904238173ab8e8d8336438dbfba586"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/894a474cda904238173ab8e8d8336438dbfba586",
-            "reference": "894a474cda904238173ab8e8d8336438dbfba586",
-            "shasum": ""
-        },
-        "require": {
-            "workerman/channel": ">=1.0.0",
-            "workerman/workerman": ">=3.1.8"
-        },
-        "time": "2018-05-27T01:39:15+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "PHPSocketIO\\": "./src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "homepage": "http://www.workerman.net",
-        "keywords": [
-            "Socket.io"
-        ]
-    },
-    {
-        "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.9",
-        "version_normalized": "5.4.9.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
-            "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9.1",
-            "symfony/phpunit-bridge": "~3.2"
-        },
-        "time": "2018-01-23T07:37:21+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "5.4-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "lib/swift_required.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Chris Corbyn"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Swiftmailer, free feature-rich PHP mailer",
-        "homepage": "https://swiftmailer.symfony.com",
-        "keywords": [
-            "email",
-            "mail",
-            "mailer"
-        ]
-    },
-    {
-        "name": "yiisoft/yii2-swiftmailer",
-        "version": "2.0.7",
-        "version_normalized": "2.0.7.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-swiftmailer.git",
-            "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
-            "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
-            "shasum": ""
-        },
-        "require": {
-            "swiftmailer/swiftmailer": "~5.0",
-            "yiisoft/yii2": "~2.0.4"
-        },
-        "time": "2017-05-01T08:29:00+00:00",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "yii\\swiftmailer\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Paul Klimov",
-                "email": "klimov.paul@gmail.com"
-            }
-        ],
-        "description": "The SwiftMailer integration for the Yii framework",
-        "keywords": [
-            "email",
-            "mail",
-            "mailer",
-            "swift",
-            "swiftmailer",
-            "yii2"
-        ]
-    },
-    {
-        "name": "bower-asset/codemirror",
-        "version": "5.40.0",
-        "version_normalized": "5.40.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/components/codemirror.git",
-            "reference": "21e642c519b6595101c47f1854c33cded43e5267"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/components/codemirror/zipball/21e642c519b6595101c47f1854c33cded43e5267",
-            "reference": "21e642c519b6595101c47f1854c33cded43e5267",
-            "shasum": null
-        },
-        "type": "bower-asset",
-        "installation-source": "dist"
-    },
-    {
-        "name": "conquer/helpers",
-        "version": "2.0.13",
-        "version_normalized": "2.0.13.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/borodulin/yii2-helpers.git",
-            "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/borodulin/yii2-helpers/zipball/fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
-            "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0",
-            "yiisoft/yii2": ">=2.0.13"
-        },
-        "time": "2018-03-14T04:09:25+00:00",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.13.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "conquer\\helpers\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Andrey Borodulin",
-                "email": "borodulin@gmail.com"
-            }
-        ],
-        "description": "Yii2 helpers",
-        "homepage": "https://github.com/borodulin/yii2-helpers",
-        "keywords": [
-            "extension",
-            "helpers",
-            "widget",
-            "yii2"
-        ]
-    },
-    {
-        "name": "conquer/codemirror",
-        "version": "2.0",
-        "version_normalized": "2.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/borodulin/yii2-codemirror.git",
-            "reference": "84bc4328eb3ec737867f503a95972cd611c94300"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/borodulin/yii2-codemirror/zipball/84bc4328eb3ec737867f503a95972cd611c94300",
-            "reference": "84bc4328eb3ec737867f503a95972cd611c94300",
-            "shasum": ""
-        },
-        "require": {
-            "bower-asset/codemirror": "*",
-            "conquer/helpers": "~2.0.8",
-            "php": ">=5.4.0",
-            "yiisoft/yii2": "*"
-        },
-        "time": "2015-10-13T11:13:22+00:00",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.2.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "conquer\\codemirror\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Andrey Borodulin",
-                "email": "borodulin@gmail.com"
-            }
-        ],
-        "description": "Yii2 codemirror widget",
-        "homepage": "https://github.com/borodulin/yii2-codemirror",
-        "keywords": [
-            "codemirror",
-            "extension",
-            "widget",
-            "yii2"
-        ]
-    },
-    {
-        "name": "justinvoelker/yii2-tagging",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/justinvoelker/yii2-tagging.git",
-            "reference": "1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/justinvoelker/yii2-tagging/zipball/1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2",
-            "reference": "1e8a93e3a1e34e386bd0c48631fd06d54bb9e0c2",
-            "shasum": ""
-        },
-        "require": {
-            "yiisoft/yii2": "*"
-        },
-        "time": "2015-08-03T16:26:25+00:00",
-        "type": "yii2-extension",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "justinvoelker\\tagging\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Justin Voelker",
-                "email": "justin@justinvoelker.com"
-            }
-        ],
-        "description": "Turn delimited data into tags",
-        "keywords": [
-            "tag",
-            "yii2"
-        ]
-    },
-    {
-        "name": "bower-asset/bootstrap",
-        "version": "v3.3.7",
-        "version_normalized": "3.3.7.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/twbs/bootstrap.git",
-            "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/twbs/bootstrap/zipball/0b9c4a4007c44201dce9a6cc1a38407005c26c86",
-            "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86",
-            "shasum": null
-        },
-        "require": {
-            "bower-asset/jquery": ">=1.9.1,<4.0"
-        },
-        "type": "bower-asset",
-        "installation-source": "dist",
-        "license": [
-            "MIT"
-        ]
-    },
-    {
         "name": "yiisoft/yii2-bootstrap",
         "version": "2.0.8",
         "version_normalized": "2.0.8.0",
@@ -892,6 +718,114 @@
         "description": "The Twitter Bootstrap extension for the Yii framework",
         "keywords": [
             "bootstrap",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-composer",
+        "version": "2.0.7",
+        "version_normalized": "2.0.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-composer.git",
+            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/1439e78be1218c492e6cde251ed87d3f128b9534",
+            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.0"
+        },
+        "require-dev": {
+            "composer/composer": "^1.0"
+        },
+        "time": "2018-07-05T15:44:47+00:00",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "yii\\composer\\Plugin",
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "yii\\composer\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Qiang Xue",
+                "email": "qiang.xue@gmail.com"
+            },
+            {
+                "name": "Carsten Brandt",
+                "email": "mail@cebe.cc"
+            }
+        ],
+        "description": "The composer plugin for Yii extension installer",
+        "keywords": [
+            "composer",
+            "extension installer",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-swiftmailer",
+        "version": "2.0.7",
+        "version_normalized": "2.0.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-swiftmailer.git",
+            "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
+            "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
+            "shasum": ""
+        },
+        "require": {
+            "swiftmailer/swiftmailer": "~5.0",
+            "yiisoft/yii2": "~2.0.4"
+        },
+        "time": "2017-05-01T08:29:00+00:00",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "yii\\swiftmailer\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Paul Klimov",
+                "email": "klimov.paul@gmail.com"
+            }
+        ],
+        "description": "The SwiftMailer integration for the Yii framework",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer",
+            "swift",
+            "swiftmailer",
             "yii2"
         ]
     }

@@ -45,7 +45,7 @@ use conquer\codemirror\CodemirrorWidget;
 $form->field($model, 'code')->widget(
     CodemirrorWidget::className(),
     [
-        'presetDir'=>'/path_to_your_presets',
+        'presetsDir'=>'/path_to_your_presets',
         'preset'=>'sql',
     ]
 );
