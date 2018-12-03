@@ -25,6 +25,9 @@ $config = [
     'components' => [
         'formatter' => $params['components.formatter'],
         'setting' => $params['components.setting'],
+        'assetManager' => [
+            'appendTimestamp' => true,
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'J2G4Qf8xcLOk8Zuf1zKcP1YC_ydIL5GY',
