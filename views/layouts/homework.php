@@ -133,7 +133,7 @@ $status = $model->getRunStatus();
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="text-center"><strong>Now</strong> <span color=#993399><span id="nowdate"> <?php echo date("Y-m-d H:i:s") ?></span></span></div>
+            <div class="text-center"><strong>Now</strong> <span><span id="nowdate"> <?= date("Y-m-d H:i:s") ?></span></span></div>
         </div>
         <hr>
         <?php if ($status == $model::STATUS_NOT_START): ?>
