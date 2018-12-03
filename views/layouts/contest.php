@@ -15,6 +15,7 @@ use app\models\Contest;
 
 AppAsset::register($this);
 
+$this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js', ['depends' => 'yii\web\JqueryAsset']);
 $model = $this->params['model'];
 $status = $model->getRunStatus();
 ?>
@@ -91,10 +92,10 @@ $status = $model->getRunStatus();
                     <h2 class="contest-title">
                         <?= Html::encode($model->title) ?>
                         <?php if ($model->type == Contest::TYPE_HOMEWORK): ?>
-                        <small>
-                            <?= Html::a('<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Setting'),
-                                ['/homework/update', 'id' => $model->id]) ?>
-                        </small>
+                            <small>
+                                <?= Html::a('<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Setting'),
+                                    ['/homework/update', 'id' => $model->id]) ?>
+                            </small>
                         <?php endif; ?>
                     </h2>
                 </div>
@@ -120,13 +121,7 @@ $status = $model->getRunStatus();
         <hr>
         <?php if ($status == $model::STATUS_NOT_START): ?>
             <div class="contest-countdown text-center">
-                <?= \russ666\widgets\Countdown::widget([
-                    'datetime' => date('Y-m-d H:i:s O', strtotime($model->start_time)),
-                    'format' => '%D:%H:%M:%S',
-                    'events' => [
-                        'finish' => 'function(){location.reload()}',
-                    ],
-                ]); ?>
+                <div id="countdown"></div>
             </div>
             <?php if (!empty($model->description)): ?>
                 <div class="contest-desc">
@@ -192,9 +187,13 @@ $status = $model->getRunStatus();
 </footer>
 <?php $this->endBody() ?>
 <script>
-    var diff = new Date("<?= date("Y/m/d H:i:s")?>").getTime() - new Date().getTime();
+    var client_time = new Date();
+    var diff = new Date("<?= date("Y/m/d H:i:s")?>").getTime() - client_time.getTime();
     var start_time = new Date("<?= $model->start_time ?>");
     var end_time = new Date("<?= $model->end_time ?>");
+    $("#countdown").countdown(start_time.getTime() - diff, function(event) {
+        $(this).html(event.strftime('%D:%H:%M:%S'));
+    });
     function clock() {
         var h, m, s, n, y, mon, d;
         var x = new Date(new Date().getTime() + diff);
@@ -207,8 +206,8 @@ $status = $model->getRunStatus();
         s = x.getSeconds();
 
         n = y + "-" + mon + "-" + d + " " + (h >= 10 ? h : "0" + h) + ":" + (m >= 10 ? m : "0" + m) + ":" + (s >= 10 ? s : "0" + s);
-        var now_time = new Date(n);
         document.getElementById('nowdate').innerHTML = n;
+        var now_time = new Date(n);
         if (now_time < end_time) {
             var rate = (now_time - start_time) / (end_time - start_time) * 100;
             document.getElementById('contest-progress').style.width = rate + "%";
@@ -223,10 +222,10 @@ $status = $model->getRunStatus();
         // 连接服务端
         var socket = io('http://' + document.domain + ':2120');
         var uid = <?= Yii::$app->user->isGuest ? session_id() : Yii::$app->user->id ?>
-        // 连接后登录
-        socket.on('connect', function(){
-            socket.emit('login', uid);
-        });
+            // 连接后登录
+            socket.on('connect', function(){
+                socket.emit('login', uid);
+            });
         // 后端推送来消息时
         socket.on('msg', function(msg){
             alert(msg);
