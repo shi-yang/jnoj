@@ -8,6 +8,7 @@ JNOJ Change Log
 - Enh: 静态资源带版本号
 - Bug: 比赛倒计时采用客户端时间的问题
 - Chg: 执行 composer update 更新 vendor 
+- Bug: 从其它OJ导入题目时可能导致的单词换行问题
 
 0.5.0 2018.12.2
 -----------------------

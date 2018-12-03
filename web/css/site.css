@@ -180,7 +180,9 @@ a.desc:after {
 .solution-search {
     padding-bottom: 20px;
 }
-
+.html-output {
+    word-wrap: break-word;
+}
 .html-output img {
     max-width: 100%;
 }
