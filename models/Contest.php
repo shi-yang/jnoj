@@ -513,4 +513,24 @@ class Contest extends \yii\db\ActiveRecord
         }
         return false;
     }
+
+    public function getLoginUserProblemSolvingStatus()
+    {
+        if (Yii::$app->user->isGuest) {
+            return null;
+        }
+        $statuses = Yii::$app->db->createCommand('
+            SELECT `s`.`result`, `s`.`problem_id`
+            FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.created_by
+            WHERE `contest_id`=:id AND `s`.`created_at`<=:endtime AND `s`.`created_by`=:uid
+        ', [':id' => $this->id, ':endtime' => $this->end_time, ':uid' => Yii::$app->user->id])->queryAll();
+        $res = [];
+        foreach ($statuses as $status) {
+            if (isset($res[$status['problem_id']]) && $res[$status['problem_id']] == Solution::OJ_AC) {
+                continue;
+            }
+            $res[$status['problem_id']] = $status['result'];
+        }
+        return $res;
+    }
 }

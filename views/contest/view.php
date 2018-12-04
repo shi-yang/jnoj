@@ -13,6 +13,7 @@ $this->title = $model->title;
 $this->params['model'] = $model;
 
 $problems = $model->problems;
+$loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
 ?>
 <div class="contest-overview text-center center-block">
     <div class="table-responsive well">
@@ -48,7 +49,7 @@ $problems = $model->problems;
                 }
                 ?>
                 <th>Name</th>
-<!--                <th>Solved</th>-->
+                <th>Solved</th>
             </tr>
             </thead>
             <tbody>
@@ -61,7 +62,14 @@ $problems = $model->problems;
                     }
                     ?>
                     <td><?= Html::a(Html::encode($p['title']), ['/contest/problem', 'id' => $model->id, 'pid' => $key, '#' => 'problem-anchor']) ?></td>
-<!--                    <td></td>-->
+                    <th>
+                        <?php if (!isset($loginUserProblemSolvingStatus[$p['problem_id']])): ?>
+                        <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] == \app\models\Solution::OJ_AC): ?>
+                            <span class="glyphicon glyphicon-ok text-success"></span>
+                        <?php else: ?>
+                            <span class="glyphicon glyphicon-remove text-danger"></span>
+                        <?php endif; ?>
+                    </th>
                 </tr>
             <?php endforeach; ?>
             </tbody>

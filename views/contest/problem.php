@@ -20,7 +20,7 @@ if (!Yii::$app->user->isGuest) {
 }
 $problems = $model->problems;
 if (empty($problems)) {
-    echo 'Please add question';
+    echo 'Please add problem';
     return;
 }
 
