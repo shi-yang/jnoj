@@ -84,7 +84,7 @@ $status = $model->getRunStatus();
         <?= Alert::widget() ?>
         <div class="contest-info">
             <div class="row">
-                <div class="col-md-3 text-left">
+                <div class="col-md-3 text-left hidden-print">
                     <strong>Start </strong>
                     <?= $model->start_time ?>
                 </div>
@@ -99,12 +99,12 @@ $status = $model->getRunStatus();
                         <?php endif; ?>
                     </h2>
                 </div>
-                <div class="col-md-3 text-right">
+                <div class="col-md-3 text-right hidden-print">
                     <strong>End </strong>
                     <?= $model->end_time ?>
                 </div>
             </div>
-            <div class="progress">
+            <div class="progress hidden-print">
                 <div class="progress-bar progress-bar-success" id="contest-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 1%;">
                     <?php if ($status == $model::STATUS_NOT_START): ?>
                         Not start
@@ -116,7 +116,7 @@ $status = $model->getRunStatus();
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="text-center"><strong>Now</strong> <span><span id="nowdate"> <?php echo date("Y-m-d H:i:s") ?></span></span></div>
+            <div class="text-center hidden-print"><strong>Now</strong> <span><span id="nowdate"> <?php echo date("Y-m-d H:i:s") ?></span></span></div>
         </div>
         <hr>
         <?php if ($status == $model::STATUS_NOT_START): ?>
@@ -171,7 +171,7 @@ $status = $model->getRunStatus();
                 }
                 echo Nav::widget([
                     'items' => $menuItems,
-                    'options' => ['class' => 'nav nav-tabs'],
+                    'options' => ['class' => 'nav nav-tabs hidden-print'],
                     'encodeLabels' => false
                 ]) ?>
                 <?php \yii\widgets\Pjax::begin() ?>
