@@ -24,6 +24,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
     'toggleButton' => ['label' => 'Add User', 'class' => 'btn btn-success'],
 ]);?>
 <?= Html::beginForm(['contest/register', 'id' => $model->id]) ?>
+    <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
+        <p class="text-muted">当前比赛为线下赛，在此添加的账号在榜单排名上会被打星，不参与榜单排名</p>
+    <?php endif; ?>
     <div class="form-group">
         <?= Html::label(Yii::t('app', 'User ID'), 'user') ?>
         <?= Html::textInput('user', '',['class' => 'form-control', 'placeholder' => 'User Id or Username or Email']) ?>
@@ -53,7 +56,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
         <?= $form->field($generatorForm, 'names')->textarea(['rows' => 10])->hint('请把所有队伍名称复制到此处，一个名字占据一行，请自行删除多余的空行')  ?>
 
         <div class="form-group">
-            <p>生成账户过程需等待一段时间，在此期间请勿刷新页面</p>
             <?= Html::submitButton(Yii::t('app', 'Generate'), ['class' => 'btn btn-success']) ?>
         </div>
 

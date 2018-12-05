@@ -63,6 +63,9 @@ class GenerateUserForm extends Model
         User::deleteAll("username LIKE '" . $this->prefix . "%'");
         ContestUser::deleteAll(['contest_id' => $this->contest_id]);
 
+        set_time_limit(0);
+        ob_end_clean();
+        echo "生成帐号需要一定时间，在此期间请勿刷新或关闭该页面<br>";
         for ($i = 1; $i <= $this->team_number; ++$i) {
 
             if(isset($pieces[$i - 1]) && !empty($pieces[$i - 1]))
@@ -85,6 +88,10 @@ class GenerateUserForm extends Model
                 'contest_id' => $this->contest_id,
                 'user_password' => $password
             ])->execute();
+            echo "帐号 {$nick} 创建成功——帐号数{$i}/{$this->team_number}<br>";
+            flush();
         }
+        echo "帐号生成完毕";
+        exit('<script>location.replace(location.href);</script>');
     }
 }
