@@ -405,6 +405,10 @@ class ProblemController extends Controller
             $problem->save();
 
             $this->copyDir(Yii::$app->params['polygonProblemDataPath'] . $polygonProblem['id'], Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+            
+            // 给 SPJ 添加可执行权限
+            $dataPath = Yii::$app->params['judgeProblemDataPath'] . $problem->id;
+            exec("chmod +x {$dataPath}/spj");
             return true;
         }
         return false;
