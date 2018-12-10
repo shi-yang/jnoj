@@ -76,61 +76,40 @@ use yii\bootstrap\Modal;
     'header' => '<h2>SPJ 模板示例</h2>',
     'toggleButton' => ['label' => 'SPJ 模板示例', 'class' => 'btn btn-success'],
 ]) ?>
+<p>SPJ 是一个可执行程序，其的返回值决定着判断结果，成功返回(0)表示AC，其他非零值表示WA。</p>
+<p>1. 如果在后台直接创建题目，需要自己手动编译出 <code>spj</code>(小写，这个名字不能错)，设执行权限，放在 judge/data/problemId 目录下，problemId 对应于题目的ID</p>
+<p>2. 如果使用 polygon 来创建题目，那就只需要保证 SPJ 写正确，导入题库时会自动编译成可执行程序。
+    因在 polygon 中未对 SPJ 的可调用函数进行限制，故在 polygon 中验题功能不会开放，需要拉倒题库后再从后台进行验题。</p>
 <div class="pre"><p>#include &lt;stdio.h&gt;
-
 #define AC 0
 #define WA 1
-#define ERROR -1
-
-int spj(FILE *input, FILE *user_output){
-    /*
-      parameter:
-        - input，your input file pointer
-        - user_output，user output file pointer
-      return:
-        - if the answer is correct, return AC else return WA
-        - if something unexpected happened in your judge function, you can return ERROR
-
-      demo:
-
-      int a, b;
-      while(fscanf(user_output, "%d %d", &a, &b) != EOF){
-          if(a -b != 3){
-              return WA;
-          }
-      }
-      return AC;
-     */
-}
-
-void close_file(FILE *f){
-    if(f != NULL){
-        fclose(f);
+const double eps = 1e-4;
+int main(int argc,char *args[])
+{
+    FILE * f_in = fopen(args[1],"r");
+    FILE * f_out = fopen(args[2],"r");
+    FILE * f_user = fopen(args[3],"r");
+    int ret = AC;
+    /**************判题逻辑**************/
+    /**
+    * 以下判题逻辑代码只是举例：输入有 t 组数据，写 spj 来判断每组数据测试输出与用户输出之差是否在 eps 之内。
+    */
+    int t;
+    double a, x;
+    fscanf(f_in, “%d”, &t); //从输入中读取数据组数 t
+    while (t-–) {
+        fscanf(f_out, “%lf”, &a); //从读取测试输出
+        fscanf(f_user, “%lf”, &x); //从读取用户输出
+        if(fabs(a-x) > eps) {
+            ret = WA;//Wrong Answer
+            break;
+        }
     }
-}
-
-int main(int argc, char *args[]){
-    FILE *input = NULL, *user_output = NULL;
-    int result;
-    if(argc != 4){
-        printf("Usage: spj x.in x.out\n");
-        return ERROR;
-    }
-    input = fopen(args[1], "r");
-    user_output = fopen(args[2], "r");
-    if(input == NULL || user_output == NULL){
-        printf("Failed to open output file\n");
-        close_file(input);
-        close_file(user_output);
-        return ERROR;
-    }
-
-    result = spj(input, user_output);
-    printf("result: %d\n", result);
-
-    close_file(input);
-    close_file(user_output);
-    return result;
+    /***********************************/
+    fclose(f_in);
+    fclose(f_out);
+    fclose(f_user);
+    return ret;
 }
 </p></div>
 <?php Modal::end() ?>
