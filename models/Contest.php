@@ -298,11 +298,6 @@ class Contest extends \yii\db\ActiveRecord
             $pid = $row['problem_id'];
             $created_at = $row['created_at'];
 
-            // 封榜，比赛结束 120 分钟后解榜
-            if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
-                time() <= strtotime($end_time) + Yii::$app->params['scoreboardFrozenTime'])
-                break;
-
             // 初始化数据信息
             if (!isset($submit_count[$pid]['solved']))
                 $submit_count[$pid]['solved'] = 0;
@@ -312,9 +307,12 @@ class Contest extends \yii\db\ActiveRecord
             // AC 时间
             if (!isset($result[$user]['ac_time'][$pid]))
                 $result[$user]['ac_time'][$pid] = 0;
-            // 没 AC 的次数
+            // 没 AC 的次数（不含 CE 编译出错 次数）
             if (!isset($result[$user]['wa_count'][$pid]))
                 $result[$user]['wa_count'][$pid] = 0;
+            // CE（编译出错） 次数
+            if (!isset($result[$user]['ce_count'][$pid]))
+                $result[$user]['ce_count'][$pid] = 0;
             // 正在测评
             if (!isset($result[$user]['pending'][$pid]))
                 $result[$user]['pending'][$pid] = 0;
@@ -329,9 +327,18 @@ class Contest extends \yii\db\ActiveRecord
 
             $result[$user]['submit']++;
             $submit_count[$pid]['submit']++;
-            // Accept
+
+            // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见 config/params.php 文件
+            if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
+                time() <= strtotime($end_time) + Yii::$app->params['scoreboardFrozenTime']) {
+                ++$result[$user]['pending'][$pid];
+                continue;
+            }
+
             if ($row['result'] == Solution::OJ_AC) {
+                // AC
                 $submit_count[$pid]['solved']++;
+                $result[$user]['pending'][$pid] = 0;
 
                 if (empty($first_blood[$pid])) {
                     if ($this->type == self::TYPE_RANK_SINGLE) {
@@ -341,6 +348,7 @@ class Contest extends \yii\db\ActiveRecord
                 }
                 $sec = strtotime($created_at) - strtotime($start_time);
                 ++$result[$user]['solved'];
+                // 单人赛计分，详见 view/wiki/contest.php。
                 if ($this->type == self::TYPE_RANK_SINGLE) {
                     $score = 0.5 * self::BASIC_SCORE + max(0, self::BASIC_SCORE - 2 * $sec / 60 - $result[$user]['wa_count'][$pid] * 50);
                     $result[$user]['ac_time'][$pid] = $score;
@@ -349,13 +357,14 @@ class Contest extends \yii\db\ActiveRecord
                     $result[$user]['ac_time'][$pid] = $sec / 60;
                     $result[$user]['time'] += $sec + $result[$user]['wa_count'][$pid] * 60 * 20;
                 }
-                //Other cases
+            } else if ($row['result'] <= 3) {
+                // 还未测评
+                ++$result[$user]['pending'][$pid];
+            } else if ($row['result'] == Solution::OJ_CE) {
+                // 编译出错
+                ++$result[$user]['ce_count'][$pid];
             } else {
-                if ($row['result'] <= 3) {
-                    ++$result[$user]['pending'][$pid];
-                } else {
-                    $result[$user]['pending'][$pid] = 0;
-                }
+                // 其它情况
                 ++$result[$user]['wa_count'][$pid];
             }
         }
@@ -363,7 +372,7 @@ class Contest extends \yii\db\ActiveRecord
         usort($result, function($a, $b) {
             if ($a['solved'] != $b['solved']) { //优先解题数
                 return $a['solved'] < $b['solved'];
-            } else if ($a['time'] != $b['time']) { //按时间或分数
+            } else if ($a['time'] != $b['time']) { //按时间（分数）
                 if ($this->type == self::TYPE_RANK_SINGLE) {
                     return $a['time'] < $b['time'];
                 } else {

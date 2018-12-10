@@ -104,11 +104,15 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                             } else {
                                 $css_class = 'solved';
                             }
-                            $num = $rank['wa_count'][$p['problem_id']] + 1;
-                            $time = round($rank['ac_time'][$p['problem_id']] / 60);
+                            $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
+                            $time = round($rank['ac_time'][$p['problem_id']]);
+                        } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
+                            $css_class = 'pending';
+                            $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
+                            $time = '--';
                         } else if (isset($rank['wa_count'][$p['problem_id']])) {
                             $css_class = 'attempted';
-                            $num = $rank['wa_count'][$p['problem_id']];
+                            $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']];
                             $time = '--';
                         }
                         echo "<th class=\"table-problem-cell {$css_class}\">{$num}<br><small>{$time}</small></th>";

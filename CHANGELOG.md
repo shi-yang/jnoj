@@ -3,7 +3,7 @@ JNOJ Change Log
 
 该文件显示了各版本间的改变。`Enh` 表示添加新功能，`Chg` 表示修改功能，`Bug` 表示修复 Bug。
 
-0.6.0 under development (2018.12.9)
+0.6.0 under development (2018.12.10)
 -----------------------
 - Enh: 静态资源带版本号
 - Bug: 比赛倒计时采用客户端时间的问题
@@ -15,6 +15,9 @@ JNOJ Change Log
 - Bug: SPJ题目不可判
 - Bug: 测试数据 out 文件无法上传
 - Bug: 可能出现判题无结果的现象
+- Bug: SPJ 模板的问题
+- Bug: 榜单 CE 的计算问题
+- Enh: 封榜后以 pending 状态显示提交次数
 
 0.5.0 2018.12.2
 -----------------------
