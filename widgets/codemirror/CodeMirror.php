@@ -46,7 +46,8 @@ class CodeMirror extends InputWidget
             styleActiveLine: true,
             indentUnit: 4,
             autofocus: true,
-            matchBrackets: true
+            matchBrackets: true,
+            autoRefresh: true
         });
 EOF;
         $this->view->registerCss("

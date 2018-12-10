@@ -13,6 +13,7 @@ class CodeMirrorAsset extends AssetBundle
         'lib/codemirror.js',
         'addon/selection/active-line.js',
         'addon/edit/matchbrackets.js',
+        'addon/display/autorefresh.js',
         'mode/javascript/javascript.js'
     ];
     public $css = [
