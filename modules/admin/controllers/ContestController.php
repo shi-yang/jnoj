@@ -232,6 +232,13 @@ class ContestController extends Controller
         ]);
     }
 
+    /**
+     * 设置题目比赛来源
+     * @param $id
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
+     */
     public function actionSetProblemSource($id)
     {
         $model = $this->findModel($id);
@@ -240,6 +247,29 @@ class ContestController extends Controller
             $problemIds = Yii::$app->db->createCommand('SELECT problem_id as id FROM contest_problem WHERE contest_id=' . $model->id)->queryColumn();
             foreach ($problemIds as $pid) {
                 Yii::$app->db->createCommand()->update('{{%problem}}', ['source' => $source], [
+                    'id' => $pid
+                ])->execute();
+            }
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Set successfully'));
+        }
+        return $this->redirect(['contest/view', 'id' => $model->id]);
+    }
+
+    /**
+     * 设置比赛题目的状态
+     * @param $id
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
+     */
+    public function actionSetProblemStatus($id)
+    {
+        $model = $this->findModel($id);
+        if (($post = Yii::$app->request->post())) {
+            $status = $post['status'];
+            $problemIds = Yii::$app->db->createCommand('SELECT problem_id as id FROM contest_problem WHERE contest_id=' . $model->id)->queryColumn();
+            foreach ($problemIds as $pid) {
+                Yii::$app->db->createCommand()->update('{{%problem}}', ['status' => $status], [
                     'id' => $pid
                 ])->execute();
             }

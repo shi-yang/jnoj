@@ -103,9 +103,7 @@ $problems = $model->problems;
         'header' => '<h3>'.Yii::t('app','设置题目来源').'</h3>',
         'toggleButton' => ['label' => '设置下列所有题目的来源', 'class' => 'btn btn-success'],
     ]); ?>
-
     <?= Html::beginForm(['contest/set-problem-source', 'id' => $model->id]) ?>
-
     <div class="form-group">
         <?= Html::label(Yii::t('app', 'Source'), 'problem_id') ?>
         <?= Html::textInput('source', $model->title,['class' => 'form-control']) ?>
@@ -113,13 +111,43 @@ $problems = $model->problems;
             设置题目来源有利于在首页题库中根据题目来源来搜索题目。此操作会修改题目的“来源”信息。
         </p>
     </div>
-
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
     </div>
     <?= Html::endForm(); ?>
-
     <?php Modal::end(); ?>
+
+    <?php Modal::begin([
+        'header' => '<h3>'.Yii::t('app','设置下列所有题目在前台显示状态').'</h3>',
+        'toggleButton' => ['label' => '设置题目在前台显示状态', 'class' => 'btn btn-success'],
+    ]); ?>
+    <?= Html::beginForm(['contest/set-problem-status', 'id' => $model->id]) ?>
+    <div class="form-group">
+        <?= Html::label(Yii::t('app', 'Status'), 'status') ?>
+        <label class="radio-inline">
+            <input type="radio" name="status" value="<?= \app\models\Problem::STATUS_VISIBLE ?>">
+            <?= Yii::t('app', 'Visible') ?>
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="status" value="<?= \app\models\Problem::STATUS_HIDDEN ?>">
+            <?= Yii::t('app', 'Hidden') ?>
+        </label>
+        <div>
+            该操作用于该场比赛目前添加的所有题目在前台设为隐藏或可见。
+            <ul>
+                <li>题目目前的状态可以在 <?= Html::a(Yii::t('app', 'Problem'), ['problem/index'], ['target' => '_blank']) ?> 中查看</li>
+                <li>状态为隐藏时，前台不可见。反之则可见</li>
+                <li>题目刚创建或从 Polygon 同步到题库时，题目的状态默认为隐藏</li>
+                <li>若前台存在题目的提交记录，并不会将那些提交记录设为隐藏</li>
+            </ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+    </div>
+    <?= Html::endForm(); ?>
+    <?php Modal::end(); ?>
+
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
