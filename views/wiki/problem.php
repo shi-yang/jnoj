@@ -79,7 +79,7 @@ use yii\bootstrap\Modal;
 <p>SPJ 是一个可执行程序，其的返回值决定着判断结果，成功返回(0)表示AC，其他非零值表示WA。</p>
 <p>1. 如果在后台直接创建题目，需要自己手动编译出 <code>spj</code>(小写，这个名字不能错)，设执行权限，放在 judge/data/problemId 目录下，problemId 对应于题目的ID</p>
 <p>2. 如果使用 polygon 来创建题目，那就只需要保证 SPJ 写正确，导入题库时会自动编译成可执行程序。
-    因在 polygon 中未对 SPJ 的可调用函数进行限制，故在 polygon 中验题功能不会开放，需要拉倒题库后再从后台进行验题。</p>
+    因在 polygon 中未对 SPJ 的可调用函数进行限制，故在 polygon 中验题功能不会开放，需要拉到题库后再从后台进行验题。</p>
 <div class="pre"><p>#include &lt;stdio.h&gt;
 #define AC 0
 #define WA 1
