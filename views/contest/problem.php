@@ -140,11 +140,7 @@ $sample_output = unserialize($problem['sample_output']);
                         <td>
                             <?php
                                 if ($sub['result'] == Solution::OJ_AC) {
-                                    $span = '<span class="label label-success">' . Solution::getResultList($sub['result']) . '</span>';
-                                    echo Html::a($span,
-                                        ['/solution/source', 'id' => $sub['id']],
-                                        ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
-                                    );
+                                    echo'<span class="label label-success">' . Solution::getResultList($sub['result']) . '</span>';
                                 } else if ($sub['result'] == Solution::OJ_CE) {
                                     $span = '<span class="label label-default">' . Solution::getResultList($sub['result']) . '</span>';
                                     echo Html::a($span,
@@ -159,6 +155,11 @@ $sample_output = unserialize($problem['sample_output']);
                                     );
                                 }
                             ?>
+                        </td>
+                        <td>
+                            <?= Html::a('<span class="glyphicon glyphicon-edit"></span>',
+                                ['/solution/source', 'id' => $sub['id']],
+                                ['title' => '查看源码', 'onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]) ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -206,6 +207,17 @@ $sample_output = unserialize($problem['sample_output']);
 <?php
 $this->registerJs('
 $(document).ready(function () {
+    $("[data-click=solution_info]").click(function() {
+        $.ajax({
+            url: $(this).attr("href"),
+            type:"post",
+            error: function(){alert("error");},
+            success:function(html){
+                $("#solution-content").html(html);
+                $("#solution-info").modal("show");
+            }
+        });
+    });
     $(".katex.math.inline").each(function () {
         var parent = $(this).parent()[0];
         if (parent.localName !== "code") {

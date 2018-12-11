@@ -154,6 +154,7 @@ $model->setSamples();
                             <?= Yii::$app->formatter->asRelativeTime($sub['created_at']) ?>
                         </td>
                         <td>
+
                             <?php
                             if ($sub['result'] == Solution::OJ_AC) {
                                 $span = '<span class="label label-success">' . Solution::getResultList($sub['result']) . '</span>';
@@ -169,6 +170,11 @@ $model->setSamples();
                                 );
                             }
                             ?>
+                        </td>
+                        <td>
+                            <?= Html::a('<span class="glyphicon glyphicon-edit"></span>',
+                                ['/solution/source', 'id' => $sub['id']],
+                                ['title' => '查看源码', 'onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]) ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
