@@ -28,8 +28,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
         <p class="text-muted">当前比赛为线下赛，在此添加的账号在榜单排名上会被打星，不参与榜单排名</p>
     <?php endif; ?>
     <div class="form-group">
-        <?= Html::label(Yii::t('app', 'User ID'), 'user') ?>
-        <?= Html::textInput('user', '',['class' => 'form-control', 'placeholder' => 'User Id or Username or Email']) ?>
+        <?= Html::label(Yii::t('app', 'User'), 'user') ?>
+        <?= Html::textarea('user', '',['class' => 'form-control', 'rows' => 10]) ?>
+        <p class="hint-block">请把要参赛用户的用户名复制到此处，一个名字占据一行，请自行删除多余的空行。</p>
     </div>
 
     <div class="form-group">

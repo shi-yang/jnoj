@@ -186,35 +186,42 @@ class ContestController extends Controller
         }
         if (Yii::$app->request->isPost) {
             if (Yii::$app->request->get('uid')) {
+                // 去掉已参赛用户
                 $uid = Yii::$app->request->get('uid');
-                $in_contest = Yii::$app->db->createCommand('SELECT count(1) FROM {{%contest_user}} WHERE user_id=:uid AND contest_id=:cid', [
+                $inContest = Yii::$app->db->createCommand('SELECT count(1) FROM {{%contest_user}} WHERE user_id=:uid AND contest_id=:cid', [
                     ':uid' => $uid,
                     ':cid' => $model->id
                 ])->queryScalar();
-                if ($in_contest) {
+                if ($inContest) {
                     ContestUser::findOne(['user_id' => $uid, 'contest_id' => $model->id])->delete();
                     Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
                 }
             } else {
-                $post = Yii::$app->request->post();
-                $user = User::findByUsername($post['user']);
-                if ($user === null) {
-                    Yii::$app->session->setFlash('error', Yii::t('app', 'Failed. No such user.'));
-                } else {
-                    $in_contest = Yii::$app->db->createCommand('SELECT count(1) FROM {{%contest_user}} WHERE user_id=:uid AND contest_id=:cid', [
-                        ':uid' => $user->id,
-                        ':cid' => $model->id
-                    ])->queryScalar();
-                    if ($in_contest) {
-                        Yii::$app->session->setFlash('success', Yii::t('app', 'This user has registered for the contest.'));
-                    } else {
+                //　添加参赛用户
+                $users = Yii::$app->request->post('user');
+                $users = explode("\n", trim($users));
+                $message = "";
+                foreach ($users as $username) {
+                    //　查找用户ID 以及查看是否已经加入比赛中
+                    $username = trim($username);
+                    $query = (new Query())->select('u.id as user_id, count(c.user_id) as exist')
+                        ->from('{{%user}} as u')
+                        ->leftJoin('{{%contest_user}} as c', 'c.user_id=u.id')
+                        ->where('u.username=:name and c.contest_id=:cid', [':name' => $username, ':cid' => $model->id])
+                        ->one();
+                    if (!isset($query['user_id'])) {
+                        $message .= $username . " 不存在该用户<br>";
+                    } else if (!$query['exist']) {
                         Yii::$app->db->createCommand()->insert('{{%contest_user}}', [
-                            'user_id' => $user->id,
+                            'user_id' => $query['user_id'],
                             'contest_id' => $model->id,
                         ])->execute();
-                        Yii::$app->session->setFlash('success', Yii::t('app', 'Add successfully'));
+                        $message .= $username . " 添加成功<br>";
+                    } else {
+                        $message .= $username . " 已参加比赛<br>";
                     }
                 }
+                Yii::$app->session->setFlash('info', $message);
             }
             return $this->refresh();
         }
