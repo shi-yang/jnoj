@@ -286,6 +286,10 @@ class Solution extends ActiveRecord
         if ($this->status == Solution::STATUS_HIDDEN && $this->created_by == Yii::$app->user->id && $this->result == self::OJ_CE) {
             return true;
         }
+        //　非比赛中的提交，普通用户也能查看出错信息
+        if ($this->status == Solution::STATUS_VISIBLE && $this->created_by == Yii::$app->user->id) {
+            return true;
+        }
         return false;
     }
 }
