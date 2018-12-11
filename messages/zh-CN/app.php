@@ -28,6 +28,7 @@ return [
     'Account' => '帐户',
     'Security' => '安全',
     'Username Or Email' => '用户名或邮箱',
+    'Role' => '角色',
     'Remember Me' => '保持登录状态',
     'Preview' => '预览',
     'Solution' => '解决方案',

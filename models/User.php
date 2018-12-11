@@ -70,7 +70,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            [['language', 'rating'], 'integer'],
+            [['language', 'rating', 'role'], 'integer'],
             [['username', 'nickname'], 'required'],
             [['nickname'], 'string', 'max' => 16],
             ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
@@ -79,6 +79,7 @@ class User extends ActiveRecord implements IdentityInterface
             }],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['role', 'in', 'range' => [self::ROLE_PLAYER, self::ROLE_USER, self::ROLE_ADMIN]],
 
             // oldPassword is validated by validateOldPassword()
             [['oldPassword'], 'validateOldPassword'],
@@ -115,7 +116,8 @@ class User extends ActiveRecord implements IdentityInterface
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
             'avatar' => Yii::t('app', 'User Icon'),
-            'rating' => Yii::t('app', 'Rating')
+            'rating' => Yii::t('app', 'Rating'),
+            'role' => Yii::t('app', 'Role')
         ];
     }
 

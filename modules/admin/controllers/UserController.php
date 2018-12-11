@@ -101,12 +101,18 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = 'security';
 
         if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->db->createCommand()->update('{{%user}}', [
-                'password_hash' => Yii::$app->security->generatePasswordHash($model->newPassword)
-            ], ['id' => $model->id])->execute();
+            if (!empty($model->newPassword)) {
+                $model->scenario = 'security';
+                Yii::$app->db->createCommand()->update('{{%user}}', [
+                    'password_hash' => Yii::$app->security->generatePasswordHash($model->newPassword)
+                ], ['id' => $model->id])->execute();
+            } else {
+                $model->scenario = 'profile';
+            }
+            $model->role = Yii::$app->request->post('User')['role'];
+            $model->save();
             Yii::$app->session->setFlash('success', 'Saved Successfully');
             return $this->refresh();
         }
