@@ -72,15 +72,15 @@ $submit_count = $rank_result['submit_count'];
                     } else {
                         $css_class = 'solved';
                     }
-                    $num = $rank['wa_count'][$p['problem_id']] + 1;
+                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
                     $time = round($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                     $css_class = 'pending';
-                    $num = $rank['wa_count'][$p['problem_id']];
+                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
                     $time = '--';
                 } else if (isset($rank['wa_count'][$p['problem_id']])) {
                     $css_class = 'attempted';
-                    $num = $rank['wa_count'][$p['problem_id']];
+                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']];
                     $time = '--';
                 }
                 if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == \app\models\Contest::STATUS_ENDED) {
