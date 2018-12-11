@@ -76,10 +76,13 @@ use yii\bootstrap\Modal;
     'header' => '<h2>SPJ 模板示例</h2>',
     'toggleButton' => ['label' => 'SPJ 模板示例', 'class' => 'btn btn-success'],
 ]) ?>
-<p>SPJ 是一个可执行程序，其的返回值决定着判断结果，成功返回(0)表示AC，其他非零值表示WA。</p>
-<p>1. 如果在后台直接创建题目，需要自己手动编译出 <code>spj</code>(小写，这个名字不能错)，设执行权限，放在 judge/data/problemId 目录下，problemId 对应于题目的ID</p>
-<p>2. 如果使用 polygon 来创建题目，那就只需要保证 SPJ 写正确，导入题库时会自动编译成可执行程序。
-    因在 polygon 中未对 SPJ 的可调用函数进行限制，故在 polygon 中验题功能不会开放，需要拉到题库后再从后台进行验题。</p>
+<p>1. SPJ 是一个可执行程序，其的返回值决定着判断结果，成功返回(0)表示AC，其他非零值表示WA。</p>
+<p>2. SPJ 放在与测试数据同一目录下，文件名为 <code>spj</code>(小写，这个名字不能错)，需要有执行权限，判题时会自动调用 SPJ。
+    对于题库中，SPJ 处于 judge/data/problemId 目录下，problemId 对应于题目的ID；对于 polygon 中，SPJ 处于 polygon/data/problemId 目录下</p>
+<p>3. 在后台创建题目时，填写的 SPJ 源码会自动编译成可执行程序并放在相应的目录下。</p>
+<p>4. 使用 polygon 来创建题目，导入题库时会自动编译成可执行程序。</p>
+<p class="text-danger">5. 当前未对 SPJ 的可调用函数进行限制，故在 polygon 中验题功能不会开放，需要拉到题库后再从后台进行验题。</p>
+<p>6. 针对第 5 条，请确保 SPJ 正确运行，也未调用与判题无关的系统函数，当 SPJ 在 OJ 中编译出错或运行出错时，OJ 不会给出反馈。</p>
 <div class="pre"><p>#include &lt;stdio.h&gt;
 #define AC 0
 #define WA 1

@@ -305,6 +305,40 @@ class ProblemController extends Controller
     }
 
     /**
+     * Spj 页面
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionSpj($id)
+    {
+        $model = $this->findModel($id);
+
+        $dataPath = Yii::$app->params['judgeProblemDataPath'] . $model->id;
+        $spjContent = '';
+        if (file_exists($dataPath . '/spj.cc')) {
+            $spjContent = file_get_contents($dataPath . '/spj.cc');
+        } else if (file_exists($dataPath . '/spj.c')) {
+            $spjContent = file_get_contents($dataPath . '/spj.c');
+        }
+        if (Yii::$app->request->isPost) {
+            $spjContent = Yii::$app->request->post('spjContent');
+            if (!is_dir($dataPath)) {
+                mkdir($dataPath);
+            }
+            $fp = fopen($dataPath . '/spj.cc',"w");
+            fputs($fp, $spjContent);
+            fclose($fp);
+            exec("g++ {$dataPath}/spj.cc -o {$dataPath}/spj");
+        }
+
+        return $this->render('spj', [
+            'model' => $model,
+            'spjContent' => $spjContent
+        ]);
+    }
+
+    /**
      * Deletes an existing Problem model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id

@@ -29,11 +29,9 @@ use yii\helpers\Url;
         0 => Yii::t('app', 'Hidden')
     ])->hint(Yii::t('app', '选择可见，题目将在首页展示．如果要准备比赛，此处应选隐藏．')) ?>
 
-
     <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
     <?= $form->field($model, 'input')->widget('app\widgets\ckeditor\CKeditor'); ?>
-
 
     <?= $form->field($model, 'output')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
@@ -63,7 +61,7 @@ use yii\helpers\Url;
     <?= $form->field($model, 'spj')->radioList([
         '1' => Yii::t('app', 'Yes'),
         '0' => Yii::t('app', 'No')
-    ])?>
+    ]) ?>
 
 
     <?= $form->field($model, 'hint')->widget('app\widgets\ckeditor\CKeditor'); ?>
