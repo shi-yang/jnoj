@@ -3,7 +3,7 @@ JNOJ Change Log
 
 该文件显示了各版本间的改变。`Enh` 表示添加新功能，`Chg` 表示修改功能，`Bug` 表示修复 Bug。
 
-0.6.0 under development (2018.12.10)
+0.6.0 under development (2018.12.11)
 -----------------------
 - Enh: 静态资源带版本号
 - Bug: 比赛倒计时采用客户端时间的问题
