@@ -12,15 +12,6 @@ return array (
       '@yii/swiftmailer' => $vendorDir . '/yiisoft/yii2-swiftmailer',
     ),
   ),
-  'conquer/helpers' => 
-  array (
-    'name' => 'conquer/helpers',
-    'version' => '2.0.13.0',
-    'alias' => 
-    array (
-      '@conquer/helpers' => $vendorDir . '/conquer/helpers',
-    ),
-  ),
   'justinvoelker/yii2-tagging' => 
   array (
     'name' => 'justinvoelker/yii2-tagging',
@@ -37,15 +28,6 @@ return array (
     'alias' => 
     array (
       '@yii/bootstrap' => $vendorDir . '/yiisoft/yii2-bootstrap/src',
-    ),
-  ),
-  'conquer/codemirror' => 
-  array (
-    'name' => 'conquer/codemirror',
-    'version' => '2.0.1.0',
-    'alias' => 
-    array (
-      '@conquer/codemirror' => $vendorDir . '/conquer/codemirror',
     ),
   ),
 );

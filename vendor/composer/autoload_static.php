@@ -25,8 +25,6 @@ class ComposerStaticInit248c156de5c41d17b4bfccde9823c1ff
         ),
         'c' => 
         array (
-            'conquer\\helpers\\' => 16,
-            'conquer\\codemirror\\' => 19,
             'cebe\\markdown\\' => 14,
         ),
         'W' => 
@@ -63,14 +61,6 @@ class ComposerStaticInit248c156de5c41d17b4bfccde9823c1ff
         'justinvoelker\\tagging\\' => 
         array (
             0 => __DIR__ . '/..' . '/justinvoelker/yii2-tagging',
-        ),
-        'conquer\\helpers\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/conquer/helpers',
-        ),
-        'conquer\\codemirror\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/conquer/codemirror',
         ),
         'cebe\\markdown\\' => 
         array (

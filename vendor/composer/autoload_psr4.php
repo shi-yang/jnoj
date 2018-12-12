@@ -11,8 +11,6 @@ return array(
     'yii\\bootstrap\\' => array($vendorDir . '/yiisoft/yii2-bootstrap/src'),
     'yii\\' => array($vendorDir . '/yiisoft/yii2'),
     'justinvoelker\\tagging\\' => array($vendorDir . '/justinvoelker/yii2-tagging'),
-    'conquer\\helpers\\' => array($vendorDir . '/conquer/helpers'),
-    'conquer\\codemirror\\' => array($vendorDir . '/conquer/codemirror'),
     'cebe\\markdown\\' => array($vendorDir . '/cebe/markdown'),
     'Workerman\\' => array($vendorDir . '/workerman/workerman'),
     'PHPSocketIO\\' => array($vendorDir . '/workerman/phpsocket.io/src'),

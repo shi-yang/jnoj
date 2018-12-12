@@ -24,24 +24,6 @@
         ]
     },
     {
-        "name": "bower-asset/codemirror",
-        "version": "5.42.0",
-        "version_normalized": "5.42.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/components/codemirror.git",
-            "reference": "376375ef377f03cdcc9336cc7d25cef38e9eccf5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/components/codemirror/zipball/376375ef377f03cdcc9336cc7d25cef38e9eccf5",
-            "reference": "376375ef377f03cdcc9336cc7d25cef38e9eccf5",
-            "shasum": null
-        },
-        "type": "bower-asset",
-        "installation-source": "dist"
-    },
-    {
         "name": "bower-asset/inputmask",
         "version": "3.3.11",
         "version_normalized": "3.3.11.0",
@@ -188,110 +170,6 @@
             "gfm",
             "markdown",
             "markdown-extra"
-        ]
-    },
-    {
-        "name": "conquer/codemirror",
-        "version": "2.0.1",
-        "version_normalized": "2.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/borodulin/yii2-codemirror.git",
-            "reference": "427485df607720d44ddf964081ba3525b849ae4c"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/borodulin/yii2-codemirror/zipball/427485df607720d44ddf964081ba3525b849ae4c",
-            "reference": "427485df607720d44ddf964081ba3525b849ae4c",
-            "shasum": ""
-        },
-        "require": {
-            "bower-asset/codemirror": "*",
-            "conquer/helpers": "~2.0.8",
-            "php": ">=5.4.0",
-            "yiisoft/yii2": "*"
-        },
-        "time": "2018-08-18T01:35:24+00:00",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.2.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "conquer\\codemirror\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Andrey Borodulin",
-                "email": "borodulin@gmail.com"
-            }
-        ],
-        "description": "Yii2 codemirror widget",
-        "homepage": "https://github.com/borodulin/yii2-codemirror",
-        "keywords": [
-            "codemirror",
-            "extension",
-            "widget",
-            "yii2"
-        ]
-    },
-    {
-        "name": "conquer/helpers",
-        "version": "2.0.13",
-        "version_normalized": "2.0.13.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/borodulin/yii2-helpers.git",
-            "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/borodulin/yii2-helpers/zipball/fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
-            "reference": "fce7205b0e7f9d2673ddb21702ad858287ab8fa3",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0",
-            "yiisoft/yii2": ">=2.0.13"
-        },
-        "time": "2018-03-14T04:09:25+00:00",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.13.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "conquer\\helpers\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Andrey Borodulin",
-                "email": "borodulin@gmail.com"
-            }
-        ],
-        "description": "Yii2 helpers",
-        "homepage": "https://github.com/borodulin/yii2-helpers",
-        "keywords": [
-            "extension",
-            "helpers",
-            "widget",
-            "yii2"
         ]
     },
     {
@@ -480,19 +358,19 @@
         "source": {
             "type": "git",
             "url": "https://github.com/walkor/phpsocket.io.git",
-            "reference": "a80074f20c2e19b8cb3351ff718ae28e7df6bbea"
+            "reference": "c3c48a67e3c3a43291f33852c4df41325f28c2f5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/a80074f20c2e19b8cb3351ff718ae28e7df6bbea",
-            "reference": "a80074f20c2e19b8cb3351ff718ae28e7df6bbea",
+            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/c3c48a67e3c3a43291f33852c4df41325f28c2f5",
+            "reference": "c3c48a67e3c3a43291f33852c4df41325f28c2f5",
             "shasum": ""
         },
         "require": {
             "workerman/channel": ">=1.0.0",
             "workerman/workerman": ">=3.5.16"
         },
-        "time": "2018-11-22T08:30:21+00:00",
+        "time": "2018-11-30T01:34:58+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -516,12 +394,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/walkor/Workerman.git",
-            "reference": "9893a3b26eb06f9d35a760e0dd049a5dacbfcb40"
+            "reference": "823aa7c9dd185ae2648f8c7164fbe934bc5e0ef4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/walkor/Workerman/zipball/9893a3b26eb06f9d35a760e0dd049a5dacbfcb40",
-            "reference": "9893a3b26eb06f9d35a760e0dd049a5dacbfcb40",
+            "url": "https://api.github.com/repos/walkor/Workerman/zipball/823aa7c9dd185ae2648f8c7164fbe934bc5e0ef4",
+            "reference": "823aa7c9dd185ae2648f8c7164fbe934bc5e0ef4",
             "shasum": ""
         },
         "require": {
@@ -530,7 +408,7 @@
         "suggest": {
             "ext-event": "For better performance. "
         },
-        "time": "2018-11-19T06:54:52+00:00",
+        "time": "2018-12-10T08:30:33+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
