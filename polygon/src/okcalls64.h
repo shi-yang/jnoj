@@ -21,7 +21,7 @@ int LANG_CV[256] = {0,1,2,3,4,5,8,9,11,12,20,21,59,63,89,99,158,202,231,240,272,
                     		SYS_close, SYS_execve, SYS_access, SYS_brk, SYS_munmap, SYS_mprotect,
                     		SYS_mmap, SYS_fstat, SYS_set_thread_area, 252, SYS_arch_prctl, 0 };
 //java
-int LANG_JV[256] = {0,2,3,4,5,9,10,11,12,13,14,21,56,59,89,97,104,158,202,218,231,273,257, 
+int LANG_JV[256] = {0,2,3,4,5,9,10,11,12,13,14,21,56,59,89,97,104,157,158,202,218,231,273,257,
 		61, 22, 6, 33, 8, 13, 16, 111, 110, 39, 79, 302, SYS_fcntl,
 		SYS_getdents64, SYS_getrlimit, SYS_rt_sigprocmask, SYS_futex, SYS_read,
 		SYS_mmap, SYS_stat, SYS_open, SYS_close, SYS_execve, SYS_access,
