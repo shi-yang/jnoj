@@ -66,6 +66,8 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
                         <?php if (!isset($loginUserProblemSolvingStatus[$p['problem_id']])): ?>
                         <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] == \app\models\Solution::OJ_AC): ?>
                             <span class="glyphicon glyphicon-ok text-success"></span>
+                        <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] < 4): ?>
+                            <span class="glyphicon glyphicon-question-sign text-muted"></span>
                         <?php else: ?>
                             <span class="glyphicon glyphicon-remove text-danger"></span>
                         <?php endif; ?>
