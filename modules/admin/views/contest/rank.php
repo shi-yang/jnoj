@@ -16,12 +16,6 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
 
 <div class="wrap">
     <div class="container">
-        <div class="alert alert-warning alert-dismissible fade in hidden-print" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <p>提示：如需打印该榜单或将榜单导出为PDF文件，可以使用浏览器自带的打印功能
-                （Chrome 浏览器可在页面上鼠标“右键”-“打印”，其它浏览器请自行利用搜索引擎获取使用方法），从中选择将此页面导出为 PDF 格式后再打印。</p>
-            <p>此提示信息不会出现在浏览器的打印窗口中。</p>
-        </div>
         <div class="row">
             <div class="col-md-3 text-left">
                 <strong>Start </strong>
@@ -41,8 +35,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                 <th width="60px">Rank</th>
                 <th width="120px">Username</th>
                 <th width="120px">Nickname</th>
-                <th width="70px">Solved</th>
-                <th width="80px">Time</th>
+                <th title="# solved / penalty time" width="70px" colspan="2">Score</th>
                 <?php foreach($problems as $key => $p): ?>
                     <th>
                         <?= chr(65 + $key) ?>
@@ -87,10 +80,10 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                     <th>
                         <?= Html::encode($rank['nickname']); ?>
                     </th>
-                    <th>
+                    <th class="score-solved">
                         <?= $rank['solved'] ?>
                     </th>
-                    <th>
+                    <th class="score-time">
                         <?= round($rank['time'] / 60) ?>
                     </th>
                     <?php
@@ -109,13 +102,21 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                         } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                             $css_class = 'pending';
                             $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
-                            $time = '--';
+                            $time = '';
                         } else if (isset($rank['wa_count'][$p['problem_id']])) {
                             $css_class = 'attempted';
                             $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']];
-                            $time = '--';
+                            $time = '';
                         }
-                        echo "<th class=\"table-problem-cell {$css_class}\">{$num}<br><small>{$time}</small></th>";
+                        if ($num == 0) {
+                            $num = '';
+                            $span = '';
+                        } else if ($num == 1) {
+                            $span = 'try';
+                        } else {
+                            $span = 'tries';
+                        }
+                        echo "<th class=\"table-problem-cell {$css_class}\">{$time}<br><small>{$num} {$span}</small></th>";
                     }
                     ?>
                 </tr>

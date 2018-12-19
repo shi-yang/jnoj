@@ -30,6 +30,7 @@ $this->params['model'] = $model;
         </div>
     <?php endforeach; ?>
     <div class="well">
+        <?php if ($model->getRunStatus() == \app\models\Contest::STATUS_RUNNING): ?>
         <?php $form = ActiveForm::begin(); ?>
 
         <?= $form->field($newClarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
@@ -38,5 +39,8 @@ $this->params['model'] = $model;
             <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>
         </div>
         <?php ActiveForm::end(); ?>
+        <?php else: ?>
+            <p>比赛已经结束</p>
+        <?php endif; ?>
     </div>
 </div>
