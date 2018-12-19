@@ -21,7 +21,7 @@ $submit_count = $rank_result['submit_count'];
     <tr>
         <th width="60px">Rank</th>
         <th width="200px">Who</th>
-        <th title="# solved / penalty time" width="70px" colspan="2">Score</th>
+        <th title="# solved / penalty time" colspan="2">Score</th>
         <?php foreach($problems as $key => $p): ?>
             <th>
                 <?= Html::a(chr(65 + $key), ['/contest/problem', 'id' => $model->id, 'pid' => $key]) ?>

@@ -35,7 +35,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                 <th width="60px">Rank</th>
                 <th width="120px">Username</th>
                 <th width="120px">Nickname</th>
-                <th title="# solved / penalty time" width="70px" colspan="2">Score</th>
+                <th title="# solved / penalty time" colspan="2">Score</th>
                 <?php foreach($problems as $key => $p): ?>
                     <th>
                         <?= chr(65 + $key) ?>

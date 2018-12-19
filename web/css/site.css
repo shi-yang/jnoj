@@ -473,10 +473,12 @@ a.desc:after {
     font-weight: normal;
 }
 .score-solved {
+    width: 40px;
     border-color: silver;
     border-right: 0 !important;
 }
 .score-time {
+    width: 60px;
     border-left: 0 !important;
     font-weight: normal;
 }
