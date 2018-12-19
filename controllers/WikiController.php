@@ -13,11 +13,6 @@ class WikiController extends Controller
         return $this->render('index');
     }
 
-    public function actionInfo()
-    {
-        return $this->render('info');
-    }
-
     public function actionAbout()
     {
         return $this->render('about');

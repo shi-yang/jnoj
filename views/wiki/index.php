@@ -10,11 +10,11 @@
         <tbody>
         <tr>
             <th>C</th>
-            <th>gcc Main.c -o Main -Wall -lm --static -std=c99 -DONLINE_JUDGE</th>
+            <th>gcc Main.c -o Main -fno-asm -O2 -Wall -lm --static -std=c99 -DONLINE_JUDGE</th>
         </tr>
         <tr>
             <th>C++</th>
-            <th>g++ -fno-asm -Wall -lm --static -std=c++11 -DONLINE_JUDGE -o Main Main.cc</th>
+            <th>g++ -fno-asm -O2 -Wall -lm --static -std=c++11 -DONLINE_JUDGE -o Main Main.cc</th>
         </tr>
         <tr>
             <th>Java</th>
