@@ -542,4 +542,13 @@ class Contest extends \yii\db\ActiveRecord
         }
         return $res;
     }
+
+    /**
+     * 是否处于封榜状态
+     */
+    public function isScoreboardFrozen()
+    {
+       return !empty($this->lock_board_time) && strtotime($this->lock_board_time) <= time() &&
+           time() <= strtotime($this->end_time) + Yii::$app->params['scoreboardFrozenTime'];
+    }
 }

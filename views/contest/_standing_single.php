@@ -13,7 +13,7 @@ $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];
 ?>
-<?php if (!empty($model->lock_board_time) && strtotime($model->lock_board_time) <= time() && strtotime($model->lock_board_time) >= time() - 120 * 60) :?>
+<?php if ($model->isScoreboardFrozen()): ?>
     <p>现已是封榜状态，榜单将不再实时更新，待赛后再揭晓</p>
 <?php endif; ?>
 <table class="table table-bordered table-rank">
@@ -75,8 +75,13 @@ $submit_count = $rank_result['submit_count'];
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
                     $time = round($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
+                    // 封榜的显示
+                    if ($model->isScoreboardFrozen()) {
+                        $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] . "+" .  $rank['pending'][$p['problem_id']];
+                    } else {
+                        $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
+                    }
                     $css_class = 'pending';
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
                     $time = '--';
                 } else if (isset($rank['wa_count'][$p['problem_id']])) {
                     $css_class = 'attempted';
