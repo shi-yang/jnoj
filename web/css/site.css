@@ -469,6 +469,17 @@ a.desc:after {
     margin: 0;
     text-align: center;
 }
+.table-problem-cell small {
+    font-weight: normal;
+}
+.score-solved {
+    border-color: silver;
+    border-right: 0 !important;
+}
+.score-time {
+    border-left: 0 !important;
+    font-weight: normal;
+}
 
 .problem-list-tags {
     float: right;

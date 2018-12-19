@@ -19,9 +19,8 @@ $submit_count = $rank_result['submit_count'];
     <thead>
     <tr>
         <th width="60px">Rank</th>
-        <th width="150px">Who</th>
-        <th width="70px">Solved</th>
-        <th width="80px">Time</th>
+        <th width="200px">Who</th>
+        <th title="# solved / penalty time" width="70px" colspan="2">Score</th>
         <?php foreach($problems as $key => $p): ?>
             <th>
                 <?= Html::a(chr(65 + $key), ['/contest/problem', 'id' => $model->id, 'pid' => $key]) ?>
@@ -63,17 +62,17 @@ $submit_count = $rank_result['submit_count'];
             <th>
                 <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['user_id']]) ?>
             </th>
-            <th>
+            <th class="score-solved">
                 <?= $rank['solved'] ?>
             </th>
-            <th>
+            <th class="score-time">
                 <?= round($rank['time'] / 60) ?>
             </th>
             <?php
             foreach($problems as $key => $p) {
-                $css_class = "";
+                $css_class = '';
                 $num = 0;
-                $time = "";
+                $time = '';
                 if (isset($rank['ac_time'][$p['problem_id']]) && $rank['ac_time'][$p['problem_id']] > 0) {
                     if ($first_blood[$p['problem_id']] == $rank['user_id']) {
                         $css_class = 'solved-first';
@@ -83,18 +82,25 @@ $submit_count = $rank_result['submit_count'];
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
                     $time = round($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
-                    // 封榜的显示
-                    if (1) {
-                        $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] . "+" .  $rank['pending'][$p['problem_id']];
-                    } else {
-                        $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
-                    }
+                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
                     $css_class = 'pending';
-                    $time = '--';
+                    $time = '';
                 } else if (isset($rank['wa_count'][$p['problem_id']])) {
                     $css_class = 'attempted';
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']];
-                    $time = '--';
+                    $time = '';
+                }
+                if ($num == 0) {
+                    $num = '';
+                    $span = '';
+                } else if ($num == 1) {
+                    $span = 'try';
+                } else {
+                    $span = 'tries';
+                }
+                // 封榜的显示
+                if ($model->isScoreboardFrozen() && isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
+                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] . "+" .  $rank['pending'][$p['problem_id']];
                 }
                 if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == \app\models\Contest::STATUS_ENDED) {
                     $url = Url::toRoute([
@@ -103,7 +109,7 @@ $submit_count = $rank_result['submit_count'];
                         'cid' => $model->id,
                         'uid' => $rank['user_id']
                     ]);
-                    echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$num}<br><small>{$time}</small></th>";
+                    echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$time}<br><small>{$num} {$span}</small></th>";
                 } else {
                     echo "<th class=\"table-problem-cell {$css_class}\">{$num}<br><small>{$time}</small></th>";
                 }
