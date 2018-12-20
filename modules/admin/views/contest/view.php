@@ -90,7 +90,7 @@ $problems = $model->problems;
             'start_time',
             'end_time',
             'lock_board_time',
-            'description:ntext',
+            'description:html',
             [
                 'label' => Yii::t('app', 'Scenario'),
                 'value' => $model->scenario == Contest::SCENARIO_ONLINE ? Yii::t('app', 'Online') : Yii::t('app', 'Offline')
