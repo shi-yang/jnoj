@@ -351,7 +351,7 @@ class ContestController extends Controller
                 ->leftJoin('{{%user}} as u', 'u.id=s.created_by')
                 ->leftJoin('{{%contest_problem}} as p', 'p.problem_id=s.problem_id')
                 ->where(['s.contest_id' => $model->id])
-                ->groupBy('id');
+                ->distinct();
             if ($model->scenario == Contest::SCENARIO_OFFLINE) {
                 $query->andWhere(['u.role' => User::ROLE_PLAYER]);
             }
