@@ -58,7 +58,7 @@ $submit_count = $rank_result['submit_count'];
                 <?= $rank['solved'] ?>
             </th>
             <th class="score-time">
-                <?= round($rank['time']) ?>
+                <?= intval($rank['time']) ?>
             </th>
             <?php
             foreach($problems as $key => $p) {
@@ -72,7 +72,7 @@ $submit_count = $rank_result['submit_count'];
                         $css_class = 'solved';
                     }
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
-                    $time = round($rank['ac_time'][$p['problem_id']]);
+                    $time = intval($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                     // 封榜的显示
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];

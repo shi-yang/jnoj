@@ -84,7 +84,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                         <?= $rank['solved'] ?>
                     </th>
                     <th class="score-time">
-                        <?= round($rank['time'] / 60) ?>
+                        <?= intval($rank['time'] / 60) ?>
                     </th>
                     <?php
                     foreach($problems as $key => $p) {
@@ -98,7 +98,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                                 $css_class = 'solved';
                             }
                             $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
-                            $time = round($rank['ac_time'][$p['problem_id']]);
+                            $time = intval($rank['ac_time'][$p['problem_id']]);
                         } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                             $css_class = 'pending';
                             $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];

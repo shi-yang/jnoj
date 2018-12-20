@@ -139,23 +139,6 @@ function Submit(submitId, teamId, alphabetId, subTime, resultId) {
     /**
      * 判题结果ID
      * @type {int}
-     * @value 0 Accepted
-     * @value 1 Presentation Error
-     * @value 2 Time Limit Exceeded
-     * @value 3 Memory Limit Exceeded
-     * @value 4 Wrong Answer
-     * @value 5 Runtime Error
-     * @value 6 Output Limit Exceeded
-     * @value 7 Compile Error
-     * @value 8 System Error
-     * @value 9 Security Error
-     * @value -1 Waiting
-     */
-    this.resultId = resultId;
-
-    /**
-     * 判题结果ID
-     * @type {int}
      * @value 0 Pending
      * @value 1 Pending Rejudge
      * @value 2 Compiling
@@ -169,6 +152,7 @@ function Submit(submitId, teamId, alphabetId, subTime, resultId) {
      * @value 10 Runtime Error
      * @value 11 Compile Error
      */
+    this.resultId = resultId;
 }
 
 /**
@@ -180,6 +164,7 @@ function TeamProblem() {
     this.penalty = 0; //罚时毫秒数
     this.acceptedTime = new Date(); //AC时间
     this.submitCount = 0; //AC前提交次数，如果AC了，值加1
+    this.compileErrorCount = 0; // CE次数，不会导致罚时
     this.isUnkonwn = false; //是否为封榜后提交，如果封榜前已AC，也为false
 }
 
@@ -233,13 +218,17 @@ Team.prototype.init = function(startTime, freezeBoardTime) {
         p.submitCount++;
         //更新AC状态
         p.isAccepted = (sub.resultId == 4);
+        //更新CE状态
+        if (sub.resultId == 11) {
+            p.compileErrorCount++;
+        }
         //如果当前提交AC
         if (p.isAccepted) {
             //则保存AC时间
             p.acceptedTime = sub.subTime.getTime() - startTime.getTime();
             //如果为封榜前AC，则计算罚时,且队伍通过题数加1
             if (p.acceptedTime < freezeBoardTime - startTime) {
-                p.penalty += p.acceptedTime + (p.submitCount - 1) * 20 * 60 * 1000;
+                p.penalty += p.acceptedTime + (p.submitCount - p.compileErrorCount - 1) * 20 * 60 * 1000;
                 this.solved++;
                 this.penalty += p.penalty;
             }
@@ -276,7 +265,7 @@ Team.prototype.updateOneProblem = function() {
             delete this.unkonwnAlphabetIdMap[subProblem.alphabetId];
             //如果AC，则更新题目状态
             if (subProblem.isAccepted) {
-                subProblem.penalty += subProblem.acceptedTime + (subProblem.submitCount - 1) * 20 * 60 * 1000;
+                subProblem.penalty += subProblem.acceptedTime + (subProblem.submitCount - subProblem.compileErrorCount - 1) * 20 * 60 * 1000;
                 this.solved++;
                 this.penalty += subProblem.penalty;
                 return true;

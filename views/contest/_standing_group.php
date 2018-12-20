@@ -66,7 +66,7 @@ $submit_count = $rank_result['submit_count'];
                 <?= $rank['solved'] ?>
             </th>
             <th class="score-time">
-                <?= round($rank['time'] / 60) ?>
+                <?= intval($rank['time'] / 60) ?>
             </th>
             <?php
             foreach($problems as $key => $p) {
@@ -80,7 +80,7 @@ $submit_count = $rank_result['submit_count'];
                         $css_class = 'solved';
                     }
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
-                    $time = round($rank['ac_time'][$p['problem_id']]);
+                    $time = intval($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
                     $css_class = 'pending';

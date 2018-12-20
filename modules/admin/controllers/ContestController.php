@@ -335,11 +335,15 @@ class ContestController extends Controller
      * @param bool $json
      * @return string
      */
-    public function actionBoard($id, $json = false)
+    public function actionScrollScoreboard($id, $json = false)
     {
         $model = $this->findModel($id);
 
         $this->layout = 'basic';
+
+        $numberOfGoldMedals = Yii::$app->request->get('gold');
+        $numberOfSilverMedals = Yii::$app->request->get('silver');
+        $numberOfBronzeMedals = Yii::$app->request->get('bronze');
 
         if ($json) {
             $query = (new Query())->select('s.id, u.username, u.nickname, s.result, s.created_at, p.num')
@@ -367,7 +371,10 @@ class ContestController extends Controller
         }
 
         return $this->render('board', [
-            'model' => $model
+            'model' => $model,
+            'numberOfGoldMedals' => $numberOfGoldMedals,
+            'numberOfSilverMedals' => $numberOfSilverMedals,
+            'numberOfBronzeMedals' => $numberOfBronzeMedals
         ]);
     }
 

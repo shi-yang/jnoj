@@ -29,9 +29,6 @@ $problems = $model->problems;
         <?= Html::a(Yii::t('app', 'Submit records'), ['status', 'id' => $model->id], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
     <p>
-        <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
-        <?= Html::a(Yii::t('app', 'Scroll Board'), ['board', 'id' => $model->id], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
-        <?php endif; ?>
         <?= Html::a(Yii::t('app', 'Rated'), ['rated', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
         <?= Html::a(Yii::t('app', 'Contest User'), ['register', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Editorial'), ['editorial', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -47,6 +44,39 @@ $problems = $model->problems;
         <?= Html::a(Yii::t('app', 'Print Problem'), ['print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?>
         <?= Html::a(Yii::t('app', 'Print Rank'), ['rank', 'id' => $model->id], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
     </p>
+    <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
+        <?php Modal::begin([
+            'header' => '<h3>'.Yii::t('app','Scroll Scoreboard').'</h3>',
+            'toggleButton' => ['label' => Yii::t('app', 'Scroll Scoreboard'), 'class' => 'btn btn-success'],
+        ]); ?>
+        <?= Html::beginForm(['contest/scroll-scoreboard', 'id' => $model->id], 'get', ['target' => '_blank']) ?>
+        <div class="form-group">
+            <?= Html::label(Yii::t('app', 'Number of gold medals'), 'gold') ?>
+            <?= Html::textInput('gold', round($model->getContestUserCount() * 0.1), ['class' => 'form-control']) ?>
+        </div>
+        <div class="form-group">
+            <?= Html::label(Yii::t('app', 'Number of silver medals'), 'silver') ?>
+            <?= Html::textInput('silver', round($model->getContestUserCount() * 0.2), ['class' => 'form-control']) ?>
+        </div>
+        <div class="form-group">
+            <?= Html::label(Yii::t('app', 'Number of bronze medals'), 'bronze') ?>
+            <?= Html::textInput('bronze', round($model->getContestUserCount() * 0.3), ['class' => 'form-control']) ?>
+        </div>
+        <div class="form-group">
+            <?= Html::submitButton(Yii::t('app', '打开滚榜页面'), ['class' => 'btn btn-primary']) ?>
+        </div>
+        <p class="hint-block">
+            1. 填写上述奖牌数，在滚榜页面会对获奖队伍有颜色的区分。暂无冠亚季军颜色区分，若有此需求，请将其包含在金牌数中。
+        </p>
+        <p class="hint-block">
+            2. 打开滚榜页面后，通过不断按回车或空格键来进行滚动。
+        </p>
+        <p class="hint-block">
+            3. 建议把浏览器设为全屏显示（打开页面后，按<code>F11</code>键）体验更佳。
+        </p>
+        <?= Html::endForm(); ?>
+        <?php Modal::end(); ?>
+    <?php endif; ?>
     <hr>
     <h3>
         <?= Yii::t('app', 'Information') ?>

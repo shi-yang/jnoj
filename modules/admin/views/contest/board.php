@@ -4,6 +4,9 @@ use yii\helpers\Url;
 
 /* @var $this \yii\web\View */
 /* @var $model app\models\Contest */
+/* @var $numberOfGoldMedals integer */
+/* @var $numberOfSilverMedals integer */
+/* @var $numberOfBronzeMedals integer */
 
 $this->title = $model->title;
 $this->registerJsFile('@web/js/scrollboard.js', ['depends' => 'yii\web\JqueryAsset']);
@@ -12,7 +15,7 @@ $this->registerCssFile('@web/css/scrollboard.css');
 $start_time = $model->start_time;
 $lock_time = $model->lock_board_time;
 $problem_count = $model->getProblemCount();
-$url = Url::toRoute(['contest/board', 'id' => $model->id, 'json' => true]);
+$url = Url::toRoute(['contest/scroll-scoreboard', 'id' => $model->id, 'json' => true]);
 $this->registerJs("
     function getSubmitList() {
         var data = new Array();
@@ -59,10 +62,15 @@ $this->registerJs("
 ", \yii\web\View::POS_END);
 
 $this->registerJs("
-var board = new Board({$problem_count}, new Array(5, 6, 10), StringToDate(\"{$start_time}\"), StringToDate(\"{$lock_time}\"));
+var board = new Board(
+    {$problem_count},
+    new Array({$numberOfGoldMedals}, {$numberOfSilverMedals}, {$numberOfBronzeMedals}),
+    StringToDate(\"{$start_time}\"),
+    StringToDate(\"{$lock_time}\")
+);
 board.showInitBoard();
 $('html').keydown(function(e) {
-    if (e.keyCode == 13) {
+    if (e.keyCode == 13 || e.keyCode == 32) {
         board.keydown();
     }
 });
