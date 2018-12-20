@@ -23,6 +23,7 @@ use app\modules\admin\models\UploadForm;
  */
 class ProblemController extends Controller
 {
+    public $enableCsrfValidation = false;
     public $layout = 'main';
     /**
      * @inheritdoc
