@@ -104,7 +104,7 @@ $submit_count = $rank_result['submit_count'];
                     ]);
                     echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$time}<br><small>{$num} {$span}</small></th>";
                 } else {
-                    echo "<th class=\"table-problem-cell {$css_class}\">{$num}<br><small>{$time}</small></th>";
+                    echo "<th class=\"table-problem-cell {$css_class}\">{$time}<br><small>{$num} {$span}</small></th>";
                 }
             }
             ?>
