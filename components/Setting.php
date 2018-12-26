@@ -119,6 +119,6 @@ class Setting extends Component
      */
     public static function getVersion()
     {
-        return '0.6.0 under development';
+        return '0.6.0';
     }
 }
