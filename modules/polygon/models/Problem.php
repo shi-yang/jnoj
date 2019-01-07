@@ -176,7 +176,10 @@ class Problem extends \yii\db\ActiveRecord
 
     public function getDataFiles()
     {
-        $path = Yii::$app->params['polygonProblemDataPath'] . $this->id ;
+        $path = Yii::$app->params['polygonProblemDataPath'] . $this->id;
+        if (!is_dir($path)) {
+            @mkdir(Yii::$app->params['polygonProblemDataPath'] . $this->id);
+        }
         $files = [];
         try {
             if ($handler = opendir($path)) {

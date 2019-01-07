@@ -20,15 +20,15 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
         <table class="table table-overview">
             <tbody>
             <tr>
-                <th>Start time</th>
+                <th><?= Yii::t('app', 'Start time') ?></th>
                 <td><?= $model->start_time ?></td>
-                <th>Type</th>
+                <th><?= Yii::t('app', 'Type') ?></th>
                 <td><?= $model->getType() ?></td>
             </tr>
             <tr>
-                <th>End time</th>
+                <th><?= Yii::t('app', 'End time') ?></th>
                 <td><?= $model->end_time ?></td>
-                <th>Status</th>
+                <th><?= Yii::t('app', 'Status') ?></th>
                 <td><?= $model->getRunStatus(true) ?></td>
             </tr>
             </tbody>
@@ -48,7 +48,7 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
                     echo "<th width='100px'>Problem Id</th>";
                 }
                 ?>
-                <th>Name</th>
+                <th><?= Yii::t('app', 'Problem Name') ?></th>
                 <th>Solved</th>
             </tr>
             </thead>

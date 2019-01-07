@@ -2,6 +2,9 @@
 use yii\helpers\Html;
 use yii\bootstrap\Modal;
 ?>
+<blockquote>
+    一个好的题目或者好的比赛都会遵循一定的规则。为规范题目形式，特制定本规则。
+</blockquote>
 <h3>题目内容</h3>
 <p>
     题目需包含：标题、描述、输入描述、输出描述、样例输入、样例输出、样例解释或提示信息（可选）、测试数据。
@@ -26,9 +29,6 @@ use yii\bootstrap\Modal;
 </ol>
 
 <h3>题面规范</h3>
-<blockquote>
-    一个好的题目或者好的比赛都会遵循一定的规则。为规范题目形式，特制定本规则。
-</blockquote>
 <ol>
     <li>题面必须清晰好懂，没有语法错误。</li>
     <li><b>题目背景中不要写数据范围，全部都要写在输入格式里。</b></li>

@@ -14,6 +14,13 @@ $this->title = Yii::t('app', 'Update');
 </p>
 <p>项目主页：<a href="https://github.com/shi-yang/jnoj" target="_blank">JNOJ GitHub Project</a></p>
 <hr>
+<p>
+    提示：当前页面打开可能会有些慢，是因为为了保证可以及时看到开发的变化，
+    以下内容是读取自
+    <a href="https://github.com/shi-yang/jnoj/blob/master/CHANGELOG.md" target="_blank">https://github.com/shi-yang/jnoj/blob/master/CHANGELOG.md</a>
+    这个链接下的文件，在读取过程中访问慢导致的。
+</p>
+<hr>
 <div>
     <?= Yii::$app->formatter->asMarkdown($changelog) ?>
 </div>

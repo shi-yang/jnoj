@@ -29,7 +29,7 @@ $problems = $model->problems;
         <?= Html::a(Yii::t('app', 'Submit records'), ['status', 'id' => $model->id], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
     <p>
-        <?= Html::a(Yii::t('app', 'Rated'), ['rated', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Calculate rating'), ['rated', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
         <?= Html::a(Yii::t('app', 'Contest User'), ['register', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Editorial'), ['editorial', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
@@ -184,8 +184,8 @@ $problems = $model->problems;
             <tr>
                 <th width="70px">#</th>
                 <th width="120px">Problem ID</th>
-                <th>Name</th>
-                <th width="200px">Operation</th>
+                <th><?= Yii::t('app', 'Problem Name') ?></th>
+                <th width="200px"><?= Yii::t('app', 'Operation') ?></th>
             </tr>
             </thead>
             <tbody>
@@ -196,8 +196,8 @@ $problems = $model->problems;
                     <td><?= Html::a(Html::encode($p['title']), ['/admin/problem/view', 'id' => $p['problem_id']]) ?></td>
                     <th>
                         <?php Modal::begin([
-                            'header' => '<h3>'.Yii::t('app','Update'). ' : ' . chr(65 + $key) . '</h3>',
-                            'toggleButton' => ['label' => 'Update', 'class' => 'btn btn-success'],
+                            'header' => '<h3>'. Yii::t('app','Modify') . ' : ' . chr(65 + $key) . '</h3>',
+                            'toggleButton' => ['label' => Yii::t('app','Modify'), 'class' => 'btn btn-success'],
                         ]); ?>
 
                         <?= Html::beginForm(['contest/updateproblem', 'id' => $model->id]) ?>
@@ -239,8 +239,8 @@ $problems = $model->problems;
                 <th></th>
                 <th>
                     <?php Modal::begin([
-                        'header' => '<h3>'.Yii::t('app','Add a problem').'</h3>',
-                        'toggleButton' => ['label' => 'Add a problem', 'class' => 'btn btn-success'],
+                        'header' => '<h3>' . Yii::t('app','Add a problem') . '</h3>',
+                        'toggleButton' => ['label' => Yii::t('app','Add a problem'), 'class' => 'btn btn-success'],
                     ]); ?>
 
                     <?= Html::beginForm(['contest/addproblem', 'id' => $model->id]) ?>

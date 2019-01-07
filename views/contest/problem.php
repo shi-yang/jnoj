@@ -126,11 +126,13 @@ $sample_output = unserialize($problem['sample_output']);
                 </table>
             </div>
 
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#submit-solution"><span class="glyphicon glyphicon-plus"></span> Submit a solution</button>
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#submit-solution">
+                <span class="glyphicon glyphicon-plus"></span> <?= Yii::t('app', 'Submit') ?>
+            </button>
 
             <?php if (!Yii::$app->user->isGuest && !empty($submissions)): ?>
             <div class="panel panel-default" style="margin-top: 40px">
-                <div class="panel-heading">Submissions</div>
+                <div class="panel-heading"><?= Yii::t('app', 'Submissions') ?></div>
                 <!-- Table -->
                 <table class="table">
                     <tbody>
@@ -178,7 +180,7 @@ $sample_output = unserialize($problem['sample_output']);
 <?php Modal::end(); ?>
 
 <?php Modal::begin([
-    'header' => '<h3>'.Yii::t('app','Submit a solution').'</h3>',
+    'header' => '<h3>' . Yii::t('app','Submit') . '：' . Html::encode(chr(65 + $problem['num']) . '. ' . $problem['title']) . '</h3>',
     'size' => Modal::SIZE_LARGE,
     'options' => ['id' => 'submit-solution']
 ]); ?>

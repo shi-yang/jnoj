@@ -17,8 +17,3 @@
 <p>
     同时，为了防止用户提交恶意代码破坏系统，测评程序会对所提交程序调用的函数及程序运行权限进行限制。
 </p>
-
-<p id="version">
-    Version <?= Yii::$app->setting->getVersion() ?> Alpha &nbsp;&nbsp;·&nbsp;&nbsp;
-    <a href="https://github.com/shi-yang/jnoj" target="_blank">GitHub Project</a>
-</p>

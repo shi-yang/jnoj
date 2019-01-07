@@ -85,7 +85,7 @@ $status = $model->getRunStatus();
         <div class="contest-info">
             <div class="row">
                 <div class="col-md-3 text-left hidden-print">
-                    <strong>Start </strong>
+                    <strong><?= Yii::t('app', 'Start') ?> </strong>
                     <?= $model->start_time ?>
                 </div>
                 <div class="col-md-6 text-center">
@@ -100,7 +100,7 @@ $status = $model->getRunStatus();
                     </h2>
                 </div>
                 <div class="col-md-3 text-right hidden-print">
-                    <strong>End </strong>
+                    <strong><?= Yii::t('app', 'End') ?> </strong>
                     <?= $model->end_time ?>
                 </div>
             </div>
@@ -116,7 +116,10 @@ $status = $model->getRunStatus();
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="text-center hidden-print"><strong>Now</strong> <span><span id="nowdate"> <?php echo date("Y-m-d H:i:s") ?></span></span></div>
+            <div class="text-center hidden-print">
+                <strong><?= Yii::t('app', 'Now') ?></strong>
+                <span id="nowdate"> <?= date("Y-m-d H:i:s") ?></span>
+            </div>
         </div>
         <hr>
         <?php if ($status == $model::STATUS_NOT_START): ?>
@@ -223,11 +226,11 @@ $status = $model->getRunStatus();
     $(document).ready(function () {
         // 连接服务端
         var socket = io(document.location.protocol + '//' + document.domain + ':2120');
-        var uid = <?= Yii::$app->user->isGuest ? session_id() : Yii::$app->user->id ?>
-            // 连接后登录
-            socket.on('connect', function(){
-                socket.emit('login', uid);
-            });
+        var uid = <?= Yii::$app->user->isGuest ? session_id() : Yii::$app->user->id ?>;
+        // 连接后登录
+        socket.on('connect', function(){
+            socket.emit('login', uid);
+        });
         // 后端推送来消息时
         socket.on('msg', function(msg){
             alert(msg);

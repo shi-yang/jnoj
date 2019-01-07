@@ -9,7 +9,7 @@ return [
     // 是否要分享代码
     // true : 用户可以查看其他用户的代码
     // false : 用户的代码只能由自己或者管理员查看
-    'isShareCode' => false,
+    'isShareCode' => true,
 
     // 封榜时间。单位：秒
     // 这个时间是从比赛结束后开始计算，如值为 2 * 60 * 60 时，表示比赛结束 2 个小时后不再封榜。
@@ -25,7 +25,8 @@ return [
         'class' => app\components\Formatter::class,
         'defaultTimeZone' => 'Asia/Shanghai',
         'locale' => 'zh-CN',
-        'dateFormat'=>'yyyy年MM月dd日',
+        'dateFormat' => 'yyyy年MM月dd日',
+        'datetimeFormat' => 'yyyy/MM/dd HH:mm:ss',
         'thousandSeparator' => '&thinsp;',
     ],
     'components.setting' => [

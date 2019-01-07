@@ -20,8 +20,8 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
 <h1><?= Html::encode($model->title) ?></h1>
 
 <?php Modal::begin([
-    'header' => '<h2>Add a user to the contest</h2>',
-    'toggleButton' => ['label' => 'Add User', 'class' => 'btn btn-success'],
+    'header' => '<h2>' . Yii::t('app', 'Add participating user') . '</h2>',
+    'toggleButton' => ['label' => Yii::t('app', 'Add participating user'), 'class' => 'btn btn-success'],
 ]);?>
 <?= Html::beginForm(['contest/register', 'id' => $model->id]) ?>
     <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
 
         <?php ActiveForm::end(); ?>
     <?php Modal::end(); ?>
-    <?= Html::a('Print User and Password', ['contest/printuser', 'id' => $model->id], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+    <?= Html::a(Yii::t('app', 'Copy these accounts to distribute'), ['contest/printuser', 'id' => $model->id], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
 <?php endif; ?>
 
 <?= GridView::widget([
