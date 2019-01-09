@@ -102,17 +102,17 @@ class UserController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            if (!empty($model->newPassword)) {
-                $model->scenario = 'security';
+        if (Yii::$app->request->isPost) {
+            $newPassword = Yii::$app->request->post('User')['newPassword'];
+            $role = Yii::$app->request->post('User')['role'];
+            if (!empty($newPassword)) {
                 Yii::$app->db->createCommand()->update('{{%user}}', [
-                    'password_hash' => Yii::$app->security->generatePasswordHash($model->newPassword)
+                    'password_hash' => Yii::$app->security->generatePasswordHash($newPassword)
                 ], ['id' => $model->id])->execute();
-            } else {
-                $model->scenario = 'profile';
+            } else if (!empty($role)) {
+                $model->role = intval($role);
+                $model->save();
             }
-            $model->role = Yii::$app->request->post('User')['role'];
-            $model->save();
             Yii::$app->session->setFlash('success', Yii::t('app', 'Saved successfully'));
             return $this->refresh();
         }
