@@ -549,7 +549,7 @@ class ContestController extends Controller
                 echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
 
-            Yii::$app->session->setFlash('success', Yii::t('app', ''));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
 
@@ -583,9 +583,9 @@ class ContestController extends Controller
             ->delete('{{%contest_problem}}', ['contest_id' => $id, 'problem_id' => $pid])
             ->execute();
         if ($ok) {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Delete successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
         } else {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Delete failed'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted failed'));
         }
         return $this->redirect(['contest/view', 'id' => $id]);
     }
