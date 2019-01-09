@@ -57,7 +57,7 @@ class SettingController extends Controller
                 return $this->refresh();
             }
             Yii::$app->setting->set($post);
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Submit successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
 

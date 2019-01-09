@@ -93,7 +93,7 @@ class Solution extends ActiveRecord
             'time' => Yii::t('app', 'Time'),
             'memory' => Yii::t('app', 'Memory'),
             'created_at' => Yii::t('app', 'Submit Time'),
-            'source' => Yii::t('app', 'Source'),
+            'source' => Yii::t('app', 'Code'),
             'result' => Yii::t('app', 'Result'),
             'language' => Yii::t('app', 'Language'),
             'contest_id' => Yii::t('app', 'Contest ID'),

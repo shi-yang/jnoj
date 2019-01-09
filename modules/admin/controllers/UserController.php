@@ -113,7 +113,7 @@ class UserController extends Controller
             }
             $model->role = Yii::$app->request->post('User')['role'];
             $model->save();
-            Yii::$app->session->setFlash('success', 'Saved Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Saved successfully'));
             return $this->refresh();
         }
 

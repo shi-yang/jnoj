@@ -109,7 +109,7 @@ class PrintController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->contest_id = $contest->id;
             $model->save();
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

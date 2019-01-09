@@ -16,14 +16,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <thead>
         <tr>
             <th width="120px">Run ID</th>
-            <th width="120px">Author</th>
-            <th width="200px">Problem</th>
-            <th width="80px">Lang</th>
-            <th>Verdict</th>
+            <th width="120px"><?= Yii::t('app', 'Author') ?></th>
+            <th width="200px"><?= Yii::t('app', 'Problem') ?></th>
+            <th width="80px"><?= Yii::t('app', 'Lang') ?></th>
+            <th><?= Yii::t('app', 'Verdict') ?></th>
             <th>Time</th>
             <th>Memory</th>
-            <th>Code Length</th>
-            <th>Submit Time</th>
+            <th><?= Yii::t('app', 'Code Length') ?></th>
+            <th><?= Yii::t('app', 'Submit Time') ?></th>
         </tr>
         </thead>
         <tbody>

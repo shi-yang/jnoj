@@ -318,7 +318,7 @@ class ContestController extends Controller
             } catch (\Exception $e) {
                 echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
         $query = Discuss::find()
@@ -400,7 +400,7 @@ class ContestController extends Controller
             $solution->contest_id = $model->id;
             $solution->status = Solution::STATUS_HIDDEN;
             $solution->save();
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
         $submissions = [];

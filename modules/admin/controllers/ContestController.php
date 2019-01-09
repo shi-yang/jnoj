@@ -103,7 +103,7 @@ class ContestController extends Controller
                 Yii::$app->db->createCommand()->update('{{%contest_problem}}', [
                     'problem_id' => $new_pid,
                 ], ['problem_id' => $pid, 'contest_id' => $model->contest_id])->execute();
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Submit successfully'));
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
@@ -257,7 +257,7 @@ class ContestController extends Controller
                     'id' => $pid
                 ])->execute();
             }
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Set successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
         }
         return $this->redirect(['contest/view', 'id' => $model->id]);
     }
@@ -280,7 +280,7 @@ class ContestController extends Controller
                     'id' => $pid
                 ])->execute();
             }
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Set successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
         }
         return $this->redirect(['contest/view', 'id' => $model->id]);
     }
@@ -321,7 +321,7 @@ class ContestController extends Controller
                     'contest_id' => $model->id,
                     'num' => $count
                 ])->execute();
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Submit successfully'));
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
@@ -465,7 +465,7 @@ class ContestController extends Controller
             } catch (\Exception $e) {
                 echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Save successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
 
@@ -549,7 +549,7 @@ class ContestController extends Controller
                 echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
 
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', ''));
             return $this->refresh();
         }
 

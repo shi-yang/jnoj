@@ -51,7 +51,7 @@ class RejudgeController extends Controller
         $rejudge = new Rejudge();
         if ($rejudge->load(Yii::$app->request->post())) {
             $rejudge->run();
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
         return $this->render('index', [

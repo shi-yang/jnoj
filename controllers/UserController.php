@@ -114,7 +114,7 @@ class UserController extends Controller
             if ($profile->load(Yii::$app->request->post())) {
                 $profile->save();
             }
-            Yii::$app->session->setFlash('success', 'Saved Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Saved successfully'));
             return $this->refresh();
         }
 

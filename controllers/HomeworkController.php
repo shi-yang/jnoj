@@ -130,7 +130,7 @@ class HomeworkController extends ContestController
             ->delete('{{%contest_problem}}', ['contest_id' => $id, 'problem_id' => $pid])
             ->execute();
         if ($ok) {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Delete successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
         } else {
             Yii::$app->session->setFlash('error', Yii::t('app', 'Delete failed'));
         }
@@ -177,7 +177,7 @@ class HomeworkController extends ContestController
                     'contest_id' => $model->id,
                     'num' => $count
                 ])->execute();
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Submit successfully'));
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
@@ -226,7 +226,7 @@ class HomeworkController extends ContestController
                 Yii::$app->db->createCommand()->update('{{%contest_problem}}', [
                     'problem_id' => $new_pid,
                 ], ['problem_id' => $pid, 'contest_id' => $model->id])->execute();
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Submit successfully'));
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
@@ -276,7 +276,7 @@ class HomeworkController extends ContestController
         if ($newAnnouncement->load(Yii::$app->request->post())) {
             $newAnnouncement->contest_id = $model->id;
             $newAnnouncement->save();
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Save successfully'));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Saved successfully'));
             return $this->refresh();
         }
 

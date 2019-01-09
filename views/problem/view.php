@@ -108,7 +108,7 @@ $model->setSamples();
         </div>
 
         <?php Modal::begin([
-            'header' => '<h3>'.Yii::t('app','Submit a solution').'</h3>',
+            'header' => '<h3>'.Yii::t('app','Submit') . '：' . Html::encode($model->id . '. ' . $model->title) . '</h3>',
             'size' => Modal::SIZE_LARGE,
             'toggleButton' => [
                 'label' => '<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('app', 'Submit'),
@@ -119,8 +119,6 @@ $model->setSamples();
                 <?= app\widgets\login\Login::widget(); ?>
             <?php else: ?>
                 <?php $form = ActiveForm::begin(); ?>
-
-                <h3><?= Yii::t('app', 'Problem : {name}', ['name' => $model->title]) ?></h3>
 
                 <?= $form->field($solution, 'language')->dropDownList($solution::getLanguageList()) ?>
 

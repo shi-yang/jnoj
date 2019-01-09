@@ -132,7 +132,7 @@ class ProblemController extends Controller
             $newDiscuss->entity = Discuss::ENTITY_PROBLEM;
             $newDiscuss->entity_id = $id;
             $newDiscuss->save();
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
 
@@ -173,7 +173,7 @@ class ProblemController extends Controller
             $solution->problem_id = $model->id;
             $solution->status = Solution::STATUS_VISIBLE;
             $solution->save();
-            Yii::$app->session->setFlash('success', 'Submit Successfully');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->redirect(['/solution/index']);
         }
 

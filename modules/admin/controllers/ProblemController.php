@@ -126,7 +126,7 @@ class ProblemController extends Controller
         if (Yii::$app->request->isPost) {
             $model->problemFile = UploadedFile::getInstance($model, 'problemFile');
             if ($model->upload()) {
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Import Successfully'));
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Imported Successfully'));
             }
             return $this->refresh();
         }
@@ -190,7 +190,7 @@ class ProblemController extends Controller
                 for ($i = $fromId; $i <= $toId; $i++) {
                     $this->synchronizeProblemFromPolygon($i);
                 }
-                Yii::$app->session->setFlash('success', 'Created Successfully.');
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', '请填好表单');
             }
@@ -292,7 +292,7 @@ class ProblemController extends Controller
             $newSolution->problem_id = $id;
             $newSolution->status = 0;
             if ($newSolution->save()) {
-                Yii::$app->session->setFlash('success', 'Submit Successfully');
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', 'Please select a language');
             }
