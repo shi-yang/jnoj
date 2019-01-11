@@ -20,7 +20,7 @@ $this->registerCss('
 ');
 ?>
 <div class="panel panel-default">
-  <div class="panel-heading"><?= $title ?></div>
+  <div class="panel-heading"><?= Yii::t('app', 'Login') ?></div>
   <div class="panel-body">
     <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
         <?= $form->field($user, 'username', [
@@ -37,12 +37,9 @@ $this->registerCss('
             ],
           ])->passwordInput()->label(false);
         ?>
-        <div style="color:#999;margin:1em 0">
-            <?= Yii::t('app', 'If you forgot your password you can ') . Html::a(Yii::t('app', 'reset it'), ['/site/request-password-reset']) ?>.
-        </div>
         <div class="form-group">
-            <?= Html::submitButton(Yii::t('app', 'Log in'), ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            <?= Html::a(Yii::t('app', 'Sign up now!'), ['/site/signup']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Login'), ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+            <?= Html::a(Yii::t('app', 'Signup'), ['/site/signup']) ?>
         </div>
     <?php ActiveForm::end(); ?>
   </div>

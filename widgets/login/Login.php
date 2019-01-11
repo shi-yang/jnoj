@@ -17,11 +17,6 @@ use app\models\LoginForm;
 class Login extends \yii\base\Widget
 {
     /**
-     * @var string the widget title. Defaults to 'Login'.
-     */
-    public $title = 'Login';
-
-    /**
      * @var boolean whether the widget is visible. Defaults to true.
      */
     public $visible = true;
@@ -36,7 +31,6 @@ class Login extends \yii\base\Widget
             } else {
                 return $this->render('loginWidget', [
                     'user' => $user,
-                    'title' => $this->title,
                 ]);
             }
         }
