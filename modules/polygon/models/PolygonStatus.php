@@ -57,6 +57,8 @@ class PolygonStatus extends Solution
             'memory' => Yii::t('app', 'Memory'),
             'info' => Yii::t('app', 'Info'),
             'created_at' => Yii::t('app', 'Created At'),
+            'source' => Yii::t('app', 'Code'),
+            'language' => Yii::t('app', 'Language')
         ];
     }
 
