@@ -153,7 +153,9 @@ class ProblemController extends Controller
     public function actionSolution($id)
     {
         $model = $this->findModel($id);
-
+        if ($model->solution_lang == null) {
+            $model->solution_lang = Yii::$app->user->identity->language;
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['solution', 'id' => $model->id]);
         }
