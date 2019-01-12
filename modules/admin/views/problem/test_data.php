@@ -29,10 +29,6 @@ $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'i
         <?= Html::encode($model->title) ?>
     </h1>
 
-    <p>
-        <?= Html::a('下载全部数据', ['download-data', 'id' => $model->id], ['class' => 'btn btn-success']); ?>
-    </p>
-
     <p class="bg-danger">
         一个标准输入文件对应一个标准输出文件，输入文件以＂.in＂结尾，输出文件以＂.out＂结尾，文件名任意取，
         但输入文件跟输出文件的文件名必须一一对应．比如一组样例: 输入文件文件名"apple.in"，输出文件文件名"apple.out"．
@@ -41,7 +37,19 @@ $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'i
 
     <?= \app\widgets\webuploader\MultiImage::widget() ?>
 
+
     <div class="row table-responsive">
+        <div class="col-md-12">
+            <?php if (extension_loaded('zip')): ?>
+                <p>
+                    <?= Html::a('下载全部数据', ['download-data', 'id' => $model->id], ['class' => 'btn btn-success']); ?>
+                </p>
+            <?php else: ?>
+                <p>
+                    服务器未启用 php-zip 扩展，如需下载测试数据，请安装 php-zip　扩展。
+                </p>
+            <?php endif; ?>
+        </div>
         <div class="col-md-6">
             <table class="table table-bordered table-rank">
                 <caption>标准输入文件</caption>
