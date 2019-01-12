@@ -29,6 +29,15 @@ class Solution extends ActiveRecord
     const STATUS_HIDDEN = 0;
     const STATUS_VISIBLE = 1;
 
+    /**
+     * 是这个值或小于这个值表示处于等待测评状态
+     */
+    const OJ_WAITING_STATUS = 3;
+
+    /**
+     * OJ 测评状态
+     * @see Solution::getResultList()
+     */
     const OJ_WT0 = 0;
     const OJ_WT1 = 1;
     const OJ_CI  = 2;
@@ -175,11 +184,18 @@ class Solution extends ActiveRecord
     public function getResult()
     {
         $res = self::getResultList($this->result);
-        if ($this->result == Solution::OJ_AC) {
-            return '<p class="text-success"><strong>' . $res . '</strong></p>';
+        $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
+
+        if ($this->result <= Solution::OJ_WAITING_STATUS) {
+            $waitingHtmlDom = 'waiting="true"';
+            $loadingImg = "<img src=\"{$loadingImgUrl}\">";
         } else {
-            return '<p class="text-danger"><strong>' . $res . '</strong></p>';
+            $waitingHtmlDom = 'waiting="false"';
+            $loadingImg = "";
         }
+        $innerHtml =  'data-verdict="' . $this->result . '" data-submissionid="' . $this->id . '" ' . $waitingHtmlDom;
+        $cssClass = $this->result == Solution::OJ_AC ? 'text-success' : 'text-danger';
+        return "<strong class=\"$cssClass\" $innerHtml>{$res}{$loadingImg}</strong>";
     }
 
     public static function getResultList($res = '')

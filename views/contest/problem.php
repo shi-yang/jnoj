@@ -37,6 +37,7 @@ foreach ($problems as $key => $p) {
 }
 $sample_input = unserialize($problem['sample_input']);
 $sample_output = unserialize($problem['sample_output']);
+$loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
 ?>
 <div class="problem-view">
     <div class="text-center">
@@ -138,24 +139,32 @@ $sample_output = unserialize($problem['sample_output']);
                     <tbody>
                     <?php foreach($submissions as $sub): ?>
                     <tr>
-                        <td><?= $sub['created_at'] ?></td>
+                        <td title="<?= $sub['created_at'] ?>">
+                            <?= Yii::$app->formatter->asRelativeTime($sub['created_at']) ?>
+                        </td>
                         <td>
                             <?php
-                                if ($sub['result'] == Solution::OJ_AC) {
-                                    echo'<span class="label label-success">' . Solution::getResultList($sub['result']) . '</span>';
-                                } else if ($sub['result'] == Solution::OJ_CE) {
-                                    $span = '<span class="label label-default">' . Solution::getResultList($sub['result']) . '</span>';
-                                    echo Html::a($span,
-                                        ['/solution/result', 'id' => $sub['id']],
-                                        ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
-                                    );
-                                } else {
-                                    $span = '<span class="label label-default">' . Solution::getResultList($sub['result']) . '</span>';
-                                    echo Html::a($span,
-                                        ['/solution/source', 'id' => $sub['id']],
-                                        ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
-                                    );
-                                }
+                            if ($sub['result'] <= Solution::OJ_WAITING_STATUS) {
+                                $waitingHtmlDom = 'waiting="true"';
+                                $loadingImg = "<img src=\"{$loadingImgUrl}\">";
+                            } else {
+                                $waitingHtmlDom = 'waiting="false"';
+                                $loadingImg = "";
+                            }
+                            $innerHtml =  'data-verdict="' . $sub['result'] . '" data-submissionid="' . $sub['id'] . '" ' . $waitingHtmlDom;
+                            if ($sub['result'] == Solution::OJ_AC) {
+                                $span = '<strong class="text-success"' . $innerHtml . '>' . Solution::getResultList($sub['result']) . '</strong>';
+                                echo Html::a($span,
+                                    ['/solution/source', 'id' => $sub['id']],
+                                    ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
+                                );
+                            } else {
+                                $span = '<strong class="text-danger" ' . $innerHtml . '>' . Solution::getResultList($sub['result']) . $loadingImg . '</strong>';
+                                echo Html::a($span,
+                                    ['/solution/result', 'id' => $sub['id']],
+                                    ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
+                                );
+                            }
                             ?>
                         </td>
                         <td>
@@ -208,44 +217,83 @@ $sample_output = unserialize($problem['sample_output']);
 <?php Modal::end(); ?>
 <?php
 $this->registerJs('
-$(document).ready(function () {
-    $("[data-click=solution_info]").click(function() {
-        $.ajax({
-            url: $(this).attr("href"),
-            type:"post",
-            error: function(){alert("error");},
-            success:function(html){
-                $("#solution-content").html(html);
-                $("#solution-info").modal("show");
-            }
-        });
-    });
-    $(".katex.math.inline").each(function () {
-        var parent = $(this).parent()[0];
-        if (parent.localName !== "code") {
-            var texTxt = $(this).text();
-            var el = $(this).get(0);
-            try {
-                katex.render(texTxt, el);
-            } catch (err) {
-                $(this).html("<span class=\'err\'>" + err);
-            }
-        } else {
-            $(this).parent().text($(this).parent().text());
-        }
-    });
-    $(".katex.math.multi-line").each(function () {
+$(".katex.math.inline").each(function () {
+    var parent = $(this).parent()[0];
+    if (parent.localName !== "code") {
         var texTxt = $(this).text();
         var el = $(this).get(0);
         try {
-            katex.render(texTxt, el, {displayMode: true})
+            katex.render(texTxt, el);
         } catch (err) {
-            $(this).html("<span class=\'err\'>" + err)
+            $(this).html("<span class=\'err\'>" + err);
+        }
+    } else {
+        $(this).parent().text($(this).parent().text());
+    }
+});
+$(".katex.math.multi-line").each(function () {
+    var texTxt = $(this).text();
+    var el = $(this).get(0);
+    try {
+        katex.render(texTxt, el, {displayMode: true})
+    } catch (err) {
+        $(this).html("<span class=\'err\'>" + err)
+    }
+});
+$(".pre p").each(function(i, block) {  // use <pre><p>
+    hljs.highlightBlock(block);
+});
+');
+?>
+
+<?php
+$url = \yii\helpers\Url::toRoute(['/solution/verdict']);
+$js = <<<EOF
+$('[data-click=solution_info]').click(function() {
+    $.ajax({
+        url: $(this).attr('href'),
+        type:'post',
+        error: function(){alert('error');},
+        success:function(html){
+            $('#solution-content').html(html);
+            $('#solution-info').modal('show');
         }
     });
-    $(".pre p").each(function(i, block) {  // use <pre><p>
-        hljs.highlightBlock(block);
+});
+function updateVerdictByKey(submission) {
+    $.get({
+        url: "{$url}?id=" + submission.attr('data-submissionid'),
+        success: function(data) {
+            var obj = JSON.parse(data);
+            submission.attr("waiting", obj.waiting);
+            submission.text(obj.result);
+            if (obj.result === "Accepted") {
+                submission.attr("class", "text-success")
+            }
+            if (obj.waiting === "true") {
+                submission.append('<img src="{$loadingImgUrl}" alt="loading">');
+            }
+        }
     });
-})
-');
+}
+var waitingCount = $("strong[waiting=true]").length;
+if (waitingCount > 0) {
+    console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
+    var interval = null;
+    var testWaitingsDone = function () {
+        var waitingCount = $("strong[waiting=true]").length;
+        console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
+        $("strong[waiting=true]").each(function(){
+            updateVerdictByKey($(this));
+        });
+        if (interval && waitingCount === 0) {
+            console.log("Stopping submissionsEventCatcher.");
+            clearInterval(interval);
+            interval = null;
+        }
+    }
+    interval = setInterval(testWaitingsDone, 1000);
+}
+EOF;
+$this->registerJs($js);
 ?>

@@ -47,6 +47,24 @@ class SolutionController extends Controller
     }
 
     /**
+     * 返回提交状态供 AJAX 查询
+     * @param $id
+     * @return false|string
+     * @throws NotFoundHttpException
+     */
+    public function actionVerdict($id)
+    {
+        $model = $this->findModel($id);
+        $res = [
+            'id' => $model->id,
+            'verdict' => $model->result,
+            'waiting' => $model->result <= Solution::OJ_WAITING_STATUS ? 'true' : 'false',
+            'result' => Solution::getResultList($model->result)
+        ];
+        return json_encode($res);
+    }
+
+    /**
      * Displays source of a single Solution model.
      * @param integer $id
      * @return mixed

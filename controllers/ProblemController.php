@@ -174,7 +174,7 @@ class ProblemController extends Controller
             $solution->status = Solution::STATUS_VISIBLE;
             $solution->save();
             Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
-            return $this->redirect(['/solution/index']);
+            return $this->refresh();
         }
 
         return $this->render('view', [

@@ -17,7 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
 if (!Yii::$app->user->isGuest) {
     $solution->language = Yii::$app->user->identity->language;
 }
+
 $model->setSamples();
+
+$loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
 ?>
 <div class="row">
     <div class="col-md-9 problem-view">
@@ -142,7 +145,7 @@ $model->setSamples();
 
         <?php if (!Yii::$app->user->isGuest && !empty($submissions)): ?>
             <div class="panel panel-default" style="margin-top: 40px">
-            <div class="panel-heading">Submissions</div>
+            <div class="panel-heading"><?= Yii::t('app', 'Submissions') ?></div>
             <!-- Table -->
             <table class="table">
                 <tbody>
@@ -152,16 +155,23 @@ $model->setSamples();
                             <?= Yii::$app->formatter->asRelativeTime($sub['created_at']) ?>
                         </td>
                         <td>
-
                             <?php
+                            if ($sub['result'] <= Solution::OJ_WAITING_STATUS) {
+                                $waitingHtmlDom = 'waiting="true"';
+                                $loadingImg = "<img src=\"{$loadingImgUrl}\">";
+                            } else {
+                                $waitingHtmlDom = 'waiting="false"';
+                                $loadingImg = "";
+                            }
+                            $innerHtml =  'data-verdict="' . $sub['result'] . '" data-submissionid="' . $sub['id'] . '" ' . $waitingHtmlDom;
                             if ($sub['result'] == Solution::OJ_AC) {
-                                $span = '<span class="label label-success">' . Solution::getResultList($sub['result']) . '</span>';
+                                $span = '<strong class="text-success"' . $innerHtml . '>' . Solution::getResultList($sub['result']) . '</strong>';
                                 echo Html::a($span,
                                     ['/solution/source', 'id' => $sub['id']],
                                     ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
                                 );
                             } else {
-                                $span = '<span class="label label-default">' . Solution::getResultList($sub['result']) . '</span>';
+                                $span = '<strong class="text-danger" ' . $innerHtml . '>' . Solution::getResultList($sub['result']) . $loadingImg . '</strong>';
                                 echo Html::a($span,
                                     ['/solution/result', 'id' => $sub['id']],
                                     ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
@@ -191,7 +201,8 @@ $model->setSamples();
 <?php Modal::end(); ?>
 
 <?php
-$js = "
+$url = \yii\helpers\Url::toRoute(['/solution/verdict']);
+$js = <<<EOF
 $('[data-click=solution_info]').click(function() {
     $.ajax({
         url: $(this).attr('href'),
@@ -203,6 +214,40 @@ $('[data-click=solution_info]').click(function() {
         }
     });
 });
-";
+function updateVerdictByKey(submission) {
+    $.get({
+        url: "{$url}?id=" + submission.attr('data-submissionid'),
+        success: function(data) {
+            var obj = JSON.parse(data);
+            submission.attr("waiting", obj.waiting);
+            submission.text(obj.result);
+            if (obj.result === "Accepted") {
+                submission.attr("class", "text-success")
+            }
+            if (obj.waiting === "true") {
+                submission.append('<img src="{$loadingImgUrl}" alt="loading">');
+            }
+        }
+    });
+}
+var waitingCount = $("strong[waiting=true]").length;
+if (waitingCount > 0) {
+    console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
+    var interval = null;
+    var testWaitingsDone = function () {
+        var waitingCount = $("strong[waiting=true]").length;
+        console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
+        $("strong[waiting=true]").each(function(){
+            updateVerdictByKey($(this));
+        });
+        if (interval && waitingCount === 0) {
+            console.log("Stopping submissionsEventCatcher.");
+            clearInterval(interval);
+            interval = null;
+        }
+    }
+    interval = setInterval(testWaitingsDone, 1000);
+}
+EOF;
 $this->registerJs($js);
 ?>
