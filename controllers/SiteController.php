@@ -65,20 +65,31 @@ class SiteController extends Controller
             ORDER BY start_time DESC LIMIT 3
         ', [':status' => Contest::STATUS_VISIBLE, ':type' => Contest::TYPE_HOMEWORK, ':time' => date('Y:m:d h:i:s', time())])->queryAll();
 
-        $query = (new Query())->select('id, title, content, created_at')
+        $newsQuery = (new Query())->select('id, title, content, created_at')
             ->from('{{%discuss}}')
             ->where(['entity' => Discuss::ENTITY_NEWS, 'status' => Discuss::STATUS_PUBLIC])
             ->orderBy('id DESC');
 
-        $pages = new Pagination(['totalCount' => $query->count()]);
-        $news = $query->offset($pages->offset)
+        $discusses = (new Query())->select('d.id, d.title, d.created_at, u.nickname, u.username, p.title as ptitle, p.id as pid')
+            ->from('{{%discuss}} as d')
+            ->leftJoin('{{%user}} as u', 'd.created_by=u.id')
+            ->leftJoin('{{%problem}} as p', 'd.entity_id=p.id')
+            ->where(['entity' => Discuss::ENTITY_PROBLEM, 'parent_id' => 0])
+            ->andWhere('DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(d.updated_at)')
+            ->orderBy('d.updated_at DESC')
+            ->limit(10)
+            ->all();
+
+        $pages = new Pagination(['totalCount' => $newsQuery->count()]);
+        $news = $newsQuery->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
 
         return $this->render('index', [
             'contests' => $contests,
             'pages' => $pages,
-            'news' => $news
+            'news' => $news,
+            'discusses' => $discusses
         ]);
     }
 

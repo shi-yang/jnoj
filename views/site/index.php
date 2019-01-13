@@ -42,5 +42,27 @@ $this->title = Yii::$app->params['ojName'] . ' Online Judge';
             </ol>
         </div>
         <?php endif; ?>
+        <?php if (!empty($discusses)): ?>
+            <div class="sidebar-module">
+                <h4>最近讨论</h4>
+                <ol class="list-unstyled">
+                    <?php foreach ($discusses as $discuss): ?>
+                        <li class="index-discuss-item">
+                            <div>
+                                <?= Html::a(Html::encode($discuss['title']), ['/discuss/view', 'id' => $discuss['id']]) ?>
+                            </div>
+                            <small class="text-muted">
+                                <span class="glyphicon glyphicon-user"></span>
+                                <?= Html::a(Html::encode($discuss['nickname']), ['/user/view', 'id' => $discuss['username']]) ?>
+                                &nbsp;•&nbsp;
+                                <span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asRelativeTime($discuss['created_at']) ?>
+                                &nbsp;•&nbsp;
+                                <?= Html::a(Html::encode($discuss['ptitle']), ['/problem/view', 'id' => $discuss['pid']]) ?>
+                            </small>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+            </div>
+        <?php endif; ?>
     </div>
 </div>

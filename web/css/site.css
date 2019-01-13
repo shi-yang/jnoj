@@ -209,7 +209,6 @@ a.desc:after {
 /* Sidebar modules for boxing content */
 .sidebar-module {
     padding: 15px;
-    margin: 0 -15px 15px;
 }
 .sidebar-module-inset {
     padding: 15px;
@@ -221,7 +220,19 @@ a.desc:after {
 .sidebar-module-inset ol:last-child {
     margin-bottom: 0;
 }
-
+.index-discuss-item {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.discuss-title {
+    word-wrap:break-word;
+    word-break:break-all;
+}
 .news-view {
     max-width: 700px;
     margin: auto;

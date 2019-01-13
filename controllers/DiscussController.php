@@ -4,11 +4,11 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Discuss;
-use app\models\User;
-use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
+use yii\db\Expression;
 use yii\filters\VerbFilter;
 
 /**
@@ -45,12 +45,26 @@ class DiscussController extends Controller
             $newDiscuss->parent_id = $model->id;
             $newDiscuss->entity = Discuss::ENTITY_PROBLEM;
             $newDiscuss->entity_id = $model->entity_id;
+            $model->updated_at = new Expression('NOW()');
+            $model->update();
             $newDiscuss->save();
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
+
+        // 查询回复
+        $query = Discuss::find()->where(['parent_id' => $model->id])->with('user');
+        $countQuery = clone $query;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $replies = $query->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
         return $this->render('view', [
             'newDiscuss' => $newDiscuss,
             'model' => $model,
+            'replies' => $replies,
+            'pages' => $pages
         ]);
     }
 
@@ -63,6 +77,10 @@ class DiscussController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
+        if (Yii::$app->user->id != $model->created_by) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -82,10 +100,13 @@ class DiscussController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-
-        $model->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->user->id === $model->created_by) {
+            $model->delete();
+            Discuss::deleteAll(['parent_id' => $model->id]);
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
+            return $this->redirect(['/site/index']);
+        }
+        throw new ForbiddenHttpException('You are not allowed to perform this action.');
     }
 
     /**

@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($newDiscuss, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
         <div class="form-group">
-            <?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Create'), ['class' => 'btn btn-success']) ?>
         </div>
         <?php ActiveForm::end(); ?>
     </div>
