@@ -17,8 +17,6 @@ use app\models\ContestAnnouncement;
  */
 class HomeworkController extends ContestController
 {
-    public $layout = 'homework';
-
     public function init()
     {
         Yii::$app->language = 'zh-CN';
@@ -76,23 +74,6 @@ class HomeworkController extends ContestController
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single Homework model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        $model = $this->findModel($id);
-        // 访问权限检查
-        if (!$model->canView()) {
-            return $this->render('/contest/forbidden', ['model' => $model]);
-        }
-        return $this->render('view', [
-            'model' => $model,
         ]);
     }
 
@@ -236,23 +217,6 @@ class HomeworkController extends ContestController
             }
             return $this->redirect(['/homework/update', 'id' => $id]);
         }
-    }
-
-    /**
-     * 榜单
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionStanding($id)
-    {
-        $model = $this->findModel($id);
-        // 访问权限检查
-        if (!$model->canView()) {
-            return $this->render('/contest/forbidden', ['model' => $model]);
-        }
-        return $this->render('standing', [
-            'model' => $model
-        ]);
     }
 
     /**

@@ -230,7 +230,7 @@ class ContestController extends Controller
             'query' => ContestAnnouncement::find()->where(['contest_id' => $model->id]),
         ]);
 
-        return $this->render('view', [
+        return $this->render('/contest/view', [
             'model' => $model,
             'dataProvider' => $dataProvider
         ]);
@@ -361,7 +361,7 @@ class ContestController extends Controller
         if (!$model->canView()) {
             return $this->render('/contest/forbidden', ['model' => $model]);
         }
-        return $this->render('standing', [
+        return $this->render('/contest/standing', [
             'model' => $model
         ]);
     }

@@ -43,6 +43,8 @@ $problems = $model->problems;
                 ]
             ]) ?>
 
+            <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
+
             <?= $form->field($model, 'status')->radioList([
                 1 => Yii::t('app', 'Published'),
                 0 => Yii::t('app', 'Draft')
