@@ -87,6 +87,10 @@ class HomeworkController extends ContestController
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        // 访问权限检查
+        if (!$model->canView()) {
+            return $this->render('/contest/forbidden', ['model' => $model]);
+        }
         return $this->render('view', [
             'model' => $model,
         ]);
@@ -242,6 +246,10 @@ class HomeworkController extends ContestController
     public function actionStanding($id)
     {
         $model = $this->findModel($id);
+        // 访问权限检查
+        if (!$model->canView()) {
+            return $this->render('/contest/forbidden', ['model' => $model]);
+        }
         return $this->render('standing', [
             'model' => $model
         ]);

@@ -601,7 +601,7 @@ class ContestController extends Controller
         $this->findModel($id)->delete();
         Solution::deleteAll(['contest_id' => $id]);
         ContestUser::deleteAll(['contest_id' => $id]);
-        Discuss::deleteAll(['contest_id' => $id]);
+        Discuss::deleteAll(['entity' => Discuss::ENTITY_CONTEST, 'entity_id' => $id]);
         ContestProblem::deleteAll(['contest_id' => $id]);
         ContestPrint::deleteAll(['contest_id' => $id]);
         ContestAnnouncement::deleteAll(['contest_id' => $id]);

@@ -72,7 +72,7 @@ class ContestController extends Controller
         $searchModel = new SolutionSearch();
         // 访问权限检查
         if (!$model->canView()) {
-            return $this->render('forbidden', ['model' => $model]);
+            return $this->render('/contest/forbidden', ['model' => $model]);
         }
 
         if (Yii::$app->request->isPjax) {
@@ -187,7 +187,7 @@ class ContestController extends Controller
 
         // 访问权限检查
         if (!$model->canView()) {
-            return $this->render('forbidden', ['model' => $model]);
+            return $this->render('/contest/forbidden', ['model' => $model]);
         }
         // 只能在线下赛未结束时访问
         if ($model->scenario != Contest::SCENARIO_OFFLINE || $model->getRunStatus() == Contest::STATUS_ENDED) {
@@ -224,7 +224,7 @@ class ContestController extends Controller
         $model = $this->findModel($id);
         // 访问权限检查
         if (!$model->canView()) {
-            return $this->render('forbidden', ['model' => $model]);
+            return $this->render('/contest/forbidden', ['model' => $model]);
         }
         $dataProvider = new ActiveDataProvider([
             'query' => ContestAnnouncement::find()->where(['contest_id' => $model->id]),
@@ -268,7 +268,7 @@ class ContestController extends Controller
         $model = $this->findModel($id);
         // 访问权限检查
         if (!$model->canView()) {
-            return $this->render('forbidden', ['model' => $model]);
+            return $this->render('/contest/forbidden', ['model' => $model]);
         }
         $newClarify = new Discuss();
         $discuss = null;
@@ -359,7 +359,7 @@ class ContestController extends Controller
         $model = $this->findModel($id);
         // 访问权限检查
         if (!$model->canView()) {
-            return $this->render('forbidden', ['model' => $model]);
+            return $this->render('/contest/forbidden', ['model' => $model]);
         }
         return $this->render('standing', [
             'model' => $model
@@ -377,7 +377,7 @@ class ContestController extends Controller
         $model = $this->findModel($id);
         // 访问权限检查
         if (!$model->canView()) {
-            return $this->render('forbidden', ['model' => $model]);
+            return $this->render('/contest/forbidden', ['model' => $model]);
         }
         $solution = new Solution();
 

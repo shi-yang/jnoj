@@ -91,8 +91,8 @@ $problems = $model->problems;
                 <tr>
                     <th width="70px">#</th>
                     <th width="120px">Problem ID</th>
-                    <th>Name</th>
-                    <th width="200px">Operation</th>
+                    <th><?= Yii::t('app', 'Problem Name') ?></th>
+                    <th width="200px"><?= Yii::t('app', 'Operation') ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -103,8 +103,8 @@ $problems = $model->problems;
                         <td><?= Html::a(Html::encode($p['title']), ['view', 'id' => $model->id, 'action' => 'problem', 'problem_id' => $key]) ?></td>
                         <th>
                             <?php Modal::begin([
-                                'header' => '<h3>'.Yii::t('app','Update'). ' : ' . chr(65 + $key) . '</h3>',
-                                'toggleButton' => ['label' => 'Update', 'class' => 'btn btn-success'],
+                                'header' => '<h3>'. Yii::t('app','Modify') . ' : ' . chr(65 + $key) . '</h3>',
+                                'toggleButton' => ['label' => Yii::t('app','Modify'), 'class' => 'btn btn-success'],
                             ]); ?>
 
                             <?= Html::beginForm(['/homework/updateproblem', 'id' => $model->id]) ?>
@@ -146,8 +146,8 @@ $problems = $model->problems;
                     <th></th>
                     <th>
                         <?php Modal::begin([
-                            'header' => '<h3>'.Yii::t('app','Information').'</h3>',
-                            'toggleButton' => ['label' => 'Add a problem', 'class' => 'btn btn-success'],
+                            'header' => '<h3>' . Yii::t('app','Add a problem') . '</h3>',
+                            'toggleButton' => ['label' => Yii::t('app','Add a problem'), 'class' => 'btn btn-success'],
                         ]); ?>
 
                         <?= Html::beginForm(['/homework/addproblem', 'id' => $model->id]) ?>

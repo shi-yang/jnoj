@@ -23,7 +23,7 @@ return [
     'Run' => '运行',
     'Code' => '代码',
     'Language' => '语言',
-    'Register »' => '参赛 >>',
+    'Register »' => '注册 >>',
     'Registration completed' => '已注册',
     'Created By' => '创建人',
     'Student Number' => '学号',
