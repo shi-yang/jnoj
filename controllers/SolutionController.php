@@ -54,12 +54,12 @@ class SolutionController extends Controller
      */
     public function actionVerdict($id)
     {
-        $model = $this->findModel($id);
+        $query = Yii::$app->db->createCommand('SELECT id,result FROM {{%solution}} WHERE id=:id', [':id' => $id])->queryOne();
         $res = [
-            'id' => $model->id,
-            'verdict' => $model->result,
-            'waiting' => $model->result <= Solution::OJ_WAITING_STATUS ? 'true' : 'false',
-            'result' => Solution::getResultList($model->result)
+            'id' => $query['id'],
+            'verdict' => $query['result'],
+            'waiting' => $query['result'] <= Solution::OJ_WAITING_STATUS ? 'true' : 'false',
+            'result' => Solution::getResultList($query['result'])
         ];
         return json_encode($res);
     }
