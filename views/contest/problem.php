@@ -77,7 +77,7 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
                         <pre><?= $sample_output[0] ?></pre>
                     </div>
 
-                    <?php if (!empty($sample_input[1])):?>
+                    <?php if ($sample_input[1] != '' || $sample_output[1] != ''):?>
                         <div class="input">
                             <h4><?= Yii::t('app', 'Input') ?></h4>
                             <pre><?= $sample_input[1] ?></pre>
@@ -88,7 +88,7 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($sample_input[2])):?>
+                    <?php if ($sample_input[2] != '' || $sample_output[2] != ''):?>
                         <div class="input">
                             <h4><?= Yii::t('app', 'Input') ?></h4>
                             <pre><?= $sample_input[2] ?></pre>
