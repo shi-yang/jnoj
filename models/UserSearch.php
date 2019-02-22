@@ -22,7 +22,7 @@ class UserSearch extends User
             [['id'], 'integer'],
             [['username', 'email', 'nickname'], 'string'],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            ['role', 'in', 'range' => [self::ROLE_ADMIN, self::ROLE_USER]]
+            ['role', 'in', 'range' => [self::ROLE_PLAYER, self::ROLE_USER, self::ROLE_VIP, self::ROLE_ADMIN]]
         ];
     }
 

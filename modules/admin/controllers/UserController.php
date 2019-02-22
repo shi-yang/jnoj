@@ -56,6 +56,16 @@ class UserController extends Controller
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        if (Yii::$app->request->isPost) {
+            $keys = Yii::$app->request->post('keylist');
+            $action = Yii::$app->request->get('action');
+            foreach ($keys as $key) {
+                Yii::$app->db->createCommand()->update('{{%user}}', [
+                    'role' => $action
+                ], ['id' => $key])->execute();
+            }
+            return $this->refresh();
+        }
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

@@ -20,8 +20,16 @@ $this->title = Yii::t('app', 'Problems');
     </p>
     <hr>
     <p>
-        选中项：<?= Html::a('设为可见', "javascript:void(0);", ['id' => 'available', 'class' => 'btn btn-success']) ?>
-        <?= Html::a('设为隐藏', "javascript:void(0);", ['id' => 'reserved', 'class' => 'btn btn-success']) ?>
+        选中项：
+        <a id="available" class="btn btn-success" href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="任何用户均能在前台看见题目">
+            设为可见
+        </a>
+        <a id="reserved" class="btn btn-success" href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="题目只能在后台查看">
+            设为隐藏
+        </a>
+        <a id="private" class="btn btn-success" href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="前台题目列表会出现题目标题，但只有VIP用户才能查看题目信息">
+            设为私有
+        </a>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -48,10 +56,12 @@ $this->title = Yii::t('app', 'Problems');
             [
                 'attribute' => 'status',
                 'value' => function ($model, $key, $index, $column) {
-                    if ($model->status) {
+                    if ($model->status == \app\models\Problem::STATUS_VISIBLE) {
                         return Yii::t('app', 'Visible');
-                    } else {
+                    } else if ($model->status == \app\models\Problem::STATUS_HIDDEN) {
                         return Yii::t('app', 'Hidden');
+                    } else {
+                        return Yii::t('app', 'Private');
                     }
                 },
                 'format' => 'raw',
@@ -67,7 +77,7 @@ $this->title = Yii::t('app', 'Problems');
                 'format' => 'raw',
             ],
             [
-                'attribute' => 'polygon_problem_id',
+                'attribute' => 'polygon_id',
                 'value' => function ($model, $key, $index, $column) {
                     return Html::a($model->polygon_problem_id, ['/polygon/problem/view', 'id' => $model->polygon_problem_id]);
                 },
@@ -77,6 +87,9 @@ $this->title = Yii::t('app', 'Problems');
         ],
     ]);
     $this->registerJs('
+    $(function () {
+      $(\'[data-toggle="tooltip"]\').tooltip()
+    })
     $("#available").on("click", function () {
         var keys = $("#grid").yiiGridView("getSelectedRows");
         $.post({
@@ -89,6 +102,14 @@ $this->title = Yii::t('app', 'Problems');
         var keys = $("#grid").yiiGridView("getSelectedRows");
         $.post({
            url: "'.\yii\helpers\Url::to(['/admin/problem/index', 'action' => \app\models\Problem::STATUS_HIDDEN]).'", 
+           dataType: \'json\',
+           data: {keylist: keys}
+        });
+    });
+    $("#private").on("click", function () {
+        var keys = $("#grid").yiiGridView("getSelectedRows");
+        $.post({
+           url: "'.\yii\helpers\Url::to(['/admin/problem/index', 'action' => \app\models\Problem::STATUS_PRIVATE]).'", 
            dataType: \'json\',
            data: {keylist: keys}
         });

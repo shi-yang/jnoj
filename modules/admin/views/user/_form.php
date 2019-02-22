@@ -17,6 +17,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'role')->radioList([
         $model::ROLE_PLAYER => '参赛用户',
         $model::ROLE_USER => '普通用户',
+        $model::ROLE_VIP => 'VIP用户',
         $model::ROLE_ADMIN => '管理员'
     ]) ?>
 

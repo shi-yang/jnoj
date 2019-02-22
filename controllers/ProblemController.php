@@ -46,15 +46,15 @@ class ProblemController extends Controller
     {
         $query = Problem::find();
 
-        if (Yii::$app->request->isGet && !empty($tag = Yii::$app->request->get('tag'))) {
-            $query->andWhere('tags LIKE :tag', [':tag' => '%' . $tag . '%']);
+        if (Yii::$app->request->isGet) {
+            $query->andWhere('tags LIKE :tag', [':tag' => '%' . Yii::$app->request->get('tag') . '%']);
         }
         if (($post = Yii::$app->request->post())) {
             $query->orWhere(['like', 'title', $post['q']])
                 ->orWhere(['like', 'id', $post['q']])
                 ->orWhere(['like', 'source', $post['q']]);
         }
-        $query->andWhere(['status' => Problem::STATUS_VISIBLE]);
+        $query->andWhere(['status' => Problem::STATUS_VISIBLE])->orWhere(['status' => Problem::STATUS_PRIVATE]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
@@ -195,7 +195,10 @@ class ProblemController extends Controller
     protected function findModel($id)
     {
         if (($model = Problem::findOne($id)) !== null) {
-            if ($model->status == Problem::STATUS_VISIBLE) {
+            $isVisible = ($model->status == Problem::STATUS_VISIBLE);
+            $isPrivate = ($model->status == Problem::STATUS_PRIVATE);
+            if ($isVisible || ($isPrivate && !Yii::$app->user->isGuest &&
+                               (Yii::$app->user->identity->role === User::ROLE_VIP || Yii::$app->user->identity->role === User::ROLE_ADMIN))) {
                 return $model;
             } else {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');

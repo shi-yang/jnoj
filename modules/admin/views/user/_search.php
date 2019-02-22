@@ -40,8 +40,11 @@ use yii\bootstrap\ActiveForm;
         'template' => "{label}\n<div class=\"input-group\"><span class=\"input-group-addon\">Role</span>{input}</div>",
     ])->dropDownList([
         '' => '所有用户',
+        User::ROLE_PLAYER => '参赛用户',
         User::ROLE_USER => '普通用户',
-        User::ROLE_ADMIN => '管理员'
+        User::ROLE_VIP => 'VIP 用户',
+        User::ROLE_ADMIN => '管理员',
+
     ])->label(false) ?>
 
     <div class="form-group">
