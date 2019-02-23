@@ -54,7 +54,7 @@ class ProblemController extends Controller
                 ->orWhere(['like', 'id', $post['q']])
                 ->orWhere(['like', 'source', $post['q']]);
         }
-        $query->andWhere(['status' => Problem::STATUS_VISIBLE])->orWhere(['status' => Problem::STATUS_PRIVATE]);
+        $query->andWhere('status !=' . Problem::STATUS_HIDDEN);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
