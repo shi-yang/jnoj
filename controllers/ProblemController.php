@@ -46,7 +46,7 @@ class ProblemController extends Controller
     {
         $query = Problem::find();
 
-        if (Yii::$app->request->isGet) {
+        if (Yii::$app->request->get('tag') != '') {
             $query->andWhere('tags LIKE :tag', [':tag' => '%' . Yii::$app->request->get('tag') . '%']);
         }
         if (($post = Yii::$app->request->post())) {
@@ -54,7 +54,7 @@ class ProblemController extends Controller
                 ->orWhere(['like', 'id', $post['q']])
                 ->orWhere(['like', 'source', $post['q']]);
         }
-        $query->andWhere('status !=' . Problem::STATUS_HIDDEN);
+        $query->andWhere('status<>' . Problem::STATUS_HIDDEN);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
@@ -64,8 +64,8 @@ class ProblemController extends Controller
 
         $tags = (new TaggingQuery())->select('tags')
             ->from('{{%problem}}')
-            ->where(['status' => Problem::STATUS_VISIBLE])
-            ->limit(20)
+            ->where('status<>' . Problem::STATUS_HIDDEN)
+            ->limit(30)
             ->displaySort(['freq' => SORT_DESC])
             ->getTags();
 
