@@ -12,7 +12,10 @@ JNOJ Change Log
 - Enh: [web] 添加 VIP 用户权限，可以将题目设为只有 VIP 用户可见
 - Bug: [web] 修复 VIP 题目查询问题
 - Bug: [web] 编辑私有题目时无法保存
-- Enh: [web、judge] 对 Special Judge 引入 `testlib.h`，**该功能会导致与旧有的 Special Judge 写法不兼容**，SPJ 的参数输入顺序修改为输入文件、选手输出、标准答案。具体参考OJ 的 Wiki。
+- Enh: [web、judge] 对 Special Judge 引入 `testlib.h`，**该功能会导致与旧有的 Special Judge 写法不兼容**，
+SPJ 的参数输入顺序修改为输入文件、选手输出、标准答案。**为保证SPJ题目的准确性，更新后需要你改写题目的SPJ**。具体参考OJ 的 Wiki。示例区别在于：
+旧版本SPJ写法示例为`FILE * f_in = fopen(args[1],"r"); FILE * f_outr = fopen(args[2],"r");FILE * f_use = fopen(args[3],"r");`，
+新版本SPJ写法示例为`FILE * f_in = fopen(args[1],"r"); FILE * f_user = fopen(args[2],"r");FILE * f_out = fopen(args[3],"r");`
 
 0.7.0 2019.2.1
 ------------------------
