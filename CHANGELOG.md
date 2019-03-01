@@ -7,10 +7,11 @@ JNOJ Change Log
 
 请阅读 [update.md](docs/update.md) 来获取更新方法。
 
-0.8.0 2019.2.22 (under development)
+0.8.0 2019.3.1 (under development)
 ------------------
 - Enh: [web] 添加 VIP 用户权限，可以将题目设为只有 VIP 用户可见
 - Bug: [web] 修复 VIP 题目查询问题
+- Bug: [web] 编辑私有题目时无法保存
 
 0.7.0 2019.2.1
 ------------------------
@@ -36,7 +37,7 @@ JNOJ Change Log
 - Bug: 测试数据 out 文件无法上传
 - Bug: 可能出现判题无结果的现象
 - Bug: SPJ 模板的问题
-- Bug: 榜单 CE 的计算问题
+- Bug: 榜单 E 的计算问题
 - Enh: 封榜后以 pending 状态显示提交次数
 - Bug: 提交代码的编辑器显示出错
 - Enh: 可以在比赛页面设置题目显示状态
