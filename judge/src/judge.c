@@ -795,7 +795,7 @@ int special_judge(char* oj_home, int problem_id, char *infile, char *outfile,
         setrlimit(RLIMIT_FSIZE, &LIM);
 
         ret = execute_cmd("%sdata/%d/spj '%s' '%s' %s", oj_home, problem_id,
-                infile, outfile, userfile);
+                infile, userfile, outfile);
         if (ret)
             exit(1);
         else

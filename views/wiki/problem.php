@@ -72,51 +72,7 @@ use yii\bootstrap\Modal;
 
 <h3>Special Judge</h3>
 <p>简称 SPJ，这是针对用户输出的特判。比如，根据题面求解出来的答案可能存在多个，这样就无法定义一个准确的输出文件来判断用户是否正确，这时就需要 SPJ。或者允许用户的输出在某一精度范围内是正确的。</p>
-<?php Modal::begin([
-    'header' => '<h2>SPJ 模板示例</h2>',
-    'toggleButton' => ['label' => 'SPJ 模板示例', 'class' => 'btn btn-success'],
-]) ?>
-<p>1. SPJ 是一个可执行程序，其的返回值决定着判断结果，成功返回(0)表示AC，其他非零值表示WA。</p>
-<p>2. SPJ 放在与测试数据同一目录下，文件名为 <code>spj</code>(小写，这个名字不能错)，需要有执行权限，判题时会自动调用 SPJ。
-    对于题库中，SPJ 处于 judge/data/problemId 目录下，problemId 对应于题目的ID；对于 polygon 中，SPJ 处于 polygon/data/problemId 目录下</p>
-<p>3. 在后台创建题目时，填写的 SPJ 源码会自动编译成可执行程序并放在相应的目录下。</p>
-<p>4. 使用 polygon 来创建题目，导入题库时会自动编译成可执行程序。</p>
-<p class="text-danger">5. 当前未对 SPJ 的可调用函数进行限制，故在 polygon 中验题功能不会开放，需要拉到题库后再从后台进行验题。</p>
-<p>6. 针对第 5 条，请确保 SPJ 正确运行，也未调用与判题无关的系统函数，当 SPJ 在 OJ 中编译出错或运行出错时，OJ 不会给出反馈。</p>
-<div class="pre"><p>#include &lt;stdio.h&gt;
-#define AC 0
-#define WA 1
-const double eps = 1e-4;
-int main(int argc,char *args[])
-{
-    FILE * f_in = fopen(args[1],"r");
-    FILE * f_out = fopen(args[2],"r");
-    FILE * f_user = fopen(args[3],"r");
-    int ret = AC;
-    /**************判题逻辑**************/
-    /**
-    * 以下判题逻辑代码只是举例：输入有 t 组数据，写 spj 来判断每组数据测试输出与用户输出之差是否在 eps 之内。
-    */
-    int t;
-    double a, x;
-    fscanf(f_in, “%d”, &t); //从输入中读取数据组数 t
-    while (t-–) {
-        fscanf(f_out, “%lf”, &a); //从读取测试输出
-        fscanf(f_user, “%lf”, &x); //从读取用户输出
-        if(fabs(a-x) > eps) {
-            ret = WA;//Wrong Answer
-            break;
-        }
-    }
-    /***********************************/
-    fclose(f_in);
-    fclose(f_out);
-    fclose(f_user);
-    return ret;
-}
-</p></div>
-<?php Modal::end() ?>
-
+<p>写法详见：<?= Html::a('SPJ', ['/wiki/spj']) ?></p>
 
 <h3 id="infile">如何快速生成输入文件</h3>
 <p>以下只是提供 C 语言一种示范，<b>数据请勿完全依赖随机生成，应根据题目要求考虑不同情况设定数据，同时应包含题面各个范围的数据情况。</b></p>
