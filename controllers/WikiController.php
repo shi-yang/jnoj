@@ -27,4 +27,9 @@ class WikiController extends Controller
     {
         return $this->render('problem');
     }
+
+    public function actionSpj()
+    {
+        return $this->render('spj');
+    }
 }
