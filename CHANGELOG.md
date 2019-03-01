@@ -5,14 +5,14 @@ JNOJ Change Log
 
 自 0.8.0 版本起，为更新方便，方括号内标注的 `web` 表示只修改了 Web 端；`db` 表示修改了数据库；`judge` 表示修改了判题部分。
 
-请阅读 [update.md](docs/update.md) 来获取更新方法。
+请阅读 [update.md](https://github.com/shi-yang/jnoj/blob/master/docs/update.md) 来获取更新方法。
 
 0.8.0 2019.3.1 (under development)
 ------------------
 - Enh: [web] 添加 VIP 用户权限，可以将题目设为只有 VIP 用户可见
 - Bug: [web] 修复 VIP 题目查询问题
 - Bug: [web] 编辑私有题目时无法保存
-- Enh: [web、judge] 对 Special Judge 引入 `testlib.h`，该功能会导致与旧有的 Special Judge 写法不兼容，参考OJ 的 Wiki。
+- Enh: [web、judge] 对 Special Judge 引入 `testlib.h`，该功能会导致与旧有的 Special Judge 写法不兼容，SPJ 的参数输入顺序修改为输入文件、选手输出、标准答案。具体参考OJ 的 Wiki。
 
 0.7.0 2019.2.1
 ------------------------
