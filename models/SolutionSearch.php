@@ -90,7 +90,7 @@ class SolutionSearch extends Solution
                 ->from('{{%user}}')
                 ->andWhere('nickname=:name', [':name' => $this->username])
                 ->orWhere('username=:name', [':name' => $this->username])
-                ->column();
+                ->scalar();
         }
         // grid filtering conditions
         $query->andFilterWhere([

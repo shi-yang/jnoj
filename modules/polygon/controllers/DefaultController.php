@@ -2,11 +2,12 @@
 
 namespace app\modules\polygon\controllers;
 
-use app\models\User;
 use Yii;
 use yii\web\Controller;
-use app\modules\polygon\models\Problem;
 use yii\data\ActiveDataProvider;
+use app\modules\polygon\models\Problem;
+use app\models\User;
+use app\modules\polygon\models\ProblemSearch;
 
 /**
  * Default controller for the `polygon` module
@@ -19,16 +20,12 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        $query = Problem::find()->with('user')->orderBy(['id' => SORT_DESC]);
-        if (Yii::$app->user->isGuest || Yii::$app->user->identity->role != User::ROLE_ADMIN) {
-            $query->andWhere(['created_by' => Yii::$app->user->id]);
-        }
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query
-        ]);
+        $searchModel = new ProblemSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel
         ]);
     }
 }

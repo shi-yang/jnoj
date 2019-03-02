@@ -3,6 +3,7 @@
 namespace app\modules\admin\controllers;
 
 use app\models\ContestProblem;
+use app\models\ProblemSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -61,12 +62,8 @@ class ProblemController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Problem::find()->orderBy(['id' => SORT_DESC])->with('user'),
-            'pagination' => [
-                'pageSize' => 50
-            ]
-        ]);
+        $searchModel = new ProblemSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         if (Yii::$app->request->isPost) {
             $keys = Yii::$app->request->post('keylist');
@@ -81,6 +78,7 @@ class ProblemController extends Controller
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel
         ]);
     }
 

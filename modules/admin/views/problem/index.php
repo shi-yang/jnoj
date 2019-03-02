@@ -5,6 +5,7 @@ use yii\grid\GridView;
 use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
+/* @var $searchModel app\models\ProblemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Problems');
@@ -31,6 +32,7 @@ $this->title = Yii::t('app', 'Problems');
             设为私有
         </a>
     </p>
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'options' => ['id' => 'grid'],

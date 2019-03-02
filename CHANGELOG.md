@@ -16,6 +16,7 @@ JNOJ Change Log
 SPJ 的参数输入顺序修改为输入文件、选手输出、标准答案。**为保证SPJ题目的准确性，更新后需要你改写题目的SPJ**。具体参考OJ 的 Wiki。示例区别在于：
 旧版本SPJ写法示例为`FILE * f_in = fopen(args[1],"r"); FILE * f_outr = fopen(args[2],"r");FILE * f_use = fopen(args[3],"r");`，
 新版本SPJ写法示例为`FILE * f_in = fopen(args[1],"r"); FILE * f_user = fopen(args[2],"r");FILE * f_out = fopen(args[3],"r");`
+- Enh: [web] 添加题目检索功能
 
 0.7.0 2019.2.1
 ------------------------

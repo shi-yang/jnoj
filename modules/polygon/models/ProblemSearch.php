@@ -1,28 +1,34 @@
 <?php
 
-namespace app\models;
+namespace app\modules\polygon\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\Query;
+use app\modules\polygon\models\Problem;
+use app\models\User;
 
 /**
- * ProblemSearch represents the model behind the search form of `app\models\Problem`.
+ * ProblemSearch represents the model behind the search form of `app\modules\polygon\models\Problem`.
  */
 class ProblemSearch extends Problem
 {
+    public $username;
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'time_limit', 'memory_limit', 'accepted', 'submit', 'solved'], 'integer'],
-            [['title', 'description', 'input', 'output', 'sample_input', 'sample_output', 'spj', 'hint', 'source', 'created_at', 'status'], 'safe'],
+            [['id', 'spj', 'spj_lang', 'time_limit', 'memory_limit', 'status', 'accepted', 'submit', 'solved', 'solution_lang'], 'integer'],
+            [['title', 'description', 'input', 'output', 'sample_input', 'sample_output', 'spj_source', 'hint',
+                'source', 'tags', 'solution_source', 'created_at', 'updated_at', 'created_by', 'username'], 'safe'],
         ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function scenarios()
     {
@@ -39,15 +45,14 @@ class ProblemSearch extends Problem
      */
     public function search($params)
     {
-        $query = Problem::find()->orderBy(['id' => SORT_DESC])->with('user');
+        $query = Problem::find()->with('user')->orderBy(['id' => SORT_DESC]);
 
-        // add conditions that should always apply here
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->role != User::ROLE_ADMIN) {
+            $query->andWhere(['created_by' => Yii::$app->user->id]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => 50
-            ]
         ]);
 
         $this->load($params);
@@ -58,15 +63,29 @@ class ProblemSearch extends Problem
             return $dataProvider;
         }
 
+        if (!empty($this->username)) {
+            $this->created_by = (new Query())->select('id')
+                ->from('{{%user}}')
+                ->andWhere('nickname=:name', [':name' => $this->username])
+                ->orWhere('username=:name', [':name' => $this->username])
+                ->scalar();
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'created_at' => $this->created_at,
+            'spj' => $this->spj,
+            'spj_lang' => $this->spj_lang,
             'time_limit' => $this->time_limit,
             'memory_limit' => $this->memory_limit,
+            'status' => $this->status,
             'accepted' => $this->accepted,
             'submit' => $this->submit,
             'solved' => $this->solved,
+            'solution_lang' => $this->solution_lang,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'created_by' => $this->created_by,
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
@@ -75,10 +94,11 @@ class ProblemSearch extends Problem
             ->andFilterWhere(['like', 'output', $this->output])
             ->andFilterWhere(['like', 'sample_input', $this->sample_input])
             ->andFilterWhere(['like', 'sample_output', $this->sample_output])
-            ->andFilterWhere(['like', 'spj', $this->spj])
+            ->andFilterWhere(['like', 'spj_source', $this->spj_source])
             ->andFilterWhere(['like', 'hint', $this->hint])
             ->andFilterWhere(['like', 'source', $this->source])
-            ->andFilterWhere(['like', 'status', $this->status]);
+            ->andFilterWhere(['like', 'tags', $this->tags])
+            ->andFilterWhere(['like', 'solution_source', $this->solution_source]);
 
         return $dataProvider;
     }

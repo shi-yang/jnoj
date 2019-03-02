@@ -4,6 +4,7 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
+/* @var $searchModel app\modules\polygon\models\ProblemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Polygon System');
@@ -28,6 +29,8 @@ $this->title = Yii::t('app', 'Polygon System');
     <p>
         <?= Html::a(Yii::t('app', 'Create Problem'), ['/polygon/problem/create'], ['class' => 'btn btn-success']) ?>
     </p>
+
+    <?php echo $this->render('/problem/_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
