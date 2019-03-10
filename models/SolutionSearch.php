@@ -59,7 +59,7 @@ class SolutionSearch extends Solution
                 ])->queryOne();
                 $lockTime = strtotime($time['lock_board_time']);
                 $endTime = strtotime($time['end_time']);
-                if (!empty($lockTime) && $lockTime <= time() && time() <= $endTime + Yii::$app->params['scoreboardFrozenTime']) {
+                if (!empty($lockTime) && $lockTime <= time() && time() <= $endTime + Yii::$app->setting('scoreboardFrozenTime')) {
                     $query->andWhere('created_by=:uid OR created_at < :lock_board_time', [
                         ':uid' => Yii::$app->user->id,
                         ':lock_board_time' => $time['lock_board_time']

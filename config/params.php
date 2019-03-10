@@ -1,20 +1,5 @@
 <?php
 return [
-    // 学校名称
-    'schoolName' => '江南大学',
-
-    // OJ名称，这里填写 ‘江南’ 则表示 `江南OJ` 或者 `江南Online Judge`
-    'ojName' => '江南',
-
-    // 是否要分享代码
-    // true : 用户可以查看其他用户的代码
-    // false : 用户的代码只能由自己或者管理员查看
-    'isShareCode' => true,
-
-    // 封榜时间。单位：秒
-    // 这个时间是从比赛结束后开始计算，如值为 2 * 60 * 60 时，表示比赛结束 2 个小时后不再封榜。
-    'scoreboardFrozenTime' => 2 * 60 * 60,
-
     // judge 数据所在目录
     'judgeProblemDataPath' => dirname(__FILE__) . '/../judge/data/',
 

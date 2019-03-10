@@ -3,7 +3,6 @@
 namespace app\models;
 
 use Yii;
-use yii\db\Query;
 
 /**
  * This is the model class for table "{{%solution}}".
@@ -270,10 +269,10 @@ class Solution extends ActiveRecord
         if ($this->created_by == Yii::$app->user->id) {
             return true;
         }
-        // 状态可见且设置了分享状态可以查看。以下代码中 isShareCode 的说明参见 config\params.php 文件。
+        // 状态可见且设置了分享状态可以查看。以下代码中 isShareCode 的说明参见后台设置页面。
         // 对于比赛中的提交， status 的值默认为 STATUS_HIDDEN，比赛结束时可以在后台设为 STATUS_VISIBLE 以供普通用户查看
         // 对于后台验题时的提交，status 的值为 STATUS_HIDDEN
-        if ($this->status == Solution::STATUS_VISIBLE && Yii::$app->params['isShareCode']) {
+        if ($this->status == Solution::STATUS_VISIBLE && Yii::$app->setting->get('isShareCode')) {
             return true;
         }
         // 管理员有权限查看
@@ -288,10 +287,10 @@ class Solution extends ActiveRecord
      */
     public function canViewErrorInfo()
     {
-        // 状态可见且设置了分享状态可以查看。以下代码中 isShareCode 的说明参见 config\params.php 文件。
+        // 状态可见且设置了分享状态可以查看。以下代码中 isShareCode 的说明参见后台设置页面。
         // 对于比赛中的提交， status 的值默认为 STATUS_HIDDEN，比赛结束时可以在后台设为 STATUS_VISIBLE 以供普通用户查看
         // 对于后台验题时的提交，status 的值为 STATUS_HIDDEN
-        if ($this->status == Solution::STATUS_VISIBLE && Yii::$app->params['isShareCode']) {
+        if ($this->status == Solution::STATUS_VISIBLE && Yii::$app->setting->get('isShareCode')) {
             return true;
         }
         // 管理员有权限查看所有情况

@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include <unistd.h>
 #include <time.h>
 #include <stdarg.h>
 #include <ctype.h>
@@ -65,6 +64,8 @@
 #define REG_ARG0 rdi
 #define REG_ARG1 rsi
 #endif
+
+extern int optind, opterr, optopt;
 
 struct problem_struct {
     int id;
@@ -1029,15 +1030,47 @@ void clean_workdir(char * work_dir)
     }
 }
 
+void display_usage()
+{
+    fprintf(stderr, "Usage:judge -s solution_id -r runner_id\n");
+    fprintf(stderr, "-d  enable debug mode\n");
+    fprintf(stderr, "-o  enable oi mode\n");
+    fprintf(stderr, "-h  help\n");
+}
+
 void init_parameters(int argc, char ** argv, int * solution_id, int * runner_id)
 {
-    if (argc < 3) {
-        fprintf(stderr, "Usage:%s solution_id runner_id.\n", argv[0]);
-        fprintf(stderr, "Multi:%s solution_id runner_id judge_base_path.\n", argv[0]);
-        fprintf(stderr, "Debug:%s solution_id runner_id judge_base_path debug.\n", argv[0]);
+    *solution_id = -1;
+    *runner_id = 0;
+    int ch;
+    opterr = 0;
+    while ((ch = getopt_long(argc, argv, "s:r:dho")) != -1) {
+        switch (ch) {
+            case 'd':
+                DEBUG = 1;
+                fprintf(stderr, "Enable DEBUG mode.\n");
+                break;
+            case 's':
+                *solution_id = atoi(optarg);
+                break;
+            case 'r':
+                *runner_id = atoi(optarg);
+                break;
+            case 'o':
+                oi_mode = 1;
+                fprintf(stderr, "Enable OI mode.\n");
+                break;
+            case 'h':
+            case '?':
+                display_usage();
+                exit(1);
+        }
+    }
+
+    if (*solution_id < 0) {
+        display_usage();
         exit(1);
     }
-    DEBUG = argc > 4;
 
     getcwd(oj_home, sizeof(oj_home));
     int len = strlen(oj_home);
@@ -1045,9 +1078,6 @@ void init_parameters(int argc, char ** argv, int * solution_id, int * runner_id)
     oj_home[len + 1] = '\0';
 
     chdir(oj_home); // change the dir
-
-    *solution_id = atoi(argv[1]);
-    *runner_id = atoi(argv[2]);
 }
 
 void mk_shm_workdir(char * work_dir)
@@ -1076,8 +1106,8 @@ int count_in_files(char * dirpath)
 int main(int argc, char** argv)
 {
     char work_dir[BUFFER_SIZE];
-    int solution_id = 1000;
-    int runner_id = 0;
+    int solution_id;
+    int runner_id;
     int problem_id, lang, max_case_time = 0;
     struct problem_struct problem;
     init_parameters(argc, argv, &solution_id, &runner_id);
@@ -1170,7 +1200,7 @@ int main(int argc, char** argv)
     int usedtime = 0, topmemory = 0;
 
     // read files and run
-    while ((run_result == OJ_AC || run_result == OJ_PE) &&
+    while ((oi_mode || run_result == OJ_AC || run_result == OJ_PE) &&
            (dirp = readdir(dp)) != NULL) {
         namelen = is_input_file(dirp->d_name);
         if (namelen == 0)

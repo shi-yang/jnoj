@@ -47,15 +47,11 @@ class SettingController extends Controller
      */
     public function actionIndex()
     {
-        $setting_date = Yii::$app->db->createCommand('SELECT * FROM {{%setting}}')->queryAll();
-        $settings = ArrayHelper::map($setting_date, 'key', 'value');
+        $settingDate = Yii::$app->db->createCommand('SELECT * FROM {{%setting}}')->queryAll();
+        $settings = ArrayHelper::map($settingDate, 'key', 'value');
 
         if (($post = Yii::$app->request->post())) {
             unset($post['_csrf']);
-            if (!is_writable($post['problem_data_path'])) {
-                Yii::$app->session->setFlash('error', Yii::t('app', 'Path can not write'));
-                return $this->refresh();
-            }
             Yii::$app->setting->set($post);
             Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();

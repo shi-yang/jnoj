@@ -328,9 +328,9 @@ class Contest extends \yii\db\ActiveRecord
             $result[$user]['submit']++;
             $submit_count[$pid]['submit']++;
 
-            // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见 config/params.php 文件
+            // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见后台设置页面
             if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
-                time() <= strtotime($end_time) + Yii::$app->params['scoreboardFrozenTime']) {
+                time() <= strtotime($end_time) + Yii::$app->setting->get('scoreboardFrozenTime')) {
                 ++$result[$user]['pending'][$pid];
                 continue;
             }
@@ -549,6 +549,6 @@ class Contest extends \yii\db\ActiveRecord
     public function isScoreboardFrozen()
     {
        return !empty($this->lock_board_time) && strtotime($this->lock_board_time) <= time() &&
-           time() <= strtotime($this->end_time) + Yii::$app->params['scoreboardFrozenTime'];
+           time() <= strtotime($this->end_time) + Yii::$app->setting->get('scoreboardFrozenTime');
     }
 }

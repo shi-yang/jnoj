@@ -205,10 +205,10 @@ int init_mysql()
             sleep(2);
             return 1;
         } else {
-            return 0;
+            return executesql("set names utf8");
         }
     } else {
-        return executesql("set names utf8");
+        return executesql("commit");
     }
 }
 

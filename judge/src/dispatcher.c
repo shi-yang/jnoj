@@ -52,6 +52,8 @@ static int sleep_tmp;
 static int oj_tot;
 static int oj_mod;
 
+
+static int oi_mode = 0;
 static bool STOP = false;
 static MYSQL *conn;
 static MYSQL_RES *res;
@@ -127,7 +129,8 @@ void init_mysql_conf()
 
 void run_client(int runid, int clientid)
 {
-    char buf[BUFFER_SIZE], runidstr[BUFFER_SIZE];
+    char clientidstr[BUFFER_SIZE];
+    char runidstr[BUFFER_SIZE];
     struct rlimit LIM;
     LIM.rlim_max = 800;
     LIM.rlim_cur = 800;
@@ -144,21 +147,13 @@ void run_client(int runid, int clientid)
     LIM.rlim_cur = LIM.rlim_max = 200;
     setrlimit(RLIMIT_NPROC, &LIM);
 
-    //buf[0]=clientid+'0'; buf[1]=0;
-    sprintf(runidstr, "%d", runid);
-    sprintf(buf, "%d", clientid);
+    sprintf(runidstr, "-s %d", runid);
+    sprintf(clientidstr, "-r %d", clientid);
 
-    //write_log("sid=%s\tclient=%s\toj_home=%s\n",runidstr,buf,oj_home);
-    //sprintf(err,"%s/run%d/error.out",oj_home,clientid);
-    //freopen(err,"a+",stderr);
-
-    if (!DEBUG) {
-        execl(judge_path, judge_path, runidstr, buf,
-              oj_home, (char *) NULL);
-    } else {
-        execl(judge_path, judge_path, runidstr, buf,
-              oj_home, "debug", (char *) NULL);
-    }
+    execl(judge_path, judge_path, runidstr, clientidstr,
+          oi_mode ? "-o" : "",
+          DEBUG ? "-d" : "",
+          (char *) NULL);
 }
 
 int executesql(const char *sql)
@@ -195,10 +190,10 @@ int init_mysql()
             sleep(2);
             return 1;
         } else {
-            return 0;
+            return executesql("set names utf8");
         }
     } else {
-        return executesql("set names utf8");
+        return executesql("commit");
     }
 }
 
@@ -435,12 +430,17 @@ void set_path()
 
 int main(int argc, char *argv[])
 {
-    char ch;
+    int ch;
     opterr = 0;
     while ((ch = getopt(argc, argv, "doh")) != -1) {
         switch (ch) {
+            case 'o':
+                oi_mode = 1;
+                printf("Enable OI mode.\n");
+                break;
             case 'd':
                 DEBUG = 1;
+                printf("Enable DEBUG mode.\n");
                 break;
             case 'h':
                 printf("Usage: dispatcher -h -d -o\n");

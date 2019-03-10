@@ -7,7 +7,11 @@ JNOJ Change Log
 
 请阅读 [update.md](https://github.com/shi-yang/jnoj/blob/master/docs/update.md) 来获取更新方法。
 
-0.8.0 2019.3.1 (under development)
+0.9.0 2019.3.10 (under development)
+------------------
+- Enh: [web、judge、db] 支持 OI 判题模式。**不兼容更新，更新后需要到后台设置页面修改oj名称、学校名称**
+
+0.8.0 2019.3.3
 ------------------
 - Enh: [web] 添加 VIP 用户权限，可以将题目设为只有 VIP 用户可见
 - Bug: [web] 修复 VIP 题目查询问题

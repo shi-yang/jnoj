@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\Contest */
 /* @var $form yii\widgets\ActiveForm */
 
-$scoreboardFrozenTime = Yii::$app->params['scoreboardFrozenTime'] / 3600;
+$scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
 ?>
 
 <div class="contest-form">
@@ -50,7 +50,7 @@ $scoreboardFrozenTime = Yii::$app->params['scoreboardFrozenTime'] / 3600;
     ])->hint('线下场景会有额外的功能：滚榜；在该比赛的页面开放打印链接；限定参赛账号．' . '参考：' . Html::a('线下赛与线上赛的区别', ['/wiki/contest'], ['target' => '_blank'])) ?>
 
     <?= $form->field($model, 'type')->radioList([
-        $model::TYPE_EDUCATIONAL => Yii::t('app', 'Educational'),
+        //$model::TYPE_EDUCATIONAL => Yii::t('app', 'Educational'),
         $model::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
         $model::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
     ])->hint('不同类型的区别只在于榜单的排名方式。详见：' . Html::a('比赛类型', ['/wiki/contest'], ['target' => '_blank'])) ?>
