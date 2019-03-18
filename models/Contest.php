@@ -329,7 +329,6 @@ class Contest extends \yii\db\ActiveRecord
                 continue;
             }
 
-            $result[$user]['submit']++;
             $submit_count[$pid]['submit']++;
 
             // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见后台设置页面
