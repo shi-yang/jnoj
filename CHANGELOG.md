@@ -7,7 +7,7 @@ JNOJ Change Log
 
 请阅读 [update.md](https://github.com/shi-yang/jnoj/blob/master/docs/update.md) 来获取更新方法。
 
-0.9.0 2019.3.10 (under development)
+0.9.0 2019.3.18 (under development)
 ------------------
 - Enh: [web、judge、db] 支持 OI 判题模式。**不兼容更新，更新后需要到后台设置页面修改oj名称、学校名称**
 
