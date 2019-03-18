@@ -570,3 +570,8 @@ a.desc:after {
 .user-admin {
     color: black !important;
 }
+
+.test-for-popup {
+    margin: 0;
+    border: none;
+}

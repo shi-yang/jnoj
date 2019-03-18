@@ -89,6 +89,10 @@ foreach ($problems as $key => $p) {
                         'format' => 'raw'
                     ],
                     [
+                        'attribute' => 'score',
+                        'visible' => Yii::$app->setting->get('oiMode')
+                    ],
+                    [
                         'attribute' => 'time',
                         'value' => function ($model, $key, $index, $column) {
                             return $model->time . ' MS';

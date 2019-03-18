@@ -7,7 +7,7 @@ use yii\bootstrap\Modal;
 /* @var $model app\models\Contest */
 
 $problems = $model->problems;
-$rank_result = $model->getRankData();
+$rank_result = $model->getOIRankData();
 $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];
@@ -67,44 +67,23 @@ $submit_count = $rank_result['submit_count'];
                 <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['user_id']]) ?>
             </th>
             <th class="score-solved">
-                <?= $rank['solved'] ?>
+                <?= $rank['total_score'] ?>
             </th>
             <th class="score-time">
-                <?= intval($rank['time'] / 60) ?>
+                <?= $rank['correction_score'] ?>
             </th>
             <?php
             foreach($problems as $key => $p) {
-                $css_class = '';
-                $num = 0;
-                $time = '';
-                if (isset($rank['ac_time'][$p['problem_id']]) && $rank['ac_time'][$p['problem_id']] > 0) {
-                    if ($first_blood[$p['problem_id']] == $rank['user_id']) {
-                        $css_class = 'solved-first';
-                    } else {
-                        $css_class = 'solved';
-                    }
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
-                    $time = intval($rank['ac_time'][$p['problem_id']]);
-                } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
-                    $css_class = 'pending';
-                    $time = '';
-                } else if (isset($rank['wa_count'][$p['problem_id']])) {
-                    $css_class = 'attempted';
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']];
-                    $time = '';
-                }
-                if ($num == 0) {
-                    $num = '';
-                    $span = '';
-                } else if ($num == 1) {
-                    $span = 'try';
-                } else {
-                    $span = 'tries';
+                $score = "";
+                $max_score = "";
+                if (isset($rank['score'][$p['problem_id']])) {
+                    $score = $rank['score'][$p['problem_id']];
+                    $max_score = $rank['max_score'][$p['problem_id']];
                 }
                 // 封榜的显示
                 if ($model->isScoreboardFrozen() && isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] . "+" .  $rank['pending'][$p['problem_id']];
+                    $score = "";
+                    $max_score = "";
                 }
                 if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == \app\models\Contest::STATUS_ENDED) {
                     $url = Url::toRoute([
@@ -113,9 +92,9 @@ $submit_count = $rank_result['submit_count'];
                         'cid' => $model->id,
                         'uid' => $rank['user_id']
                     ]);
-                    echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$time}<br><small>{$num} {$span}</small></th>";
+                    echo "<th class=\"table-problem-cell\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$score}<br><small>{$max_score}</small></th>";
                 } else {
-                    echo "<th class=\"table-problem-cell {$css_class}\">{$time}<br><small>{$num} {$span}</small></th>";
+                    echo "<th class=\"table-problem-cell\">{$score}<br><small>{$max_score}</small></th>";
                 }
             }
             ?>

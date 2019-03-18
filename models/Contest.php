@@ -220,7 +220,7 @@ class Contest extends \yii\db\ActiveRecord
     public function getUsersSolution()
     {
         return Yii::$app->db->createCommand('
-            SELECT `u`.`id` as `user_id`, `username`, `nickname`, `result`, `s`.`problem_id`, `s`.`created_at`, `s`.`id`
+            SELECT u.id as user_id, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
             FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id AND `s`.`created_at` <= :endtime ORDER BY `s`.`id`
         ', [':id' => $this->id, ':endtime' => $this->end_time])->queryAll();
@@ -397,9 +397,106 @@ class Contest extends \yii\db\ActiveRecord
     /**
      * 获取 OI 比赛排名数据
      */
-    public function getOIRankData()
+    public function getOIRankData($lock = true)
     {
+        $users_solution_data = $this->getUsersSolution();
+        $users = $this->getContestUser();
+        $result = [];
+        $first_blood = [];
+        $submit_count = [];
+        $count = count($users_solution_data);
+        $start_time = $this->start_time;
+        $end_time = $this->end_time;
+        $lock_time = 0x7fffffff;
 
+        foreach ($users as $user) {
+            $result[$user['user_id']]['username'] = $user['username'];
+            $result[$user['user_id']]['user_id'] = $user['user_id'];
+            $result[$user['user_id']]['nickname'] = $user['nickname'];
+            $result[$user['user_id']]['role'] = $user['role'];
+            $result[$user['user_id']]['rating'] = $user['rating'];
+            $result[$user['user_id']]['total_score'] = 0; // 测评总分
+            $result[$user['user_id']]['correction_score'] = 0; //订正总分
+            $result[$user['user_id']]['student_number'] = $user['student_number'];
+        }
+
+        if (!empty($this->lock_board_time)) {
+            $lock_time = $this->lock_board_time;
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            $row = $users_solution_data[$i];
+            $user = $row['user_id'];
+            $pid = $row['problem_id'];
+            $created_at = $row['created_at'];
+            $score = $row['score'];
+
+            // 初始化数据信息
+            if (!isset($submit_count[$pid]['solved']))
+                $submit_count[$pid]['solved'] = 0;
+            if (!isset($submit_count[$pid]['submit']))
+                $submit_count[$pid]['submit'] = 0;
+
+            if (!isset($result[$user]['max_score'][$pid]))
+                $result[$user]['max_score'][$pid] = 0;
+
+            $result[$user]['score'][$pid] = $score;
+            $result[$user]['max_score'][$pid] = max($score, $result[$user]['max_score'][$pid]);
+
+            // 正在测评
+            if (!isset($result[$user]['pending'][$pid]))
+                $result[$user]['pending'][$pid] = 0;
+            // 最快解题
+            if (!isset($first_blood[$pid]))
+                $first_blood[$pid] = '';
+
+            // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见后台设置页面
+            if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
+                time() <= strtotime($end_time) + Yii::$app->setting->get('scoreboardFrozenTime')) {
+                ++$result[$user]['pending'][$pid];
+                continue;
+            }
+            $submit_count[$pid]['submit']++;
+            if ($row['result'] == Solution::OJ_AC) {
+                // AC
+                $submit_count[$pid]['solved']++;
+                $result[$user]['pending'][$pid] = 0;
+                $sec = strtotime($created_at) - strtotime($start_time);
+                // AC 时间
+                if (!isset($result[$user]['ac_time'][$pid]))
+                    $result[$user]['ac_time'][$pid] = $sec / 60;
+
+                if (empty($first_blood[$pid])) {
+                    $first_blood[$pid] = $user;
+                }
+            } else if ($row['result'] <= 3) {
+                // 还未测评
+                ++$result[$user]['pending'][$pid];
+            }
+        }
+
+        foreach ($result as &$v) {
+            foreach ($v['score'] as $s) {
+                $v['total_score'] += $s;
+            }
+            foreach ($v['max_score'] as $s) {
+                $v['correction_score'] += $s;
+            }
+        }
+
+        usort($result, function($a, $b) {
+            if ($a['total_score'] != $b['total_score']) { // 优先测评总分
+                return $a['total_score'] < $b['total_score'];
+            } else { //订正总分
+                return $a['correction_score'] < $b['correction_score'];
+            }
+        });
+
+        return [
+            'rank_result' => $result,
+            'submit_count' => $submit_count,
+            'first_blood' => $first_blood
+        ];
     }
 
     /**

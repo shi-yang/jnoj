@@ -171,7 +171,6 @@ function subtaskHtml(id, score)
 var json = '$json';
 if (verdict != CE) {
     json = eval('(' + json + ')');
-    console.log(json);
     var subtasks = json.subtasks;
     var testId = 1;
     for (var i = 0; i < subtasks.length; i++) {

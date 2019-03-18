@@ -154,7 +154,7 @@
             server: '#',
             accept: {
                 title: 'Text',
-                extensions: 'in,out'
+                extensions: 'in,out,ans'
                 //mimeTypes: 'text/*'
             },
             // runtimeOrder: 'flash',

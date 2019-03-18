@@ -389,9 +389,15 @@ class ContestController extends Controller
 
         $this->layout = 'basic';
 
-        return $this->render('rank', [
-            'model' => $model,
-        ]);
+        if ($model->type == Contest::TYPE_OI) {
+            return $this->render('oi_rank', [
+                'model' => $model,
+            ]);
+        } else {
+            return $this->render('rank', [
+                'model' => $model,
+            ]);
+        }
     }
 
     public function actionPrint($id)
