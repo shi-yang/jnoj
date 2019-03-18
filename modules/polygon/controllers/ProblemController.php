@@ -296,6 +296,31 @@ class ProblemController extends Controller
         ]);
     }
 
+    public function actionSubtask($id)
+    {
+        $model = $this->findModel($id);
+
+        $dataPath = Yii::$app->params['polygonProblemDataPath'] . $model->id;
+        $subtaskContent = '';
+
+        if (file_exists($dataPath . '/config')) {
+            $subtaskContent = file_get_contents($dataPath . '/config');
+        }
+        if (Yii::$app->request->isPost) {
+            $spjContent = Yii::$app->request->post('subtaskContent');
+            if (!is_dir($dataPath)) {
+                mkdir($dataPath);
+            }
+            $fp = fopen($dataPath . '/config',"w");
+            fputs($fp, $spjContent);
+            fclose($fp);
+        }
+        return $this->render('subtask', [
+            'model' => $model,
+            'subtaskContent' => $subtaskContent
+        ]);
+    }
+
     /**
      * Deletes an existing Problem model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

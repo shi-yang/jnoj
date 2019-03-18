@@ -32,4 +32,9 @@ class WikiController extends Controller
     {
         return $this->render('spj');
     }
+
+    public function actionOi()
+    {
+        return $this->render('oi');
+    }
 }

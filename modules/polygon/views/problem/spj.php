@@ -15,7 +15,7 @@ $this->params['model'] = $model;
 $model->setSamples();
 ?>
 <p>
-    如果该题目需要特判的，请在下面填写特判程序。参考：<?= Html::a('如何编写特判程序？', ['/wiki/problem']) ?>
+    如果该题目需要特判的，请在下面填写特判程序。参考：<?= Html::a('如何编写特判程序？', ['/wiki/spj']) ?>
 </p>
 
 <?php if ($model->spj): ?>

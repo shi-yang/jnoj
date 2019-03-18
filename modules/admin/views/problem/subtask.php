@@ -30,23 +30,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1>
         <?= Html::encode($model->title) ?>
     </h1>
-    <?php if ($model->spj): ?>
+    <?php if (Yii::$app->setting->get('oiMode')): ?>
         <p>
-            如果该题目需要特判的，请在下面填写特判程序。参考：<?= Html::a('如何编写特判程序？', ['/wiki/spj']) ?>
+            如果题目需要配置子任务的，可以在下面填写子任务的配置。参考：<?= Html::a('子任务配置要求', ['/wiki/oi']) ?>
         </p>
         <hr>
 
         <?= Html::beginForm() ?>
 
         <div class="form-group">
-            <?= Html::textInput('spjLang', 'C、C++', ['disabled' => true, 'class' => 'form-control']); ?>
-            <p class="hint-block">当前仅支持 C\C++ 语言。</p>
-        </div>
+            <?= Html::label(Yii::t('app', 'Subtask'), 'subtaskContent', ['class' => 'sr-only']) ?>
 
-        <div class="form-group">
-            <?= Html::label(Yii::t('app', 'Spj'), 'spj', ['class' => 'sr-only']) ?>
-
-            <?= \app\widgets\codemirror\CodeMirror::widget(['name' => 'spjContent', 'value' => $spjContent]);  ?>
+            <?= \app\widgets\codemirror\CodeMirror::widget(['name' => 'subtaskContent', 'value' => $subtaskContent]);  ?>
         </div>
 
         <div class="form-group">
@@ -54,6 +49,6 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <?= Html::endForm(); ?>
     <?php else: ?>
-        <p>当前题目不是 SPJ 判题，如需启用 SPJ 判题，请先到题目信息编辑页面将 Special Judge 改为是。</p>
+        <p>当前 OJ 运行模式不是 OI 模式，要启用子任务编辑，需要在后台设置页面启用 OI 模式。</p>
     <?php endif; ?>
 </div>

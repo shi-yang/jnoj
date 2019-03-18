@@ -103,6 +103,7 @@ return [
     'Solution Source' => '代码',
     'Source' => '来源',
     'Verify Data' => '验题',
+    'Subtask' => '子任务',
     'Print Rank' => '打印榜单',
     'Running' => '正在进行',
     'Show the submissions in frontend' => '在前台展示提交记录',

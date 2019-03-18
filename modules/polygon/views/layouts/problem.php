@@ -17,6 +17,7 @@ $problem = $this->params['model'];
             ['label' => Yii::t('app', 'Special Judge'), 'url' => ['/polygon/problem/spj', 'id' => $problem->id]],
             ['label' => Yii::t('app', 'Tests Data'), 'url' => ['/polygon/problem/tests', 'id' => $problem->id]],
             ['label' => Yii::t('app', 'Verify Data'), 'url' => ['/polygon/problem/verify', 'id' => $problem->id]],
+            ['label' => Yii::t('app', 'Subtask'), 'url' => ['/polygon/problem/subtask', 'id' => $problem->id]],
         ],
     ]) ?>
 </div>

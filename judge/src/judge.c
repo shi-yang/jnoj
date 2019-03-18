@@ -561,21 +561,34 @@ char *escape(char s[], char t[])
     return s;
 }
 
-void prepare_files(char * filename, char * infile, int p_id,
+/**
+ * 准备需要测试的数据点
+ * 成功返回 0，失败返回1
+ */
+int prepare_files(char * filename, char * infile, int p_id,
                    char * work_dir, char * outfile, char * userfile,
                    int runner_id)
 {
     char fname0[BUFFER_SIZE];
     char fname[BUFFER_SIZE];
     int namelen = strlen(filename);
+    int res = 0;
     strncpy(fname0, filename, namelen - 3);
     fname0[namelen] = 0;
     escape(fname, fname0);
     sprintf(infile, "%sdata/%d/%s.in", oj_home, p_id, fname);
-    execute_cmd("/bin/cp '%s' %s/data.in", infile, work_dir);
+    res = execute_cmd("/bin/cp '%s' %s/data.in", infile, work_dir);
 
+    // 判断是输出文件是 out 还是 ans 为后缀
     sprintf(outfile, "%sdata/%d/%s.out", oj_home, p_id, fname0);
+    if (access(outfile, R_OK) == -1) {
+        sprintf(outfile, "%sdata/%d/%s.ans", oj_home, p_id, fname0);
+        if (access(outfile, R_OK) == -1) {
+            res = 1;
+        }
+    }
     sprintf(userfile, "%srun/%d/user.out", oj_home, runner_id);
+    return res;
 }
 
 /**
@@ -1141,9 +1154,14 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         char tmp_name[NAME_MAX] = {0};
         int begin = 0, end = 0, score = 0;
         int i = 0, j = 0;
-        // 跳过开头空格
+        int found_num = 0;
+        // 跳过空格
         while (buf[i] && isspace(buf[i])) {
             i++;
+        }
+        // 跳过空行
+        if (!buf[i]) {
+            continue;
         }
         while (buf[i] && buf[i] != '[') {
             name_prefix[j++] = buf[i++];
@@ -1157,6 +1175,7 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         while (buf[i] && buf[i] != '-' && buf[i] != ']') {
             if (isdigit(buf[i])) {
                 begin = begin * 10 + buf[i] - '0';
+                found_num = 1;
             }
             i++;
         }
@@ -1191,9 +1210,13 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         subtask_node = (subtask_struct *)malloc(sizeof(subtask_struct));
         subtask_node->test_count = end - begin + 1;
         subtask_node->score = score;
-        for (i = begin, j = 0; i <= end; i++, j++) {
-            sprintf(tmp_name, "%s%d.in", name_prefix, i);
-            strcpy(subtask_node->test_input_name[j], tmp_name);
+        if (found_num) {
+            for (i = begin, j = 0; i <= end; i++, j++) {
+                sprintf(tmp_name, "%s%d.in", name_prefix, i);
+                strcpy(subtask_node->test_input_name[j], tmp_name);
+            }
+        } else {
+            strcpy(subtask_node->test_input_name[j], name_prefix);
         }
         subtask_rear->next = subtask_node;
         subtask_rear = subtask_node; 
@@ -1221,8 +1244,12 @@ void read_files_run_solution(verdict_struct * verdict_res,
     verdict_res->checker_exit_code = 0;
     init_syscalls_limits(lang);
 
-    prepare_files(infile_name, infile, problem_id, work_dir,
+    int tmp = prepare_files(infile_name, infile, problem_id, work_dir,
                     outfile, userfile, runner_id);
+    if (tmp) {
+        verdict_res->verdict = OJ_NT;
+        return;
+    }
 
     pid_t pid = fork();
     if (pid == 0) {
