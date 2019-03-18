@@ -1255,9 +1255,9 @@ void read_files_run_solution(verdict_struct * verdict_res,
     if (pid == 0) {
         run_solution(problem, lang, work_dir, verdict_res->time);
     } else {
-        watch_solution(problem, &verdict_res, pid, infile, userfile, outfile,
+        watch_solution(problem, verdict_res, pid, infile, userfile, outfile,
                 solution_id, lang, work_dir);
-        judge_solution(problem, &verdict_res, infile,
+        judge_solution(problem, verdict_res, infile,
                 outfile, userfile, &is_pe, lang, work_dir,
                 solution_id);
     }
