@@ -1258,7 +1258,7 @@ void read_files_run_solution(verdict_struct * verdict_res,
         watch_solution(problem, verdict_res, pid, infile, userfile, outfile,
                 solution_id, lang, work_dir);
         judge_solution(problem, verdict_res, infile,
-                outfile, userfile, &is_pe, lang, work_dir,
+                outfile, userfile, is_pe, lang, work_dir,
                 solution_id);
     }
 }
