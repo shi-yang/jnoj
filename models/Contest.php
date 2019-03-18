@@ -47,6 +47,7 @@ class Contest extends \yii\db\ActiveRecord
     const TYPE_RANK_SINGLE = 1;
     const TYPE_RANK_GROUP  = 2;
     const TYPE_HOMEWORK    = 3;
+    const TYPE_OI          = 4;
 
     /**
      * 是否可见
@@ -136,6 +137,9 @@ class Contest extends \yii\db\ActiveRecord
                 break;
             case Contest::TYPE_HOMEWORK:
                 $res = Yii::t('app', 'Homework');
+                break;
+            case Contest::TYPE_OI:
+                $res = Yii::t('app', 'OI');
                 break;
             default:
                 $res = "null";
@@ -388,6 +392,14 @@ class Contest extends \yii\db\ActiveRecord
             'submit_count' => $submit_count,
             'first_blood' => $first_blood
         ];
+    }
+
+    /**
+     * 获取 OI 比赛排名数据
+     */
+    public function getOIRankData()
+    {
+
     }
 
     /**

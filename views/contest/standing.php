@@ -37,6 +37,10 @@ $this->params['model'] = $model;
                 echo $this->render('_standing_single', [
                     'model' => $model
                 ]);
+            } else if ($model->type == $model::TYPE_OI) {
+                echo $this->render('_standing_oi', [
+                    'model' => $model
+                ]);
             } else {
                 echo $this->render('_standing_group', [
                     'model' => $model

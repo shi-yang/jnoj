@@ -151,6 +151,12 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
                                 $waitingHtmlDom = 'waiting="false"';
                                 $loadingImg = "";
                             }
+                            // OI 比赛过程中结果不可见
+                            if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                                $waitingHtmlDom = 'waiting="false"';
+                                $loadingImg = "";
+                                $sub['result'] = 0;
+                            }
                             $innerHtml =  'data-verdict="' . $sub['result'] . '" data-submissionid="' . $sub['id'] . '" ' . $waitingHtmlDom;
                             if ($sub['result'] == Solution::OJ_AC) {
                                 $span = '<strong class="text-success"' . $innerHtml . '>' . Solution::getResultList($sub['result']) . '</strong>';

@@ -43,7 +43,7 @@ $status = $model->getRunStatus();
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->params['ojName'] . ' OJ',
+        'brandLabel' => Yii::$app->setting->get('ojName') . ' OJ',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-default',
@@ -153,11 +153,15 @@ $status = $model->getRunStatus();
                     [
                         'label' => '<span class="glyphicon glyphicon-signal"></span> ' . Yii::t('app' , 'Status'),
                         'url' => ['contest/status', 'id' => $model->id],
-                        'linkOptions' => ['data-pjax' => 0]
+                        'linkOptions' => ['data-pjax' => 0],
+                        // OI 模式不可见
+                        //'visible' => $model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-glass"></span> ' . Yii::t('app', 'Standing'),
                         'url' => ['contest/standing', 'id' => $model->id],
+                        // OI 模式不可见
+                        //'visible' => $model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-comment"></span> ' . Yii::t('app', 'Clarification'),
@@ -191,7 +195,7 @@ $status = $model->getRunStatus();
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; <?= Yii::$app->params['ojName'] ?> OJ <?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= Yii::$app->setting->get('ojName') ?> OJ <?= date('Y') ?></p>
     </div>
 </footer>
 <?php $this->endBody() ?>

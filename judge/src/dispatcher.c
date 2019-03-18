@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <syslog.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -41,7 +42,6 @@
 #define BUFFER_SIZE 1024
 #define STD_MB 1048576
 
-extern int optind, opterr, optopt;
 static char lock_file[BUFFER_SIZE] = LOCKFILE;
 static char oj_home[BUFFER_SIZE];
 static char judge_path[BUFFER_SIZE];
@@ -428,11 +428,28 @@ void set_path()
     judge_path[++cnt] = '\0';
 }
 
-int main(int argc, char *argv[])
+void display_usage()
+{
+    fprintf(stderr, "Judge server for JNOJ.\n\n");
+    fprintf(stderr, "  Options may be given in one of two forms: either a single\n");
+    fprintf(stderr, "  character preceded by a -, or a name preceded by --.\n");
+    fprintf(stderr, "  -d ...... --debug\n");
+    fprintf(stderr, "              Enable debug mode.\n");
+    fprintf(stderr, "  -o ...... --oi\n");
+    fprintf(stderr, "              Enable oi mode.\n");
+    fprintf(stderr, "  -h ...... --help\n");
+    fprintf(stderr, "              Dsiplay help (from command line).\n");
+}
+
+void init_parameters(int argc, char *argv[])
 {
     int ch;
-    opterr = 0;
-    while ((ch = getopt(argc, argv, "doh")) != -1) {
+    struct option long_options[] = {
+        {"debug", no_argument, 0,  'd'},
+        {"oi",  no_argument, 0, 'o'},
+        {"help",  no_argument, 0, 'h'}
+    };
+    while ((ch = getopt_long(argc, argv, "doh", long_options, 0)) != -1) {
         switch (ch) {
             case 'o':
                 oi_mode = 1;
@@ -443,12 +460,14 @@ int main(int argc, char *argv[])
                 printf("Enable DEBUG mode.\n");
                 break;
             case 'h':
-                printf("Usage: dispatcher -h -d -o\n");
-                printf("-d : Turn on debug mode\n");
-                printf("-h : Help\n");
-                return 0;
+                display_usage();
+                exit(1);
         }
     }
+}
+int main(int argc, char *argv[])
+{
+    init_parameters(argc, argv);
     set_path();
     chdir(oj_home); // change the dir
 

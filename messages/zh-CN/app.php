@@ -69,6 +69,7 @@ return [
     'Author' => '作者',
     'Verdict' => '测评结果',
     'Result' => '测评结果',
+    'Score' => '分数',
     'Reset' => '重置',
     'Submit Time' => '提交时间',
     'Code Length' => '代码长度',

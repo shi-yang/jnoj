@@ -13,6 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="solution-view">
     <h3>Run id: <?= Html::encode($this->title) ?></h3>
     <?php if ($model->solutionInfo != null): ?>
-        <pre><?= \yii\helpers\HtmlPurifier::process($model->solutionInfo->error) ?></pre>
+        <pre><?= \yii\helpers\HtmlPurifier::process($model->solutionInfo->run_info) ?></pre>
     <?php endif; ?>
 </div>

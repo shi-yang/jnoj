@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\Contest */
 /* @var $form yii\widgets\ActiveForm */
 
-$scoreboardFrozenTime = Yii::$app->params['scoreboardFrozenTime'] / 3600;
+$scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
 ?>
 
 <div class="contest-form">

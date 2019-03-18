@@ -64,6 +64,9 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
                     <td><?= Html::a(Html::encode($p['title']), ['/contest/problem', 'id' => $model->id, 'pid' => $key, '#' => 'problem-anchor']) ?></td>
                     <th>
                         <?php if (!isset($loginUserProblemSolvingStatus[$p['problem_id']])): ?>
+
+                        <?php elseif ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() == \app\models\Contest::STATUS_RUNNING): ?>
+                            <span class="glyphicon glyphicon-question-sign"></span>
                         <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] == \app\models\Solution::OJ_AC): ?>
                             <span class="glyphicon glyphicon-ok text-success"></span>
                         <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] < 4): ?>

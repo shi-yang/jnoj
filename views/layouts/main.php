@@ -48,7 +48,7 @@ AppAsset::register($this);
     </header>
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->params['ojName'] . ' OJ',
+        'brandLabel' => Yii::$app->setting->get('ojName') . ' OJ',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-default',
@@ -108,7 +108,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; <?= Yii::$app->params['ojName'] ?> OJ <?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= Yii::$app->setting->get('ojName') ?> OJ <?= date('Y') ?></p>
     </div>
 </footer>
 

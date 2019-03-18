@@ -19,6 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with HUSTOJ. if not, see <http://www.gnu.org/licenses/>.
  */
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +27,7 @@
 #include <time.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <getopt.h>
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 #include <sys/types.h>
@@ -39,15 +41,18 @@
 #include <errno.h>
 #include <mysql/mysql.h>
 #include <assert.h>
+#include <limits.h>
 #include "okcalls.h"
 #include "common.h"
 #include "language.h"
+#include "cJSON.h"
 
 #define STD_MB 1048576
 #define STD_T_LIM 2
 #define STD_F_LIM (STD_MB<<5)
 #define STD_M_LIM (STD_MB<<7)
-#define BUFFER_SIZE 5120
+#define BUFFER_SIZE 4096
+#define RECORD_SIZE 256
 
 
 /*copy from ZOJ
@@ -65,14 +70,32 @@
 #define REG_ARG1 rsi
 #endif
 
-extern int optind, opterr, optopt;
-
-struct problem_struct {
+typedef struct {
     int id;
     int memory_limit;
     int time_limit;
     bool isspj;
-};
+} problem_struct;
+
+typedef struct { // 记录每个数据点测试状态
+    double score; // OI 中的分数
+    int verdict; // 测评结果
+    int time; // 测评时间
+    int memory; // 测评内存
+    int exit_code; // 用户程序退出状态
+    char input[RECORD_SIZE]; // 测试输入
+    char output[RECORD_SIZE]; // 测试输出
+    char user_output[RECORD_SIZE]; // 用户输出
+    int checker_exit_code; // SPJ 退出状态
+    char checker_log[RECORD_SIZE]; // SPJ 输出
+} verdict_struct;
+
+typedef struct subtask_s {
+    int score; // 子任务的分数
+    int test_count; // 子任务的数据点个数。最大 256
+    char test_input_name[256][NAME_MAX];
+    struct subtask_s * next;
+} subtask_struct;
 
 static char oj_home[BUFFER_SIZE];
 
@@ -90,6 +113,7 @@ static int shm_run = 0;
 static char record_call = 0;
 static int use_ptrace = 1;
 static int compile_chroot = 1;
+static int subtask_cnt = 0;
 
 static const char * tbname = "solution";
 //static int sleep_tmp;
@@ -97,8 +121,6 @@ static const char * tbname = "solution";
 #ifdef _mysql_h
 MYSQL *conn;
 #endif
-
-//static char buf[BUFFER_SIZE];
 
 long get_file_size(const char * filename)
 {
@@ -158,23 +180,6 @@ void init_syscalls_limits(int lang)
     }
 }
 
-FILE * read_cmd_output(const char * fmt, ...)
-{
-    char cmd[BUFFER_SIZE];
-
-    FILE * ret = NULL;
-    va_list ap;
-
-    va_start(ap, fmt);
-    vsprintf(cmd, fmt, ap);
-    va_end(ap);
-    if (DEBUG)
-        printf("%s\n", cmd);
-    ret = popen(cmd, "r");
-
-    return ret;
-}
-
 // read the configue file
 void init_mysql_conf()
 {
@@ -207,13 +212,13 @@ void init_mysql_conf()
     }
 }
 
-int is_input_file(const char fname[])
+int input_file_filter(const struct dirent *entry)
 {
-    int l = strlen(fname);
-    if (l <= 3 || strcmp(fname + l - 3, ".in") != 0)
-        return 0;
-    else
-        return l - 3;
+	int l = strlen(entry->d_name);
+	if (l <= 3 || strcmp(entry->d_name + l - 3, ".in") != 0)
+		return 0;
+	else
+		return l - 3;
 }
 
 void find_next_nonspace(int * c1, int * c2, FILE ** f1, FILE ** f2, int * ret)
@@ -247,16 +252,6 @@ void find_next_nonspace(int * c1, int * c2, FILE ** f1, FILE ** f2, int * ret)
             *c2 = fgetc(*f2);
         }
     }
-}
-
-void make_diff_out(const char * path)
-{
-    execute_cmd("echo '------Input------<br>'>>diff.out");
-    execute_cmd("head -c 500 data.in>>diff.out");
-    execute_cmd("echo '<br>------Answer-----<br>'>>diff.out");
-    execute_cmd("head -c 500 '%s'>>diff.out", path);
-    execute_cmd("echo '<br>------Your output-----<br>'>>diff.out");
-    execute_cmd("head -c 500 user.out>>diff.out");
 }
 
 void delnextline(char s[])
@@ -316,18 +311,13 @@ int compare(const char *file1, const char *file2)
             }
         }
     end: 
-    if (ret == OJ_WA || ret == OJ_PE){
-        make_diff_out(file1);
-    }
-    if (f1)
-        fclose(f1);
-    if (f2)
-        fclose(f2);
+    fclose(f1);
+    fclose(f2);
     return ret;
 }
 
 void update_solution(int solution_id, int result, int time, int memory,
-                     char *pass_info)
+                     char *pass_info, int score)
 {
     if (result == OJ_TL && memory == 0)
         result = OJ_ML;
@@ -335,8 +325,8 @@ void update_solution(int solution_id, int result, int time, int memory,
 
     sprintf(sql,
             "UPDATE %s SET result=%d,time=%d,memory=%d,pass_info='%s',"
-            "judge='%s',judgetime=now() WHERE id=%d LIMIT 1",
-            tbname, result, time, memory, pass_info, "local", solution_id);
+            "score=%d,judge='%s',judgetime=now() WHERE id=%d LIMIT 1",
+            tbname, result, time, memory, pass_info, score, "local", solution_id);
 
     // printf("sql= %s\n",sql);
     if (mysql_real_query(conn, sql, strlen(sql))) {
@@ -344,86 +334,28 @@ void update_solution(int solution_id, int result, int time, int memory,
     }
 }
 
+void update_solution_info(int solution_id, char * buf)
+{
+    char sql[(1 << 16)];
+    sprintf(sql,
+            "INSERT INTO `solution_info`(`solution_id`, `run_info`) VALUES(%d, '%s') "
+            "ON DUPLICATE KEY UPDATE `run_info`='%s'",
+            solution_id, buf, buf);
+    if (mysql_real_query(conn, sql, strlen(sql)))
+        write_log(mysql_error(conn));
+}
+
 void addceinfo(int solution_id)
 {
-    char sql[(1 << 16)], *end;
     char ceinfo[(1 << 16)], *cend;
     FILE *fp = fopen("ce.txt", "re");
-    snprintf(sql, (1 << 16) - 1, "DELETE FROM solution_info "
-             "WHERE solution_id=%d", solution_id);
-    mysql_real_query(conn, sql, strlen(sql));
     cend = ceinfo;
     while (fgets(cend, 1024, fp)) {
         cend += strlen(cend);
         if (cend - ceinfo > 40000)
             break;
     }
-    cend = 0;
-    end = sql;
-    strcpy(end, "INSERT INTO solution_info VALUES(");
-    end += strlen(sql);
-    *end++ = '\'';
-    end += sprintf(end, "%d", solution_id);
-    *end++ = '\'';
-    *end++ = ',';
-    *end++ = '\'';
-    end += mysql_real_escape_string(conn, end, ceinfo, strlen(ceinfo));
-    *end++ = '\'';
-    *end++ = ')';
-    *end = 0;
-    // printf("%s\n",ceinfo);
-    if (mysql_real_query(conn, sql, end - sql))
-        printf("%s\n", mysql_error(conn));
-    fclose(fp);
-}
-
-// write runtime error message back to database
-void _add_solution_info_mysql(int solution_id, const char * filename)
-{
-    char sql[(1 << 16)], *end;
-    char reinfo[(1 << 16)], *rend;
-    FILE *fp = fopen(filename, "re");
-    snprintf(sql, (1 << 16) - 1, "DELETE FROM solution_info "
-             "WHERE solution_id=%d", solution_id);
-    mysql_real_query(conn, sql, strlen(sql));
-    rend = reinfo;
-    while (fgets(rend, 1024, fp)) {
-        rend += strlen(rend);
-        if (rend - reinfo > 40000)
-            break;
-    }
-    rend = 0;
-    end = sql;
-    strcpy(end, "INSERT INTO solution_info VALUES(");
-    end += strlen(sql);
-    *end++ = '\'';
-    end += sprintf(end, "%d", solution_id);
-    *end++ = '\'';
-    *end++ = ',';
-    *end++ = '\'';
-    end += mysql_real_escape_string(conn, end, reinfo, strlen(reinfo));
-    *end++ = '\'';
-    *end++ = ')';
-    *end = 0;
-    //      printf("%s\n",ceinfo);
-    if (mysql_real_query(conn, sql, end - sql))
-        printf("%s\n", mysql_error(conn));
-    fclose(fp);
-}
-
-void addreinfo(int solution_id)
-{
-    _add_solution_info_mysql(solution_id, "error.out");
-}
-
-void adddiffinfo(int solution_id)
-{
-    _add_solution_info_mysql(solution_id, "diff.out");
-}
-
-void addcustomout(int solution_id)
-{
-    _add_solution_info_mysql(solution_id, "user.out");
+    update_solution_info(solution_id, ceinfo);
 }
 
 void update_problem_stat(int pid)
@@ -481,7 +413,6 @@ int compile(int lang, char * work_dir)
             LIM.rlim_cur = STD_MB * 512;
         }
         setrlimit(RLIMIT_AS, &LIM);
-        freopen("ce.txt", "w", stderr);
 
         if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3) {
             execute_cmd("mkdir -p "
@@ -497,6 +428,9 @@ int compile(int lang, char * work_dir)
             execute_cmd("mount -o bind /proc proc");
             chroot(work_dir);
         }
+
+        freopen("ce.txt", "w", stderr);
+
         while (setgid(1536) != 0)
             sleep(1);
         while (setuid(1536) != 0)
@@ -585,9 +519,9 @@ void get_solution_info(int solution_id, int * p_id, int * lang)
     }
 }
 
-struct problem_struct get_problem_info(int p_id)
+problem_struct get_problem_info(int p_id)
 {
-    struct problem_struct problem;
+    problem_struct problem;
     problem.id = p_id;
     // get the problem info from Table:problem
     char sql[BUFFER_SIZE];
@@ -627,13 +561,14 @@ char *escape(char s[], char t[])
     return s;
 }
 
-void prepare_files(char * filename, int namelen, char * infile, int p_id,
+void prepare_files(char * filename, char * infile, int p_id,
                    char * work_dir, char * outfile, char * userfile,
                    int runner_id)
 {
     char fname0[BUFFER_SIZE];
     char fname[BUFFER_SIZE];
-    strncpy(fname0, filename, namelen);
+    int namelen = strlen(filename);
+    strncpy(fname0, filename, namelen - 3);
     fname0[namelen] = 0;
     escape(fname, fname0);
     sprintf(infile, "%sdata/%d/%s.in", oj_home, p_id, fname);
@@ -643,7 +578,77 @@ void prepare_files(char * filename, int namelen, char * infile, int p_id,
     sprintf(userfile, "%srun/%d/user.out", oj_home, runner_id);
 }
 
-void run_solution(struct problem_struct problem, int lang, char * work_dir,
+/**
+ * 从文件中读取指定数目的字符到字符串中，每次最多读取bufsize - 1个字符，
+ * 返回读取的字符数
+ */
+int read_file(char *buf, int bufsize, FILE *stream)
+{
+    char ch;
+    int i = 0;
+    while ((ch = fgetc(stream)) != EOF && i < bufsize) {
+        buf[i] = ch;
+        i++;
+    }
+    buf[i == bufsize ? i - 1 : i] = '\0';
+    return i;
+}
+
+/**
+ * 记录用户程序非 AC 时数据点的信息。
+ * 读取文件数据时，只记录前100个字符，超出100用省略号代替。
+ */
+void record_data(problem_struct problem,
+                 verdict_struct * verdict_res,
+                 char * infile, char * outfile, char * userfile)
+{
+    const int rsize = 100; // 需要记录的字符数
+    const char * omit_str = "...";
+    int tmp_size;
+    FILE * fp = NULL;
+    if (verdict_res->verdict == OJ_RE) {
+        fp = fopen("error.out", "r");
+    } else if (problem.isspj) {
+        fp = fopen("std_out.txt", "r");
+    }
+    if (fp != NULL) {
+        tmp_size = read_file(verdict_res->checker_log, rsize, fp);
+        if (tmp_size >= rsize) {
+            strcat(verdict_res->checker_log, omit_str);
+        }
+        fclose(fp);
+    }
+
+    FILE * in_file = fopen(infile, "r");
+    FILE * out_file = fopen(outfile, "r");
+    FILE * user_file = fopen(userfile, "r");
+    
+    if (in_file != NULL) {
+        tmp_size = read_file(verdict_res->input, rsize, in_file);
+        if (tmp_size >= rsize) {
+            strcat(verdict_res->input, omit_str);
+        }
+        fclose(in_file);
+    }
+    
+    if (out_file != NULL) {
+        tmp_size = read_file(verdict_res->output, rsize, out_file);
+        if (tmp_size >= rsize) {
+            strcat(verdict_res->output, omit_str);
+        }
+        fclose(out_file);
+    }
+
+    if (user_file != NULL) {
+        tmp_size = read_file(verdict_res->user_output, rsize, user_file);
+        if (tmp_size >= rsize) {
+            strcat(verdict_res->user_output, omit_str);
+        }
+        fclose(user_file);
+    }
+}
+
+void run_solution(problem_struct problem, int lang, char * work_dir,
                   int usedtime)
 {
     nice(19);
@@ -715,7 +720,7 @@ void run_solution(struct problem_struct problem, int lang, char * work_dir,
     exit(0);
 }
 
-int fix_python_mis_judge(char *work_dir, int * ACflg, int * topmemory,
+int fix_python_mis_judge(char *work_dir, verdict_struct * verdict_res,
                          int mem_lmt)
 {
     int comp_res = OJ_AC;
@@ -724,14 +729,14 @@ int fix_python_mis_judge(char *work_dir, int * ACflg, int * topmemory,
 
     if (!comp_res) {
         printf("Python need more Memory!");
-        *ACflg = OJ_ML;
-        *topmemory = mem_lmt * STD_MB;
+        verdict_res->verdict = OJ_ML;
+        verdict_res->memory = mem_lmt * STD_MB;
     }
 
     return comp_res;
 }
 
-int fix_java_mis_judge(char *work_dir, int * ACflg, int * topmemory,
+int fix_java_mis_judge(char *work_dir, verdict_struct * verdict_res,
                        int mem_lmt)
 {
     int comp_res = OJ_AC;
@@ -741,7 +746,7 @@ int fix_java_mis_judge(char *work_dir, int * ACflg, int * topmemory,
     comp_res = execute_cmd("/bin/grep 'Exception'  %s/error.out", work_dir);
     if (!comp_res) {
         printf("Exception reported\n");
-        *ACflg = OJ_RE;
+        verdict_res->verdict = OJ_RE;
     }
     execute_cmd("cat %s/error.out", work_dir);
 
@@ -750,27 +755,27 @@ int fix_java_mis_judge(char *work_dir, int * ACflg, int * topmemory,
 
     if (!comp_res) {
         printf("JVM need more Memory!");
-        *ACflg = OJ_ML;
-        *topmemory = mem_lmt * STD_MB;
+        verdict_res->verdict = OJ_ML;
+        verdict_res->memory = mem_lmt * STD_MB;
     }
 
     if (!comp_res) {
         printf("JVM need more Memory or Threads!");
-        *ACflg = OJ_ML;
-        *topmemory = mem_lmt * STD_MB;
+        verdict_res->verdict = OJ_ML;
+        verdict_res->memory = mem_lmt * STD_MB;
     }
     comp_res = execute_cmd("/bin/grep 'Could not create'  %s/error.out",
             work_dir);
     if (!comp_res) {
         printf("jvm need more resource,tweak -Xmx(OJ_JAVA_BONUS) Settings");
-        *ACflg = OJ_RE;
+        verdict_res->verdict = OJ_RE;
         //topmemory=0;
     }
     return comp_res;
 }
 
-int special_judge(char* oj_home, int problem_id, char *infile, char *outfile,
-                  char *userfile)
+int special_judge(char* oj_home, int problem_id, verdict_struct * verdict_res,
+                  char *infile, char *outfile, char *userfile)
 {
     pid_t pid = fork();
     int ret = 0;
@@ -794,64 +799,54 @@ int special_judge(char* oj_home, int problem_id, char *infile, char *outfile,
         LIM.rlim_max = STD_F_LIM + STD_MB;
         LIM.rlim_cur = STD_F_LIM;
         setrlimit(RLIMIT_FSIZE, &LIM);
-
+        freopen("std_out.txt", "w", stderr);
         ret = execute_cmd("%sdata/%d/spj '%s' '%s' %s", oj_home, problem_id,
-                infile, userfile, outfile);
-        if (ret)
+                          infile, userfile, outfile);
+        fflush(stderr);
+        if (ret) { // WA
             exit(1);
-        else
+        } else { //AC
             exit(0);
+        }
     } else {
         int status;
-
         waitpid(pid, &status, 0);
         ret = WEXITSTATUS(status);
     }
-    return ret;
+    verdict_res->checker_exit_code = ret;
+    return ret ? OJ_WA : OJ_AC;
 }
 
-void judge_solution(struct problem_struct problem, int * ACflg, int usedtime, 
+void judge_solution(problem_struct problem,
+                    verdict_struct * verdict_res,
                     char * infile, char * outfile, char * userfile,
-                    int * PEflg, int lang, char * work_dir, int * topmemory,
-                    int solution_id)
+                    int * PEflg, int lang, char * work_dir, int solution_id)
 {
     int mem_lmt = problem.memory_limit;
-
     int comp_res;
-    if (*ACflg == OJ_AC && usedtime > problem.time_limit * 1000)
-        *ACflg = OJ_TL;
-    if (*topmemory > mem_lmt * STD_MB)
-        *ACflg = OJ_ML;
+    if (verdict_res->verdict == OJ_AC && verdict_res->time > problem.time_limit * 1000)
+        verdict_res->verdict = OJ_TL;
+    if (verdict_res->memory > mem_lmt * STD_MB)
+        verdict_res->verdict = OJ_ML;
     // compare
-    if (*ACflg == OJ_AC) {
+    if (verdict_res->verdict == OJ_AC) {
         if (problem.isspj) {
-            comp_res = special_judge(oj_home, problem.id, infile, outfile,
-                                     userfile);
-            if (comp_res == 0) {
-                comp_res = OJ_AC;
-            } else {
-                if (DEBUG)
-                    printf("fail test %s\n", infile);
-                comp_res = OJ_WA;
-                make_diff_out(outfile);
-            }
+            comp_res = special_judge(oj_home, problem.id, verdict_res,
+                                     infile, outfile, userfile);
         } else {
             comp_res = compare(outfile, userfile);
         }
-        if (comp_res == OJ_WA) {
-            *ACflg = OJ_WA;
-            if (DEBUG)
-                printf("fail test %s\n", infile);
-        } else if (comp_res == OJ_PE)
+        if (comp_res == OJ_PE) {
             *PEflg = OJ_PE;
-        *ACflg = comp_res;
+        }
+        verdict_res->verdict = comp_res;
     }
     //jvm popup messages, if don't consider them will get miss-WrongAnswer
     if (lang == LANG_JAVA) {
-        comp_res = fix_java_mis_judge(work_dir, ACflg, topmemory, mem_lmt);
+        comp_res = fix_java_mis_judge(work_dir, verdict_res, mem_lmt);
     }
     if (lang == LANG_PYTHON3) {
-        comp_res = fix_python_mis_judge(work_dir, ACflg, topmemory, mem_lmt);
+        comp_res = fix_python_mis_judge(work_dir, verdict_res, mem_lmt);
     }
 }
 
@@ -862,10 +857,11 @@ void print_runtimeerror(char * err)
     fclose(ferr);
 }
 
-void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
-                    int * ACflg, char * userfile, char * outfile,
-                    int solution_id, int lang, int * topmemory, int * usedtime,
-                    int PEflg, char * work_dir)
+void watch_solution(problem_struct problem,
+                    verdict_struct * verdict_res,
+                    pid_t pidApp,
+                    char * infile, char * userfile, char * outfile,
+                    int solution_id, int lang, int PEflg, char * work_dir)
 {
     int mem_lmt = problem.memory_limit;
     int isspj = problem.isspj;
@@ -890,14 +886,14 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
                 //  |PTRACE_O_TRACEVFORK
             );
         }
-        if (*topmemory < getpagesize() * ruse.ru_minflt)
-            *topmemory = getpagesize() * ruse.ru_minflt;
+        if (verdict_res->memory < getpagesize() * ruse.ru_minflt)
+            verdict_res->memory = getpagesize() * ruse.ru_minflt;
 
-        if (*topmemory > mem_lmt * STD_MB) {
+        if (verdict_res->memory > mem_lmt * STD_MB) {
             if (DEBUG)
-                printf("out of memory %d\n", *topmemory);
-            if (*ACflg == OJ_AC)
-                *ACflg = OJ_ML;
+                printf("out of memory %d\n", verdict_res->memory);
+            if (verdict_res->verdict == OJ_AC)
+                verdict_res->verdict = OJ_ML;
             ptrace(PTRACE_KILL, pidApp, NULL, NULL);
             break;
         }
@@ -905,14 +901,13 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
         if (WIFEXITED(status))
             break;
         if ((lang == LANG_C || lang == LANG_CPP) && get_file_size("error.out")) {
-            *ACflg = OJ_RE;
-            addreinfo(solution_id);
+            verdict_res->verdict = OJ_RE;
             ptrace(PTRACE_KILL, pidApp, NULL, NULL);
             break;
         }
 
         if (!isspj && get_file_size(userfile) > get_file_size(outfile) * 2 + 1024) {
-            *ACflg = OJ_OL;
+            verdict_res->verdict = OJ_OL;
             ptrace(PTRACE_KILL, pidApp, NULL, NULL);
             break;
         }
@@ -932,20 +927,20 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
             }
             //psignal(exitcode, NULL);
 
-            if (*ACflg == OJ_AC) {
+            if (verdict_res->verdict == OJ_AC) {
                 switch (exitcode) {
                 case SIGCHLD:
                 case SIGALRM:
                     alarm(0);
                 case SIGKILL:
                 case SIGXCPU:
-                    *ACflg = OJ_TL;
+                    verdict_res->verdict = OJ_TL;
                     break;
                 case SIGXFSZ:
-                    *ACflg = OJ_OL;
+                    verdict_res->verdict = OJ_OL;
                     break;
                 default:
-                    *ACflg = OJ_RE;
+                    verdict_res->verdict = OJ_RE;
                 }
                 print_runtimeerror(strsignal(exitcode));
             }
@@ -967,21 +962,20 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
                 printf("WTERMSIG=%d\n", sig);
                 psignal(sig, NULL);
             }
-            if (*ACflg == OJ_AC) {
+            if (verdict_res->verdict == OJ_AC) {
                 switch (sig) {
                 case SIGCHLD:
                 case SIGALRM:
                     alarm(0);
                 case SIGKILL:
                 case SIGXCPU:
-                    *ACflg = OJ_TL;
+                    verdict_res->verdict = OJ_TL;
                     break;
                 case SIGXFSZ:
-                    *ACflg = OJ_OL;
+                    verdict_res->verdict = OJ_OL;
                     break;
-
                 default:
-                    *ACflg = OJ_RE;
+                    verdict_res->verdict = OJ_RE;
                 }
                 print_runtimeerror(strsignal(sig));
             }
@@ -1001,7 +995,7 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
         } else if (record_call) {
             call_counter[call_id] = 1;
         } else { //do not limit JVM syscall for using different JVM
-            *ACflg = OJ_RE;
+            verdict_res->verdict = OJ_RE;
             char error[BUFFER_SIZE];
             sprintf(error, "[ERROR] A not allowed system call.\nCall ID:%u",
                 call_id);
@@ -1012,8 +1006,8 @@ void watch_solution(struct problem_struct problem, pid_t pidApp, char * infile,
         ptrace(PTRACE_SYSCALL, pidApp, NULL, NULL);
         first_run = false;
     }
-    *usedtime += (ruse.ru_utime.tv_sec * 1000 + ruse.ru_utime.tv_usec / 1000);
-    *usedtime += (ruse.ru_stime.tv_sec * 1000 + ruse.ru_stime.tv_usec / 1000);
+    verdict_res->time += (ruse.ru_utime.tv_sec * 1000 + ruse.ru_utime.tv_usec / 1000);
+    verdict_res->time += (ruse.ru_stime.tv_sec * 1000 + ruse.ru_stime.tv_usec / 1000);
 }
 
 void clean_workdir(char * work_dir)
@@ -1032,10 +1026,17 @@ void clean_workdir(char * work_dir)
 
 void display_usage()
 {
-    fprintf(stderr, "Usage:judge -s solution_id -r runner_id\n");
-    fprintf(stderr, "-d  enable debug mode\n");
-    fprintf(stderr, "-o  enable oi mode\n");
-    fprintf(stderr, "-h  help\n");
+    fprintf(stderr, "Usage:judge -s solution -r runner\n");
+    fprintf(stderr, "  -s [n] .. --solution [n]\n");
+    fprintf(stderr, "              Solution id\n");
+    fprintf(stderr, "  -r [n] .. --runner [n]\n");
+    fprintf(stderr, "              Runner id, default 0.\n");
+    fprintf(stderr, "  -d ...... --debug\n");
+    fprintf(stderr, "              Enable debug mode.\n");
+    fprintf(stderr, "  -o ...... --oi\n");
+    fprintf(stderr, "              Enable oi mode.\n");
+    fprintf(stderr, "  -h ...... --help\n");
+    fprintf(stderr, "              Dsiplay help (from command line).\n");
 }
 
 void init_parameters(int argc, char ** argv, int * solution_id, int * runner_id)
@@ -1043,8 +1044,14 @@ void init_parameters(int argc, char ** argv, int * solution_id, int * runner_id)
     *solution_id = -1;
     *runner_id = 0;
     int ch;
-    opterr = 0;
-    while ((ch = getopt_long(argc, argv, "s:r:dho")) != -1) {
+    struct option long_options[] = {
+        {"solution", required_argument, 0, 's'},
+        {"runner", no_argument, 0, 'r'},
+        {"debug", no_argument, 0,  'd'},
+        {"oi",  no_argument, 0, 'o'},
+        {"help",  no_argument, 0, 'h'}
+    };
+    while ((ch = getopt_long(argc, argv, "s:r:dho", long_options, 0)) != -1) {
         switch (ch) {
             case 'd':
                 DEBUG = 1;
@@ -1061,17 +1068,14 @@ void init_parameters(int argc, char ** argv, int * solution_id, int * runner_id)
                 fprintf(stderr, "Enable OI mode.\n");
                 break;
             case 'h':
-            case '?':
                 display_usage();
                 exit(1);
         }
     }
-
     if (*solution_id < 0) {
         display_usage();
         exit(1);
     }
-
     getcwd(oj_home, sizeof(oj_home));
     int len = strlen(oj_home);
     oj_home[len] = '/';
@@ -1093,14 +1097,143 @@ void mk_shm_workdir(char * work_dir)
     execute_cmd("/bin/ln -s %sdata %s", oj_home, shm_path);
 }
 
-int count_in_files(char * dirpath)
+cJSON * create_case_object(verdict_struct verdict_res)
 {
-    const char * cmd = "ls -l %s/*.in|wc -l";
-    int ret = 0;
-    FILE * fjobs = read_cmd_output(cmd, dirpath);
-    fscanf(fjobs, "%d", &ret);
-    pclose(fjobs);
-    return ret;
+    cJSON * case_item = cJSON_CreateObject();
+    cJSON_AddItemToObject(case_item, "verdict", cJSON_CreateNumber(verdict_res.verdict));
+    cJSON_AddItemToObject(case_item, "time", cJSON_CreateNumber(verdict_res.time));
+    cJSON_AddItemToObject(case_item, "memory", cJSON_CreateNumber(verdict_res.memory >> 10));
+    cJSON_AddItemToObject(case_item, "exit_code", cJSON_CreateNumber(verdict_res.exit_code));
+    cJSON_AddItemToObject(case_item, "input", cJSON_CreateString(verdict_res.input));
+    cJSON_AddItemToObject(case_item, "output", cJSON_CreateString(verdict_res.output));
+    cJSON_AddItemToObject(case_item, "user_output", cJSON_CreateString(verdict_res.user_output));
+    cJSON_AddItemToObject(case_item, "checker_exit_code", cJSON_CreateNumber(verdict_res.checker_exit_code));
+    cJSON_AddItemToObject(case_item, "checker_log", cJSON_CreateString(verdict_res.checker_log));
+    return case_item;
+}
+
+/**
+ * 读取 OI 子任务设定的 config
+ * config 内容如下：
+ * name[start-end] score
+ * 例如：
+ * data[1-12] 10
+ * data[13-23] 90
+ * 表示 data1.in, data2.in, ..., data12.in 打包成一个子任务，分数是10分
+ * data13.in, data14.in, ..., data23.in 打包成一个子任务，分数是90分
+ */
+subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
+{
+    FILE * fp = fopen(configfile_path, "r");
+    if (fp == NULL) {
+        return NULL;
+    }
+    char buf[BUFFER_SIZE];
+    subtask_struct * head = (subtask_struct *)malloc(sizeof(subtask_struct));
+    subtask_struct * subtask_rear = head;
+    subtask_struct * subtask_node;
+    if (head == NULL) {
+        return NULL;
+    }
+    head->next = NULL;
+    while (fgets(buf, BUFFER_SIZE - 1, fp)) {
+        char name_prefix[NAME_MAX] = {0};
+        char tmp_name[NAME_MAX] = {0};
+        int begin = 0, end = 0, score = 0;
+        int i = 0, j = 0;
+        // 跳过开头空格
+        while (buf[i] && isspace(buf[i])) {
+            i++;
+        }
+        while (buf[i] && buf[i] != '[') {
+            name_prefix[j++] = buf[i++];
+        }
+        if (buf[i] != '[') {
+            printf("Configuration file format error\n");
+            break;
+        }
+        i++; // 跳过 '['
+        // 读取开始区间
+        while (buf[i] && buf[i] != '-' && buf[i] != ']') {
+            if (isdigit(buf[i])) {
+                begin = begin * 10 + buf[i] - '0';
+            }
+            i++;
+        }
+        if (buf[i] == '-') {
+            i++; // 跳过 '-'
+            while (buf[i] && buf[i] != ']') {
+                if (isdigit(buf[i])) {
+                    end = end * 10 + buf[i] - '0';
+                }
+                i++;
+            }
+        } else {
+            end = begin;
+        }
+        if (buf[i] != ']') {
+            printf("Configuration file format error\n");
+            break;
+        }
+        i++; // 跳过 ']'
+        // 跳过空格
+        while (buf[i] && isspace(buf[i])) {
+            i++;
+        }
+        while (buf[i] && isdigit(buf[i])) {
+            score = score * 10 + buf[i++] - '0';
+        }
+        if (score <= 0 || score >= 100 || begin > end) {
+            printf("Configuration file format error\n");
+            break;
+        }
+        // 储存子任务的数据
+        subtask_node = (subtask_struct *)malloc(sizeof(subtask_struct));
+        subtask_node->test_count = end - begin + 1;
+        subtask_node->score = score;
+        for (i = begin, j = 0; i <= end; i++, j++) {
+            sprintf(tmp_name, "%s%d.in", name_prefix, i);
+            strcpy(subtask_node->test_input_name[j], tmp_name);
+        }
+        subtask_rear->next = subtask_node;
+        subtask_rear = subtask_node; 
+        subtask_cnt++;
+        if (DEBUG) {
+            printf("cnt = %d, name_prefix = %s, begin = %d, end = %d, score = %d\n",
+                   subtask_cnt, name_prefix, begin, end, score);
+        }
+    }
+    subtask_rear->next = NULL;
+    return head;
+}
+
+void read_files_run_solution(verdict_struct * verdict_res,
+                             problem_struct problem, char * infile_name,
+                             char * infile,  char * outfile, char * userfile,
+                             char * work_dir, int * is_pe, int solution_id,
+                             int problem_id, int runner_id, int lang)
+{
+    verdict_res->score = 0;
+    verdict_res->verdict = OJ_AC;
+    verdict_res->time = 0;
+    verdict_res->memory = 0;
+    verdict_res->exit_code = 0;
+    verdict_res->checker_exit_code = 0;
+    init_syscalls_limits(lang);
+
+    prepare_files(infile_name, infile, problem_id, work_dir,
+                    outfile, userfile, runner_id);
+
+    pid_t pid = fork();
+    if (pid == 0) {
+        run_solution(problem, lang, work_dir, verdict_res->time);
+    } else {
+        watch_solution(problem, verdict_res, pid, infile, userfile, outfile,
+                solution_id, lang, is_pe, work_dir);
+        judge_solution(problem, verdict_res, infile,
+                outfile, userfile, &is_pe, lang, work_dir,
+                solution_id);
+    }
 }
 
 int main(int argc, char** argv)
@@ -1108,8 +1241,11 @@ int main(int argc, char** argv)
     char work_dir[BUFFER_SIZE];
     int solution_id;
     int runner_id;
-    int problem_id, lang, max_case_time = 0;
-    struct problem_struct problem;
+    int problem_id, lang;
+    problem_struct problem;
+    verdict_struct verdict_res;
+    subtask_struct * subtask_list; // 子任务链表
+    double score = 0; // OI mode score
     init_parameters(argc, argv, &solution_id, &runner_id);
 
     init_mysql_conf();
@@ -1117,6 +1253,7 @@ int main(int argc, char** argv)
     if (!init_mysql_conn()) {
         exit(0); //exit if mysql is down
     }
+
     //set work directory to start running & judging
     sprintf(work_dir, "%srun/%d", oj_home, runner_id);
     if (opendir(work_dir) == NULL) {
@@ -1158,14 +1295,14 @@ int main(int argc, char** argv)
     // set the result to compiling
     if (compile(lang, work_dir) != 0) {
         addceinfo(solution_id);
-        update_solution(solution_id, OJ_CE, 0, 0, "0/0");
+        update_solution(solution_id, OJ_CE, 0, 0, "0/0", 0);
         update_problem_stat(problem_id);
         mysql_close(conn);
         clean_workdir(work_dir);
         write_log("[Solution ID: %d] Compile Error", solution_id);
         exit(0);
     } else {
-        update_solution(solution_id, OJ_RI, 0, 0, "0/0");
+        update_solution(solution_id, OJ_RI, 0, 0, "0/0", 0);
         umount(work_dir);
     }
 
@@ -1173,87 +1310,128 @@ int main(int argc, char** argv)
     char infile[BUFFER_SIZE];
     char outfile[BUFFER_SIZE];
     char userfile[BUFFER_SIZE];
+    char oi_substask_configfile[BUFFER_SIZE]; // OI 子任务设定的 config 文件路径
 
     // the fullpath of data dir
     sprintf(fullpath, "%sdata/%d", oj_home, problem_id);
+    sprintf(oi_substask_configfile, "%sdata/%d/config", oj_home, problem_id);
 
     // open DIRs
     DIR *dp;
-    struct dirent *dirp;
     if ((dp = opendir(fullpath)) == NULL) {
+        update_solution(solution_id, OJ_NT, 0, 0, "0/0", 0);
         write_log("No such test data dir:%s!\n", fullpath);
-        mysql_close(conn);
-        exit(-1);
-    }
-
-    int test_count = count_in_files(fullpath);
-    int pass_test_count = 0;
-    if (test_count == 0) {
-        write_log("No input files!\n");
         mysql_close(conn);
         exit(-1);
     }
 
     int run_result, is_pe;
     run_result = is_pe = OJ_AC;
-    int namelen;
-    int usedtime = 0, topmemory = 0;
+    int topmemory = 0, max_case_time = 0;
 
-    // read files and run
-    while ((oi_mode || run_result == OJ_AC || run_result == OJ_PE) &&
-           (dirp = readdir(dp)) != NULL) {
-        namelen = is_input_file(dirp->d_name);
-        if (namelen == 0)
-            continue;
+    struct dirent **namelist;
 
-        prepare_files(dirp->d_name, namelen, infile, problem_id, work_dir,
-                      outfile, userfile, runner_id);
-        init_syscalls_limits(lang);
+    int test_count = scandir(fullpath, &namelist, input_file_filter, versionsort);
+    int pass_test_count = 0;
+    if (test_count <= 0) {
+        update_solution(solution_id, OJ_NT, 0, 0, "0/0", 0);
+        write_log("No input files!\n");
+        mysql_close(conn);
+        exit(-1);
+    }
 
-        pid_t pid = fork();
-
-        if (pid == 0) {
-            run_solution(problem, lang, work_dir, usedtime);
-        } else {
-            watch_solution(problem, pid, infile, &run_result, userfile, outfile,
-                    solution_id, lang, &topmemory, &usedtime, is_pe, work_dir);
-            judge_solution(problem, &run_result, usedtime, infile,
-                    outfile, userfile, &is_pe, lang, work_dir, &topmemory,
-                    solution_id);
-
-            max_case_time =
-                        usedtime > max_case_time ? usedtime : max_case_time;
-            usedtime = 0;
+    // OI 子任务设定的 config 文件
+    subtask_list = read_oi_mode_substask_configfile(oi_substask_configfile);
+    if (subtask_list == NULL) {
+        subtask_list = (subtask_struct *)malloc(sizeof(subtask_struct));
+        subtask_list->next = (subtask_struct *)malloc(sizeof(subtask_struct));
+        subtask_list->next->test_count = 0;
+        subtask_list->next->next = NULL;
+        for (int i = 0; i < test_count; i++) {
+            strcpy(subtask_list->next->test_input_name[i], namelist[i]->d_name);
+            subtask_list->next->test_count++;
+            free(namelist[i]);
         }
-        if (run_result == OJ_AC) {
-            pass_test_count++;
+        free(namelist);
+    }
+
+    if (subtask_list == NULL) {
+        update_solution(solution_id, OJ_SE, 0, 0, "0/0", 0);
+        write_log("Unable to allocate memory!\n");
+        mysql_close(conn);
+        exit(-1);
+    }
+
+    // create json struct
+    cJSON * judge_json_object = cJSON_CreateObject();
+    cJSON * subtask_json_array = cJSON_CreateArray();
+    cJSON * subtask_json_object = NULL;
+    cJSON * cases_array = NULL;
+    cJSON_AddItemToObject(judge_json_object, "subtasks", subtask_json_array);
+
+    if (oi_mode) {
+        test_count = 0; //测试总数
+    }
+
+    subtask_struct * subtask_node = subtask_list;
+    while (subtask_node->next != NULL) {
+        subtask_node = subtask_node->next;
+        int pass_count = 0;
+        subtask_json_object = cJSON_CreateObject();
+        cases_array = cJSON_CreateArray();
+        cJSON_AddItemToArray(subtask_json_array, subtask_json_object);
+        cJSON_AddItemToObject(subtask_json_object, "cases", cases_array);
+        for (int i = 0; i < subtask_node->test_count; i++) {
+            read_files_run_solution(&verdict_res, problem, subtask_node->test_input_name[i],
+                                    infile, outfile, userfile, work_dir, &is_pe, solution_id,
+                                    problem_id, runner_id, lang);
+            max_case_time = verdict_res.time > max_case_time ? verdict_res.time : max_case_time;
+            topmemory = verdict_res.memory > topmemory ? verdict_res.memory : topmemory;
+            run_result = verdict_res.verdict;
+            if (run_result == OJ_AC) {
+                pass_count++;
+            } else {
+                // 记录该数据点的运行信息
+                record_data(problem, &verdict_res, infile, outfile, userfile);
+            }
+            cJSON * case_json_object = create_case_object(verdict_res);
+            cJSON_AddItemToArray(cases_array, case_json_object);
+
+            // 非OI模式出错后不再评判
+            if (!oi_mode && run_result != OJ_AC && run_result != OJ_PE) {
+                break;
+            }
+            if (oi_mode) {
+                test_count++;
+            }
         }
+        // 没有子任务情况下所有数据点总分100分。
+        if (subtask_cnt == 0) {
+            score = 100.0 * pass_count / subtask_node->test_count;
+        } else if (pass_count == subtask_node->test_count) {
+            score += subtask_node->score;
+        }
+        pass_test_count += pass_count;
+        cJSON_AddItemToObject(subtask_json_object, "score",
+                              cJSON_CreateNumber((int)subtask_node->score));
+    }
+    if (DEBUG) {
+        printf("%s\n", cJSON_Print(judge_json_object));
     }
     if (run_result == OJ_AC && is_pe == OJ_PE)
         run_result = OJ_PE;
-
-    if (run_result == OJ_RE) {
-        addreinfo(solution_id);
-    }
-    usedtime = max_case_time;
     
     if (run_result == OJ_TL) {
-        usedtime = problem.time_limit * 1000;
+        max_case_time = problem.time_limit * 1000;
     }
-
     char pass_info[BUFFER_SIZE];
     sprintf(pass_info, "%d/%d", pass_test_count, test_count);
-    update_solution(solution_id, run_result, usedtime, topmemory >> 10, pass_info);
-   
-    if (run_result == OJ_WA) {
-        adddiffinfo(solution_id);
-    }
+    update_solution(solution_id, run_result, max_case_time, topmemory >> 10, pass_info, (int)score);
     update_problem_stat(problem_id);
-
+    update_solution_info(solution_id, cJSON_Print(judge_json_object));
     clean_workdir(work_dir);
     mysql_close(conn);
     closedir(dp);
-
     write_log("[Solution ID: %d] Result = %d", solution_id, run_result);
     return 0;
 }
