@@ -874,7 +874,7 @@ void watch_solution(problem_struct problem,
                     verdict_struct * verdict_res,
                     pid_t pidApp,
                     char * infile, char * userfile, char * outfile,
-                    int solution_id, int lang, int PEflg, char * work_dir)
+                    int solution_id, int lang, char * work_dir)
 {
     int mem_lmt = problem.memory_limit;
     int isspj = problem.isspj;
@@ -1256,7 +1256,7 @@ void read_files_run_solution(verdict_struct * verdict_res,
         run_solution(problem, lang, work_dir, verdict_res->time);
     } else {
         watch_solution(problem, verdict_res, pid, infile, userfile, outfile,
-                solution_id, lang, is_pe, work_dir);
+                solution_id, lang, work_dir);
         judge_solution(problem, verdict_res, infile,
                 outfile, userfile, &is_pe, lang, work_dir,
                 solution_id);
