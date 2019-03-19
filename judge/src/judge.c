@@ -1246,6 +1246,11 @@ void read_files_run_solution(verdict_struct * verdict_res,
     verdict_res->memory = 0;
     verdict_res->exit_code = 0;
     verdict_res->checker_exit_code = 0;
+    memset(verdict_res->input, 0, sizeof(verdict_res->input));
+    memset(verdict_res->output, 0, sizeof(verdict_res->output));
+    memset(verdict_res->user_output, 0, sizeof(verdict_res->user_output));
+    memset(verdict_res->checker_log, 0, sizeof(verdict_res->checker_log));
+
     init_syscalls_limits(lang);
 
     int tmp = prepare_files(infile_name, infile, problem_id, work_dir,
@@ -1362,9 +1367,9 @@ int main(int argc, char** argv)
 
     struct dirent **namelist;
 
-    int test_count = scandir(fullpath, &namelist, input_file_filter, versionsort);
-    int pass_test_count = 0;
-    if (test_count <= 0) {
+    int test_total_count = scandir(fullpath, &namelist, input_file_filter, versionsort);
+    int pass_total_test_count = 0;
+    if (test_total_count <= 0) {
         update_solution(solution_id, OJ_NT, 0, 0, "0/0", 0);
         write_log("No input files!\n");
         mysql_close(conn);
@@ -1379,7 +1384,7 @@ int main(int argc, char** argv)
         subtask_list->next = (subtask_struct *)malloc(sizeof(subtask_struct));
         subtask_list->next->test_count = 0;
         subtask_list->next->next = NULL;
-        for (int i = 0; i < test_count; i++) {
+        for (int i = 0; i < test_total_count; i++) {
             strcpy(subtask_list->next->test_input_name[i], namelist[i]->d_name);
             subtask_list->next->test_count++;
             free(namelist[i]);
@@ -1402,10 +1407,12 @@ int main(int argc, char** argv)
     cJSON_AddItemToObject(judge_json_object, "subtasks", subtask_json_array);
 
     if (oi_mode) {
-        test_count = 0; //测试总数
+        test_total_count = 0; //OI 模式下的测试总数，根据实际测试点数据来计算
     }
 
     subtask_struct * subtask_node = subtask_list;
+    int test_result_rec[OJ_NT + 1]; // 记录各个测试点的通过结果的数量
+    memset(test_result_rec, 0, sizeof(test_result_rec));
     while (subtask_node->next != NULL) {
         subtask_node = subtask_node->next;
         int pass_count = 0;
@@ -1420,6 +1427,7 @@ int main(int argc, char** argv)
             max_case_time = verdict_res.time > max_case_time ? verdict_res.time : max_case_time;
             topmemory = verdict_res.memory > topmemory ? verdict_res.memory : topmemory;
             run_result = verdict_res.verdict;
+            test_result_rec[run_result]++;
             if (run_result == OJ_AC) {
                 pass_count++;
             } else {
@@ -1434,7 +1442,7 @@ int main(int argc, char** argv)
                 break;
             }
             if (oi_mode) {
-                test_count++;
+                test_total_count++;
             }
         }
         // 没有子任务情况下所有数据点总分100分。
@@ -1443,21 +1451,32 @@ int main(int argc, char** argv)
         } else if (pass_count == subtask_node->test_count) {
             score += subtask_node->score;
         }
-        pass_test_count += pass_count;
+        pass_total_test_count += pass_count;
         cJSON_AddItemToObject(subtask_json_object, "score",
                               cJSON_CreateNumber((int)subtask_node->score));
     }
     if (DEBUG) {
         printf("%s\n", cJSON_Print(judge_json_object));
     }
-    if (run_result == OJ_AC && is_pe == OJ_PE)
+    if (run_result == OJ_AC && is_pe == OJ_PE) {
         run_result = OJ_PE;
-    
+    }
     if (run_result == OJ_TL) {
         max_case_time = problem.time_limit * 1000;
     }
+
+    // OI 模式下，没有通过所有数据点时，取报错信息最多的那个点作为结果
+    if (oi_mode && pass_total_test_count != test_total_count) {
+        int tmp_cnt = OJ_AC;
+        for (int i = OJ_AC; i <= OJ_NT; i++) {
+            if (test_result_rec[tmp_cnt] < test_result_rec[i]) {
+                tmp_cnt = i;
+            }
+        }
+        run_result = tmp_cnt;
+    }
     char pass_info[BUFFER_SIZE];
-    sprintf(pass_info, "%d/%d", pass_test_count, test_count);
+    sprintf(pass_info, "%d/%d", pass_total_test_count, test_total_count);
     update_solution(solution_id, run_result, max_case_time, topmemory >> 10, pass_info, (int)score);
     update_problem_stat(problem_id);
     update_solution_info(solution_id, cJSON_Print(judge_json_object));
