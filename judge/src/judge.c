@@ -1202,7 +1202,7 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         while (buf[i] && isdigit(buf[i])) {
             score = score * 10 + buf[i++] - '0';
         }
-        if (score <= 0 || score >= 100 || begin > end) {
+        if (score <= 0 || begin > end) {
             printf("Configuration file format error\n");
             break;
         }
@@ -1467,13 +1467,13 @@ int main(int argc, char** argv)
 
     // OI 模式下，没有通过所有数据点时，取报错信息最多的那个点作为结果
     if (oi_mode && pass_total_test_count != test_total_count) {
-        int tmp_cnt = OJ_AC;
-        for (int i = OJ_AC; i <= OJ_NT; i++) {
+        int tmp_cnt = OJ_AC + 1;
+        for (int i = tmp_cnt; i <= OJ_NT; i++) {
             if (test_result_rec[tmp_cnt] < test_result_rec[i]) {
                 tmp_cnt = i;
             }
         }
-        run_result = tmp_cnt;
+        run_result = test_result_rec[tmp_cnt];
     }
     char pass_info[BUFFER_SIZE];
     sprintf(pass_info, "%d/%d", pass_total_test_count, test_total_count);
