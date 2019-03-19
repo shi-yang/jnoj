@@ -1227,7 +1227,7 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         }
     }
     subtask_rear->next = NULL;
-    return head;
+    return subtask_cnt == 0 ? NULL : head;
 }
 
 void read_files_run_solution(verdict_struct * verdict_res,
