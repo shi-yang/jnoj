@@ -1473,7 +1473,7 @@ int main(int argc, char** argv)
                 tmp_cnt = i;
             }
         }
-        run_result = test_result_rec[tmp_cnt];
+        run_result = tmp_cnt;
     }
     char pass_info[BUFFER_SIZE];
     sprintf(pass_info, "%d/%d", pass_total_test_count, test_total_count);
