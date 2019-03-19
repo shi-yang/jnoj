@@ -700,9 +700,9 @@ void run_solution(problem_struct problem, int lang, char * work_dir,
     setrlimit(RLIMIT_CPU, &LIM);
     alarm(0);
     alarm(problem.time_limit * 5);
-
-    // file limit
-    LIM.rlim_max = STD_F_LIM + STD_MB;
+R_OK
+R_OK
+R_OK
     LIM.rlim_cur = STD_F_LIM;
     setrlimit(RLIMIT_FSIZE, &LIM);
     // proc limit

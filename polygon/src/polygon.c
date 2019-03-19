@@ -32,8 +32,9 @@
 #include <mysql/mysql.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <signal.h>
+#include <sys/sysinfo.h>
 #include <sys/resource.h>
+#include <signal.h>
 #include "common.h"
 
 #define LOCKFILE "/var/run/polygon.pid"
