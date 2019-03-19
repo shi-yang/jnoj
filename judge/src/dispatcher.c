@@ -94,7 +94,7 @@ void init_mysql_conf()
     FILE *fp = NULL;
     char buf[BUFFER_SIZE];
     db.port_number = 3306;
-    max_running = 3;
+    max_running = get_nprocs();
     sleep_time = 1;
     oj_tot = 1;
     oj_mod = 0;
@@ -108,7 +108,6 @@ void init_mysql_conf()
             read_buf(buf, "OJ_DB_NAME", db.db_name);
             read_buf(buf, "OJ_MYSQL_UNIX_PORT", db.mysql_unix_port);
             read_int(buf, "OJ_PORT_NUMBER", &db.port_number);
-            read_int(buf, "OJ_RUNNING", &max_running);
             read_int(buf, "OJ_SLEEP_TIME", &sleep_time);
             read_int(buf, "OJ_TOTAL", &oj_tot);
             read_int(buf, "OJ_MOD", &oj_mod);
