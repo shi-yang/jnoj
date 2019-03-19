@@ -574,7 +574,7 @@ int prepare_files(char * filename, char * infile, int p_id,
     int namelen = strlen(filename);
     int res = 0;
     strncpy(fname0, filename, namelen - 3);
-    fname0[namelen] = 0;
+    fname0[namelen - 3] = 0;
     escape(fname, fname0);
     sprintf(infile, "%sdata/%d/%s.in", oj_home, p_id, fname);
     res = execute_cmd("/bin/cp '%s' %s/data.in", infile, work_dir);
@@ -1227,7 +1227,11 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         }
     }
     subtask_rear->next = NULL;
-    return subtask_cnt == 0 ? NULL : head;
+    if (subtask_cnt == 0) {
+        free(head);
+        return NULL;
+    }
+    return head;
 }
 
 void read_files_run_solution(verdict_struct * verdict_res,
@@ -1369,6 +1373,7 @@ int main(int argc, char** argv)
 
     // OI 子任务设定的 config 文件
     subtask_list = read_oi_mode_substask_configfile(oi_substask_configfile);
+    // 读取不成功，则采用满分100分分给每个测试点
     if (subtask_list == NULL) {
         subtask_list = (subtask_struct *)malloc(sizeof(subtask_struct));
         subtask_list->next = (subtask_struct *)malloc(sizeof(subtask_struct));
