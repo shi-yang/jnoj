@@ -135,40 +135,6 @@ $('[data-click=solution_info]').click(function() {
         }
     });
 });
-function updateVerdictByKey(submission) {
-    $.get({
-        url: "{$url}?id=" + submission.attr('data-submissionid'),
-        success: function(data) {
-            var obj = JSON.parse(data);
-            submission.attr("waiting", obj.waiting);
-            submission.text(obj.result);
-            if (obj.result === "Accepted") {
-                submission.attr("class", "text-success")
-            }
-            if (obj.waiting === "true") {
-                submission.append('<img src="{$loadingImgUrl}" alt="loading">');
-            }
-        }
-    });
-}
-var waitingCount = $("strong[waiting=true]").length;
-if (waitingCount > 0) {
-    console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
-    var interval = null;
-    var testWaitingsDone = function () {
-        var waitingCount = $("strong[waiting=true]").length;
-        console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
-        $("strong[waiting=true]").each(function(){
-            updateVerdictByKey($(this));
-        });
-        if (interval && waitingCount === 0) {
-            console.log("Stopping submissionsEventCatcher.");
-            clearInterval(interval);
-            interval = null;
-        }
-    }
-    interval = setInterval(testWaitingsDone, 1000);
-}
 EOF;
 $this->registerJs($js);
 ?>
