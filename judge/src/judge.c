@@ -600,8 +600,17 @@ int read_file(char *buf, int bufsize, FILE *stream)
     char ch;
     int i = 0;
     while ((ch = fgetc(stream)) != EOF && i < bufsize) {
-        buf[i] = ch;
-        i++;
+        if (ch == '"') {
+            buf[i++] = '\\';
+            buf[i++] = '\\';
+            buf[i++] = '"';
+        } else {
+            buf[i++] = ch;
+        }
+    }
+    // 移去末尾换行
+    while (buf[i - 1] == '\n') {
+        i--;
     }
     buf[i == bufsize ? i - 1 : i] = '\0';
     return i;
@@ -615,14 +624,14 @@ void record_data(problem_struct problem,
                  verdict_struct * verdict_res,
                  char * infile, char * outfile, char * userfile)
 {
-    const int rsize = 100; // 需要记录的字符数
+    const int rsize = 200; // 需要记录的字符数
     const char * omit_str = "...";
     int tmp_size;
     FILE * fp = NULL;
-    if (verdict_res->verdict == OJ_RE) {
-        fp = fopen("error.out", "r");
-    } else if (problem.isspj) {
+    if (problem.isspj) {
         fp = fopen("std_out.txt", "r");
+    } else {
+        fp = fopen("error.out", "r");
     }
     if (fp != NULL) {
         tmp_size = read_file(verdict_res->checker_log, rsize, fp);
@@ -670,7 +679,7 @@ void run_solution(problem_struct problem, int lang, char * work_dir,
     // open the files
     freopen("data.in", "r", stdin);
     freopen("user.out", "w", stdout);
-    freopen("error.out", "a+", stderr);
+    freopen("error.out", "w", stderr);
     // trace me
     if(use_ptrace) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);

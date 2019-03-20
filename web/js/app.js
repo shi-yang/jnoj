@@ -14,6 +14,23 @@ var OJ_VERDICT = new Array(
     "System Error",
     "No Test Data"
 );
+// bootstrap 3 CSS class
+var OJ_VERDICT_COLOR = new Array(
+    "text-muted",
+    "text-muted",
+    "text-muted",
+    "text-muted",
+    "text-success", // AC
+    "text-warning", // PE
+    "text-danger",  // WA
+    "text-warning", // TLE
+    "text-warning", // MLE
+    "text-warning", // OLE
+    "text-warning", // RE
+    "text-warning", // CE
+    "text-danger",  // SE
+    "text-danger"
+);
 function testHtml(id, caseJsonObject)
 {
   return '<div class="panel panel-default test-for-popup"> \
@@ -21,10 +38,12 @@ function testHtml(id, caseJsonObject)
             <h4 class="panel-title"> \
                 <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" \
                    href="#test-' + id + '" aria-expanded="false" aria-controls="test-' + id + '"> \
-                    #<span class="test" style="width: 50px">' + id + '</span>， \
+                    <div class="' + OJ_VERDICT_COLOR[caseJsonObject.verdict] +  '">\
+                    测试点<span class="test" style="width: 50px">' + id + '</span>： \
                     <span class="verdict">' + OJ_VERDICT[caseJsonObject.verdict] + '</span>， \
                     用时: <span class="time">' + caseJsonObject.time + '</span> ms， \
                     内存: <span class="memory">' + caseJsonObject.memory + '</span> KB \
+                    </div> \
                 </a> \
             </h4> \
         </div> \
