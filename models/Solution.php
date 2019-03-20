@@ -113,7 +113,8 @@ class Solution extends ActiveRecord
             'judgetime' => Yii::t('app', 'Judgetime'),
             'pass_info' => Yii::t('app', 'Pass Info'),
             'judge' => Yii::t('app', 'Judge'),
-            'score' => Yii::t('app', 'Score')
+            'score' => Yii::t('app', 'Score'),
+            'who' => Yii::t('app', 'Who')
         ];
     }
 

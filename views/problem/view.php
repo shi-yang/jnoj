@@ -10,7 +10,7 @@ use app\models\Solution;
 /* @var $solution app\models\Solution */
 /* @var $submissions array */
 
-$this->title = $model->title;
+$this->title = $model->id . ' - ' . $model->title;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Problems'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -211,9 +211,10 @@ $('[data-click=solution_info]').click(function() {
         success:function(html){
             $('#solution-content').html(html);
             $('#solution-info').modal('show');
-        }
+        }   
     });
 });
+
 function updateVerdictByKey(submission) {
     $.get({
         url: "{$url}?id=" + submission.attr('data-submissionid'),

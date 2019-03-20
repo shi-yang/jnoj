@@ -13,9 +13,9 @@ use yii\helpers\Html;
 $this->title = Yii::t('app', 'Rating');
 ?>
 <p style="text-align: center">
-    <?= Html::a('段位排行', ['index']) ?>
+    ★<?= Html::a('题数排行', ['problem']) ?>
     &nbsp;&bull;&nbsp;
-    <?= Html::a('题数排行', ['problem']) ?>
+    <?= Html::a('段位排行', ['index']) ?>
 </p>
 <div class="rating-index">
     <div class="row">

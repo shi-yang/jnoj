@@ -15,9 +15,6 @@ $submit_count = $rank_result['submit_count'];
 <?php if ($model->isScoreboardFrozen()): ?>
     <p>现已是封榜状态，榜单将不再实时更新，待赛后再揭晓</p>
 <?php endif; ?>
-<?php if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED): ?>
-    <p>请等待比赛结束再查看榜单</p>
-<?php endif; ?>
 <table class="table table-bordered table-rank">
     <thead>
     <tr>

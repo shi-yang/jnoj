@@ -25,7 +25,9 @@ class AppAsset extends AssetBundle
     public $js = [
         'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js',
         'js/katex/katex.min.js',
-        'js/socket.io.js'
+        'js/socket.io.js',
+        'js/clipboard.min.js',
+        'js/app.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',

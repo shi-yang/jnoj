@@ -161,7 +161,7 @@ $status = $model->getRunStatus();
                         'label' => '<span class="glyphicon glyphicon-glass"></span> ' . Yii::t('app', 'Standing'),
                         'url' => ['contest/standing', 'id' => $model->id],
                         // OI 模式不可见
-                        //'visible' => $model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED
+                        'visible' => $model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-comment"></span> ' . Yii::t('app', 'Clarification'),

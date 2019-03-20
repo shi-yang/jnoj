@@ -415,6 +415,8 @@ class Contest extends \yii\db\ActiveRecord
             $result[$user['user_id']]['role'] = $user['role'];
             $result[$user['user_id']]['rating'] = $user['rating'];
             $result[$user['user_id']]['total_score'] = 0; // 测评总分
+            $result[$user['user_id']]['score'] = [];
+            $result[$user['user_id']]['max_score'] = [];
             $result[$user['user_id']]['correction_score'] = 0; //订正总分
             $result[$user['user_id']]['student_number'] = $user['student_number'];
         }

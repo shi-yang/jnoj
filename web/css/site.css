@@ -575,3 +575,22 @@ a.desc:after {
     margin: 0;
     border: none;
 }
+
+.btn-copy {
+    font-size: 1.2rem;
+    float: right;
+    color: #888 !important;
+    cursor: pointer;
+    border: 1px solid rgb(185, 185, 185);
+    padding: 3px;
+    margin: 1px;
+    line-height: 1.1rem;
+    text-transform: none;
+    text-decoration: none !important;
+}
+.btn-copy:hover {
+    background-color: #def;
+}
+.w-25 {
+    width: 25%!important;
+}

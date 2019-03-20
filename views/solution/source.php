@@ -8,13 +8,9 @@ use yii\helpers\Html;
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Status'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="solution-view">
     <div class="row">
-        <div class="col-md-6">
-            <p>Run ID：<?= Html::a($model->id, ['/solution/detail', 'id' => $model->id], ['target' => '_blank']) ?></p>
-        </div>
         <div class="col-md-6">
             <p><?= Yii::t('app', 'Submit Time') ?>：<?= $model->created_at ?></p>
         </div>

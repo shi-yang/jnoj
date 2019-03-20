@@ -1479,7 +1479,7 @@ int main(int argc, char** argv)
     sprintf(pass_info, "%d/%d", pass_total_test_count, test_total_count);
     update_solution(solution_id, run_result, max_case_time, topmemory >> 10, pass_info, (int)score);
     update_problem_stat(problem_id);
-    update_solution_info(solution_id, cJSON_Print(judge_json_object));
+    update_solution_info(solution_id, cJSON_PrintUnformatted(judge_json_object));
     clean_workdir(work_dir);
     mysql_close(conn);
     closedir(dp);
