@@ -186,14 +186,15 @@ class ContestController extends Controller
         }
         if (Yii::$app->request->isPost) {
             if (Yii::$app->request->get('uid')) {
-                // 去掉已参赛用户
+                // 删除已参赛用户
                 $uid = Yii::$app->request->get('uid');
                 $inContest = Yii::$app->db->createCommand('SELECT count(1) FROM {{%contest_user}} WHERE user_id=:uid AND contest_id=:cid', [
                     ':uid' => $uid,
                     ':cid' => $model->id
                 ])->queryScalar();
                 if ($inContest) {
-                    ContestUser::findOne(['user_id' => $uid, 'contest_id' => $model->id])->delete();
+                    ContestUser::deleteAll(['user_id' => $uid, 'contest_id' => $model->id]);
+                    Solution::deleteAll(['created_by' => $uid, 'contest_id' => $model->id]);
                     Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
                 }
             } else {
