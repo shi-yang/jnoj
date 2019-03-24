@@ -97,13 +97,13 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
             <table class="table">
                 <tbody>
                 <tr>
-                    <td>Time limit</td>
+                    <td><?= Yii::t('app', 'Time Limit') ?></td>
                     <td>
                         <?= Yii::t('app', '{t, plural, =1{# second} other{# seconds}}', ['t' => intval($model->time_limit)]); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>Memory limit</td>
+                    <td><?= Yii::t('app', 'Memory Limit') ?></td>
                     <td><?= $model->memory_limit ?> MB</td>
                 </tr>
                 </tbody>

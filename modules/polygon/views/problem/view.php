@@ -79,11 +79,11 @@ $this->params['model'] = $model;
             <table class="table">
                 <tbody>
                 <tr>
-                    <td>Time limit</td>
+                    <td><?= Yii::t('app', 'Time Limit') ?></td>
                     <td><?= $model->time_limit ?> Second</td>
                 </tr>
                 <tr>
-                    <td>Memory limit</td>
+                    <td><?= Yii::t('app', 'Memory Limit') ?></td>
                     <td><?= $model->memory_limit ?> MB</td>
                 </tr>
                 </tbody>
