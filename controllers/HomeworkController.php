@@ -59,7 +59,8 @@ class HomeworkController extends ContestController
 
         $query = Homework::find()->with('user')->where([
             'type' => Homework::TYPE_HOMEWORK,
-            'status' => Homework::STATUS_PUBLISHED
+        ])->andWhere([
+            '<>', 'status', Homework::STATUS_DRAFT
         ])->orderBy(['id' => SORT_DESC]);
 
         if (!Yii::$app->user->isGuest) {

@@ -153,6 +153,7 @@ return [
 
     'Visible' => '可见',
     'Hidden' => '隐藏',
+    'Public' => '公开',
     'Private' => '私有',
     'Draft' => '草稿',
     'Published' => '已发布',

@@ -28,6 +28,7 @@ class Solution extends ActiveRecord
 {
     const STATUS_HIDDEN = 0;
     const STATUS_VISIBLE = 1;
+    const STATUS_TEST = 2;
 
     /**
      * 是这个值或小于这个值表示处于等待测评状态

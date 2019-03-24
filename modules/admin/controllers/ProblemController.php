@@ -279,7 +279,7 @@ class ProblemController extends Controller
         $model = $this->findModel($id);
         $solutions = (new Query())->select('id, result, created_at, memory, time, language, code_length')
             ->from('{{%solution}}')
-            ->where(['problem_id' => $id, 'status' => 0])
+            ->where(['problem_id' => $id, 'status' => Solution::STATUS_TEST])
             ->limit(10)
             ->orderBy(['id' => SORT_DESC])
             ->all();
@@ -288,7 +288,7 @@ class ProblemController extends Controller
 
         if ($newSolution->load(Yii::$app->request->post())) {
             $newSolution->problem_id = $id;
-            $newSolution->status = 0;
+            $newSolution->status = Solution::STATUS_TEST;
             if ($newSolution->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {

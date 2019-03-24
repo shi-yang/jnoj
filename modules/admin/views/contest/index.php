@@ -39,8 +39,10 @@ $this->title = Yii::t('app', 'Contests');
             [
                 'attribute' => 'status',
                 'value' => function ($model, $key, $index, $column) {
-                    if ($model->status) {
-                        return Yii::t('app', 'Visible');
+                    if ($model->status == $model::STATUS_VISIBLE) {
+                        return Yii::t('app', 'Public');
+                    } else if ($model->status == $model::STATUS_PRIVATE) {
+                        return Yii::t('app', 'Private');
                     } else {
                         return Yii::t('app', 'Hidden');
                     }

@@ -6,6 +6,7 @@ use yii\widgets\ActiveForm;
 use yii\bootstrap\Modal;
 use yii\bootstrap\Nav;
 use app\models\Contest;
+use app\models\Homework;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Homework */
@@ -46,9 +47,10 @@ $problems = $model->problems;
             <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
             <?= $form->field($model, 'status')->radioList([
-                1 => Yii::t('app', 'Published'),
-                0 => Yii::t('app', 'Draft')
-            ])->hint('设为“草稿”时，该作业对其它用户不可见') ?>
+                Homework::STATUS_PUBLISHED => Yii::t('app', 'Published'),
+                Homework::STATUS_PRIVATE => Yii::t('app', 'Private'),
+                Homework::STATUS_DRAFT => Yii::t('app', 'Draft')
+            ])->hint('设为“草稿”时，该作业对其它用户不可见。设为"私有"时，该作业仅能由参赛用户可见，且参赛用户只能手动添加') ?>
 
             <div class="form-group">
                 <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>

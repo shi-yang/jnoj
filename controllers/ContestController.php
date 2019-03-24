@@ -50,7 +50,7 @@ class ContestController extends Controller
         $this->layout = 'main';
         $dataProvider = new ActiveDataProvider([
             'query' => Contest::find()->where([
-                'status' => Contest::STATUS_VISIBLE
+                '<>', 'status', Contest::STATUS_HIDDEN
             ])->andWhere([
                 '<>', 'type', Contest::TYPE_HOMEWORK
             ])->orderBy(['id' => SORT_DESC]),
@@ -157,6 +157,11 @@ class ContestController extends Controller
 
         // 线下赛只能在后台加入，在此处不给注册
         if ($model->scenario == Contest::SCENARIO_OFFLINE) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
+
+        // 设为私有的比赛只能在后台加入，在此处不给注册
+        if ($model->status == Contest::STATUS_PRIVATE) {
             throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
 
@@ -447,7 +452,7 @@ class ContestController extends Controller
     protected function findModel($id)
     {
         if (($model = Contest::findOne($id)) !== null) {
-            if ($model->status == Contest::STATUS_VISIBLE || !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by) {
+            if ($model->status != Contest::STATUS_HIDDEN || !Yii::$app->user->isGuest && Yii::$app->user->id === $model->created_by) {
                 return $model;
             } else {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');

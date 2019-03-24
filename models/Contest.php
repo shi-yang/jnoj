@@ -52,8 +52,9 @@ class Contest extends \yii\db\ActiveRecord
     /**
      * 是否可见
      */
-    const STATUS_HIDDEN = 0;
-    const STATUS_VISIBLE = 1;
+    const STATUS_HIDDEN = 0; // 隐藏
+    const STATUS_VISIBLE = 1; // 公开
+    const STATUS_PRIVATE = 2; // 私有
 
     /**
      * 线上线下场景
@@ -613,7 +614,7 @@ class Contest extends \yii\db\ActiveRecord
     public function canView()
     {
         // 比赛结束
-        if ($this->getRunStatus() == Contest::STATUS_ENDED) {
+        if ($this->status == Contest::STATUS_VISIBLE && $this->getRunStatus() == Contest::STATUS_ENDED) {
             return true;
         }
         $isAdmin = !Yii::$app->user->isGuest && Yii::$app->user->identity->role == User::ROLE_ADMIN;
@@ -623,7 +624,7 @@ class Contest extends \yii\db\ActiveRecord
             return true;
         }
         // 该比赛/作业不可见
-        if ($this->status != Contest::STATUS_VISIBLE) {
+        if ($this->status == Contest::STATUS_HIDDEN) {
             return false;
         }
         // 参赛用户

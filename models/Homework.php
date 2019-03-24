@@ -14,6 +14,7 @@ class Homework extends Contest
      */
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISHED = 1;
+    const STATUS_PRIVATE = 2;
 
     /**
      * @inheritdoc

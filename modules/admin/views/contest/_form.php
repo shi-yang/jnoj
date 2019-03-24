@@ -3,6 +3,7 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\models\Contest;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contest */
@@ -40,9 +41,10 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
              后才会自动在前台页面解除封榜限制。如需提前结束封榜也可选择清空该表单项。使用封榜功能，后台管理界面的比赛榜单仍然处于实时榜单。") ?>
 
     <?= $form->field($model, 'status')->radioList([
-        1 => Yii::t('app', 'Visible'),
-        0 => Yii::t('app', 'Hidden')
-    ])->hint('是否在前台的比赛列表页面显示') ?>
+        Contest::STATUS_VISIBLE => Yii::t('app', 'Public'),
+        Contest::STATUS_PRIVATE => Yii::t('app', 'Private'),
+        Contest::STATUS_HIDDEN => Yii::t('app', 'Hidden')
+    ])->hint('公开：任何用户均可参加比赛（线下赛场景除外）。私有：任何时候比赛均只能由参赛用户访问，且比赛用户需要在后台手动添加。隐藏：前台无法看到比赛') ?>
 
     <?= $form->field($model, 'scenario')->radioList([
         $model::SCENARIO_ONLINE => Yii::t('app', 'Online'),
