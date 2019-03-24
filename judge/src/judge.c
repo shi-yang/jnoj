@@ -347,12 +347,12 @@ void update_solution_info(int solution_id, char * buf)
 
 void addceinfo(int solution_id)
 {
-    char ceinfo[(1 << 16)], *cend;
+    char ceinfo[(1 << 15)], *cend;
     FILE *fp = fopen("ce.txt", "re");
     cend = ceinfo;
     while (fgets(cend, 1024, fp)) {
         cend += strlen(cend);
-        if (cend - ceinfo > 40000)
+        if (cend - ceinfo > 30000)
             break;
     }
     update_solution_info(solution_id, ceinfo);
