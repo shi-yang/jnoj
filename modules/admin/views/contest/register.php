@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
                     $options = [
                         'title' => Yii::t('yii', 'Delete'),
                         'aria-label' => Yii::t('yii', 'Delete'),
-                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                        'data-confirm' => '删除该项，也会删除该用户在此比赛中的提交记录，确定删除？',
                         'data-method' => 'post',
                         'data-pjax' => '0',
                     ];
