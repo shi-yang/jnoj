@@ -54,7 +54,12 @@ class SolutionController extends Controller
      */
     public function actionVerdict($id)
     {
-        $query = Yii::$app->db->createCommand('SELECT id,result FROM {{%solution}} WHERE id=:id', [':id' => $id])->queryOne();
+        $query = Yii::$app->db->createCommand('SELECT id,result,contest_id FROM {{%solution}} WHERE id=:id', [
+            ':id' => $id
+        ])->queryOne();
+        if ($query['contest_id'] != NULL) {
+            $query['result'] = 0;
+        }
         $res = [
             'id' => $query['id'],
             'verdict' => $query['result'],
