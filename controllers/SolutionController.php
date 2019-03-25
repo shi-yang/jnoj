@@ -57,7 +57,7 @@ class SolutionController extends Controller
         $query = Yii::$app->db->createCommand('SELECT id,result,contest_id FROM {{%solution}} WHERE id=:id', [
             ':id' => $id
         ])->queryOne();
-        if ($query['contest_id'] != NULL) {
+        if ($query['contest_id'] != NULL && Yii::$app->setting->get('oiMode')) {
             $query['result'] = 0;
         }
         $res = [
