@@ -221,36 +221,6 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
 <?php endif; ?>
 
 <?php Modal::end(); ?>
-<?php
-$this->registerJs('
-$(".katex.math.inline").each(function () {
-    var parent = $(this).parent()[0];
-    if (parent.localName !== "code") {
-        var texTxt = $(this).text();
-        var el = $(this).get(0);
-        try {
-            katex.render(texTxt, el);
-        } catch (err) {
-            $(this).html("<span class=\'err\'>" + err);
-        }
-    } else {
-        $(this).parent().text($(this).parent().text());
-    }
-});
-$(".katex.math.multi-line").each(function () {
-    var texTxt = $(this).text();
-    var el = $(this).get(0);
-    try {
-        katex.render(texTxt, el, {displayMode: true})
-    } catch (err) {
-        $(this).html("<span class=\'err\'>" + err)
-    }
-});
-$(".pre p").each(function(i, block) {  // use <pre><p>
-    hljs.highlightBlock(block);
-});
-');
-?>
 
 <?php
 $url = \yii\helpers\Url::toRoute(['/solution/verdict']);
