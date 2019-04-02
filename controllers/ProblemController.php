@@ -62,12 +62,17 @@ class ProblemController extends Controller
             ]
         ]);
 
-        $tags = (new TaggingQuery())->select('tags')
-            ->from('{{%problem}}')
-            ->where('status<>' . Problem::STATUS_HIDDEN)
-            ->limit(30)
-            ->displaySort(['freq' => SORT_DESC])
-            ->getTags();
+        $cache = Yii::$app->cache;
+        $tags = $cache->get('problem-tags');
+        if ($tags === false) {
+            $tags = (new TaggingQuery())->select('tags')
+                ->from('{{%problem}}')
+                ->where('status<>' . Problem::STATUS_HIDDEN)
+                ->limit(30)
+                ->displaySort(['freq' => SORT_DESC])
+                ->getTags();
+            $cache->set('problem-tags', $tags, 3600);
+        }
 
         $solvedProblem = [];
         if (!Yii::$app->user->isGuest) {

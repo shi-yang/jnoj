@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\caching\TagDependency;
 use yii\db\Expression;
 use yii\db\Query;
 
@@ -205,13 +206,19 @@ class Contest extends \yii\db\ActiveRecord
      */
     public function getProblems()
     {
-        return Yii::$app->db->createCommand('
-            SELECT `p`.`title`, `p`.`id` AS `problem_id`, `c`.`num`
-            FROM `problem` `p`
-            LEFT JOIN `contest_problem` `c` ON `c`.`contest_id`=:cid
-            WHERE p.id=c.problem_id
-            ORDER BY `c`.`num`
-        ', [':cid' => $this->id])->queryAll();
+        $dependency = new \yii\caching\DbDependency([
+            'sql'=>'SELECT COUNT(*) FROM {{%contest_problem}} WHERE contest_id=:cid',
+            'params' => [':cid' => $this->id]
+        ]);
+        return Yii::$app->db->cache(function ($db) {
+            return $db->createCommand('
+                SELECT `p`.`title`, `p`.`id` AS `problem_id`, `c`.`num`
+                FROM `problem` `p`
+                LEFT JOIN `contest_problem` `c` ON `c`.`contest_id`=:cid
+                WHERE p.id=c.problem_id
+                ORDER BY `c`.`num`
+            ', [':cid' => $this->id])->queryAll();
+        }, 60, $dependency);
     }
 
     /**
@@ -520,14 +527,18 @@ class Contest extends \yii\db\ActiveRecord
      */
     public function getProblemById($id)
     {
-        return Yii::$app->db->createCommand(
-            "SELECT `cp`.`num`, `p`.`title`, `p`.`id`, `p`.`description`, 
-            `p`.`input`, `p`.`output`, `p`.`sample_input`, `p`.`sample_output`, `p`.`hint`, `p`.`time_limit`, 
-            `p`.`memory_limit` 
-            FROM `problem` `p` 
-            LEFT JOIN `contest_problem` `cp` ON cp.problem_id=p.id 
-            WHERE (`cp`.`num`={$id}) AND (`cp`.`contest_id`={$this->id})"
-        )->queryOne();
+        $contestID = $this->id;
+        $dependency = new TagDependency(['tags' => ['id' => $id, 'contestID' => $contestID]]);
+        return Yii::$app->db->cache(function ($db) use ($id, $contestID) {
+            return $db->createCommand(
+                "SELECT `cp`.`num`, `p`.`title`, `p`.`id`, `p`.`description`, 
+                `p`.`input`, `p`.`output`, `p`.`sample_input`, `p`.`sample_output`, `p`.`hint`, `p`.`time_limit`, 
+                `p`.`memory_limit` 
+                FROM `problem` `p` 
+                LEFT JOIN `contest_problem` `cp` ON cp.problem_id=p.id 
+                WHERE (`cp`.`num`={$id}) AND (`cp`.`contest_id`={$contestID})"
+            )->queryOne();
+        }, 60, $dependency);
     }
 
     public function getClarifies()

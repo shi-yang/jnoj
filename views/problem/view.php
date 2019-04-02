@@ -23,6 +23,8 @@ $model->setSamples();
 $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
 ?>
 <div class="row">
+
+    <?php if ($this->beginCache('problem-' . $model->id)): ?>
     <div class="col-md-9 problem-view">
 
         <h1><?= Html::encode($this->title) ?></h1>
@@ -91,6 +93,8 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
             </div>
         <?php endif; ?>
     </div>
+    <?php $this->endCache(); ?>
+    <?php endif; ?>
     <div class="col-md-3 problem-info">
         <div class="panel panel-default">
             <!-- Table -->
