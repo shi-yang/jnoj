@@ -18,6 +18,7 @@ use yii\db\Query;
  * @property string $status
  * @property string $description
  * @property string $editorial
+ * @property int $group_id
  * @property int $type
  * @property int $scenario
  * @property int $created_by
@@ -77,9 +78,10 @@ class Contest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['title', 'start_time', 'end_time'], 'required'],
             [['start_time', 'end_time', 'lock_board_time'], 'safe'],
             [['description', 'editorial'], 'string'],
-            [['id', 'status', 'type', 'scenario', 'created_by'], 'integer'],
+            [['id', 'status', 'type', 'scenario', 'created_by', 'group_id'], 'integer'],
             [['title'], 'string', 'max' => 255],
         ];
     }
