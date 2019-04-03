@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $form->field($model, 'email') ?>
 
-    <?= $form->field($model, 'studentNumber') ?>
+    <?= $form->field($model, 'studentNumber')->textInput(['placeholder' => '可不填']) ?>
 
     <?= $form->field($model, 'password')->passwordInput() ?>
 

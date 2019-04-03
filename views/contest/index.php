@@ -24,12 +24,6 @@ $this->title = Yii::t('app', 'Contests');
                 },
                 'format' => 'raw',
             ],
-//            [
-//                'attribute' => 'type',
-//                'value' => function ($model, $key, $index, $column) {
-//                    return $model->getType();
-//                },
-//            ],
             [
                 'attribute' => 'status',
                 'value' => function ($model, $key, $index, $column) {
