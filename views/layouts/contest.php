@@ -52,8 +52,8 @@ $status = $model->getRunStatus();
     $menuItems = [
         ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index']],
     ];
-    if ($model->type == Contest::TYPE_HOMEWORK) {
-        $menuItems[] = ['label' => Yii::t('app', 'Homework'), 'url' => ['/homework/index']];
+    if ($model->group_id != 0) {
+        $menuItems[] = ['label' => Yii::t('app', 'Group'), 'url' => ['/group/index']];
     } else {
         $menuItems[] = ['label' => Yii::t('app', 'Contest'), 'url' => ['/contest/index']];
     }
@@ -95,7 +95,7 @@ $status = $model->getRunStatus();
                 <div class="col-md-6 text-center">
                     <h2 class="contest-title">
                         <?= Html::encode($model->title) ?>
-                        <?php if ($model->type == Contest::TYPE_HOMEWORK && !Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id): ?>
+                        <?php if ($model->group_id != 0 && !Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id): ?>
                             <small>
                                 <?= Html::a('<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Setting'),
                                     ['/homework/update', 'id' => $model->id]) ?>

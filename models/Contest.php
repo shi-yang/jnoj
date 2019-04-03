@@ -156,6 +156,11 @@ class Contest extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
 
+    public function getGroup()
+    {
+        return $this->hasOne(Group::className(), ['id' => 'group_id']);
+    }
+
     /**
      * 返回比赛的状态，还没开始，正在进行，已经结束
      * @param $description boolean 是否显示文字描述
@@ -643,6 +648,13 @@ class Contest extends \yii\db\ActiveRecord
         // 参赛用户
         if ($this->isUserInContest()) {
             return true;
+        }
+        // 小组成员
+        if ($this->group_id != 0) {
+            return Yii::$app->db->createCommand('SELECT count(*) FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
+                ':uid' => Yii::$app->user->id,
+                ':gid' => $this->group_id
+            ])->queryScalar();
         }
         return false;
     }

@@ -21,21 +21,27 @@ $this->title = $model->name;
     <div class="row">
         <div class="col-md-3">
             <h1><?= Html::a(Html::encode($this->title), ['/group/view', 'id' => $model->id]) ?></h1>
+            <?php if ($model->role == GroupUser::ROLE_LEADER): ?>
+            <?= Html::a(Yii::t('app', 'Setting'), ['/group/update', 'id' => $model->id], ['class' => 'btn btn-default btn-block']) ?>
+            <?php endif; ?>
             <hr>
             <p>
                 <?= Yii::$app->formatter->asHtml($model->description); ?>
             </p>
+            <hr>
+            <p><?= Yii::t('app', 'Join Policy') ?>: <?= $model->getJoinPolicy() ?></p>
+            <p><?= Yii::t('app', 'Status') ?>: <?= $model->getStatus() ?></p>
         </div>
         <div class="col-md-9">
             <div>
                 <h2 style="display: inline">
-                    <?= Yii::t('app', 'Contest'); ?>
+                    <?= Yii::t('app', 'Homework'); ?>
                 </h2>
-                <?php if ($model->role == GroupUser::ROLE_LEADER || $model->role == GroupUser::ROLE_MANAGER): ?>
+                <?php if ($model->hasPermission()): ?>
                 <?php Modal::begin([
-                    'header' => '<h3>' . Yii::t('app', 'Create Contest') . '</h3>',
+                    'header' => '<h3>' . Yii::t('app', 'Create') . '</h3>',
                     'toggleButton' => [
-                        'label' => Yii::t('app', 'Create Contest'),
+                        'label' => Yii::t('app', 'Create'),
                         'tag' => 'a',
                         'style' => 'cursor:pointer;'
                     ]
@@ -115,7 +121,7 @@ $this->title = $model->name;
                 <h2 style="display: inline">
                     <?= Yii::t('app', 'Member'); ?>
                 </h2>
-                <?php if ($model->role == GroupUser::ROLE_LEADER || $model->role == GroupUser::ROLE_MANAGER): ?>
+                <?php if ($model->hasPermission()): ?>
                     <?php Modal::begin([
                         'header' => '<h3>' . Yii::t('app', 'Invite Member') . '</h3>',
                         'toggleButton' => [

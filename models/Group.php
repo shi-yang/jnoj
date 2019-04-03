@@ -97,6 +97,30 @@ class Group extends ActiveRecord
         return new GroupQuery(get_called_class());
     }
 
+    public function getJoinPolicy()
+    {
+        $policy = [
+            Yii::t('app', 'Invite Only'),
+            Yii::t('app', 'Application & Approve'),
+            Yii::t('app', 'Free')
+        ];
+        return $policy[$this->join_policy];
+    }
+
+    public function getStatus()
+    {
+        $status = [
+            Yii::t('app', 'Hidden'),
+            Yii::t('app', 'Visible')
+        ];
+        return $status[$this->status];
+    }
+
+    /**
+     * 获取当前登录用户的角色
+     * @return mixed
+     * @throws \Throwable
+     */
     public function getRole()
     {
         return Yii::$app->db->cache(function ($db) {
@@ -125,5 +149,10 @@ class Group extends ActiveRecord
             ':uid' => Yii::$app->user->id,
             ':gid' => $this->id
         ])->queryScalar();
+    }
+
+    public function hasPermission()
+    {
+        return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER;
     }
 }

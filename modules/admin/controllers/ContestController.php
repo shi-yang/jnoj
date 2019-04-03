@@ -67,7 +67,7 @@ class ContestController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Contest::find()->orderBy(['id' => SORT_DESC]),
+            'query' => Contest::find()->where(['group_id' => 0])->orderBy(['id' => SORT_DESC]),
         ]);
 
         return $this->render('index', [

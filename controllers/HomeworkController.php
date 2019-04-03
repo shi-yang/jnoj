@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Contest;
 use app\models\Problem;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -11,6 +12,7 @@ use yii\db\Query;
 use yii\filters\AccessControl;
 use app\models\Homework;
 use app\models\ContestAnnouncement;
+use yii\web\NotFoundHttpException;
 
 /**
  * HomeworkController implements the CRUD actions for Homework model.
@@ -50,70 +52,20 @@ class HomeworkController extends ContestController
     }
 
     /**
-     * Lists all Homework models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $this->layout = 'main';
-
-        $query = Homework::find()->with('user')->where([
-            'type' => Homework::TYPE_HOMEWORK,
-        ])->andWhere([
-            '<>', 'status', Homework::STATUS_DRAFT
-        ])->orderBy(['id' => SORT_DESC]);
-
-        if (!Yii::$app->user->isGuest) {
-            $query->orWhere([
-                'type' => Homework::TYPE_HOMEWORK,
-                'created_by' => Yii::$app->user->id
-            ]);
-        }
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Creates a new Homework model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $this->layout = 'main';
-        $model = new Homework();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['update', 'id' => $model->id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
      * 删除一个问题
      * @param $id
      * @param $pid
      * @return \yii\web\Response
-     * @throws ForbiddenHttpException if the model cannot be viewed
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionDeleteproblem($id, $pid)
     {
         $model = $this->findModel($id);
-        // 权限判断
-        if ($model->type != Homework::TYPE_HOMEWORK || Yii::$app->user->isGuest || $model->created_by != Yii::$app->user->id) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
 
         $ok = Yii::$app->db->createCommand()
-            ->delete('{{%contest_problem}}', ['contest_id' => $id, 'problem_id' => $pid])
+            ->delete('{{%contest_problem}}', ['contest_id' => $model->id, 'problem_id' => $pid])
             ->execute();
         if ($ok) {
             Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
@@ -127,29 +79,26 @@ class HomeworkController extends ContestController
      * 增加一个问题
      * @param $id
      * @return \yii\web\Response
-     * @throws ForbiddenHttpException if the model cannot be viewed
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionAddproblem($id)
     {
         $model = $this->findModel($id);
 
-        // 权限判断
-        if ($model->type != Homework::TYPE_HOMEWORK || Yii::$app->user->isGuest || $model->created_by != Yii::$app->user->id) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
-
         if (($post = Yii::$app->request->post())) {
             $pid = intval($post['problem_id']);
-            $has_problem = (new Query())->select('id')
+            $hasProblem = (new Query())->select('id')
                 ->from('{{%problem}}')
                 ->where('id=:id AND status=:status', [':id' => $pid, ':status' => Problem::STATUS_VISIBLE])
                 ->exists();
-            if ($has_problem) {
-                $problem_in_contest = (new Query())->select('problem_id')
+            if ($hasProblem) {
+                $problemInContest = (new Query())->select('problem_id')
                     ->from('{{%contest_problem}}')
                     ->where(['problem_id' => $pid, 'contest_id' => $model->id])
                     ->exists();
-                if ($problem_in_contest) {
+                if ($problemInContest) {
                     Yii::$app->session->setFlash('info', Yii::t('app', 'This problem has in the contest.'));
                     return $this->redirect(['/homework/update', 'id' => $id]);
                 }
@@ -174,17 +123,14 @@ class HomeworkController extends ContestController
     /**
      * 修改一个问题
      * @param $id
-     * @return mixed
-     * @throws ForbiddenHttpException if the model cannot be viewed
+     * @return \yii\web\Response
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionUpdateproblem($id)
     {
         $model = $this->findModel($id);
-
-        // 权限判断
-        if ($model->type != Homework::TYPE_HOMEWORK || Yii::$app->user->isGuest || $model->created_by != Yii::$app->user->id) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
 
         if (($post = Yii::$app->request->post())) {
             $pid = intval($post['problem_id']);
@@ -221,21 +167,15 @@ class HomeworkController extends ContestController
     }
 
     /**
-     * Updates an existing Homework model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws ForbiddenHttpException if the model cannot be viewed
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
         $this->layout = 'main';
         $model = $this->findModel($id);
-
-        // 权限判断
-        if ($model->type != Homework::TYPE_HOMEWORK || Yii::$app->user->isGuest || $model->created_by != Yii::$app->user->id) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->refresh();
@@ -258,5 +198,23 @@ class HomeworkController extends ContestController
             'announcements' => $announcements,
             'newAnnouncement' => $newAnnouncement
         ]);
+    }
+
+    /**
+     * @param int $id
+     * @return Homework|null
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     */
+    protected function findModel($id)
+    {
+        if (($model = Homework::findOne($id)) !== null) {
+            if ($model->hasPermission()) {
+                return $model;
+            } else {
+                throw new ForbiddenHttpException('You are not allowed to perform this action.');
+            }
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

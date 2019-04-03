@@ -9,6 +9,7 @@ use app\models\GroupSearch;
 use app\models\Contest;
 use yii\db\Query;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\db\Expression;
@@ -20,7 +21,6 @@ use yii\data\ActiveDataProvider;
  */
 class GroupController extends Controller
 {
-    private $_model;
     /**
      * {@inheritdoc}
      */
@@ -71,6 +71,7 @@ class GroupController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException
      */
     public function actionView($id)
     {
@@ -91,12 +92,19 @@ class GroupController extends Controller
         ]);
 
         if ($newContest->load(Yii::$app->request->post())) {
+            if (!$model->hasPermission()) {
+                throw new ForbiddenHttpException('You are not allowed to perform this action.');
+            }
             $newContest->group_id = $model->id;
             $newContest->scenario = Contest::SCENARIO_ONLINE;
+            $newContest->status = Contest::STATUS_PRIVATE;
             $newContest->save();
         }
 
         if ($newGroupUser->load(Yii::$app->request->post())) {
+            if (!$model->hasPermission()) {
+                throw new ForbiddenHttpException('You are not allowed to perform this action.');
+            }
             //　查找用户ID 以及查看是否已经加入比赛中
             $query = (new Query())->select('u.id as user_id, count(g.user_id) as exist')
                 ->from('{{%user}} as u')
@@ -158,10 +166,14 @@ class GroupController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if ($model->getRole() != GroupUser::ROLE_LEADER) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -178,6 +190,7 @@ class GroupController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException
      */
     public function actionDelete($id)
     {
@@ -192,12 +205,14 @@ class GroupController extends Controller
      * @param integer $id
      * @return Group the loaded model
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException
      */
     protected function findModel($id)
     {
         if (($model = Group::findOne($id)) !== null) {
-            if 
-            $this->_model = $model;
+            if (!$model->isUserInGroup()) {
+                throw new ForbiddenHttpException('You are not allowed to perform this action.');
+            }
             return $model;
         }
 
