@@ -31,13 +31,13 @@ if ($discuss != null) {
                 [
                     'attribute' => Yii::t('app', 'Announcement'),
                     'value' => function ($model, $key, $index, $column) {
-                        return $model->content;
+                        return Yii::$app->formatter->asHtml($model->content);
                     },
-                    'format' => 'ntext',
+                    'format' => 'html'
                 ],
                 [
                     'attribute' => 'created_at',
-                    'headerOptions' => ['width' => '34%'],
+                    'options' => ['width' => '150px'],
                     'format' => 'datetime'
                 ]
             ],

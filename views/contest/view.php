@@ -88,13 +88,17 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
             'dataProvider' => $dataProvider,
             'options' => ['class' => 'table-responsive', 'style' => 'margin:0 auto;width:50%;min-width:600px;text-align: left;'],
             'columns' => [
-                'created_at:datetime',
+                [
+                    'attribute' => 'created_at',
+                    'options' => ['width' => '150px'],
+                    'format' => 'datetime'
+                ],
                 [
                     'attribute' => Yii::t('app', 'Announcement'),
                     'value' => function ($model, $key, $index, $column) {
-                        return $model->content;
+                        return Yii::$app->formatter->asHtml($model->content);
                     },
-                    'format' => 'ntext',
+                    'format' => 'html',
                 ],
             ],
         ]);
