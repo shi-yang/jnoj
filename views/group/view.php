@@ -15,7 +15,6 @@ use app\models\Contest;
 /* @var $newGroupUser app\models\GroupUser */
 
 $this->title = $model->name;
-\yii\web\YiiAsset::register($this);
 ?>
 <div class="group-view">
     <div class="row">
@@ -165,6 +164,32 @@ $this->title = $model->name;
                             return Yii::$app->formatter->asRelativeTime($model->created_at);
                         },
                         'options' => ['width' => '150px']
+                    ],
+                    [
+                        'class' => 'yii\grid\ActionColumn',
+                        'template' => '{user-update} {user-delete}',
+                        'buttons' => [
+//                            'user-update' => function ($url, $model, $key) {
+//                                $options = [
+//                                    'title' => Yii::t('yii', 'Update'),
+//                                    'aria-label' => Yii::t('yii', 'Update'),
+//                                    'data-pjax' => '0',
+//                                ];
+//                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, $options);
+//                            },
+                            'user-delete' => function ($url, $model, $key) {
+                                $options = [
+                                    'title' => Yii::t('yii', 'Delete'),
+                                    'aria-label' => Yii::t('yii', 'Delete'),
+                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                    'data-method' => 'post',
+                                    'data-pjax' => '0',
+                                ];
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, $options);
+                            }
+                        ],
+                        'visible' => $model->hasPermission(),
+                        'options' => ['width' => '90px']
                     ]
                 ],
             ]); ?>

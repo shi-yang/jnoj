@@ -128,7 +128,7 @@ class Group extends ActiveRecord
                 ':uid' => Yii::$app->user->id,
                 ':gid' => $this->id
             ])->queryScalar();
-        }, 60);
+        }, 10);
     }
 
     public function getGroupUser()
@@ -145,7 +145,7 @@ class Group extends ActiveRecord
         if (Yii::$app->user->isGuest) {
             return false;
         }
-        return Yii::$app->db->createCommand('SELECT count(*) FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
+        return Yii::$app->db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
             ':uid' => Yii::$app->user->id,
             ':gid' => $this->id
         ])->queryScalar();
@@ -154,5 +154,19 @@ class Group extends ActiveRecord
     public function hasPermission()
     {
         return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER;
+    }
+
+    /**
+     * 获取组长
+     * @return User|null
+     * @throws \yii\db\Exception
+     */
+    public function getLeader()
+    {
+        $id = Yii::$app->db->createCommand('SELECT user_id FROM {{%group_user}} WHERE group_id=:gid AND role=:role', [
+            ':gid' => $this->id,
+            ':role' => GroupUser::ROLE_LEADER
+        ])->queryScalar();
+        return User::findOne($id);
     }
 }

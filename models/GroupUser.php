@@ -81,7 +81,7 @@ class GroupUser extends \yii\db\ActiveRecord
     public function getRole($color = false)
     {
         $roles = [
-            Yii::t('app', 'Refuse'),
+            Yii::t('app', 'Refuse to join'),
             Yii::t('app', 'Inviting'),
             Yii::t('app', 'Member'),
             Yii::t('app', 'Manager'),

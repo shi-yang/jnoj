@@ -63,7 +63,10 @@ AppAsset::register($this);
             'url' => ['/rating/problem'],
             'active' => Yii::$app->controller->id == 'rating'
         ],
-        ['label' => '<span class="glyphicon glyphicon-user"></span> ' . Yii::t('app', 'Group'), 'url' => ['/group/index']],
+        [
+            'label' => '<span class="glyphicon glyphicon-user"></span> ' . Yii::t('app', 'Group'),
+            'url' => Yii::$app->user->isGuest ? ['/group/index'] : ['/group/my-group']
+        ],
         ['label' => '<span class="glyphicon glyphicon-knight"></span> ' . Yii::t('app', 'Contests'), 'url' => ['/contest/index']],
         [
             'label' => '<span class="glyphicon glyphicon-info-sign"></span> '. Yii::t('app', 'Wiki'),

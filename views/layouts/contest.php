@@ -53,7 +53,10 @@ $status = $model->getRunStatus();
         ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index']],
     ];
     if ($model->group_id != 0) {
-        $menuItems[] = ['label' => Yii::t('app', 'Group'), 'url' => ['/group/index']];
+        $menuItems[] = [
+            'label' => Yii::t('app', 'Group'),
+            'url' => Yii::$app->user->isGuest ? ['/group/index'] : ['/group/my-group']
+        ];
     } else {
         $menuItems[] = ['label' => Yii::t('app', 'Contest'), 'url' => ['/contest/index']];
     }

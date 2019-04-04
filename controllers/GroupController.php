@@ -7,7 +7,9 @@ use app\models\Group;
 use app\models\GroupUser;
 use app\models\GroupSearch;
 use app\models\Contest;
+use yii\data\SqlDataProvider;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -33,7 +35,42 @@ class GroupController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['create'],
+                'rules' => [
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
         ];
+    }
+
+    /**
+     * 显示我的小组
+     * @return string
+     * @throws \yii\db\Exception
+     */
+    public function actionMyGroup()
+    {
+        $count = Yii::$app->db->createCommand('
+            SELECT COUNT(*) FROM {{%group}} AS g LEFT JOIN {{%group_user}} AS u ON u.group_id=g.id WHERE u.user_id=:id',
+            [':id' => Yii::$app->user->id]
+        )->queryScalar();
+        $dataProvider = new SqlDataProvider([
+            'sql' => 'SELECT g.id,g.name,g.description FROM {{%group}} AS g LEFT JOIN {{%group_user}} AS u ON u.group_id=g.id WHERE u.user_id=:id AND u.role <> 0',
+            'params' => [':id' => Yii::$app->user->id],
+            'totalCount' => $count,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**
@@ -52,17 +89,40 @@ class GroupController extends Controller
     }
 
     /**
-     * Lists all Group models.
-     * @return mixed
+     * 接收邀请页面
+     * @param $id
+     * @param $accept
+     * @return string
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
-    public function actionExplore()
+    public function actionAccept($id, $accept = -1)
     {
-        $searchModel = new GroupSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+        $model = $this->findModel($id);
+        if ($model->isUserInGroup()) {
+            return $this->redirect(['/group/view', 'id' => $model->id]);
+        }
+        $userDataProvider = new ActiveDataProvider([
+            'query' => GroupUser::find()->where([
+                'group_id' => $model->id
+            ])->with('user')->orderBy(['role' => SORT_DESC])
+        ]);
+        if ($accept == 1) {
+            Yii::$app->db->createCommand()->update('{{%group_user}}', [
+                'role' => GroupUser::ROLE_MEMBER
+            ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
+            Yii::$app->session->setFlash('success', '已加入');
+            return $this->redirect(['/group/view', 'id' => $model->id]);
+        } else if ($accept == 0) {
+            Yii::$app->db->createCommand()->update('{{%group_user}}', [
+                'role' => GroupUser::ROLE_REUSE
+            ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
+            Yii::$app->session->setFlash('info', '已拒绝');
+            return $this->redirect(['/group/index']);
+        }
+        return $this->render('accept', [
+            'model' => $model,
+            'userDataProvider' => $userDataProvider
         ]);
     }
 
@@ -76,6 +136,9 @@ class GroupController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        if ($model->getRole() == GroupUser::ROLE_INVITING) {
+            return $this->redirect(['/group/accept', 'id' => $model->id]);
+        }
         $newGroupUser = new GroupUser();
         $newContest = new Contest();
         $newContest->type = Contest::TYPE_RANK_GROUP;
@@ -121,7 +184,10 @@ class GroupController extends Controller
                 $newGroupUser->save();
                 Yii::$app->session->setFlash('success', '已邀请');
             } else {
-                Yii::$app->session->setFlash('error', '用户已在小组中');
+                Yii::$app->db->createCommand()->update('{{%group_user}}', [
+                    'role' => GroupUser::ROLE_INVITING
+                ], ['user_id' => $query['user_id'], 'group_id' => $model->id])->execute();
+                Yii::$app->session->setFlash('error', '已邀请');
             }
         }
 
@@ -185,18 +251,23 @@ class GroupController extends Controller
     }
 
     /**
-     * Deletes an existing Group model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * 从小组中删除用户
+     * @param $id
      * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
-    public function actionDelete($id)
+    public function actionUserDelete($id)
     {
-        $this->findModel($id)->delete();
+        $groupUser = GroupUser::findOne($id);
+        $group = $this->findModel($groupUser->group_id);
+        if ($group->hasPermission() && $groupUser->role != GroupUser::ROLE_LEADER) {
+            $groupUser->delete();
+            return $this->redirect(['/group/view', 'id' => $group->id]);
+        }
 
-        return $this->redirect(['index']);
+        throw new ForbiddenHttpException('You are not allowed to perform this action.');
     }
 
     /**
