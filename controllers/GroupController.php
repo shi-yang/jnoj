@@ -99,7 +99,7 @@ class GroupController extends Controller
     public function actionAccept($id, $accept = -1)
     {
         $model = $this->findModel($id);
-        if ($model->isUserInGroup()) {
+        if ($model->getRole() != GroupUser::ROLE_INVITING) {
             return $this->redirect(['/group/view', 'id' => $model->id]);
         }
         $userDataProvider = new ActiveDataProvider([
@@ -281,7 +281,7 @@ class GroupController extends Controller
     protected function findModel($id)
     {
         if (($model = Group::findOne($id)) !== null) {
-            if (!$model->isUserInGroup()) {
+            if (!$model->getRole()) {
                 throw new ForbiddenHttpException('You are not allowed to perform this action.');
             }
             return $model;

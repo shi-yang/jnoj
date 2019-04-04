@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Contest;
 use app\models\Problem;
+use app\models\User;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\ForbiddenHttpException;
@@ -89,11 +90,16 @@ class HomeworkController extends ContestController
 
         if (($post = Yii::$app->request->post())) {
             $pid = intval($post['problem_id']);
-            $hasProblem = (new Query())->select('id')
+            $problemStatus = (new Query())->select('status')
                 ->from('{{%problem}}')
-                ->where('id=:id AND status=:status', [':id' => $pid, ':status' => Problem::STATUS_VISIBLE])
-                ->exists();
-            if ($hasProblem) {
+                ->where('id=:id', [':id' => $pid])
+                ->scalar();
+            if ($problemStatus == null || $problemStatus == Problem::STATUS_HIDDEN) {
+                Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
+            } else if ($problemStatus == Problem::STATUS_PRIVATE && (Yii::$app->user->identity->role == User::ROLE_USER ||
+                                                                     Yii::$app->user->identity->role == User::ROLE_PLAYER)) {
+                Yii::$app->session->setFlash('error', Yii::t('app', '私有题目，仅 VIP 用户可选用'));
+            } else {
                 $problemInContest = (new Query())->select('problem_id')
                     ->from('{{%contest_problem}}')
                     ->where(['problem_id' => $pid, 'contest_id' => $model->id])
@@ -113,8 +119,6 @@ class HomeworkController extends ContestController
                     'num' => $count
                 ])->execute();
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
-            } else {
-                Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
             return $this->redirect(['/homework/update', 'id' => $id]);
         }
