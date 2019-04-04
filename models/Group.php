@@ -136,21 +136,6 @@ class Group extends ActiveRecord
         return $this->hasMany(GroupUser::className(), ['group_id' => 'id']);
     }
 
-    /**
-     * 判断当前用户是否在小组中
-     * @return boolean
-     */
-    public function isUserInGroup()
-    {
-        if (Yii::$app->user->isGuest) {
-            return false;
-        }
-        return Yii::$app->db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
-            ':uid' => Yii::$app->user->id,
-            ':gid' => $this->id
-        ])->queryScalar();
-    }
-
     public function hasPermission()
     {
         return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER;
