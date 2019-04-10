@@ -123,12 +123,17 @@ class Group extends ActiveRecord
      */
     public function getRole()
     {
-        return Yii::$app->db->cache(function ($db) {
-            return $db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid',[
+        $key = 'role' . $this->id . Yii::$app->user->id;
+        $cache = Yii::$app->cache;
+        $data = $cache->get($key);
+        if ($data === false) {
+            $data = Yii::$app->db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid',[
                 ':uid' => Yii::$app->user->id,
                 ':gid' => $this->id
             ])->queryScalar();
-        }, 10);
+            $cache->set($key, $data, 60);
+        }
+        return $data;
     }
 
     public function getGroupUser()
@@ -139,6 +144,12 @@ class Group extends ActiveRecord
     public function hasPermission()
     {
         return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER;
+    }
+
+    public function isMember()
+    {
+        return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER ||
+            $this->getRole() == GroupUser::ROLE_MEMBER;
     }
 
     /**

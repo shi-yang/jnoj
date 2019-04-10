@@ -40,7 +40,7 @@ class GroupController extends Controller
                 'only' => ['create'],
                 'rules' => [
                     [
-                        'actions' => ['create'],
+                        'actions' => ['create', 'accept', 'my-group', 'update', 'user-delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -99,27 +99,47 @@ class GroupController extends Controller
     public function actionAccept($id, $accept = -1)
     {
         $model = $this->findModel($id);
-        if ($model->getRole() != GroupUser::ROLE_INVITING) {
+        if ($model->isMember()) {
             return $this->redirect(['/group/view', 'id' => $model->id]);
+        }
+        if ($model->join_policy == Group::JOIN_POLICY_INVITE && $model->getRole() != GroupUser::ROLE_INVITING) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
         $userDataProvider = new ActiveDataProvider([
             'query' => GroupUser::find()->where([
                 'group_id' => $model->id
             ])->with('user')->orderBy(['role' => SORT_DESC])
         ]);
-        if ($accept == 1) {
+        if ($accept == 0) { // 拒绝小组邀请
+            Yii::$app->db->createCommand()->update('{{%group_user}}', [
+                'role' => GroupUser::ROLE_REUSE_INVITATION
+            ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
+            Yii::$app->session->setFlash('info', '已拒绝');
+            return $this->redirect(['/group/index']);
+        } else if ($accept == 1) { // 接受小组邀请
             Yii::$app->db->createCommand()->update('{{%group_user}}', [
                 'role' => GroupUser::ROLE_MEMBER
             ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
             Yii::$app->session->setFlash('success', '已加入');
             return $this->redirect(['/group/view', 'id' => $model->id]);
-        } else if ($accept == 0) {
-            Yii::$app->db->createCommand()->update('{{%group_user}}', [
-                'role' => GroupUser::ROLE_REUSE
-            ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
-            Yii::$app->session->setFlash('info', '已拒绝');
-            return $this->redirect(['/group/index']);
+        } else if ($model->join_policy == Group::JOIN_POLICY_FREE && $accept == 2) { // 加入小组
+            Yii::$app->db->createCommand()->insert('{{%group_user}}', [
+                'user_id' => Yii::$app->user->id,
+                'group_id' => $model->id,
+                'created_at' => new Expression('NOW()'),
+                'role' => GroupUser::ROLE_MEMBER
+            ])->execute();
+            Yii::$app->session->setFlash('info', '已加入');
+        } else if ($model->join_policy == Group::JOIN_POLICY_APPLICATION && $accept == 3) { // 申请加入小组
+            Yii::$app->db->createCommand()->insert('{{%group_user}}', [
+                'user_id' => Yii::$app->user->id,
+                'group_id' => $model->id,
+                'created_at' => new Expression('NOW()'),
+                'role' => GroupUser::ROLE_APPLICATION
+            ])->execute();
+            Yii::$app->session->setFlash('info', '已申请');
         }
+        Yii::$app->cache->delete('role' . $model->id . Yii::$app->user->id);
         return $this->render('accept', [
             'model' => $model,
             'userDataProvider' => $userDataProvider
@@ -136,8 +156,11 @@ class GroupController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        if ($model->getRole() == GroupUser::ROLE_INVITING) {
+        if ($model->getRole() == GroupUser::ROLE_INVITING || (!$model->isMember() && ($model->join_policy == Group::JOIN_POLICY_FREE ||
+            $model->join_policy == Group::JOIN_POLICY_APPLICATION))) {
             return $this->redirect(['/group/accept', 'id' => $model->id]);
+        } else if (!$model->isMember() && $model->join_policy == Group::JOIN_POLICY_INVITE) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
         $newGroupUser = new GroupUser();
         $newContest = new Contest();
@@ -271,19 +294,51 @@ class GroupController extends Controller
     }
 
     /**
+     * @param $id
+     * @return string
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     */
+    public function actionUserUpdate($id, $role = 0)
+    {
+        $groupUser = GroupUser::findOne($id);
+        $group = $this->findModel($groupUser->group_id);
+        if (!$group->hasPermission()) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
+        if ($role == 1) { // 同意加入
+            $groupUser->role = GroupUser::ROLE_MEMBER;
+        } else if ($role == 2) { // 拒绝申请
+            $groupUser->role = GroupUser::ROLE_REUSE_APPLICATION;
+        } else if ($role == 3) { // 重新邀请
+            $groupUser->role = GroupUser::ROLE_INVITING;
+        } else if ($role == 4 && $group->getRole() == GroupUser::ROLE_LEADER) { // 设为管理员
+            $groupUser->role = GroupUser::ROLE_MANAGER;
+        } else if ($role == 5 && $group->getRole() == GroupUser::ROLE_LEADER) { // 设为普通成员
+            $groupUser->role = GroupUser::ROLE_MEMBER;
+        }
+        if ($role != 0) {
+            $groupUser->update();
+            Yii::$app->cache->delete('role' . $group->id . $groupUser->user_id);
+            return $this->redirect(['/group/view', 'id' => $group->id]);
+        }
+
+        return $this->renderAjax('user_manager', [
+            'model' => $group,
+            'groupUser' => $groupUser
+        ]);
+    }
+
+    /**
      * Finds the Group model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
      * @return Group the loaded model
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws ForbiddenHttpException
      */
     protected function findModel($id)
     {
         if (($model = Group::findOne($id)) !== null) {
-            if (!$model->getRole()) {
-                throw new ForbiddenHttpException('You are not allowed to perform this action.');
-            }
             return $model;
         }
 

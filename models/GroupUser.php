@@ -16,13 +16,15 @@ use Yii;
 class GroupUser extends \yii\db\ActiveRecord
 {
     /**
-     * 权限对应：拒绝，邀请中，普通成员，管理员，领导（最高权限）
+     * 权限对应：拒绝邀请，拒绝申请，邀请中，申请中，普通成员，管理员，领导（最高权限）
      */
-    const ROLE_REUSE = 0;
-    const ROLE_INVITING = 1;
-    const ROLE_MEMBER = 2;
-    const ROLE_MANAGER = 3;
-    const ROLE_LEADER = 4;
+    const ROLE_REUSE_INVITATION = 0;
+    const ROLE_REUSE_APPLICATION = 1;
+    const ROLE_INVITING = 2;
+    const ROLE_APPLICATION = 3;
+    const ROLE_MEMBER = 4;
+    const ROLE_MANAGER = 5;
+    const ROLE_LEADER = 6;
 
     /**
      * @var string 邀请用户时用到
@@ -82,7 +84,9 @@ class GroupUser extends \yii\db\ActiveRecord
     {
         $roles = [
             Yii::t('app', 'Refuse to join'),
+            Yii::t('app', 'Refuse to apply'),
             Yii::t('app', 'Inviting'),
+            Yii::t('app', 'Apply to join'),
             Yii::t('app', 'Member'),
             Yii::t('app', 'Manager'),
             Yii::t('app', 'Leader')
@@ -93,6 +97,8 @@ class GroupUser extends \yii\db\ActiveRecord
         $rolesColor = [
             'text-danger',
             'text-warning',
+            'text-info',
+            'text-info',
             'text-info',
             'text-primary',
             'text-success'

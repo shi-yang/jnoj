@@ -169,14 +169,16 @@ $this->title = $model->name;
                         'class' => 'yii\grid\ActionColumn',
                         'template' => '{user-update} {user-delete}',
                         'buttons' => [
-//                            'user-update' => function ($url, $model, $key) {
-//                                $options = [
-//                                    'title' => Yii::t('yii', 'Update'),
-//                                    'aria-label' => Yii::t('yii', 'Update'),
-//                                    'data-pjax' => '0',
-//                                ];
-//                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, $options);
-//                            },
+                            'user-update' => function ($url, $model, $key) {
+                                $options = [
+                                    'title' => Yii::t('yii', 'Update'),
+                                    'aria-label' => Yii::t('yii', 'Update'),
+                                    'data-pjax' => '0',
+                                    'onclick' => 'return false',
+                                    'data-click' => "user-manager"
+                                ];
+                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, $options);
+                            },
                             'user-delete' => function ($url, $model, $key) {
                                 $options = [
                                     'title' => Yii::t('yii', 'Delete'),
@@ -196,3 +198,25 @@ $this->title = $model->name;
         </div>
     </div>
 </div>
+<?php
+$js = <<<EOF
+$('[data-click=user-manager]').click(function() {
+    $.ajax({
+        url: $(this).attr('href'),
+        type:'post',
+        error: function(){alert('error');},
+        success:function(html){
+        $('#solution-content').html(html);
+        $('#solution-info').modal('show');
+    }
+    });
+});
+EOF;
+$this->registerJs($js);
+?>
+<?php Modal::begin([
+    'options' => ['id' => 'solution-info']
+]); ?>
+    <div id="solution-content">
+    </div>
+<?php Modal::end(); ?>
