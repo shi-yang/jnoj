@@ -1422,6 +1422,8 @@ int main(int argc, char** argv)
     subtask_struct * subtask_node = subtask_list;
     int test_result_rec[OJ_NT + 1]; // 记录各个测试点的通过结果的数量
     memset(test_result_rec, 0, sizeof(test_result_rec));
+
+    // 遍历子任务链表
     while (subtask_node->next != NULL) {
         subtask_node = subtask_node->next;
         int pass_count = 0;
@@ -1429,6 +1431,7 @@ int main(int argc, char** argv)
         cases_array = cJSON_CreateArray();
         cJSON_AddItemToArray(subtask_json_array, subtask_json_object);
         cJSON_AddItemToObject(subtask_json_object, "cases", cases_array);
+        // 遍历数据点进行测评
         for (int i = 0; i < subtask_node->test_count; i++) {
             read_files_run_solution(&verdict_res, problem, subtask_node->test_input_name[i],
                                     infile, outfile, userfile, work_dir, &is_pe, solution_id,
@@ -1446,8 +1449,12 @@ int main(int argc, char** argv)
             cJSON * case_json_object = create_case_object(verdict_res);
             cJSON_AddItemToArray(cases_array, case_json_object);
 
-            // 非OI模式出错后不再评判
+            // 非OI模式出错后不再测评
             if (!oi_mode && run_result != OJ_AC && run_result != OJ_PE) {
+                break;
+            }
+            // OI 模式下存在子任务时，若子任务出错则不再测评该子任务
+            if (oi_mode && subtask_cnt != 0 && run_result != OJ_AC && run_result != OJ_PE) {
                 break;
             }
             if (oi_mode) {
