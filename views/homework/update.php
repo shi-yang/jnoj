@@ -46,6 +46,8 @@ $problems = $model->problems;
 
             <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
 
+            <?= $form->field($model, 'editorial')->widget('app\widgets\ckeditor\CKeditor'); ?>
+
             <?= $form->field($model, 'type')->radioList([
                 Contest::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
                 Contest::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),

@@ -44,6 +44,8 @@ class Homework extends Contest
             'status' => Yii::t('app', 'Status'),
             'type' => Yii::t('app', 'Type'),
             'created_by' => Yii::t('app', 'Created By'),
+            'description' => Yii::t('app', 'Description'),
+            'editorial' => Yii::t('app', 'Editorial'),
         ];
     }
 
