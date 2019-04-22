@@ -112,6 +112,7 @@ void init_mysql_conf()
             read_buf(buf, "OJ_PASSWORD", db.password);
             read_buf(buf, "OJ_DB_NAME", db.db_name);
             read_int(buf, "OJ_PORT_NUMBER", &db.port_number);
+            read_buf(buf, "OJ_MYSQL_UNIX_PORT", db.mysql_unix_port);
             read_int(buf, "OJ_SLEEP_TIME", &sleep_time);
             read_int(buf, "OJ_TOTAL", &oj_tot);
             read_int(buf, "OJ_MOD", &oj_mod);
