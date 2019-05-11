@@ -82,13 +82,13 @@ class ContestController extends Controller
         if (($post = Yii::$app->request->post())) {
             $pid = intval($post['problem_id']);
             $new_pid = intval($post['new_problem_id']);
-            $has_problem1 = (new Query())->select('problem_id')
+            $has_problem1 = (new Query())->select('id')
                 ->from('{{%problem}}')
-                ->where('problem_id=:id', [':id' => $pid])
+                ->where('id=:id', [':id' => $pid])
                 ->exists();
-            $has_problem2 = (new Query())->select('problem_id')
+            $has_problem2 = (new Query())->select('id')
                 ->from('{{%problem}}')
-                ->where('problem_id=:id', [':id' => $pid])
+                ->where('id=:id', [':id' => $pid])
                 ->exists();
             if ($has_problem1 && $has_problem2) {
                 $problem_in_contest = (new Query())->select('problem_id')
@@ -102,7 +102,7 @@ class ContestController extends Controller
 
                 Yii::$app->db->createCommand()->update('{{%contest_problem}}', [
                     'problem_id' => $new_pid,
-                ], ['problem_id' => $pid, 'contest_id' => $model->contest_id])->execute();
+                ], ['problem_id' => $pid, 'contest_id' => $model->id])->execute();
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));

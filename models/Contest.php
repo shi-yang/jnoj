@@ -236,7 +236,8 @@ class Contest extends \yii\db\ActiveRecord
     {
         return Yii::$app->db->createCommand('
             SELECT u.id as user_id, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
-            FROM `solution` `s` LEFT JOIN `user` `u` ON u.id=s.created_by
+            FROM `solution` `s`
+            LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id AND `s`.`created_at` <= :endtime ORDER BY `s`.`id`
         ', [':id' => $this->id, ':endtime' => $this->end_time])->queryAll();
     }
@@ -287,14 +288,19 @@ class Contest extends \yii\db\ActiveRecord
     {
         $users_solution_data = $this->getUsersSolution();
         $users = $this->getContestUser();
+        $problems = $this->getProblems();
         $result = [];
         $first_blood = [];
         $submit_count = [];
+        $problem_ids = [];
         $count = count($users_solution_data);
         $start_time = $this->start_time;
         $end_time = $this->end_time;
         $lock_time = 0x7fffffff;
 
+        foreach ($problems as $problem) {
+            $problem_ids[$problem['problem_id']] = 1;
+        }
         foreach ($users as $user) {
             $result[$user['user_id']]['username'] = $user['username'];
             $result[$user['user_id']]['role'] = $user['role'];
@@ -316,6 +322,10 @@ class Contest extends \yii\db\ActiveRecord
             $user = $row['user_id'];
             $pid = $row['problem_id'];
             $created_at = $row['created_at'];
+
+            if (!isset($problem_ids[$pid])) {
+                continue;
+            }
 
             // 初始化数据信息
             if (!isset($submit_count[$pid]['solved']))
@@ -415,6 +425,7 @@ class Contest extends \yii\db\ActiveRecord
     {
         $users_solution_data = $this->getUsersSolution();
         $users = $this->getContestUser();
+        $problems = $this->getProblems();
         $result = [];
         $first_blood = [];
         $submit_count = [];
@@ -436,6 +447,10 @@ class Contest extends \yii\db\ActiveRecord
             $result[$user['user_id']]['student_number'] = $user['student_number'];
         }
 
+        foreach ($problems as $problem) {
+            $problem_ids[$problem['problem_id']] = 1;
+        }
+
         if (!empty($this->lock_board_time)) {
             $lock_time = $this->lock_board_time;
         }
@@ -446,6 +461,10 @@ class Contest extends \yii\db\ActiveRecord
             $pid = $row['problem_id'];
             $created_at = $row['created_at'];
             $score = $row['score'];
+
+            if (!isset($problem_ids[$pid])) {
+                continue;
+            }
 
             // 初始化数据信息
             if (!isset($submit_count[$pid]['solved']))
