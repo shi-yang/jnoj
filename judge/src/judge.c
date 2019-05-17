@@ -1305,15 +1305,16 @@ int main(int argc, char** argv)
     }
 
     //set work directory to start running & judging
-    sprintf(work_dir, "%srun/%d", oj_home, runner_id);
+    sprintf(work_dir, "%srun%d/", oj_home, runner_id);
     if (opendir(work_dir) == NULL) {
         execute_cmd("/bin/mkdir -p %s", work_dir);
         execute_cmd("/bin/chown judge %s ", work_dir);
         execute_cmd("chmod 777 %s ", work_dir);
     }
     clean_workdir(work_dir);
-    if (shm_run)
+    if (shm_run) {
         mk_shm_workdir(work_dir);
+    }
     chdir(work_dir);
     get_solution_info(solution_id, &problem_id, &lang);
 
