@@ -99,7 +99,6 @@ typedef struct subtask_s {
 
 static char oj_home[BUFFER_SIZE];
 
-static int max_running;
 static int sleep_time;
 static int java_time_bonus = 5;
 static int java_memory_bonus = 512;
@@ -186,7 +185,6 @@ void init_mysql_conf()
     FILE *fp = NULL;
     char buf[BUFFER_SIZE];
     db.port_number = 3306;
-    max_running = 3;
     sleep_time = 3;
     strcpy(java_xms, "-Xms32m");
     strcpy(java_xmx, "-Xmx256m");
