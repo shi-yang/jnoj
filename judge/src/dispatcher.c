@@ -41,7 +41,7 @@
 #define LOCKFILE "/var/run/judged.pid"
 #define LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define BUFFER_SIZE 1024
-#define STD_MB 1048576
+#define STD_MB 1048576LL
 
 static char lock_file[BUFFER_SIZE] = LOCKFILE;
 static char oj_home[BUFFER_SIZE];
