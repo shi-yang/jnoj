@@ -308,9 +308,11 @@ int compare(const char *file1, const char *file2)
                 }
             }
         }
-    end: 
-    fclose(f1);
-    fclose(f2);
+    end:
+    if (f1)
+        fclose(f1);
+    if (f2)
+        fclose(f2);
     return ret;
 }
 
@@ -411,7 +413,9 @@ int compile(int lang, char * work_dir)
         }
         setrlimit(RLIMIT_AS, &LIM);
 
-
+        freopen("ce.txt", "w", stderr);
+        execute_cmd("/bin/chown judge %s ", work_dir);
+        execute_cmd("/bin/chmod 700 %s ", work_dir);
 
         if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3)
         {
@@ -433,8 +437,6 @@ int compile(int lang, char * work_dir)
             execute_cmd("mount -o remount,ro proc");
             chroot(work_dir);
         }
-
-        freopen("ce.txt", "w", stderr);
 
         while (setgid(1536) != 0)
             sleep(1);
@@ -1305,7 +1307,7 @@ int main(int argc, char** argv)
     }
 
     //set work directory to start running & judging
-    sprintf(work_dir, "%srun%d/", oj_home, runner_id);
+    sprintf(work_dir, "%srun/%d/", oj_home, runner_id);
     if (opendir(work_dir) == NULL) {
         execute_cmd("/bin/mkdir -p %s", work_dir);
         execute_cmd("/bin/chown judge %s ", work_dir);
