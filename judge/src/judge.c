@@ -457,8 +457,8 @@ int compile(int lang, char * work_dir)
             status = get_file_size("ce.txt");
         if (DEBUG)
             printf("status = %d\n", status);
-        execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>&1 >/dev/null");
-        execute_cmd("/bin/umount -f %s/* 2>&1 >/dev/null", work_dir);
+        execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>/dev/null");
+        execute_cmd("/bin/umount -f %s/* 2>/dev/null", work_dir);
         umount(work_dir);
  
         return status;
@@ -721,7 +721,7 @@ void run_solution(problem_struct problem, int lang, char * work_dir,
     setrlimit(RLIMIT_FSIZE, &LIM);
     // proc limit
     if (lang == LANG_JAVA) {
-        LIM.rlim_cur = LIM.rlim_max = 80;
+        LIM.rlim_cur = LIM.rlim_max = 200;
     } else {
         LIM.rlim_cur = LIM.rlim_max = 1;
     }
@@ -729,8 +729,8 @@ void run_solution(problem_struct problem, int lang, char * work_dir,
     setrlimit(RLIMIT_NPROC, &LIM);
 
     // set the stack
-    LIM.rlim_cur = STD_MB << 6;
-    LIM.rlim_max = STD_MB << 6;
+    LIM.rlim_cur = STD_MB << 7;
+    LIM.rlim_max = STD_MB << 7;
     setrlimit(RLIMIT_STACK, &LIM);
     // set the memory
     LIM.rlim_cur = STD_MB * problem.memory_limit / 2 * 3;
@@ -1041,13 +1041,13 @@ void clean_workdir(char * work_dir)
 {
     umount(work_dir);
     if (DEBUG) {
-        execute_cmd("/bin/rm -rf %s/log/*", work_dir);
-        execute_cmd("mkdir %s/log/", work_dir);
-        execute_cmd("/bin/mv %s/* %s/log/", work_dir, work_dir);
+        execute_cmd("/bin/rm -rf %s/log/* 2>/dev/null", work_dir);
+        execute_cmd("mkdir %s/log/ 2>/dev/null", work_dir);
+        execute_cmd("/bin/mv %s/* %s/log/ 2>/dev/null", work_dir, work_dir);
     } else {
-        execute_cmd("mkdir %s/log/", work_dir);
-        execute_cmd("/bin/mv %s/* %s/log/", work_dir, work_dir);
-        execute_cmd("/bin/rm -rf %s/log/*", work_dir);
+        execute_cmd("mkdir %s/log/ 2>/dev/null", work_dir);
+        execute_cmd("/bin/mv %s/* %s/log/ 2>/dev/null", work_dir, work_dir);
+        execute_cmd("/bin/rm -rf %s/log/* 2>/dev/null", work_dir);
     }
 }
 
