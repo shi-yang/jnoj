@@ -133,12 +133,23 @@ var waitingCount = $("strong[waiting=true]").length;
 if (waitingCount > 0) {
     console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
     var interval = null;
+    var waitingQueue = [];
+    $("strong[waiting=true]").each(function(){
+        waitingQueue.push($(this));
+    });
+    waitingQueue.reverse();
     var testWaitingsDone = function () {
+        updateVerdictByKey(waitingQueue[0]);
         var waitingCount = $("strong[waiting=true]").length;
+        while (waitingCount < waitingQueue.length) {
+            if (waitingCount < waitingQueue.length) {
+                waitingQueue.shift();
+            }
+            updateVerdictByKey(waitingQueue[0]);
+            waitingCount = $("strong[waiting=true]").length;
+        }
         console.log("There is waitingCount=" + waitingCount + ", starting submissionsEventCatcher...");
-        $("strong[waiting=true]").each(function(){
-            updateVerdictByKey($(this));
-        });
+        
         if (interval && waitingCount === 0) {
             console.log("Stopping submissionsEventCatcher.");
             clearInterval(interval);
