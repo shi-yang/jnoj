@@ -373,21 +373,20 @@ void update_problem_stat(int pid)
         write_log(mysql_error(conn));
 }
 
-void umount(char * work_dir)
+void umount(char *work_dir)
 {
-    execute_cmd("/bin/umount -f %s/proc", work_dir);
-    execute_cmd("/bin/umount -f %s/dev ", work_dir);
-    execute_cmd("/bin/umount -f %s/lib ", work_dir);
-    execute_cmd("/bin/umount -f %s/lib64 ", work_dir);
-    execute_cmd("/bin/umount -f %s/etc/alternatives ", work_dir);
-    execute_cmd("/bin/umount -f %s/usr ", work_dir);
-    execute_cmd("/bin/umount -f %s/bin ", work_dir);
-    execute_cmd("/bin/umount -f %s/proc ", work_dir);
-    execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev ");
-    execute_cmd("/bin/umount -f bin usr lib lib64 proc dev ");
-    execute_cmd("/bin/umount -f %s/* ",work_dir);
-    execute_cmd("/bin/umount -f %s/log/* ",work_dir);
-    execute_cmd("/bin/umount -f %s/log/etc/alternatives ", work_dir);
+    execute_cmd("/bin/umount -f %s/proc 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/dev 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/lib 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/lib64 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/etc/alternatives 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/usr 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/bin 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/proc 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>/dev/null");
+    execute_cmd("/bin/umount -f %s/* 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/log/* 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/log/etc/alternatives 2>/dev/null", work_dir);
 }
 
 int compile(int lang, char * work_dir)
@@ -412,18 +411,26 @@ int compile(int lang, char * work_dir)
         }
         setrlimit(RLIMIT_AS, &LIM);
 
-        if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3) {
-            execute_cmd("mkdir -p "
-                        "bin usr lib lib64 etc/alternatives proc tmp dev");
+
+
+        if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3)
+        {
+            execute_cmd("mkdir -p bin usr lib lib64 etc/alternatives proc tmp dev");
             execute_cmd("chown judge *");
             execute_cmd("mount -o bind /bin bin");
+            execute_cmd("mount -o remount,ro bin");
             execute_cmd("mount -o bind /usr usr");
+            execute_cmd("mount -o remount,ro usr");
             execute_cmd("mount -o bind /lib lib");
-#ifndef __i386
+            execute_cmd("mount -o remount,ro lib");
+#ifndef __i386__
             execute_cmd("mount -o bind /lib64 lib64");
+            execute_cmd("mount -o remount,ro lib64");
 #endif
             execute_cmd("mount -o bind /etc/alternatives etc/alternatives");
+            execute_cmd("mount -o remount,ro etc/alternatives");
             execute_cmd("mount -o bind /proc proc");
+            execute_cmd("mount -o remount,ro proc");
             chroot(work_dir);
         }
 
