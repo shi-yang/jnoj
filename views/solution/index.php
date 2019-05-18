@@ -145,6 +145,9 @@ if (waitingCount > 0) {
             if (waitingCount < waitingQueue.length) {
                 waitingQueue.shift();
             }
+            if (waitingQueue.length === 0) {
+                break;
+            }
             updateVerdictByKey(waitingQueue[0]);
             waitingCount = $("strong[waiting=true]").length;
         }
