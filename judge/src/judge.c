@@ -1457,7 +1457,9 @@ int main(int argc, char** argv)
             }
             cJSON * case_json_object = create_case_object(verdict_res);
             cJSON_AddItemToArray(cases_array, case_json_object);
-
+            if (oi_mode) {
+                test_total_count++;
+            }
             // 非OI模式出错后不再测评
             if (!oi_mode && run_result != OJ_AC && run_result != OJ_PE) {
                 break;
@@ -1465,9 +1467,6 @@ int main(int argc, char** argv)
             // OI 模式下存在子任务时，若子任务出错则不再测评该子任务
             if (oi_mode && subtask_cnt != 0 && run_result != OJ_AC && run_result != OJ_PE) {
                 break;
-            }
-            if (oi_mode) {
-                test_total_count++;
             }
         }
         // 没有子任务情况下所有数据点总分100分。
