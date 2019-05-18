@@ -410,15 +410,15 @@ int compile(int lang, char * work_dir)
         } else {
             LIM.rlim_max = STD_MB * 512;
             LIM.rlim_cur = STD_MB * 512;
+            setrlimit(RLIMIT_AS, &LIM);
         }
-        setrlimit(RLIMIT_AS, &LIM);
+        
 
         freopen("ce.txt", "w", stderr);
         execute_cmd("/bin/chown judge %s ", work_dir);
         execute_cmd("/bin/chmod 700 %s ", work_dir);
 
-        if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3)
-        {
+        if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3) {
             execute_cmd("mkdir -p bin usr lib lib64 etc/alternatives proc tmp dev");
             execute_cmd("chown judge *");
             execute_cmd("mount -o bind /bin bin");
@@ -1242,6 +1242,7 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
                    subtask_cnt, name_prefix, begin, end, score);
         }
     }
+    fclose(fp);
     subtask_rear->next = NULL;
     if (subtask_cnt == 0) {
         free(head);
