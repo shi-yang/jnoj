@@ -190,6 +190,22 @@ class ProblemController extends Controller
     }
 
     /**
+     * 查看题解
+     * @param $id
+     * @return string
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     */
+    public function actionSolution($id)
+    {
+        $model = $this->findModel($id);
+
+        return $this->render('solution', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
      * Finds the Problem model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id

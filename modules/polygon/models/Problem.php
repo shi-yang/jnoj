@@ -27,6 +27,7 @@ use app\models\User;
  * @property int $time_limit
  * @property int $memory_limit
  * @property string $tags
+ * @property string $solution
  * @property int $status
  * @property int $solution_lang
  * @property string $solution_source
@@ -67,7 +68,7 @@ class Problem extends \yii\db\ActiveRecord
     {
         return [
             [['description', 'input', 'output', 'sample_input', 'sample_output', 'sample_input_2', 'sample_output_2',
-              'sample_input_3', 'sample_output_3', 'hint', 'tags', 'spj_source', 'solution_source'], 'string'],
+              'sample_input_3', 'sample_output_3', 'hint', 'tags', 'spj_source', 'solution_source', 'solution'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'required'],
             [['created_by', 'time_limit', 'memory_limit', 'status', 'solution_lang', 'spj_lang', 'spj'], 'integer'],

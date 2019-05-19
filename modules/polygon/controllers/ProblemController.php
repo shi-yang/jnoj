@@ -83,6 +83,24 @@ class ProblemController extends Controller
     }
 
     /**
+     * 题解
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionAnswer($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->save();
+            return $this->refresh();
+        }
+        return $this->render('answer', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
      * Displays a single Problem model.
      * @param integer $id
      * @return mixed

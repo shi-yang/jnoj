@@ -27,6 +27,7 @@ use yii\db\Query;
  * @property int $submit
  * @property int $solved
  * @property int $created_by
+ * @property string $solution
  * @property string $tags
  * @property int polygon_problem_id
  */
@@ -68,7 +69,7 @@ class Problem extends ActiveRecord
     public function rules()
     {
         return [
-            [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'test_status', 'tags'], 'string'],
+            [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'test_status', 'solution','tags'], 'string'],
             [['sample_input_2', 'sample_output_2', 'sample_input_3', 'sample_output_3', 'created_at',
               'updated_at', ], 'string'],
             [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_by', 'polygon_problem_id'], 'integer'],

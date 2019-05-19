@@ -10,21 +10,8 @@ $this->title = Html::encode($model->title);
 $files = $model->getDataFiles();
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Problems'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
+$this->params['model'] = $model;
 ?>
-<div class="problem-header">
-    <?= \yii\bootstrap\Nav::widget([
-        'options' => ['class' => 'nav nav-pills'],
-        'items' => [
-            ['label' => Yii::t('app', 'Preview'), 'url' => ['/admin/problem/view', 'id' => $model->id]],
-            ['label' => Yii::t('app', 'Edit'), 'url' => ['/admin/problem/update', 'id' => $model->id]],
-            ['label' => Yii::t('app', 'Tests Data'), 'url' => ['/admin/problem/test-data', 'id' => $model->id]],
-            ['label' => Yii::t('app', 'Verify Data'), 'url' => ['/admin/problem/verify', 'id' => $model->id]],
-            ['label' => Yii::t('app', 'SPJ'), 'url' => ['/admin/problem/spj', 'id' => $model->id]],
-            ['label' => Yii::t('app', 'Subtask'), 'url' => ['/admin/problem/subtask', 'id' => $model->id]]
-        ],
-    ]) ?>
-</div>
-<hr>
 <div class="solutions-view">
     <h1>
         <?= Html::encode($model->title) ?>

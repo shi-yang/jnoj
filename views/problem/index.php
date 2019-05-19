@@ -83,7 +83,7 @@ $this->title = Yii::t('app', 'Problems');
         </div>
 
         <div class="panel panel-default">
-            <div class="panel-heading"><?= Yii::t('app', 'Category') ?></div>
+            <div class="panel-heading"><?= Yii::t('app', 'Tags') ?></div>
             <div class="panel-body">
                 <?= TaggingWidget::widget([
                     'items' => $tags,

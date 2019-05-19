@@ -104,10 +104,31 @@ class ProblemController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = 'problem';
         $model = $this->findModel($id);
         $model->setSamples();
 
         return $this->render('view', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * 题解页面
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     */
+    public function actionSolution($id)
+    {
+        $this->layout = 'problem';
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->save();
+            return $this->refresh();
+        }
+
+        return $this->render('solution', [
             'model' => $model,
         ]);
     }
@@ -206,6 +227,7 @@ class ProblemController extends Controller
      */
     public function actionUpdate($id)
     {
+        $this->layout = 'problem';
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             $sample_input = [$model->sample_input, $model->sample_input_2, $model->sample_input_3];
@@ -230,6 +252,7 @@ class ProblemController extends Controller
      */
     public function actionTestData($id)
     {
+        $this->layout = 'problem';
         $model = $this->findModel($id);
         if (Yii::$app->request->isPost) {
             $fileContent = file_get_contents($_FILES["file"]["tmp_name"]);
@@ -276,6 +299,7 @@ class ProblemController extends Controller
      */
     public function actionVerify($id)
     {
+        $this->layout = 'problem';
         $model = $this->findModel($id);
         $solutions = (new Query())->select('id, result, created_at, memory, time, language, code_length')
             ->from('{{%solution}}')
@@ -311,6 +335,7 @@ class ProblemController extends Controller
      */
     public function actionSpj($id)
     {
+        $this->layout = 'problem';
         $model = $this->findModel($id);
 
         $dataPath = Yii::$app->params['judgeProblemDataPath'] . $model->id;
@@ -339,6 +364,7 @@ class ProblemController extends Controller
 
     public function actionSubtask($id)
     {
+        $this->layout = 'problem';
         $model = $this->findModel($id);
 
         $dataPath = Yii::$app->params['judgeProblemDataPath'] . $model->id;
@@ -457,6 +483,7 @@ class ProblemController extends Controller
             $problem->memory_limit = $polygonProblem['memory_limit'];
             $problem->time_limit = $polygonProblem['time_limit'];
             $problem->created_by = $polygonProblem['created_by'];
+            $problem->solution = $polygonProblem['solution'];
             $problem->tags = $polygonProblem['tags'];
             $problem->status = Problem::STATUS_HIDDEN;
             $problem->polygon_problem_id = $id;

@@ -142,6 +142,12 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
             ['/problem/discuss', 'id' => $model->id],
             ['class' => 'btn btn-default'])
         ?>
+        <?php if (!empty($model->solution)): ?>
+        <?= Html::a('<span class="glyphicon glyphicon-info-sign"></span> ' . Yii::t('app', '题解'),
+            ['/problem/solution', 'id' => $model->id],
+            ['class' => 'btn btn-default'])
+        ?>
+        <?php endif; ?>
         <?= Html::a('<span class="glyphicon glyphicon-signal"></span> ' . Yii::t('app', 'Stats'),
             ['/problem/statistics', 'id' => $model->id],
             ['class' => 'btn btn-default', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Problem statistics']
