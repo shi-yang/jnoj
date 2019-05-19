@@ -69,10 +69,12 @@ class Problem extends ActiveRecord
     public function rules()
     {
         return [
-            [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'test_status', 'solution','tags'], 'string'],
+            [['description', 'input', 'output', 'sample_input', 'sample_output', 'hint', 'test_status',
+                'solution','tags'], 'string'],
             [['sample_input_2', 'sample_output_2', 'sample_input_3', 'sample_output_3', 'created_at',
               'updated_at', ], 'string'],
-            [['time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_by', 'polygon_problem_id'], 'integer'],
+            [['id', 'time_limit', 'memory_limit', 'accepted', 'submit', 'solved', 'status', 'contest_id', 'created_by',
+                'polygon_problem_id'], 'integer'],
             [['title'], 'string', 'max' => 200],
             [['spj'], 'integer', 'max' => 1],
             [['source'], 'string', 'max' => 100],

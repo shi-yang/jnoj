@@ -14,6 +14,9 @@ use yii\helpers\Url;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->field($model, 'id')->textInput(['placeholder' => '可不填'])
+        ->hint('此处用于指定题目ID，若不填，新建题目时题目ID会自动增长。新建题目时填写的ID不能为已经存在的ID') ?>
+
     <?= $form->field($model, 'title')->textInput() ?>
 
     <?= $form->field($model, 'time_limit', [

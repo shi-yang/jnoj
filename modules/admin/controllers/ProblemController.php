@@ -6,6 +6,7 @@ use app\models\ContestProblem;
 use app\models\ProblemSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -176,9 +177,17 @@ class ProblemController extends Controller
             $model->sample_input = serialize($sample_input);
             $model->sample_output = serialize($sample_output);
             $model->created_by = Yii::$app->user->id;
-            $model->save();
-            mkdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
-            return $this->redirect(['view', 'id' => $model->id]);
+            try {
+                if ($model->save()) {
+                    mkdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+                    Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    Yii::$app->session->setFlash('error', '创建失败');
+                }
+            } catch (Exception $e) {
+                Yii::$app->session->setFlash('error', '创建失败。ID冲突。');
+            }
         }
         $model->setSamples();
 
@@ -234,8 +243,17 @@ class ProblemController extends Controller
             $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_output_3];
             $model->sample_input = serialize($sample_input);
             $model->sample_output = serialize($sample_output);
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+            try {
+                if ($model->save()) {
+                    mkdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+                    Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    Yii::$app->session->setFlash('error', '更新失败');
+                }
+            } catch (Exception $e) {
+                Yii::$app->session->setFlash('error', '更新失败：ID冲突');
+            }
         }
         $model->setSamples();
 
