@@ -245,7 +245,6 @@ class ProblemController extends Controller
             $model->sample_output = serialize($sample_output);
             try {
                 if ($model->save()) {
-                    mkdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
                     Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
                     return $this->redirect(['view', 'id' => $model->id]);
                 } else {
