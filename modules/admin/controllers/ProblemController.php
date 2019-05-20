@@ -261,10 +261,10 @@ class ProblemController extends Controller
             } catch (ErrorException $e) {
                 Yii::$app->session->setFlash('error', '更新失败：无法移动数据目录');
                 $transaction->rollBack();
-                $model->id = $oldID;
             } catch (Exception $e) {
                 Yii::$app->session->setFlash('error', '更新失败：ID冲突');
             }
+            $model->id = $oldID;
         }
         $model->setSamples();
 
@@ -427,11 +427,17 @@ class ProblemController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        try {
+            $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+            rmdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+        } catch (\ErrorException $e) {
+            Yii::$app->session->setFlash('error', '删除失败:' . $e->getMessage());
+            return $this->redirect(['index']);
+        }
         Solution::deleteAll(['problem_id' => $id]);
         ContestProblem::deleteAll(['problem_id' => $id]);
         $model->delete();
-        $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $model->id);
-        @rmdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+        Yii::$app->session->setFlash('success', Yii::t('app', '删除成功'));
         return $this->redirect(['index']);
     }
 
@@ -479,7 +485,7 @@ class ProblemController extends Controller
             if($file != "." && $file != "..") {
                 $fullpath = $dir . "/" . $file;
                 if(!is_dir($fullpath)) {
-                    @unlink($fullpath);
+                    unlink($fullpath);
                 } else {
                     $this->makeDirEmpty($fullpath);
                 }
@@ -501,7 +507,12 @@ class ProblemController extends Controller
             $problem = new Problem();
             if (!empty($in)) {
                 $problem = Problem::findOne(['polygon_problem_id' => $id]);
-                $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+                try {
+                    $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $problem->id);
+                } catch (\ErrorException $e) {
+                    $e->getMessage();
+                    return false;
+                }
             }
             $problem->title = $polygonProblem['title'];
             $problem->description = $polygonProblem['description'];
