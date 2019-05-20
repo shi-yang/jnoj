@@ -5,8 +5,10 @@ namespace app\modules\admin\controllers;
 use app\models\ContestProblem;
 use app\models\ProblemSearch;
 use Yii;
+use yii\base\ErrorException;
 use yii\data\ActiveDataProvider;
 use yii\db\Exception;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -237,19 +239,29 @@ class ProblemController extends Controller
     public function actionUpdate($id)
     {
         $this->layout = 'problem';
+        $id = intval($id);
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             $sample_input = [$model->sample_input, $model->sample_input_2, $model->sample_input_3];
             $sample_output = [$model->sample_output, $model->sample_output_2, $model->sample_output_3];
             $model->sample_input = serialize($sample_input);
             $model->sample_output = serialize($sample_output);
+            $oldID = $id;
+            $newID = $model->id;
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save()) {
-                    Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    Yii::$app->session->setFlash('error', '更新失败');
+                if ($model->save() && $oldID != $newID) {
+                    $dataOldName = Yii::$app->params['judgeProblemDataPath'] . $oldID;
+                    $dataNewName = Yii::$app->params['judgeProblemDataPath'] . $newID;
+                    rename($dataOldName, $dataNewName);
                 }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
+                return $this->redirect(['update', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                Yii::$app->session->setFlash('error', '更新失败：无法移动数据目录');
+                $transaction->rollBack();
+                $model->id = $oldID;
             } catch (Exception $e) {
                 Yii::$app->session->setFlash('error', '更新失败：ID冲突');
             }
@@ -414,10 +426,12 @@ class ProblemController extends Controller
      */
     public function actionDelete($id)
     {
+        $model = $this->findModel($id);
         Solution::deleteAll(['problem_id' => $id]);
         ContestProblem::deleteAll(['problem_id' => $id]);
-        $this->findModel($id)->delete();
-
+        $model->delete();
+        $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+        @rmdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
         return $this->redirect(['index']);
     }
 

@@ -68,6 +68,12 @@ foreach ($problems as $key => $p) {
                         'label' => Yii::t('app', 'Problem'),
                         'value' => function ($model, $key, $index, $column) {
                             $res = $model->getProblemInContest();
+                            if (!isset($model->problem)) {
+                                return null;
+                            }
+                            if (!isset($res->num)) {
+                                return $model->problem->title;
+                            }
                             return Html::a(chr(65 + $res->num) . ' - ' . $model->problem->title,
                                 ['/contest/problem', 'id' => $res->contest_id, 'pid' => $res->num]);
                         },

@@ -54,6 +54,9 @@ foreach ($problems as $key => $p) {
                 'label' => Yii::t('app', 'Problem'),
                 'value' => function ($model, $key, $index, $column) {
                     $res = $model->getProblemInContest();
+                    if (!isset($model->problem)) {
+                        return null;
+                    }
                     if (!isset($res->num)) {
                         return $model->problem->title;
                     }
