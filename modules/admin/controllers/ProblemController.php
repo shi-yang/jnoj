@@ -254,6 +254,7 @@ class ProblemController extends Controller
                     $dataOldName = Yii::$app->params['judgeProblemDataPath'] . $oldID;
                     $dataNewName = Yii::$app->params['judgeProblemDataPath'] . $newID;
                     rename($dataOldName, $dataNewName);
+                    Solution::updateAll(['problem_id' => $newID], ['problem_id' => $oldID]);
                 }
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
