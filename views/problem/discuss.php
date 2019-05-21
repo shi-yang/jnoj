@@ -1,5 +1,6 @@
 <?php
 
+use app\models\User;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
@@ -51,6 +52,18 @@ $this->params['breadcrumbs'][] = $this->title;
                             <time title="<?= Yii::t('app', 'Last Reply Time') ?>">
                                 <span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asRelativeTime($discuss->updated_at)?>
                             </time>
+                            <?php if (!Yii::$app->user->isGuest && (Yii::$app->user->id === $discuss->created_by || Yii::$app->user->identity->role == User::ROLE_ADMIN)): ?>
+                                &nbsp;•&nbsp;
+                                <span class="glyphicon glyphicon-edit"></span> <?= Html::a(Yii::t('app', 'Edit'), ['/discuss/update', 'id' => $discuss->id]) ?>
+                                &nbsp;•&nbsp;
+                                <span class="glyphicon glyphicon-trash"></span>
+                                <?= Html::a(Yii::t('app', 'Delete'), ['/discuss/delete', 'id' => $discuss->id], [
+                                    'data' => [
+                                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'method' => 'post',
+                                    ],
+                                ]) ?>
+                            <?php endif; ?>
                         </small>
                     </td>
                     <td width="50" align="right" valign="middle" title="<?= Yii::t('app', 'Reply') ?>">

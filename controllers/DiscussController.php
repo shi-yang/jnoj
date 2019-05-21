@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use app\models\Discuss;
 use yii\data\Pagination;
@@ -78,17 +79,18 @@ class DiscussController extends Controller
     {
         $model = $this->findModel($id);
 
-        if (Yii::$app->user->id != $model->created_by) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        if (!Yii::$app->user->isGuest && (Yii::$app->user->id === $model->created_by || Yii::$app->user->identity->role == User::ROLE_ADMIN)) {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('update', [
+                'model' => $model,
+            ]);
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        throw new ForbiddenHttpException('You are not allowed to perform this action.');
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -100,10 +102,20 @@ class DiscussController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        if (Yii::$app->user->id === $model->created_by) {
+        $parentID = $model->parent_id;
+        $entityID = $model->entity_id;
+        $entity = $model->entity;
+        if (!Yii::$app->user->isGuest && (Yii::$app->user->id === $model->created_by || Yii::$app->user->identity->role == User::ROLE_ADMIN)) {
             $model->delete();
             Discuss::deleteAll(['parent_id' => $model->id]);
             Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
+            if ($entity == Discuss::ENTITY_PROBLEM) {
+                if ($parentID != 0) {
+                    return $this->redirect(['/discuss/view', 'id' => $parentID]);
+                } else {
+                    return $this->redirect(['/problem/discuss', 'id' => $entityID]);
+                }
+            }
             return $this->redirect(['/site/index']);
         }
         throw new ForbiddenHttpException('You are not allowed to perform this action.');
