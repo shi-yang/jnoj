@@ -96,15 +96,23 @@ foreach ($problems as $key => $p) {
             ],
             [
                 'attribute' => 'time',
-                'value' => function ($model, $key, $index, $column) {
-                    return $model->time . ' MS';
+                'value' => function ($solution, $key, $index, $column) use ($model) {
+                    // OI 比赛模式未结束时不返回具体结果
+                    if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                        return "－";
+                    }
+                    return $solution->time . ' MS';
                 },
                 'format' => 'raw'
             ],
             [
                 'attribute' => 'memory',
-                'value' => function ($model, $key, $index, $column) {
-                    return $model->memory . ' KB';
+                'value' => function ($solution, $key, $index, $column) use ($model) {
+                    // OI 比赛模式未结束时不返回具体结果
+                    if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                        return "－";
+                    }
+                    return $solution->memory . ' KB';
                 },
                 'format' => 'raw'
             ],

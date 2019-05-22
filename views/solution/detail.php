@@ -43,10 +43,34 @@ $this->params['breadcrumbs'][] = $this->title;
                 } ?>
             </th>
             <?php if (Yii::$app->setting->get('oiMode')): ?>
-                <th width="80px"><?= $model->score ?></th>
+                <th width="80px">
+                    <?php
+                        if ($model->canViewResult()) {
+                            echo $model->score;
+                        } else {
+                            echo '-';
+                        }
+                    ?>
+                </th>
             <?php endif; ?>
-            <th><?= $model->time ?> MS</th>
-            <th><?= $model->memory ?> KB</th>
+            <th>
+                <?php
+                if ($model->canViewResult()) {
+                    echo $model->time;
+                } else {
+                    echo '-';
+                }
+                ?> MS
+            </th>
+            <th>
+                <?php
+                if ($model->canViewResult()) {
+                    echo $model->memory;
+                } else {
+                    echo '-';
+                }
+                ?> KB
+            </th>
             <th><?= $model->code_length ?></th>
             <th><?= $model->created_at ?></th>
         </tr>
