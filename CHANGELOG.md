@@ -7,7 +7,7 @@ JNOJ Change Log
 
 请阅读 [update.md](https://github.com/shi-yang/jnoj/blob/master/docs/update.md) 来获取更新方法。
 
-0.9.0 2019.5.19 (under development)
+0.9.0 2019.5.22 (under development)
 ------------------
 - Enh: [web、judge、db] 支持 OI 判题模式。**不兼容更新，更新后需要到后台设置页面修改oj名称、学校名称**
 - Enh: [web] 私有比赛、作业模式。将比赛设为私有时，任何时候均只能由参赛用户访问。
@@ -24,6 +24,7 @@ JNOJ Change Log
 - Enh: [web、db] 新增题目题解功能。每道题目都可以单独编写题解。
 - Enh: [web] 可以创建、编辑可以自定义题目 ID，以保持题目ID的连贯性。
 - Enh: [web] 可以删除题目讨论
+- Bug: [web] OI赛制下比赛依然可以看到过题情况
 
 0.8.0 2019.3.3
 ------------------
