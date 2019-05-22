@@ -368,9 +368,6 @@ class ContestController extends Controller
         if (!$model->canView()) {
             return $this->render('/contest/forbidden', ['model' => $model]);
         }
-        if ($model->type == Contest::TYPE_OI && $model->getRunStatus() != Contest::STATUS_ENDED) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
         return $this->render('/contest/standing', [
             'model' => $model
         ]);

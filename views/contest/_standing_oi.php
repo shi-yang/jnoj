@@ -12,10 +12,12 @@ $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];
 ?>
-<?php if ($model->isScoreboardFrozen()): ?>
-    <p>现已是封榜状态，榜单将不再实时更新，待赛后再揭晓</p>
-<?php endif; ?>
-<table class="table table-bordered table-rank">
+<?php if ($model->isScoreboardFrozen()) {
+    echo '<p>待赛后再揭晓</p>';
+    return;
+}
+?>
+<table class="table table-bordered table-rank" style="margin-top: 15px">
     <thead>
     <tr>
         <th width="60px">Rank</th>

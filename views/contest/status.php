@@ -21,8 +21,7 @@ foreach ($problems as $key => $p) {
 }
 ?>
 <div class="solution-index" style="margin-top: 20px">
-    <?php if (!empty($model->lock_board_time) && strtotime($model->lock_board_time) <= time() &&
-              strtotime($model->end_time) >= time() - Yii::$app->setting->get('scoreboardFrozenTime')) :?>
+    <?php if ($model->type != \app\models\Contest::TYPE_OI && $model->isScoreboardFrozen()) :?>
         <p class="text-center">现已是封榜状态，榜单将不再实时更新，只显示封榜前的提交及您个人的所有提交记录。</p>
     <?php endif; ?>
     <?php Pjax::begin() ?>

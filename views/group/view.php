@@ -15,6 +15,7 @@ use app\models\Contest;
 /* @var $newGroupUser app\models\GroupUser */
 
 $this->title = $model->name;
+$scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
 ?>
 <div class="group-view">
     <div class="row">
@@ -61,6 +62,17 @@ $this->title = $model->name;
                         ],
                         'options' => ['autocomplete' => 'off']
                     ]) ?>
+
+                    <?= $form->field($newContest, 'lock_board_time')->widget('app\widgets\laydate\LayDate', [
+                        'clientOptions' => [
+                            'istoday' => true,
+                            'type' => 'datetime'
+                        ]
+                    ])->hint("如果不需要封榜请留空，当前会在比赛结束{$scoreboardFrozenTime}小时后才会自动在前台页面解除封榜限制。
+                        如需提前结束封榜也可选择清空该表单项。使用封榜功能，后台管理界面的比赛榜单仍然处于实时榜单。
+                        <p class='text-danger'>注意：比赛类型为OI时，如果不填写“封榜时间”则会成为实时榜单。如需要非实时榜单，则填写为开始时间或开始时间之前的时间即可。</p>
+                    ") ?>
+
                     <?= $form->field($newContest, 'type')->radioList([
                         Contest::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
                         Contest::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
