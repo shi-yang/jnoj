@@ -286,11 +286,11 @@ class Contest extends \yii\db\ActiveRecord
     {
         $userSolutions = $this->getUsersSolution();
         $problems = $this->getProblems();
-        $problem_ids = [];
-        foreach ($problems as $problem) {
-            $problem_ids[$problem['problem_id']] = 1;
-        }
         $res = [];
+        foreach ($problems as $problem) {
+            $res[$problem['problem_id']]['solved'] = 0;
+            $res[$problem['problem_id']]['submit'] = 0;
+        }
         foreach ($userSolutions as $solution) {
             $pid = $solution['problem_id'];
             // 初始化数据信息
