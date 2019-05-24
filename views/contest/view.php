@@ -14,6 +14,7 @@ $this->params['model'] = $model;
 
 $problems = $model->problems;
 $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
+$submissionStatistics = $model->getSubmissionStatistics();
 ?>
 <div class="contest-overview text-center center-block">
     <div class="table-responsive well">
@@ -45,11 +46,12 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
                 <th width="70px">#</th>
                 <?php
                 if ($model->getRunStatus() == $model::STATUS_ENDED) {
-                    echo "<th width='100px'>Problem Id</th>";
+                    echo "<th width='100px'>题号</th>";
                 }
                 ?>
                 <th><?= Yii::t('app', 'Problem Name') ?></th>
-                <th>Solved</th>
+                <th width="100px">正确 / 提交</th>
+                <th width="80px">解答状态</th>
             </tr>
             </thead>
             <tbody>
@@ -63,16 +65,19 @@ $loginUserProblemSolvingStatus = $model->getLoginUserProblemSolvingStatus();
                     ?>
                     <td><?= Html::a(Html::encode($p['title']), ['/contest/problem', 'id' => $model->id, 'pid' => $key, '#' => 'problem-anchor']) ?></td>
                     <th>
+                        <?= $submissionStatistics[$p['problem_id']]['solved'] ?> / <?= $submissionStatistics[$p['problem_id']]['submit'] ?>
+                    </th>
+                    <th>
                         <?php if (!isset($loginUserProblemSolvingStatus[$p['problem_id']])): ?>
 
                         <?php elseif ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() == \app\models\Contest::STATUS_RUNNING): ?>
                             <span class="glyphicon glyphicon-question-sign"></span>
                         <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] == \app\models\Solution::OJ_AC): ?>
-                            <span class="glyphicon glyphicon-ok text-success"></span>
+                            <span class="glyphicon glyphicon-ok text-success" title="正确解答"></span>
                         <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] < 4): ?>
-                            <span class="glyphicon glyphicon-question-sign text-muted"></span>
+                            <span class="glyphicon glyphicon-question-sign text-muted" title="等待测评"></span>
                         <?php else: ?>
-                            <span class="glyphicon glyphicon-remove text-danger"></span>
+                            <span class="glyphicon glyphicon-remove text-danger" title="未正确解答"></span>
                         <?php endif; ?>
                     </th>
                 </tr>

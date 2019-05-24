@@ -280,6 +280,34 @@ class Contest extends \yii\db\ActiveRecord
     }
 
     /**
+     * 获取每道题提交过题情况
+     */
+    public function getSubmissionStatistics()
+    {
+        $userSolutions = $this->getUsersSolution();
+        $problems = $this->getProblems();
+        $problem_ids = [];
+        foreach ($problems as $problem) {
+            $problem_ids[$problem['problem_id']] = 1;
+        }
+        $res = [];
+        foreach ($userSolutions as $solution) {
+            $pid = $solution['problem_id'];
+            // 初始化数据信息
+            if (!isset($res[$pid]['solved']))
+                $res[$pid]['solved'] = 0;
+            if (!isset($res[$pid]['submit']))
+                $res[$pid]['submit'] = 0;
+
+            if ($solution['result'] == Solution::OJ_AC) {
+                $res[$pid]['solved']++;
+            }
+            $res[$pid]['submit']++;
+        }
+        return $res;
+    }
+
+    /**
      * 获取比赛排名数据
      * @param $lock bool
      * @return array
