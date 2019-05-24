@@ -440,6 +440,7 @@ class Contest extends \yii\db\ActiveRecord
             $result[$user['user_id']]['nickname'] = $user['nickname'];
             $result[$user['user_id']]['role'] = $user['role'];
             $result[$user['user_id']]['rating'] = $user['rating'];
+            $result[$user['user_id']]['solved'] = 0;
             $result[$user['user_id']]['total_score'] = 0; // 测评总分
             $result[$user['user_id']]['score'] = [];
             $result[$user['user_id']]['max_score'] = [];
@@ -496,6 +497,7 @@ class Contest extends \yii\db\ActiveRecord
                 // AC
                 $submit_count[$pid]['solved']++;
                 $result[$user]['pending'][$pid] = 0;
+                $result[$user]['solved']++;
                 $sec = strtotime($created_at) - strtotime($start_time);
                 // AC 时间
                 if (!isset($result[$user]['ac_time'][$pid]))
@@ -586,10 +588,14 @@ class Contest extends \yii\db\ActiveRecord
             WHERE u.id=c.user_id ORDER BY `c`.`id`
         ', [':cid' => $this->id])->queryAll();
 
-        $rankResult = $this->getRankData()['rank_result'];
+        if ($this->type == self::TYPE_OI) {
+            $rankResult = $this->getOIRankData(false)['rank_result'];
+        } else {
+            $rankResult = $this->getRankData(false)['rank_result'];
+        }
         $tmp = [];
         foreach ($rankResult as $k => $user) {
-            $tmp[$user['user_id']] = ['solved' => $user['solved'], 'rank' => $k, 'submit' => $user['submit']];
+            $tmp[$user['user_id']] = ['solved' => $user['solved'], 'rank' => $k];
         }
         $rankResult = $tmp;
 
@@ -603,11 +609,12 @@ class Contest extends \yii\db\ActiveRecord
                 $userCount++;
             }
         }
-
         foreach ($users as $user) {
             $old = $user['rating'] == NULL ? self::RATING_INIT_SCORE : $user['rating'];
             $exp = 0;
-            if ($rankResult[$user['user_id']]['submit'] == 0) {
+
+            // 没有解决题目的不计算
+            if ($rankResult[$user['user_id']]['solved'] == 0) {
                 continue;
             }
             if ($user['rating']) {
@@ -622,19 +629,21 @@ class Contest extends \yii\db\ActiveRecord
 
             // 此处 ELO 算法中 K 的合理性有待改进
             if ($old < 1150) {
-                $eloK = 2;
-            } else if ($old < 1400) {
-                $eloK = 3;
-            } else if ($old < 1650) {
-                $eloK = 4;
-            } else if ($old < 1900) {
                 $eloK = 5;
-            } else if ($old < 2150) {
+            } else if ($old < 1400) {
                 $eloK = 6;
-            } else {
+            } else if ($old < 1650) {
                 $eloK = 7;
+            } else if ($old < 1900) {
+                $eloK = 8;
+            } else if ($old < 2150) {
+                $eloK = 9;
+            } else {
+                $eloK = 10;
             }
-            $newRating = intval($old + $eloK * (($userCount - $rankResult[$user['user_id']]['rank'] - 1) - $exp));
+            $newRating = intval($old + $eloK * (($userCount - $rankResult[$user['user_id']]['rank']) - $exp));
+
+            // echo $old . " " . $newRating . " " . ($newRating - $old) . "<br>";
             Yii::$app->db->createCommand()->update('{{%user}}', [
                 'rating' => $newRating
             ], ['id' => $user['user_id']])->execute();
