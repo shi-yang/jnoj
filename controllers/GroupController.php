@@ -110,20 +110,20 @@ class GroupController extends Controller
                 'group_id' => $model->id
             ])->with('user')->orderBy(['role' => SORT_DESC])
         ]);
-        if (!Yii::$app->user->isGuest && !$model->getRole()) {
-            if ($accept == 0) { // 拒绝小组邀请
+        if (!Yii::$app->user->isGuest) {
+            if ($accept == 0 && $model->getRole() == GroupUser::ROLE_INVITING) { // 拒绝小组邀请
                 Yii::$app->db->createCommand()->update('{{%group_user}}', [
                     'role' => GroupUser::ROLE_REUSE_INVITATION
                 ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
                 Yii::$app->session->setFlash('info', '已拒绝');
                 return $this->redirect(['/group/index']);
-            } else if ($accept == 1) { // 接受小组邀请
+            } else if ($accept == 1&& $model->getRole() == GroupUser::ROLE_INVITING) { // 接受小组邀请
                 Yii::$app->db->createCommand()->update('{{%group_user}}', [
                     'role' => GroupUser::ROLE_MEMBER
                 ], ['user_id' => Yii::$app->user->id, 'group_id' => $model->id])->execute();
                 Yii::$app->session->setFlash('success', '已加入');
                 return $this->redirect(['/group/view', 'id' => $model->id]);
-            } else if ($model->join_policy == Group::JOIN_POLICY_FREE && $accept == 2) { // 加入小组
+            } else if ($model->join_policy == Group::JOIN_POLICY_FREE && $accept == 2 && !$model->getRole()) { // 加入小组
                 Yii::$app->db->createCommand()->insert('{{%group_user}}', [
                     'user_id' => Yii::$app->user->id,
                     'group_id' => $model->id,
@@ -131,7 +131,7 @@ class GroupController extends Controller
                     'role' => GroupUser::ROLE_MEMBER
                 ])->execute();
                 Yii::$app->session->setFlash('info', '已加入');
-            } else if ($model->join_policy == Group::JOIN_POLICY_APPLICATION && $accept == 3) { // 申请加入小组
+            } else if ($model->join_policy == Group::JOIN_POLICY_APPLICATION && $accept == 3 && !$model->getRole()) { // 申请加入小组
                 Yii::$app->db->createCommand()->insert('{{%group_user}}', [
                     'user_id' => Yii::$app->user->id,
                     'group_id' => $model->id,
@@ -141,7 +141,7 @@ class GroupController extends Controller
                 Yii::$app->session->setFlash('info', '已申请');
             }
         }
-        Yii::$app->cache->delete('role' . $model->id . Yii::$app->user->id);
+        Yii::$app->cache->delete('role' . $model->id . '_' . Yii::$app->user->id);
         return $this->render('accept', [
             'model' => $model,
             'userDataProvider' => $userDataProvider
@@ -214,6 +214,7 @@ class GroupController extends Controller
                 ], ['user_id' => $query['user_id'], 'group_id' => $model->id])->execute();
                 Yii::$app->session->setFlash('error', '已邀请');
             }
+            return $this->refresh();
         }
 
         return $this->render('view', [
@@ -288,6 +289,7 @@ class GroupController extends Controller
         $groupUser = GroupUser::findOne($id);
         $group = $this->findModel($groupUser->group_id);
         if ($group->hasPermission() && $groupUser->role != GroupUser::ROLE_LEADER) {
+            Yii::$app->cache->delete('role' . $group->id . '_' . $groupUser->user_id);
             $groupUser->delete();
             return $this->redirect(['/group/view', 'id' => $group->id]);
         }
@@ -321,7 +323,7 @@ class GroupController extends Controller
         }
         if ($role != 0) {
             $groupUser->update();
-            Yii::$app->cache->delete('role' . $group->id . $groupUser->user_id);
+            Yii::$app->cache->delete('role' . $group->id . '_' . $groupUser->user_id);
             return $this->redirect(['/group/view', 'id' => $group->id]);
         }
 

@@ -123,7 +123,7 @@ class Group extends ActiveRecord
      */
     public function getRole()
     {
-        $key = 'role' . $this->id . Yii::$app->user->id;
+        $key = 'role' . $this->id . '_' . Yii::$app->user->id;
         $cache = Yii::$app->cache;
         $data = $cache->get($key);
         if ($data === false) {
