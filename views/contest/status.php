@@ -71,18 +71,13 @@ foreach ($problems as $key => $p) {
                     if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
                         return "Pending";
                     }
-                    if ($solution->result == $solution::OJ_CE || $solution->result == $solution::OJ_WA
-                        || $solution->result == $solution::OJ_RE) {
-                        if (($solution->status == 1 && Yii::$app->setting->get('isShareCode')) ||
-                            (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id ||
-                            ($solution->result == $solution::OJ_CE && Yii::$app->user->id == $solution->created_by)))) {
-                            return Html::a($solution->getResult(),
-                                ['/solution/result', 'id' => $solution->id],
-                                ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
-                            );
-                        } else {
-                            return $solution->getResult();
-                        }
+                    $otherCan = ($solution->status == 1 && Yii::$app->setting->get('isShareCode'));
+                    $createdBy = (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id || Yii::$app->user->id == $solution->created_by));
+                    if ($otherCan || $createdBy || $model->type == \app\models\Contest::TYPE_HOMEWORK) {
+                        return Html::a($solution->getResult(),
+                            ['/solution/result', 'id' => $solution->id],
+                            ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
+                        );
                     } else {
                         return $solution->getResult();
                     }

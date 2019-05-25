@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Contest;
 use Yii;
 use app\models\User;
 use app\models\Solution;
@@ -57,8 +58,12 @@ class SolutionController extends Controller
         $query = Yii::$app->db->createCommand('SELECT id,result,contest_id FROM {{%solution}} WHERE id=:id', [
             ':id' => $id
         ])->queryOne();
-        if ($query['contest_id'] != NULL && Yii::$app->setting->get('oiMode')) {
-            $query['result'] = 0;
+
+        if (!empty($query['contest_id'])) {
+            $contest = Solution::getContestInfo($query['contest_id']);
+            if ($contest['type'] == Contest::TYPE_OI) {
+                $query['result'] = 0;
+            }
         }
         $res = [
             'id' => $query['id'],

@@ -54,6 +54,7 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
     <?= $form->field($model, 'type')->radioList([
         $model::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
         $model::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
+        $model::TYPE_HOMEWORK => Yii::t('app', 'Homework'),
         $model::TYPE_OI => Yii::t('app', 'OI'),
     ])->hint('不同类型的区别只在于榜单的排名方式。详见：' . Html::a('比赛类型', ['/wiki/contest'], ['target' => '_blank']) . '。如需使用OI比赛，请在后台设置页面启用OI模式。') ?>
 

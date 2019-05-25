@@ -39,7 +39,7 @@ $this->params['model'] = $model;
                 echo $this->render('_standing_single', [
                     'model' => $model
                 ]);
-            } else if ($model->type == $model::TYPE_OI) {
+            } else if ($model->type == $model::TYPE_OI || $model->type == $model::TYPE_IOI) {
                 echo $this->render('_standing_oi', [
                     'model' => $model
                 ]);

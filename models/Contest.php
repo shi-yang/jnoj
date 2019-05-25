@@ -50,6 +50,7 @@ class Contest extends \yii\db\ActiveRecord
     const TYPE_RANK_GROUP  = 2;
     const TYPE_HOMEWORK    = 3;
     const TYPE_OI          = 4;
+    const TYPE_IOI         = 5;
 
     /**
      * 是否可见
@@ -137,13 +138,16 @@ class Contest extends \yii\db\ActiveRecord
                 $res = Yii::t('app', 'Single Ranked');
                 break;
             case Contest::TYPE_RANK_GROUP:
-                $res = Yii::t('app', 'Group Ranked');
+                $res = Yii::t('app', 'ICPC');
                 break;
             case Contest::TYPE_HOMEWORK:
                 $res = Yii::t('app', 'Homework');
                 break;
             case Contest::TYPE_OI:
                 $res = Yii::t('app', 'OI');
+                break;
+            case Contest::TYPE_IOI:
+                $res = Yii::t('app', 'IOI');
                 break;
             default:
                 $res = "null";

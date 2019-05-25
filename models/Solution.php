@@ -288,9 +288,7 @@ class Solution extends ActiveRecord
             return true;
         }
 
-        $contest = Yii::$app->db->createCommand('SELECT end_time, type FROM {{%contest}} WHERE id = :id', [
-            ':id' => $this->contest_id
-        ])->queryOne();
+        $contest = self::getContestInfo($this->contest_id);
 
         // OI 模式比赛结束时才可以看
         if ($contest['type'] != Contest::TYPE_OI || time() >= strtotime($contest['end_time'])) {
@@ -321,6 +319,20 @@ class Solution extends ActiveRecord
         return false;
     }
 
+    public static function getContestInfo($contestID)
+    {
+        $key = 'status_' . $contestID;
+        $cache = Yii::$app->cache;
+        $contest = $cache->get($key);
+        if ($contest === false) {
+            $contest = Yii::$app->db->createCommand('SELECT end_time, type FROM {{%contest}} WHERE id = :id', [
+                ':id' => $contestID
+            ])->queryOne();
+            $cache->set($key, $contest, 60);
+        }
+        return $contest;
+    }
+
     /**
      * 用户是否有权限可以查看错误信息
      */
@@ -336,11 +348,24 @@ class Solution extends ActiveRecord
         if (!Yii::$app->user->isGuest && Yii::$app->user->identity->role == User::ROLE_ADMIN) {
             return true;
         }
-        // 对于比赛中的提交，普通用户只能查看 Compile Error 所记录的信息
-        if ($this->status == Solution::STATUS_HIDDEN && $this->created_by == Yii::$app->user->id && $this->result == self::OJ_CE) {
-            return true;
+        if (!empty($this->contest_id)) {
+            $contest = self::getContestInfo($this->contest_id);
+            // 比赛结束都可以看
+            if (time() >= strtotime($contest['end_time'])) {
+                return true;
+            }
+
+            // 作业模式无限制
+            if ($contest['type'] == Contest::TYPE_HOMEWORK) {
+                return true;
+            }
+
+            // 对于比赛中的提交，普通用户能查看自己的 Compile Error 所记录的信息
+            if ($this->created_by == Yii::$app->user->id && $this->result == self::OJ_CE) {
+                return true;
+            }
         }
-        //　非比赛中的提交，普通用户也能查看出错信息
+        //　非比赛中的提交，普通用户也能查看自己的出错信息
         if ($this->status == Solution::STATUS_VISIBLE && $this->created_by == Yii::$app->user->id) {
             return true;
         }
