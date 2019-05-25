@@ -50,7 +50,7 @@ $problems = $model->problems;
 
             <?= $form->field($model, 'type')->radioList([
                 Contest::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
-                Contest::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
+                Contest::TYPE_RANK_GROUP => Yii::t('app', 'ICPC'),
                 Contest::TYPE_HOMEWORK => Yii::t('app', 'Homework'),
                 Contest::TYPE_OI => Yii::t('app', 'OI'),
                 Contest::TYPE_IOI => Yii::t('app', 'IOI'),
