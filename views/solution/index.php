@@ -45,8 +45,7 @@ $this->title = Yii::t('app', 'Status');
             [
                 'attribute' => 'result',
                 'value' => function ($model, $key, $index, $column) {
-                    if (($model->result == $model::OJ_CE || $model->result == $model::OJ_WA
-                        || $model->result == $model::OJ_RE) && $model->canViewErrorInfo()) {
+                    if ($model->canViewErrorInfo()) {
                         return Html::a($model->getResult(),
                             ['/solution/result', 'id' => $model->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info"]
