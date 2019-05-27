@@ -52,10 +52,11 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
     ])->hint('线下场景会有额外的功能：滚榜；在该比赛的页面开放打印链接；限定参赛账号．' . '参考：' . Html::a('线下赛与线上赛的区别', ['/wiki/contest'], ['target' => '_blank'])) ?>
 
     <?= $form->field($model, 'type')->radioList([
-        $model::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
-        $model::TYPE_RANK_GROUP => Yii::t('app', 'Group Ranked'),
-        $model::TYPE_HOMEWORK => Yii::t('app', 'Homework'),
-        $model::TYPE_OI => Yii::t('app', 'OI'),
+        Contest::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),
+        Contest::TYPE_RANK_GROUP => Yii::t('app', 'ICPC'),
+        Contest::TYPE_HOMEWORK => Yii::t('app', 'Homework'),
+        Contest::TYPE_OI => Yii::t('app', 'OI'),
+        Contest::TYPE_IOI => Yii::t('app', 'IOI'),
     ])->hint('不同类型的区别只在于榜单的排名方式。详见：' . Html::a('比赛类型', ['/wiki/contest'], ['target' => '_blank']) . '。如需使用OI比赛，请在后台设置页面启用OI模式。') ?>
 
 
