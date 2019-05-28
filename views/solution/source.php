@@ -6,8 +6,10 @@ use yii\helpers\Html;
 /* @var $model app\models\Solution */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Status'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+
+if (!$model->canViewSource()) {
+    return '暂无权限查看源码';
+}
 ?>
 <div class="solution-view">
     <div class="row">

@@ -7,9 +7,11 @@ use app\models\Solution;
 /* @var $model app\models\Solution */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Status'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 $json = NULL;
+
+if (!$model->canViewErrorInfo()) {
+    return '暂无权限查看出错信息';
+}
 ?>
 <div class="solution-view">
     <h3><?= Yii::t('app', 'Run ID') ?>: <?= Html::a($model->id, ['/solution/detail', 'id' => $model->id]) ?></h3>

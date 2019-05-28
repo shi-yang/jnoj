@@ -85,13 +85,10 @@ class SolutionController extends Controller
     {
         $this->layout = false;
         $model = $this->findModel($id);
-        if ($model->canViewSource()) {
-            return $this->render('source', [
-                'model' => $model,
-            ]);
-        }
 
-        throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        return $this->render('source', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -105,13 +102,10 @@ class SolutionController extends Controller
     {
         $this->layout = false;
         $model = $this->findModel($id);
-        if ($model->canViewErrorInfo()) {
-            return $this->render('result', [
-                'model' => $model,
-            ]);
-        }
 
-        throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        return $this->render('result', [
+            'model' => $model,
+        ]);
     }
 
     /**
