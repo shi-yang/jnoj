@@ -140,29 +140,31 @@ class HomeworkController extends ContestController
             $pid = intval($post['problem_id']);
             $new_pid = intval($post['new_problem_id']);
 
-            $has_problem1 = (new Query())->select('id')
+            $oldProblemStatus = (new Query())->select('status')
                 ->from('{{%problem}}')
-                ->where('id=:id AND status=:status', [':id' => $pid, ':status' => Problem::STATUS_VISIBLE])
-                ->exists();
+                ->where('id=:id', [':id' => $pid])
+                ->scalar();
+            $newProblemStatus = (new Query())->select('status')
+                ->from('{{%problem}}')
+                ->where('id=:id', [':id' => $new_pid])
+                ->scalar();
 
-            $has_problem2 = (new Query())->select('id')
-                ->from('{{%problem}}')
-                ->where('id=:id AND status=:status', [':id' => $new_pid, ':status' => Problem::STATUS_VISIBLE])
-                ->exists();
-            if ($has_problem1 && $has_problem2) {
-                $problem_in_contest = (new Query())->select('problem_id')
+            if (!empty($oldProblemStatus) && !empty($newProblemStatus)) {
+                $problemInContest = (new Query())->select('problem_id')
                     ->from('{{%contest_problem}}')
                     ->where(['problem_id' => $new_pid, 'contest_id' => $model->id])
                     ->exists();
-                if ($problem_in_contest) {
+                if ($problemInContest) {
                     Yii::$app->session->setFlash('info', Yii::t('app', 'This problem has in the contest.'));
                     return $this->refresh();
                 }
-
-                Yii::$app->db->createCommand()->update('{{%contest_problem}}', [
-                    'problem_id' => $new_pid,
-                ], ['problem_id' => $pid, 'contest_id' => $model->id])->execute();
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
+                if ($newProblemStatus == Problem::STATUS_VISIBLE || Yii::$app->user->identity->role == User::ROLE_ADMIN
+                    || ($newProblemStatus == Problem::STATUS_PRIVATE && Yii::$app->user->identity->role == User::ROLE_VIP)) {
+                    Yii::$app->db->createCommand()->update('{{%contest_problem}}', [
+                        'problem_id' => $new_pid,
+                    ], ['problem_id' => $pid, 'contest_id' => $model->id])->execute();
+                    Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
+                }
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'No such problem.'));
             }
