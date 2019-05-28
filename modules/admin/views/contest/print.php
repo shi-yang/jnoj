@@ -67,7 +67,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
             </tr>
             </tbody>
         </table>
-        <?php if (!empty($sample_input[1])): ?>
+        <?php if ($sample_input[1] != '' || $sample_output[1] != ''):?>
             <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -83,7 +83,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                 </tbody>
             </table>
         <?php endif; ?>
-        <?php if (!empty($sample_input[2])): ?>
+        <?php if ($sample_input[2] != '' || $sample_output[2] != ''):?>
             <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -109,30 +109,3 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
     <?php endforeach; ?>
     </div>
 </div>
-<?php
-$this->registerJs('
-$(".katex.math.inline").each(function () {
-    var parent = $(this).parent()[0];
-    if (parent.localName !== "code") {
-        var texTxt = $(this).text();
-        var el = $(this).get(0);
-        try {
-            katex.render(texTxt, el);
-        } catch (err) {
-            $(this).html("<span class=\'err\'>" + err);
-        }
-    } else {
-        $(this).parent().text($(this).parent().text());
-    }
-});
-$(".katex.math.multi-line").each(function () {
-    var texTxt = $(this).text();
-    var el = $(this).get(0);
-    try {
-        katex.render(texTxt, el, {displayMode: true})
-    } catch (err) {
-        $(this).html("<span class=\'err\'>" + err)
-    }
-});
-');
-?>
