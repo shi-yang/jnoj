@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
+use app\models\Contest;
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Contest */
 /* @var $searchModel app\models\SolutionSearch */
@@ -86,7 +88,8 @@ foreach ($problems as $key => $p) {
             ],
             [
                 'attribute' => 'score',
-                'visible' => Yii::$app->setting->get('oiMode') && $model->getRunStatus() == \app\models\Contest::STATUS_ENDED
+                'visible' => (Yii::$app->setting->get('oiMode') && $model->type != Contest::TYPE_OI) ||
+                            ($model->type == Contest::TYPE_OI && $model->getRunStatus() == Contest::STATUS_ENDED)
             ],
             [
                 'attribute' => 'time',
