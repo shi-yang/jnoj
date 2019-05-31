@@ -20,7 +20,7 @@ $this->title = Yii::t('app', 'Contests');
             [
                 'attribute' => 'title',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a('['. $model->id . '] ' . Html::encode($model->title), ['/contest/view', 'id' => $key]);
+                    return Html::a(Html::encode($model->title), ['/contest/view', 'id' => $key]);
                 },
                 'format' => 'raw',
             ],

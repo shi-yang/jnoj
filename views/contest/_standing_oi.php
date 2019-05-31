@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\Modal;
+use app\models\Contest;
 
 /* @var $model app\models\Contest */
 
@@ -54,7 +55,7 @@ $submit_count = $rank_result['submit_count'];
             <th>
                 <?php
                 //线下赛，参加比赛但不参加排名的处理
-                if ($model->scenario == \app\models\Contest::SCENARIO_OFFLINE && $rank['role'] != \app\models\User::ROLE_PLAYER) {
+                if ($model->scenario == Contest::SCENARIO_OFFLINE && $rank['role'] != \app\models\User::ROLE_PLAYER) {
                     echo '*';
                 } else {
                     echo $ranking;
@@ -84,7 +85,7 @@ $submit_count = $rank_result['submit_count'];
                     $score = "";
                     $max_score = "";
                 }
-                if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == \app\models\Contest::STATUS_ENDED) {
+                if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == Contest::STATUS_ENDED) {
                     $url = Url::toRoute([
                         '/contest/submission',
                         'pid' => $p['problem_id'],
