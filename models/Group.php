@@ -131,8 +131,15 @@ class Group extends ActiveRecord
                 ':uid' => Yii::$app->user->id,
                 ':gid' => $this->id
             ])->queryScalar();
-            $cache->set($key, $data, 60);
+            $a = $cache->set($key, $data, 7200);
+            print_r($a);
         }
+        $data = $cache->get($key);
+        $data = $cache->get($key);
+        $data = $cache->get($key);
+        $data = $cache->get($key);
+        $data = $cache->get($key);
+        $data = $cache->get($key);
         return $data;
     }
 
@@ -143,13 +150,15 @@ class Group extends ActiveRecord
 
     public function hasPermission()
     {
-        return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER;
+        $role = $this->getRole();
+        return $role == GroupUser::ROLE_LEADER || $role == GroupUser::ROLE_MANAGER || Yii::$app->user->identity->isAdmin();
     }
 
     public function isMember()
     {
-        return $this->getRole() == GroupUser::ROLE_LEADER || $this->getRole() == GroupUser::ROLE_MANAGER ||
-            $this->getRole() == GroupUser::ROLE_MEMBER;
+        $role = $this->getRole();
+        return $role == GroupUser::ROLE_LEADER || $role == GroupUser::ROLE_MANAGER ||
+            $role == GroupUser::ROLE_MEMBER || Yii::$app->user->identity->isAdmin();
     }
 
     /**

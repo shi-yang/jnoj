@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Group;
@@ -43,7 +44,9 @@ class GroupSearch extends Group
         $query = Group::find();
 
         // add conditions that should always apply here
-        $query->where(['status' => Group::STATUS_VISIBLE]);
+        if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
+            $query->where(['status' => Group::STATUS_VISIBLE]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

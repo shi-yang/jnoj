@@ -442,4 +442,8 @@ class User extends ActiveRecord implements IdentityInterface
         }
         return "<span class=\"{$tmp} rated-user\">{$nickname}</span>";
     }
+
+    public function isAdmin() {
+        return $this->role == self::ROLE_ADMIN;
+    }
 }
