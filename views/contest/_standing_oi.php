@@ -76,6 +76,16 @@ $submit_count = $rank_result['submit_count'];
             foreach($problems as $key => $p) {
                 $score = "";
                 $max_score = "";
+                $css_class = '';
+                if (isset($rank['ac_time'][$p['problem_id']])) {
+                    $css_class = 'solved-first';
+                } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
+                    $css_class = 'pending';
+                } else if (isset($rank['score'][$p['problem_id']]) && $rank['score'][$p['problem_id']] > 0) {
+                    $css_class = 'solved';
+                } else if (isset($rank['score'][$p['problem_id']]) && $rank['score'][$p['problem_id']] == 0) {
+                    $css_class = 'attempted';
+                }
                 if (isset($rank['score'][$p['problem_id']])) {
                     $score = $rank['score'][$p['problem_id']];
                     $max_score = $rank['max_score'][$p['problem_id']];
@@ -92,9 +102,9 @@ $submit_count = $rank_result['submit_count'];
                         'cid' => $model->id,
                         'uid' => $rank['user_id']
                     ]);
-                    echo "<th class=\"table-problem-cell\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$score}<br><small>{$max_score}</small></th>";
+                    echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$score}<br><small>{$max_score}</small></th>";
                 } else {
-                    echo "<th class=\"table-problem-cell\">{$score}<br><small>{$max_score}</small></th>";
+                    echo "<th class=\"table-problem-cell {$css_class}\">{$score}<br><small>{$max_score}</small></th>";
                 }
             }
             ?>

@@ -142,4 +142,3 @@ $this->registerJs($js);
     <div id="submission-content">
     </div>
 <?php Modal::end(); ?>
-

@@ -1,7 +1,6 @@
 <?php
 
-use yii\helpers\Html;
-use app\models\Solution;
+use app\models\Contest;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contest */
@@ -11,16 +10,28 @@ $this->title = $model->title;
 $this->params['model'] = $model;
 ?>
 <div class="contest-overview text-center center-block">
-    <?php if ($model->type != \app\models\Contest::TYPE_OI): ?>
+    <?php if ($model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED): ?>
     <div class="legend-strip">
         <div class="pull-right table-legend">
-            <div>
-                <span class="solved-first legend-status"></span>
-                <p class="legend-label"> First to solve problem</p>
-            </div>
-            <div>
-                <span class="solved legend-status"></span>
-                <p class="legend-label"> Solved problem</p></div>
+            <?php if ($model->type != Contest::TYPE_OI && $model->type = Contest::TYPE_IOI): ?>
+                <div>
+                    <span class="solved-first legend-status"></span>
+                    <p class="legend-label"> First to solve problem</p>
+                </div>
+                <div>
+                    <span class="solved legend-status"></span>
+                    <p class="legend-label"> Solved problem</p>
+                </div>
+            <?php else: ?>
+                <div>
+                    <span class="solved-first legend-status"></span>
+                    <p class="legend-label"> All correct</p>
+                </div>
+                <div>
+                    <span class="solved legend-status"></span>
+                    <p class="legend-label"> Partially correct</p>
+                </div>
+            <?php endif; ?>
             <div>
                 <span class="attempted legend-status"></span>
                 <p class="legend-label"> Attempted problem</p>
