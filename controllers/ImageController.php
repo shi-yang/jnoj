@@ -19,7 +19,7 @@ class ImageController extends Controller
             $up = new Uploader('upload');
             $info = $up->getFileInfo();
             if ($info['state'] == 'SUCCESS') {
-                $info['url'] = Yii::$app->request->hostInfo . Yii::getAlias('@web') . '/' . $info['url'];
+                $info['url'] = Yii::getAlias('@web') . '/' . $info['url'];
                 $info['uploaded'] = true;
             } else {
                 $info['uploaded'] = false;
