@@ -13,7 +13,7 @@ $this->params['model'] = $model;
     <?php if ($model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED): ?>
     <div class="legend-strip">
         <div class="pull-right table-legend">
-            <?php if ($model->type != Contest::TYPE_OI && $model->type = Contest::TYPE_IOI): ?>
+            <?php if ($model->type != Contest::TYPE_OI && $model->type == Contest::TYPE_IOI): ?>
                 <div>
                     <span class="solved-first legend-status"></span>
                     <p class="legend-label"> First to solve problem</p>
