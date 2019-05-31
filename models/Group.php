@@ -131,15 +131,8 @@ class Group extends ActiveRecord
                 ':uid' => Yii::$app->user->id,
                 ':gid' => $this->id
             ])->queryScalar();
-            $a = $cache->set($key, $data, 7200);
-            print_r($a);
+            $cache->set($key, $data, 60);
         }
-        $data = $cache->get($key);
-        $data = $cache->get($key);
-        $data = $cache->get($key);
-        $data = $cache->get($key);
-        $data = $cache->get($key);
-        $data = $cache->get($key);
         return $data;
     }
 
