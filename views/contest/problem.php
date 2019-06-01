@@ -202,8 +202,8 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
     'size' => Modal::SIZE_LARGE,
     'options' => ['id' => 'submit-solution']
 ]); ?>
-<?php if ($model->getRunStatus() == app\models\Contest::STATUS_ENDED): ?>
-    <?= Yii::t('app', 'The contest has ended.') ?>
+<?php if ($model->getRunStatus() == app\models\Contest::STATUS_ENDED && time() < strtotime($model->end_time) + 5 * 60): ?>
+    比赛已结束。比赛结束五分钟后开放提交。
 <?php else: ?>
 
     <?php if (Yii::$app->user->isGuest): ?>

@@ -308,7 +308,7 @@ class ContestController extends Controller
                 Yii::$app->session->setFlash('error', '标题不能为空');
                 return $this->refresh();
             }
-            $newClarify->status = Discuss::STATUS_PRIVATE;
+            $newClarify->status = Discuss::STATUS_PUBLIC;
             $newClarify->save();
 
             // 给所有管理员发送弹窗提醒
@@ -394,21 +394,16 @@ class ContestController extends Controller
         $problem = $model->getProblemById(intval($pid));
 
         if (!Yii::$app->user->isGuest && $solution->load(Yii::$app->request->post())) {
-            if (!$model->isUserInContest()) {
-                // 判断是否已经参赛，提交即参加比赛
-                if (!$model->isUserInContest()) {
-                    Yii::$app->db->createCommand()->insert('{{%contest_user}}', [
-                        'contest_id' => $model->id,
-                        'user_id' => Yii::$app->user->id
-                    ])->execute();
-                }
+            // 判断是否已经参赛，提交即参加比赛
+            // 比赛结束后的提交不计入参赛人员
+            if ($model->getRunStatus() != Contest::STATUS_ENDED && !$model->isUserInContest()) {
+                Yii::$app->db->createCommand()->insert('{{%contest_user}}', [
+                    'contest_id' => $model->id,
+                    'user_id' => Yii::$app->user->id
+                ])->execute();
             }
             if ($model->getRunStatus() == Contest::STATUS_NOT_START) {
                 Yii::$app->session->setFlash('error', 'The contest has not started.');
-                return $this->refresh();
-            }
-            if ($model->getRunStatus() == Contest::STATUS_ENDED) {
-                Yii::$app->session->setFlash('error', 'The contest is over.');
                 return $this->refresh();
             }
             $solution->problem_id = $problem['id'];
