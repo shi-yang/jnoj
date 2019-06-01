@@ -125,7 +125,7 @@ $files = $model->getDataFiles();
                     </tr>
                     <?php foreach ($files as $file): ?>
                         <?php
-                        if (!strpos($file['name'], '.out') || !strpos($file['name'], '.ans'))
+                        if (!strpos($file['name'], '.out') && !strpos($file['name'], '.ans'))
                             continue;
                         ?>
                         <tr>
