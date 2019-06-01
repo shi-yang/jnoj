@@ -711,10 +711,13 @@ class Contest extends \yii\db\ActiveRecord
         }
         // 小组成员
         if ($this->group_id != 0) {
-            return Yii::$app->db->createCommand('SELECT count(*) FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
+            $role = Yii::$app->db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
                 ':uid' => Yii::$app->user->id,
                 ':gid' => $this->group_id
             ])->queryScalar();
+            if ($role == GroupUser::ROLE_MEMBER || $role == GroupUser::ROLE_MANAGER || $role == GroupUser::ROLE_LEADER) {
+                return true;
+            }
         }
         return false;
     }

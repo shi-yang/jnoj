@@ -188,6 +188,7 @@ class GroupController extends Controller
             $newContest->scenario = Contest::SCENARIO_ONLINE;
             $newContest->status = Contest::STATUS_PRIVATE;
             $newContest->save();
+            return $this->refresh();
         }
 
         if ($newGroupUser->load(Yii::$app->request->post())) {
