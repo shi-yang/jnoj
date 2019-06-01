@@ -329,9 +329,12 @@ class ContestController extends Controller
             return $this->refresh();
         }
         $query = Discuss::find()
-            ->where(['parent_id' => 0, 'entity_id' => $model->id, 'entity' => Discuss::ENTITY_CONTEST, 'status' => 1])
+            ->where(['parent_id' => 0, 'entity_id' => $model->id, 'entity' => Discuss::ENTITY_CONTEST])
             ->with('user')
             ->orderBy('created_at DESC');
+        if (!$model->isContestAdmin()) {
+            $query->andWhere('status=1');
+        }
         if (!Yii::$app->user->isGuest) {
             $query->orWhere(['parent_id' => 0, 'entity_id' => $model->id, 'entity' => Discuss::ENTITY_CONTEST, 'created_by' => Yii::$app->user->id]);
         }

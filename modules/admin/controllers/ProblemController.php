@@ -3,6 +3,7 @@
 namespace app\modules\admin\controllers;
 
 use app\models\ContestProblem;
+use app\models\Discuss;
 use app\models\ProblemSearch;
 use Yii;
 use yii\base\ErrorException;
@@ -255,6 +256,8 @@ class ProblemController extends Controller
                     $dataNewName = Yii::$app->params['judgeProblemDataPath'] . $newID;
                     rename($dataOldName, $dataNewName);
                     Solution::updateAll(['problem_id' => $newID], ['problem_id' => $oldID]);
+                    ContestProblem::updateAll(['problem_id' => $newID], ['problem_id' => $oldID]);
+                    Discuss::updateAll(['entity_id' => $newID], ['entity_id' => $newID, 'entity' => Discuss::ENTITY_PROBLEM]);
                 }
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
@@ -263,6 +266,7 @@ class ProblemController extends Controller
                 Yii::$app->session->setFlash('error', '更新失败：无法移动数据目录');
                 $transaction->rollBack();
             } catch (Exception $e) {
+                $transaction->rollBack();
                 Yii::$app->session->setFlash('error', '更新失败：ID冲突');
             }
             $model->id = $oldID;

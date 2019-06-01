@@ -98,7 +98,7 @@ $status = $model->getRunStatus();
                 <div class="col-md-6 text-center">
                     <h2 class="contest-title">
                         <?= Html::encode($model->title) ?>
-                        <?php if ($model->group_id != 0 && !Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id): ?>
+                        <?php if ($model->isContestAdmin()): ?>
                             <small>
                                 <?= Html::a('<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Setting'),
                                     ['/homework/update', 'id' => $model->id]) ?>
