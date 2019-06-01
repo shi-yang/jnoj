@@ -36,7 +36,7 @@ function testHtml(id, caseJsonObject)
   return '<div class="panel panel-default test-for-popup"> \
         <div class="panel-heading" role="tab" id="heading' + id + '"> \
             <h4 class="panel-title"> \
-                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" \
+                <a class="collapsed" role="button" data-toggle="collapse" \
                    href="#test-' + id + '" aria-expanded="false" aria-controls="test-' + id + '"> \
                     <div class="' + OJ_VERDICT_COLOR[caseJsonObject.verdict] +  '">\
                     测试点<span class="test" style="width: 50px">' + id + '</span>： \
@@ -76,13 +76,13 @@ function subtaskHtml(id, score)
   return '<div class="panel panel-default test-for-popup"> \
         <div class="panel-heading" role="tab" id="subtask-heading-' + id + '"> \
             <h4 class="panel-title"> \
-                <a role="button" data-toggle="collapse" data-parent="#accordion" \
+                <a role="button" data-toggle="collapse" \
                     href="#subtask-' + id + '" aria-expanded="false" aria-controls="subtask-' + id + '"> \
                     子任务 #' + id + ', score: ' + score + ' \
                 </a> \
             </h4> \
         </div> \
-        <div id="subtask-' + id + '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="subtask-heading-' + id + '"> \
+        <div id="subtask-' + id + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="subtask-heading-' + id + '"> \
             <div id="subtask-body-' + id + '" class="panel-body"> \
             </div> \
         </div> \
