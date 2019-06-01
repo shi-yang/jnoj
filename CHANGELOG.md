@@ -33,6 +33,7 @@ JNOJ Change Log
 - Chg: [web] 图片改用相对路径
 - Enh: [web] 管理员可查看所有小组
 - Enh: [web] 改进 OI 榜单的显示
+- Enh: [web] 改进 polygon
 
 0.8.0 2019.3.3
 ------------------

@@ -18,20 +18,21 @@ struct database {
     int port_number;
 } db;
 
-const int OJ_WT0 = 0;
-const int OJ_WT1 = 1;
-const int OJ_CI = 2;
-const int OJ_RI = 3;
-const int OJ_AC = 4;
-const int OJ_PE = 5;
-const int OJ_WA = 6;
-const int OJ_TL = 7;
-const int OJ_ML = 8;
-const int OJ_OL = 9;
-const int OJ_RE = 10;
-const int OJ_CE = 11;
-const int OJ_CO = 12;
-const int OJ_TR = 13;
+
+#define OJ_WT0 0 // Pending 
+#define OJ_WT1 1 // Pending_Rejudging  
+#define OJ_CI 2  // Compiling  
+#define OJ_RI 3  // Running_Judging  
+#define OJ_AC 4  // Accepted  
+#define OJ_PE 5  // Presentation Error  
+#define OJ_WA 6  // Wrong Answer  
+#define OJ_TL 7  // Time Limit Exceeded  
+#define OJ_ML 8  // Memory Limit Exceeded  
+#define OJ_OL 9  // Output Limit Exceeded  
+#define OJ_RE 10 // Runtime Error  
+#define OJ_CE 11 // Compilation Error  
+#define OJ_SE 12 // System Error
+#define OJ_NT 13 // No Testdata
 
 //读取配置文件时寻找等号
 int after_equal(char * c)

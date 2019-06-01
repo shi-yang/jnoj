@@ -420,21 +420,20 @@ void addcustomout(int solution_id)
     _add_solution_info_mysql(solution_id, "user.out");
 }
 
-void umount(char * work_dir)
+void umount(char *work_dir)
 {
-    execute_cmd("/bin/umount -f %s/proc", work_dir);
-    execute_cmd("/bin/umount -f %s/dev ", work_dir);
-    execute_cmd("/bin/umount -f %s/lib ", work_dir);
-    execute_cmd("/bin/umount -f %s/lib64 ", work_dir);
-    execute_cmd("/bin/umount -f %s/etc/alternatives ", work_dir);
-    execute_cmd("/bin/umount -f %s/usr ", work_dir);
-    execute_cmd("/bin/umount -f %s/bin ", work_dir);
-    execute_cmd("/bin/umount -f %s/proc ", work_dir);
-    execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev ");
-    execute_cmd("/bin/umount -f bin usr lib lib64 proc dev ");
-    execute_cmd("/bin/umount -f %s/* ",work_dir);
-    execute_cmd("/bin/umount -f %s/log/* ",work_dir);
-    execute_cmd("/bin/umount -f %s/log/etc/alternatives ", work_dir);
+    execute_cmd("/bin/umount -f %s/proc 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/dev 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/lib 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/lib64 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/etc/alternatives 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/usr 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/bin 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/proc 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>/dev/null");
+    execute_cmd("/bin/umount -f %s/* 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/log/* 2>/dev/null", work_dir);
+    execute_cmd("/bin/umount -f %s/log/etc/alternatives 2>/dev/null", work_dir);
 }
 
 int compile(int lang, char * work_dir)
@@ -461,17 +460,22 @@ int compile(int lang, char * work_dir)
         freopen("ce.txt", "w", stderr);
 
         if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3) {
-            execute_cmd("mkdir -p "
-                        "bin usr lib lib64 etc/alternatives proc tmp dev");
+            execute_cmd("mkdir -p bin usr lib lib64 etc/alternatives proc tmp dev");
             execute_cmd("chown judge *");
             execute_cmd("mount -o bind /bin bin");
+            execute_cmd("mount -o remount,ro bin");
             execute_cmd("mount -o bind /usr usr");
+            execute_cmd("mount -o remount,ro usr");
             execute_cmd("mount -o bind /lib lib");
-#ifndef __i386
+            execute_cmd("mount -o remount,ro lib");
+#ifndef __i386__
             execute_cmd("mount -o bind /lib64 lib64");
+            execute_cmd("mount -o remount,ro lib64");
 #endif
             execute_cmd("mount -o bind /etc/alternatives etc/alternatives");
+            execute_cmd("mount -o remount,ro etc/alternatives");
             execute_cmd("mount -o bind /proc proc");
+            execute_cmd("mount -o remount,ro proc");
             chroot(work_dir);
         }
         while (setgid(1536) != 0)
@@ -495,8 +499,8 @@ int compile(int lang, char * work_dir)
             status = get_file_size("ce.txt");
         if (DEBUG)
             printf("status = %d\n", status);
-        execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>&1 >/dev/null");
-        execute_cmd("/bin/umount -f %s/* 2>&1 >/dev/null", work_dir);
+        execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>/dev/null");
+        execute_cmd("/bin/umount -f %s/* 2>/dev/null", work_dir);
         umount(work_dir);
  
         return status;
@@ -586,7 +590,9 @@ struct problem_struct get_problem_info(int p_id)
     row = mysql_fetch_row(res);
     problem.isspj = atoi(row[0]);
     problem.spj_lang = LANG_CPP; //当前只支持C、C++语言的SPJ
-    problem.solution_lang = atoi(row[3]);
+    if (row[3]) {
+        problem.solution_lang = atoi(row[3]);
+    }
     if (!is_verify) {
         _create_solution_file(row[4], problem.solution_lang);
     }
@@ -615,15 +621,28 @@ char *escape(char s[], char t[])
     return s;
 }
 
-void prepare_files(char * filename, char * infile, int p_id,
+/**
+ * 准备需要测试的数据点
+ * 成功返回 0，失败返回1
+ */
+int prepare_files(char * filename, char * infile, int p_id,
                    char * work_dir, char * outfile, char * userfile,
                    int runner_id)
 {
+    int res = 0;
     sprintf(infile, "%sdata/%d/%s.in", oj_home, p_id, filename);
     execute_cmd("/bin/cp '%s' %s/data.in", infile, work_dir);
 
+    // 判断是输出文件是 out 还是 ans 为后缀
     sprintf(outfile, "%sdata/%d/%s.out", oj_home, p_id, filename);
+    if (access(outfile, R_OK) == -1) {
+        sprintf(outfile, "%sdata/%d/%s.ans", oj_home, p_id, filename);
+        if (access(outfile, R_OK) == -1) {
+            res = 1;
+        }
+    }
     sprintf(userfile, "%srun/%d/user.out", oj_home, runner_id);
+    return res;
 }
 
 void run_solution(struct problem_struct problem, int lang, char * work_dir,
@@ -672,7 +691,7 @@ void run_solution(struct problem_struct problem, int lang, char * work_dir,
     setrlimit(RLIMIT_FSIZE, &LIM);
     // proc limit
     if (lang == LANG_JAVA) {
-        LIM.rlim_cur = LIM.rlim_max = 80;
+        LIM.rlim_cur = LIM.rlim_max = 200;
     } else {
         LIM.rlim_cur = LIM.rlim_max = 1;
     }
@@ -680,8 +699,8 @@ void run_solution(struct problem_struct problem, int lang, char * work_dir,
     setrlimit(RLIMIT_NPROC, &LIM);
 
     // set the stack
-    LIM.rlim_cur = STD_MB << 6;
-    LIM.rlim_max = STD_MB << 6;
+    LIM.rlim_cur = STD_MB << 7;
+    LIM.rlim_max = STD_MB << 7;
     setrlimit(RLIMIT_STACK, &LIM);
     // set the memory
     LIM.rlim_cur = STD_MB * problem.memory_limit / 2 * 3;
@@ -808,7 +827,7 @@ void judge_solution(struct problem_struct problem, int * ACflg, int usedtime,
     // compare
     if (*ACflg == OJ_AC) {
         if (problem.isspj) {
-            comp_res = OJ_CO; //因暂无限制SPJ运行环境，Polygon暂不支持SPJ验题
+            comp_res = OJ_SE; //因暂无限制SPJ运行环境，Polygon暂不支持SPJ验题
             // comp_res = special_judge(oj_home, problem.id, infile, outfile,
             //                          userfile);
             // if (comp_res == 0) {
@@ -1004,13 +1023,13 @@ void clean_workdir(char * work_dir)
 {
     umount(work_dir);
     if (DEBUG) {
-        execute_cmd("/bin/rm -rf %s/log/*", work_dir);
-        execute_cmd("mkdir %s/log/", work_dir);
-        execute_cmd("/bin/mv %s/* %s/log/", work_dir, work_dir);
+        execute_cmd("/bin/rm -rf %s/log/* 2>/dev/null", work_dir);
+        execute_cmd("mkdir %s/log/ 2>/dev/null", work_dir);
+        execute_cmd("/bin/mv %s/* %s/log/ 2>/dev/null", work_dir, work_dir);
     } else {
-        execute_cmd("mkdir %s/log/", work_dir);
-        execute_cmd("/bin/mv %s/* %s/log/", work_dir, work_dir);
-        execute_cmd("/bin/rm -rf %s/log/*", work_dir);
+        execute_cmd("mkdir %s/log/ 2>/dev/null", work_dir);
+        execute_cmd("/bin/mv %s/* %s/log/ 2>/dev/null", work_dir, work_dir);
+        execute_cmd("/bin/rm -rf %s/log/* 2>/dev/null", work_dir);
     }
 }
 
@@ -1172,8 +1191,12 @@ int main(int argc, char** argv)
 
         strncpy(filename, dirp->d_name, namelen);
         filename[namelen] = 0;
-        prepare_files(filename, infile, problem_id, work_dir,
+        int tmp = prepare_files(filename, infile, problem_id, work_dir,
                       outfile, userfile, runner_id);
+        if (tmp) {
+            run_result = OJ_NT;
+            break;
+        }
         init_syscalls_limits(lang);
 
         pid_t pid = fork();

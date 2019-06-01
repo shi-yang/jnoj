@@ -122,7 +122,8 @@ class ProblemController extends Controller
             Yii::$app->session->setFlash('error', '请提供解决方案');
             return $this->redirect(['tests', 'id' => $id]);
         }
-        Yii::$app->db->createCommand()->delete('{{%polygon_status}}', ['problem_id' => $model->id])->execute();
+        Yii::$app->db->createCommand()->delete('{{%polygon_status}}',
+            'problem_id=:pid AND source IS NULL', [':pid' => $model->id])->execute();
         Yii::$app->db->createCommand()->insert('{{%polygon_status}}', [
             'problem_id' => $model->id,
             'created_at' => new Expression('NOW()'),
@@ -255,7 +256,26 @@ class ProblemController extends Controller
     public function actionDeletefile($id, $name)
     {
         $model = $this->findModel($id);
-        @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+        if ($name == 'in') {
+            $files = $model->getDataFiles();
+            foreach ($files as $file) {
+                if (strpos($file['name'], '.in')) {
+                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name'] . '.in');
+                }
+            }
+        } else if ($name == 'out') {
+            $files = $model->getDataFiles();
+            foreach ($files as $file) {
+                if (strpos($file['name'], '.out')) {
+                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name'] . '.out');
+                }
+                if (strpos($file['name'], '.ans')) {
+                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name'] . '.ans');
+                }
+            }
+        } else {
+            @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+        }
         return $this->redirect(['tests', 'id' => $model->id]);
     }
 

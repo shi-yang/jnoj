@@ -72,7 +72,12 @@ $files = $model->getDataFiles();
         <div class="row">
             <div class="col-md-6">
                 <table class="table">
-                    <caption>标准输入文件</caption>
+                    <caption>
+                        标准输入文件
+                        <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => 'in']) ?>" onclick="return confirm('确定删除全部输入文件？');">
+                            删除全部输入文件
+                        </a>
+                    </caption>
                     <tr>
                         <th>文件名</th>
                         <th>大小</th>
@@ -106,7 +111,12 @@ $files = $model->getDataFiles();
             </div>
             <div class="col-md-6">
                 <table class="table">
-                    <caption>标准输出文件</caption>
+                    <caption>
+                        标准输出文件
+                        <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => 'in']) ?>" onclick="return confirm('确定删除全部输出文件？');">
+                            删除全部输出文件
+                        </a>
+                    </caption>
                     <tr>
                         <th>文件名</th>
                         <th>大小</th>
@@ -115,7 +125,7 @@ $files = $model->getDataFiles();
                     </tr>
                     <?php foreach ($files as $file): ?>
                         <?php
-                        if (!strpos($file['name'], '.out'))
+                        if (!strpos($file['name'], '.out') || !strpos($file['name'], '.ans'))
                             continue;
                         ?>
                         <tr>
