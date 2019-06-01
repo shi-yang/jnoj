@@ -235,7 +235,7 @@ $status = $model->getRunStatus();
     $(document).ready(function () {
         // 连接服务端
         var socket = io(document.location.protocol + '//' + document.domain + ':2120');
-        var uid = <?= Yii::$app->user->isGuest ? session_id() : Yii::$app->user->id ?>;
+        var uid = '<?= Yii::$app->user->isGuest ? session_id() : Yii::$app->user->id ?>';
         // 连接后登录
         socket.on('connect', function(){
             socket.emit('login', uid);
