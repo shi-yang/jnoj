@@ -71,14 +71,20 @@ function testHtml(id, caseJsonObject)
         </div>\
     </div>';
 }
-function subtaskHtml(id, score)
+function subtaskHtml(id, score, verdict)
 {
-  return '<div class="panel panel-default test-for-popup"> \
+  var scoregot = score;
+  var csscolor = 'panel-success';
+  if (verdict != 4) {
+    scoregot = 0;
+    csscolor = 'panel-warning';
+  }
+  return '<div class="panel ' + csscolor + 'test-for-popup"> \
         <div class="panel-heading" role="tab" id="subtask-heading-' + id + '"> \
             <h4 class="panel-title"> \
                 <a role="button" data-toggle="collapse" \
                     href="#subtask-' + id + '" aria-expanded="false" aria-controls="subtask-' + id + '"> \
-                    子任务 #' + id + ', score: ' + score + ' \
+                    子任务 #' + id + ', 分数: ' + score + ', 得分: ' + scoregot + ' \
                 </a> \
             </h4> \
         </div> \

@@ -44,7 +44,8 @@ if (!$model->canViewErrorInfo()) {
             var score = subtasks[i].score;
             var isSubtask = (subtasks.length != 1);
             if (isSubtask) {
-                $("#run-info").append(subtaskHtml(i + 1, score));
+                var verdict = cases[cases.length - 1].verdict;
+                $("#run-info").append(subtaskHtml(i + 1, score, verdict));
                 for (var j = 0; j < cases.length; j++) {
                     var id = i + 1;
                     $('#subtask-body-' + id).append(testHtml(testId, cases[j]));
