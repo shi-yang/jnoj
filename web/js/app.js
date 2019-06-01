@@ -79,7 +79,7 @@ function subtaskHtml(id, score, verdict)
     scoregot = 0;
     csscolor = 'panel-warning';
   }
-  return '<div class="panel ' + csscolor + 'test-for-popup"> \
+  return '<div class="panel ' + csscolor + ' test-for-popup"> \
         <div class="panel-heading" role="tab" id="subtask-heading-' + id + '"> \
             <h4 class="panel-title"> \
                 <a role="button" data-toggle="collapse" \
