@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\models\Contest;
+use app\models\ContestProblem;
 use app\models\Problem;
+use app\models\Solution;
 use app\models\User;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -64,15 +66,8 @@ class HomeworkController extends ContestController
     public function actionDeleteproblem($id, $pid)
     {
         $model = $this->findModel($id);
-
-        $ok = Yii::$app->db->createCommand()
-            ->delete('{{%contest_problem}}', ['contest_id' => $model->id, 'problem_id' => $pid])
-            ->execute();
-        if ($ok) {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
-        } else {
-            Yii::$app->session->setFlash('error', Yii::t('app', 'Delete failed'));
-        }
+        $model->deleteProblem($pid);
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
         return $this->redirect(['/homework/update', 'id' => $id]);
     }
 

@@ -774,4 +774,37 @@ class Contest extends \yii\db\ActiveRecord
         }
         return false;
     }
+
+    /**
+     * 删除比赛中的某道题目
+     * @param $pid integer Problem ID
+     * @throws \Throwable
+     */
+    public function deleteProblem($pid) {
+        $db = Yii::$app->db;
+        $cid = $this->id;
+        $db->transaction(function () use ($pid, $cid) {
+            Yii::$app->db->createCommand()
+                ->delete('{{%contest_problem}}', ['contest_id' => $cid, 'problem_id' => $pid])
+                ->execute();
+            Solution::deleteAll(['contest_id' => $cid, 'problem_id' => $pid]);
+
+            $problems = Yii::$app->db->createCommand('
+                SELECT `p`.`id` AS `problem_id`
+                FROM `problem` `p`
+                LEFT JOIN `contest_problem` `c` ON `c`.`contest_id`=:cid
+                WHERE p.id=c.problem_id
+                ORDER BY `c`.`num`
+            ', [':cid' => $cid])->queryAll();
+
+            $i = 0;
+            foreach ($problems as $problem) {
+                Yii::$app->db->createCommand()->update('{{%contest_problem}}', [
+                    'num' => $i
+                ], ['contest_id' => $cid, 'problem_id' => $problem['problem_id']])->execute();
+                TagDependency::invalidate(Yii::$app->cache, ['id' => $i, 'contestID' => $cid]);
+                $i++;
+            }
+        });
+    }
 }

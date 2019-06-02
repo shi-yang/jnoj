@@ -133,19 +133,18 @@ $problems = $model->problems;
                             <?= Html::endForm(); ?>
 
                             <?php Modal::end(); ?>
-                            <?php if ($key == count($problems) - 1): ?>
-                                <?= Html::a(Yii::t('app', 'Delete'), [
-                                    'deleteproblem',
-                                    'id' => $model->id,
-                                    'pid' => $p['problem_id']
-                                ],[
-                                    'class' => 'btn btn-danger',
-                                    'data' => [
-                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                                        'method' => 'post',
-                                    ],
-                                ]) ?>
-                            <?php endif; ?>
+
+                            <?= Html::a(Yii::t('app', 'Delete'), [
+                                'deleteproblem',
+                                'id' => $model->id,
+                                'pid' => $p['problem_id']
+                            ],[
+                                'class' => 'btn btn-danger',
+                                'data' => [
+                                    'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                                    'method' => 'post',
+                                ],
+                            ]) ?>
                         </th>
                     </tr>
                 <?php endforeach; ?>

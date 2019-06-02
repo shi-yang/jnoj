@@ -218,7 +218,6 @@ $problems = $model->problems;
                         <?= Html::endForm(); ?>
 
                         <?php Modal::end(); ?>
-                        <?php if ($key == count($problems) - 1): ?>
                         <?= Html::a(Yii::t('app', 'Delete'), [
                                 'deleteproblem',
                                 'id' => $model->id,
@@ -230,7 +229,6 @@ $problems = $model->problems;
                                 'method' => 'post',
                             ],
                         ]) ?>
-                        <?php endif; ?>
                     </th>
                 </tr>
             <?php endforeach; ?>

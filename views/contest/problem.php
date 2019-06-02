@@ -47,7 +47,7 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
         ]) ?>
     </div>
     <div class="row">
-        <?php if ($this->beginCache($model->id . $problem['num'])): ?>
+        <?php if ($this->beginCache('contest_problem_view' . $model->id . '_' . $problem['num'] . '_ '. $problem['id'])): ?>
         <div class="col-md-8 problem-view">
             <h1><?= Html::encode(chr(65 + $problem['num']) . '. ' . $problem['title']) ?></h1>
 

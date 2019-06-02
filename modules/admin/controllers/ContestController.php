@@ -586,14 +586,9 @@ class ContestController extends Controller
 
     public function actionDeleteproblem($id, $pid)
     {
-        $ok = Yii::$app->db->createCommand()
-            ->delete('{{%contest_problem}}', ['contest_id' => $id, 'problem_id' => $pid])
-            ->execute();
-        if ($ok) {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
-        } else {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted failed'));
-        }
+        $model = $this->findModel($id);
+        $model->deleteProblem($pid);
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Deleted successfully'));
         return $this->redirect(['contest/view', 'id' => $id]);
     }
 
