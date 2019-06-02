@@ -35,6 +35,7 @@ JNOJ Change Log
 - Enh: [web] 改进 OI 榜单的显示
 - Enh: [web、polygon] 改进 polygon。需要重新对 polygon 进行编译。
 - Enh: [web] 比赛结束五分钟后开放提交
+- Bug: [web] 比赛页面切换题目不出现复制按钮
 
 0.8.0 2019.3.3
 ------------------

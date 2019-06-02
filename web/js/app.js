@@ -126,38 +126,45 @@ $(document).ready(function () {
   }
   renderKatex();
 
+  function addCopyBtn() {
+    $(".sample-test h4").each(function() {
+      var preId = ("id" + Math.random()).replace('.', '0');
+      var cpyId = ("id" + Math.random()).replace('.', '0');
+
+      $(this).parent().find("pre").attr("id", preId);
+      var copy = $("<div title='Copy' data-clipboard-target='#" + preId + "' id='" + cpyId + "' class='btn-copy'>复制</div>");
+      $(this).append(copy);
+
+      var clipboard = new ClipboardJS('#' + cpyId, {
+        text: function(trigger) {
+          return document.querySelector('#' + preId).innerText;
+        }
+      });
+      clipboard.on('success', function(e) {
+        $('#' + cpyId).text("已复制");
+        setTimeout(function() {
+          $('#' + cpyId).text('复制');
+        }, 500);
+        e.clearSelection();
+      });
+      clipboard.on('error', function(e) {
+        $('#' + cpyId).text("复制失败");
+        setTimeout(function() {
+          $('#' + cpyId).text('复制');
+        }, 500);
+      });
+    });
+  }
+
+  addCopyBtn();
+
   $(document).on('pjax:complete', function() {
     renderKatex();
+    addCopyBtn();
   });
 
 
-$(".sample-test h4").each(function() {
-  var preId = ("id" + Math.random()).replace('.', '0');
-  var cpyId = ("id" + Math.random()).replace('.', '0');
 
-  $(this).parent().find("pre").attr("id", preId);
-  var copy = $("<div title='Copy' data-clipboard-target='#" + preId + "' id='" + cpyId + "' class='btn-copy'>复制</div>");
-  $(this).append(copy);
-
-  var clipboard = new ClipboardJS('#' + cpyId, {
-    text: function(trigger) {
-      return document.querySelector('#' + preId).innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
-    $('#' + cpyId).text("已复制");
-    setTimeout(function() {
-      $('#' + cpyId).text('复制');
-    }, 500);
-    e.clearSelection();
-  });
-  clipboard.on('error', function(e) {
-    $('#' + cpyId).text("复制失败");
-    setTimeout(function() {
-      $('#' + cpyId).text('复制');
-    }, 500);
-  });
-});
 
 
 //do something
