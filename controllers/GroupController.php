@@ -159,8 +159,11 @@ class GroupController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        if ($model->getRole() == GroupUser::ROLE_INVITING || (!$model->isMember() && ($model->join_policy == Group::JOIN_POLICY_FREE ||
-            $model->join_policy == Group::JOIN_POLICY_APPLICATION))) {
+        $role = $model->getRole();
+        if (!$model->isMember() && ($role == GroupUser::ROLE_INVITING ||
+                                    $role == GroupUser::ROLE_APPLICATION ||
+                                    $model->join_policy == Group::JOIN_POLICY_FREE ||
+                                    $model->join_policy == Group::JOIN_POLICY_APPLICATION)) {
             return $this->redirect(['/group/accept', 'id' => $model->id]);
         } else if (!$model->isMember() && $model->join_policy == Group::JOIN_POLICY_INVITE) {
             throw new ForbiddenHttpException('You are not allowed to perform this action.');
