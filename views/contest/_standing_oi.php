@@ -8,7 +8,7 @@ use app\models\Contest;
 /* @var $model app\models\Contest */
 
 $problems = $model->problems;
-$rank_result = $model->getOIRankData();
+$rank_result = $model->getOIRankData(true, time());
 $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];

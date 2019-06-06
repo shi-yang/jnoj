@@ -233,8 +233,10 @@ class Contest extends \yii\db\ActiveRecord
     }
 
     /**
-     * 获取用户的提交
+     * 获取用户提交
+     * @param boolean $betweenContest
      * @return array
+     * @throws \yii\db\Exception
      */
     public function getUsersSolution()
     {
@@ -242,8 +244,8 @@ class Contest extends \yii\db\ActiveRecord
             SELECT u.id as user_id, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
             FROM `solution` `s`
             LEFT JOIN `user` `u` ON u.id=s.created_by
-            WHERE `contest_id`=:id AND `s`.`created_at` <= :endtime ORDER BY `s`.`id`
-        ', [':id' => $this->id, ':endtime' => $this->end_time])->queryAll();
+            WHERE `contest_id`=:id ORDER BY `s`.`id`
+        ', [':id' => $this->id])->queryAll();
     }
 
     /**
@@ -313,10 +315,12 @@ class Contest extends \yii\db\ActiveRecord
 
     /**
      * 获取比赛排名数据
-     * @param $lock bool
+     * @param bool $lock 是否获取封榜的数据
+     * @param null $endtime 在此时间之前的榜单
      * @return array
+     * @throws \yii\db\Exception
      */
-    public function getRankData($lock = true)
+    public function getRankData($lock = true, $endtime = null)
     {
         $users_solution_data = $this->getUsersSolution();
         $users = $this->getContestUser();
@@ -327,8 +331,10 @@ class Contest extends \yii\db\ActiveRecord
         $problem_ids = [];
         $count = count($users_solution_data);
         $start_time = $this->start_time;
-        $end_time = $this->end_time;
         $lock_time = 0x7fffffff;
+        if ($endtime == null) {
+            $endtime = strtotime($this->end_time);
+        }
 
         foreach ($problems as $problem) {
             $problem_ids[$problem['problem_id']] = 1;
@@ -354,6 +360,9 @@ class Contest extends \yii\db\ActiveRecord
             $user = $row['user_id'];
             $pid = $row['problem_id'];
             $created_at = $row['created_at'];
+            if ($created_at > $endtime) {
+                break;
+            }
 
             if (!isset($problem_ids[$pid])) {
                 continue;
@@ -390,7 +399,7 @@ class Contest extends \yii\db\ActiveRecord
 
             // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见后台设置页面
             if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
-                time() <= strtotime($end_time) + Yii::$app->setting->get('scoreboardFrozenTime')) {
+                time() <= $endtime + Yii::$app->setting->get('scoreboardFrozenTime')) {
                 ++$result[$user]['pending'][$pid];
                 continue;
             }
@@ -452,8 +461,12 @@ class Contest extends \yii\db\ActiveRecord
 
     /**
      * 获取 OI 比赛排名数据
+     * @param bool $lock 是否获取封榜的数据
+     * @param null $endtime 在此时间之前的榜单
+     * @return array
+     * @throws \yii\db\Exception
      */
-    public function getOIRankData($lock = true)
+    public function getOIRankData($lock = true, $endtime = null)
     {
         $users_solution_data = $this->getUsersSolution();
         $users = $this->getContestUser();
@@ -463,8 +476,10 @@ class Contest extends \yii\db\ActiveRecord
         $submit_count = [];
         $count = count($users_solution_data);
         $start_time = $this->start_time;
-        $end_time = $this->end_time;
         $lock_time = 0x7fffffff;
+        if ($endtime == null) {
+            $endtime = strtotime($this->end_time);
+        }
 
         foreach ($users as $user) {
             $result[$user['user_id']]['username'] = $user['username'];
@@ -504,11 +519,14 @@ class Contest extends \yii\db\ActiveRecord
                 $submit_count[$pid]['solved'] = 0;
             if (!isset($submit_count[$pid]['submit']))
                 $submit_count[$pid]['submit'] = 0;
-
+            if (!isset($result[$user]['score'][$pid]))
+                $result[$user]['score'][$pid] = 0;
             if (!isset($result[$user]['max_score'][$pid]))
                 $result[$user]['max_score'][$pid] = 0;
 
-            $result[$user]['score'][$pid] = $score;
+            if (strtotime($created_at) <= $endtime) {
+                $result[$user]['score'][$pid] = $score;
+            }
             $result[$user]['max_score'][$pid] = max($score, $result[$user]['max_score'][$pid]);
 
             // 正在测评
@@ -520,7 +538,7 @@ class Contest extends \yii\db\ActiveRecord
 
             // 封榜，比赛结束后的一定时间解榜，解榜时间 scoreboardFrozenTime 变量的设置详见后台设置页面
             if ($lock && strtotime($lock_time) <= strtotime($created_at) &&
-                time() <= strtotime($end_time) + Yii::$app->setting->get('scoreboardFrozenTime')) {
+                time() <= $endtime + Yii::$app->setting->get('scoreboardFrozenTime')) {
                 ++$result[$user]['pending'][$pid];
                 continue;
             }

@@ -7,7 +7,7 @@ use yii\bootstrap\Modal;
 /* @var $model app\models\Contest */
 
 $problems = $model->problems;
-$rank_result = $model->getRankData();
+$rank_result = $model->getRankData(true, time());
 $first_blood = $rank_result['first_blood'];
 $result = $rank_result['rank_result'];
 $submit_count = $rank_result['submit_count'];
