@@ -395,8 +395,7 @@ class ContestController extends Controller
 
         if (!Yii::$app->user->isGuest && $solution->load(Yii::$app->request->post())) {
             // 判断是否已经参赛，提交即参加比赛
-            // 比赛结束后的提交不计入参赛人员
-            if ($model->getRunStatus() != Contest::STATUS_ENDED && !$model->isUserInContest()) {
+            if (!$model->isUserInContest()) {
                 Yii::$app->db->createCommand()->insert('{{%contest_user}}', [
                     'contest_id' => $model->id,
                     'user_id' => Yii::$app->user->id
