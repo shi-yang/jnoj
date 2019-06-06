@@ -6,10 +6,11 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 /* @var $contests array */
+/* @var $contestCnt integer */
 
 $this->title = $model->nickname;
 $solutionStats = $model->getSolutionStats();
-
+$recentSubmission = $model->getRecentSubmission();
 $this->registerJsFile("https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js", ['depends' => 'yii\web\JqueryAsset']);
 $this->registerJsFile("https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.time.js", ['depends' => 'yii\web\JqueryAsset']);
 $plotJS = <<<EOT
@@ -109,6 +110,7 @@ $("#placeholder").bind("plothover", function (event, pos, item) {
 });
 EOT;
 $this->registerJs($plotJS);
+
 ?>
 <div class="user-view">
 
@@ -147,7 +149,24 @@ $this->registerJs($plotJS);
                 ]) ?>
             </div>
             <div class="col-md-9">
+                <?php if ($contestCnt): ?>
                 <div id="placeholder" style="width:100%;height:300px;"></div>
+                    <hr>
+                <?php endif; ?>
+                <p>最近提交</p>
+                <div class="list-group">
+                    <?php foreach ($recentSubmission as $submission): ?>
+                    <a href="<?= \yii\helpers\Url::toRoute(['/solution/detail', 'id' => $submission['id']]) ?>" class="list-group-item">
+                        <span>
+                            <?= Html::encode($submission['problem_id'] . '. '. $submission['title']) ?>
+                        </span>
+                        <span style="float: right">
+                            <?= \app\models\Solution::getResultList($submission['result']) ?>
+                            <?= Yii::$app->formatter->asRelativeTime($submission['created_at']) ?>
+                        </span>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
         <hr>

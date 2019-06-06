@@ -74,7 +74,8 @@ class UserController extends Controller
 
         return $this->render('view', [
             'model' => $model,
-            'contests' => Json::encode($contests)
+            'contests' => Json::encode($contests),
+            'contestCnt' => count($contests)
         ]);
     }
 

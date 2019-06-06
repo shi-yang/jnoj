@@ -336,6 +336,16 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    public function getRecentSubmission() {
+        return (new Query())->select('s.id, p.title, p.id as problem_id, s.created_at, s.result')
+            ->from('{{%solution}} s')
+            ->leftJoin('{{%problem}} p', 'p.id=s.problem_id')
+            ->where('s.created_by=:id AND s.status=:status', [':id' => $this->id, ':status' => Solution::STATUS_VISIBLE])
+            ->orderBy('s.id DESC')
+            ->limit(10)
+            ->all();
+    }
+
     public function getRatingLevel($rating = -1)
     {
         if ($rating == -1)
