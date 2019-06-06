@@ -40,6 +40,7 @@ JNOJ Change Log
 - Enh: [web] 支持比赛任意题目的删除
 - Bug: [web] polygon 全部删除输入输出文件
 - Bug: [web、polygon] polygon 无法根据标程出数据。需要重新对 polygon 进行编译。
+- Enh: [web] 显示比赛结束后的榜单
 
 0.8.0 2019.3.3
 ------------------
