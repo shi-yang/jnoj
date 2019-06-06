@@ -213,7 +213,9 @@ class ProblemController extends Controller
     public function actionTests($id)
     {
         $model = $this->findModel($id);
-        $solutionStatus = Yii::$app->db->createCommand("SELECT * FROM {{%polygon_status}} WHERE problem_id=:pid", [':pid' => $model->id])->queryOne();
+        $solutionStatus = Yii::$app->db->createCommand("SELECT * FROM {{%polygon_status}} WHERE problem_id=:pid AND language IS NULL", [
+            ':pid' => $model->id
+        ])->queryOne();
         if (Yii::$app->request->isPost) {
             $inputFile = file_get_contents($_FILES["file"]["tmp_name"]);
             file_put_contents($_FILES["file"]["tmp_name"], preg_replace("(\r\n)","\n", $inputFile));
