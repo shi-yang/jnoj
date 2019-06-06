@@ -642,7 +642,7 @@ int prepare_files(char * filename, char * infile, int p_id,
         }
     }
     sprintf(userfile, "%srun/%d/user.out", oj_home, runner_id);
-    return res;
+    return is_verify ? res : 0;
 }
 
 void run_solution(struct problem_struct problem, int lang, char * work_dir,

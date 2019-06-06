@@ -46,7 +46,8 @@ class Problem extends \yii\db\ActiveRecord
     const OJ_OL  = 9;
     const OJ_RE  = 10;
     const OJ_CE  = 11;
-    const OJ_CO  = 12;
+    const OJ_SE  = 12;
+    const OJ_NT  = 13;
 
     public $sample_input_2;
     public $sample_output_2;
@@ -155,7 +156,8 @@ class Problem extends \yii\db\ActiveRecord
             self::OJ_OL => Yii::t('app', 'Output Limit Exceeded'),
             self::OJ_RE => Yii::t('app', 'Runtime Error'),
             self::OJ_CE => Yii::t('app', 'Compile Error'),
-            //Solution::OJ_CO => Yii::t('app', 'Compile Succeed')
+            self::OJ_SE => Yii::t('app', 'System Error'),
+            self::OJ_NT => Yii::t('app', 'No Test Data')
         ];
         return $res === '' ? $results : $results[$res];
     }
