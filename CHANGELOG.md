@@ -41,6 +41,7 @@ JNOJ Change Log
 - Bug: [web] polygon 全部删除输入输出文件
 - Bug: [web、polygon] polygon 无法根据标程出数据。需要重新对 polygon 进行编译。
 - Enh: [web] 显示比赛结束后的榜单
+- Bug: [web] 比赛结束后的提交导致榜单页面出错
 
 0.8.0 2019.3.3
 ------------------
