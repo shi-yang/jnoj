@@ -260,17 +260,17 @@ class ProblemController extends Controller
             $files = $model->getDataFiles();
             foreach ($files as $file) {
                 if (strpos($file['name'], '.in')) {
-                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name'] . '.in');
+                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name']);
                 }
             }
         } else if ($name == 'out') {
             $files = $model->getDataFiles();
             foreach ($files as $file) {
                 if (strpos($file['name'], '.out')) {
-                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name'] . '.out');
+                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name']);
                 }
                 if (strpos($file['name'], '.ans')) {
-                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name'] . '.ans');
+                    @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name']);
                 }
             }
         } else {

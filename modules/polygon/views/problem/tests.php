@@ -113,7 +113,7 @@ $files = $model->getDataFiles();
                 <table class="table">
                     <caption>
                         标准输出文件
-                        <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id,'name' => 'in']) ?>" onclick="return confirm('确定删除全部输出文件？');">
+                        <a href="<?= Url::toRoute(['/polygon/problem/deletefile', 'id' => $model->id, 'name' => 'out']) ?>" onclick="return confirm('确定删除全部输出文件？');">
                             删除全部输出文件
                         </a>
                     </caption>
