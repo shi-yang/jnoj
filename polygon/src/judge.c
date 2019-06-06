@@ -344,64 +344,46 @@ void update_solution(int solution_id, int result, int time, int memory)
     }
 }
 
+void update_not_ac_info(int solution_id, char * buf)
+{
+    char sql[(1 << 16)];
+    sprintf(sql,
+            "UPDATE polygon_status SET info = '%s' WHERE id=%d",
+            buf, solution_id);
+
+    if (mysql_real_query(conn, sql, strlen(sql))) {
+        write_log(mysql_error(conn));
+    }
+}
+
 void addceinfo(int solution_id)
 {
-    char sql[(1 << 16)], *end;
-    char ceinfo[(1 << 16)], *cend;
+    char ceinfo[(1 << 15)], *cend;
     FILE *fp = fopen("ce.txt", "re");
     cend = ceinfo;
     while (fgets(cend, 1024, fp)) {
         cend += strlen(cend);
-        if (cend - ceinfo > 40000)
+        if (cend - ceinfo > 30000)
             break;
     }
     cend = 0;
-    end = sql;
-    strcpy(end, "UPDATE polygon_status SET info =`");
-    end += strlen(sql);
-    *end++ = '\'';
-    end += sprintf(end, "%d", solution_id);
-    *end++ = '\'';
-    *end++ = ',';
-    *end++ = '\'';
-    end += mysql_real_escape_string(conn, end, ceinfo, strlen(ceinfo));
-    *end++ = '\'';
-    *end++ = '`';
-    *end = 0;
-    // printf("%s\n",ceinfo);
-    if (mysql_real_query(conn, sql, end - sql))
-        printf("%s\n", mysql_error(conn));
+    update_not_ac_info(solution_id, ceinfo);
     fclose(fp);
 }
 
 // write runtime error message back to database
 void _add_solution_info_mysql(int solution_id, const char * filename)
 {
-    char sql[(1 << 16)], *end;
-    char reinfo[(1 << 16)], *rend;
+    char reinfo[(1 << 15)], *rend;
     FILE *fp = fopen(filename, "re");
     rend = reinfo;
     while (fgets(rend, 1024, fp)) {
         rend += strlen(rend);
-        if (rend - reinfo > 40000)
+        if (rend - reinfo > 30000)
             break;
     }
     rend = 0;
-    end = sql;
-    strcpy(end, "UPDATE polygon_status SET info =`");
-    end += strlen(sql);
-    *end++ = '\'';
-    end += sprintf(end, "%d", solution_id);
-    *end++ = '\'';
-    *end++ = ',';
-    *end++ = '\'';
-    end += mysql_real_escape_string(conn, end, reinfo, strlen(reinfo));
-    *end++ = '\'';
-    *end++ = '`';
-    *end = 0;
-    //      printf("%s\n",ceinfo);
-    if (mysql_real_query(conn, sql, end - sql))
-        printf("%s\n", mysql_error(conn));
+    update_not_ac_info(solution_id, reinfo);
     fclose(fp);
 }
 
@@ -413,11 +395,6 @@ void addreinfo(int solution_id)
 void adddiffinfo(int solution_id)
 {
     _add_solution_info_mysql(solution_id, "diff.out");
-}
-
-void addcustomout(int solution_id)
-{
-    _add_solution_info_mysql(solution_id, "user.out");
 }
 
 void umount(char *work_dir)
