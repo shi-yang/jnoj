@@ -1231,11 +1231,11 @@ int main(int argc, char** argv)
         usedtime = problem.time_limit * 1000;
     }
 
-    update_solution(solution_id, run_result, usedtime, topmemory >> 10);
-   
     if (run_result == OJ_WA) {
         adddiffinfo(solution_id);
     }
+
+    update_solution(solution_id, run_result, usedtime, topmemory >> 10);
 
     clean_workdir(work_dir);
     mysql_close(conn);
