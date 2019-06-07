@@ -8,7 +8,6 @@ use app\models\Contest;
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contest'), 'url' => ['/contest/index']];
-$this->params['breadcrumbs'][] = $this->title;
 $this->params['model'] = $model;
 ?>
 <?php if ($model->status == Contest::STATUS_PRIVATE): ?>
