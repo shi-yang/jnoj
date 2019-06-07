@@ -433,7 +433,7 @@ int compile(int lang, char * work_dir)
 #endif
             execute_cmd("mount -o bind /etc/alternatives etc/alternatives");
             execute_cmd("mount -o remount,ro etc/alternatives");
-            execute_cmd("mount -o bind /proc proc");
+            execute_cmd("mount -t proc /proc proc");
             execute_cmd("mount -o remount,ro proc");
             chroot(work_dir);
         }
