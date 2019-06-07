@@ -387,7 +387,8 @@ class ProblemController extends Controller
             $fp = fopen($dataPath . '/spj.cc',"w");
             fputs($fp, $spjContent);
             fclose($fp);
-            $cmd = "g++ -fno-asm -std=c++11 -O2 {$dataPath}/spj.cc -o {$dataPath}/spj -I" . Yii::getAlias('@app/libraries');
+            putenv('PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin');
+            $cmd = "/usr/bin/g++ -fno-asm -std=c++11 -O2 {$dataPath}/spj.cc -o {$dataPath}/spj -I" . Yii::getAlias('@app/libraries');
             exec($cmd . ' 2>&1', $compileInfo, $compileRes);
             if ($compileRes) {
                 Yii::$app->session->setFlash('error', '编译失败:' . implode("\n", $compileInfo));
