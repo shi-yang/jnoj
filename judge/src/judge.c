@@ -1167,7 +1167,6 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
     head->next = NULL;
     while (fgets(buf, BUFFER_SIZE - 1, fp)) {
         char name_prefix[NAME_MAX] = {0};
-        char tmp_name[NAME_MAX] = {0};
         int begin = 0, end = 0, score = 0;
         int i = 0, j = 0;
         int found_num = 0;
