@@ -120,11 +120,6 @@ AppAsset::register($this);
 </footer>
 
 <?php $this->endBody() ?>
-<script type="text/javascript">
-    (function ($) {
-
-    })(jQuery);
-</script>
 </body>
 </html>
 <?php $this->endPage() ?>
