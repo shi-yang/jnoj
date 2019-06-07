@@ -85,11 +85,30 @@ class ProblemController extends Controller
             'searchModel' => $searchModel
         ]);
     }
-
+    
     public function actionDeletefile($id, $name)
     {
         $model = $this->findModel($id);
-        @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+        if ($name == 'in') {
+            $files = $model->getDataFiles();
+            foreach ($files as $file) {
+                if (strpos($file['name'], '.in')) {
+                    @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $file['name']);
+                }
+            }
+        } else if ($name == 'out') {
+            $files = $model->getDataFiles();
+            foreach ($files as $file) {
+                if (strpos($file['name'], '.out')) {
+                    @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $file['name']);
+                }
+                if (strpos($file['name'], '.ans')) {
+                    @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $file['name']);
+                }
+            }
+        } else {
+            @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+        }
         return $this->redirect(['test-data', 'id' => $model->id]);
     }
 
