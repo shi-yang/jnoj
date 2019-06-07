@@ -337,10 +337,12 @@ void update_solution(int solution_id, int result, int time, int memory,
 void update_solution_info(int solution_id, char * buf)
 {
     char sql[(1 << 16)];
+    char tmp[(1 << 15)];
+    mysql_real_escape_string(conn, tmp, buf, strlen(buf));
     sprintf(sql,
             "INSERT INTO `solution_info`(`solution_id`, `run_info`) VALUES(%d, '%s') "
             "ON DUPLICATE KEY UPDATE `run_info`='%s'",
-            solution_id, buf, buf);
+            solution_id, tmp, tmp);
     if (mysql_real_query(conn, sql, strlen(sql)))
         write_log(mysql_error(conn));
 }
@@ -1401,6 +1403,7 @@ int main(int argc, char** argv)
         subtask_list = (subtask_struct *)malloc(sizeof(subtask_struct));
         subtask_list->next = (subtask_struct *)malloc(sizeof(subtask_struct));
         subtask_list->next->test_count = 0;
+        subtask_list->next->score = 0;
         subtask_list->next->next = NULL;
         for (int i = 0; i < test_total_count; i++) {
             subtask_list->next->test_input_name[i] = (char *)malloc(sizeof(char) * (strlen(namelist[i]->d_name) + 1));
