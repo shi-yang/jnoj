@@ -92,8 +92,8 @@ typedef struct { // 记录每个数据点测试状态
 
 typedef struct subtask_s {
     int score; // 子任务的分数
-    int test_count; // 子任务的数据点个数。最大 256
-    char test_input_name[256][NAME_MAX];
+    int test_count; // 子任务的数据点个数。最大 1000
+    char *test_input_name[1000];
     struct subtask_s * next;
 } subtask_struct;
 
@@ -1228,11 +1228,12 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
         subtask_node->score = score;
         if (found_num) {
             for (i = begin, j = 0; i <= end; i++, j++) {
-                sprintf(tmp_name, "%s%d.in", name_prefix, i);
-                strcpy(subtask_node->test_input_name[j], tmp_name);
+                subtask_node->test_input_name[j] = (char *)malloc(sizeof(char) * NAME_MAX);
+                snprintf(subtask_node->test_input_name[j], NAME_MAX,"%s%d.in", name_prefix, i);
             }
         } else {
-            strcpy(subtask_node->test_input_name[j], name_prefix);
+            subtask_node->test_input_name[j] = (char *)malloc(sizeof(char) * NAME_MAX);
+            snprintf(subtask_node->test_input_name[j], NAME_MAX, "%s.in", name_prefix);
         }
         subtask_rear->next = subtask_node;
         subtask_rear = subtask_node; 
@@ -1403,6 +1404,7 @@ int main(int argc, char** argv)
         subtask_list->next->test_count = 0;
         subtask_list->next->next = NULL;
         for (int i = 0; i < test_total_count; i++) {
+            subtask_list->next->test_input_name[i] = (char *)malloc(sizeof(char) * (strlen(namelist[i]->d_name) + 1));
             strcpy(subtask_list->next->test_input_name[i], namelist[i]->d_name);
             subtask_list->next->test_count++;
             free(namelist[i]);
