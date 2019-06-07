@@ -24,6 +24,7 @@ if (!$model->canViewErrorInfo()) {
         </div>
         <?php
         $json = $model->solutionInfo->run_info;
+        $json = str_replace(PHP_EOL,"<br>",$json);
         $json = str_replace("\\n","<br>",$json);
         $json = str_replace("'","\'",$json);
         ?>

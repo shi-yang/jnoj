@@ -108,6 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $json = $model->solutionInfo->run_info;
 $json = str_replace("\\n","<br>",$json);
+$json = str_replace("\\n","<br>",$json);
 $json = str_replace("'","\'",$json);
 $oiMode = Yii::$app->setting->get('oiMode');
 $verdict = $model->result;
