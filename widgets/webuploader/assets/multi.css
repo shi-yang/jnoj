@@ -85,7 +85,7 @@
 
 #uploader .filelist li {
     width: 110px;
-    height: 110px;
+    height: 50px;
     background: url(./bg.png) no-repeat;
     text-align: center;
     margin: 0 8px 20px 0;

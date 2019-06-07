@@ -109,18 +109,18 @@ var Uploader = (function() {
             });
 
             uploader.on('fileQueued', function( _file ) {
-                file = _file;
+                // file = _file;
 
-                uploader.makeThumb( file, function( error, src ) {
+                // uploader.makeThumb( file, function( error, src ) {
 
-                    if ( error ) {
-                        alert('不能预览');
-                        return;
-                    }
+                //     if ( error ) {
+                //         alert('不能预览');
+                //         return;
+                //     }
 
-                    selectCb( src );
+                //     selectCb( src );
 
-                }, FRAME_WIDTH, 1 );   // 注意这里的 height 值是 1，被当成了 100% 使用。
+                // }, FRAME_WIDTH, 1 );   // 注意这里的 height 值是 1，被当成了 100% 使用。
             }).on('uploadSuccess', function() {
                 alert('上传成功');
             });
