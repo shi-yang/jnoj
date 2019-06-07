@@ -931,7 +931,7 @@ void watch_solution(problem_struct problem,
         //sig = status >> 8;/*status >> 8 EXITCODE*/
         if (WIFEXITED(status))
             break;
-        if ((lang == LANG_C || lang == LANG_CPP) && get_file_size("error.out")) {
+        if ((lang == LANG_C || lang == LANG_CPP) && get_file_size("error.out") && !oi_mode) {
             verdict_res->verdict = OJ_RE;
             ptrace(PTRACE_KILL, pidApp, NULL, NULL);
             break;
