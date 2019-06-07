@@ -336,8 +336,9 @@ void update_solution(int solution_id, int result, int time, int memory,
 
 void update_solution_info(int solution_id, char * buf)
 {
-    char sql[(1 << 16)];
-    char tmp[(1 << 15)];
+    int len = strlen(buf);
+    char *sql = (char *)malloc(sizeof(char) * (len + len + 1024));
+    char *tmp = (char *)malloc(sizeof(char) * (len + len + 1024));
     mysql_real_escape_string(conn, tmp, buf, strlen(buf));
     sprintf(sql,
             "INSERT INTO `solution_info`(`solution_id`, `run_info`) VALUES(%d, '%s') "
@@ -345,6 +346,8 @@ void update_solution_info(int solution_id, char * buf)
             solution_id, tmp, tmp);
     if (mysql_real_query(conn, sql, strlen(sql)))
         write_log(mysql_error(conn));
+    free(sql);
+    free(tmp);
 }
 
 void addceinfo(int solution_id)
