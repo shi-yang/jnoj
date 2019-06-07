@@ -316,6 +316,13 @@ class Solution extends ActiveRecord
         if (!Yii::$app->user->isGuest && Yii::$app->user->identity->role == User::ROLE_ADMIN) {
             return true;
         }
+        if (!empty($this->contest_id)) {
+            $contest = self::getContestInfo($this->contest_id);
+            // 比赛结束都可以看
+            if (time() >= strtotime($contest['end_time'])) {
+                return true;
+            }
+        }
         return false;
     }
 

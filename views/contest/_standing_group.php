@@ -79,15 +79,15 @@ $submit_count = $rank_result['submit_count'];
                     } else {
                         $css_class = 'solved';
                     }
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + 1;
+                    $num = $rank['wa_count'][$p['problem_id']] + 1;
                     $time = intval($rank['ac_time'][$p['problem_id']]);
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
+                    $num = $rank['wa_count'][$p['problem_id']] + $rank['pending'][$p['problem_id']];
                     $css_class = 'pending';
                     $time = '';
                 } else if (isset($rank['wa_count'][$p['problem_id']])) {
                     $css_class = 'attempted';
-                    $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']];
+                    $num =  $rank['wa_count'][$p['problem_id']];
                     $time = '';
                 }
                 if ($num == 0) {

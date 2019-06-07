@@ -21,6 +21,7 @@ $nav[''] = 'All';
 foreach ($problems as $key => $p) {
     $nav[$p['problem_id']] = chr(65 + $key) . '-' . $p['title'];
 }
+$userInContest = $model->isUserInContest();
 ?>
 <div class="solution-index" style="margin-top: 20px">
     <?php if ($model->type != \app\models\Contest::TYPE_OI && $model->isScoreboardFrozen()) :?>
@@ -68,14 +69,14 @@ foreach ($problems as $key => $p) {
             ],
             [
                 'attribute' => 'result',
-                'value' => function ($solution, $key, $index, $column) use ($model) {
+                'value' => function ($solution, $key, $index, $column) use ($model, $userInContest) {
                     // OI 比赛模式未结束时不返回具体结果
-                    if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                    if ($model->type == Contest::TYPE_OI && $model->getRunStatus() != Contest::STATUS_ENDED) {
                         return "Pending";
                     }
                     $otherCan = ($solution->status == 1 && Yii::$app->setting->get('isShareCode'));
                     $createdBy = (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id || Yii::$app->user->id == $solution->created_by));
-                    if ($otherCan || $createdBy || $model->type == \app\models\Contest::TYPE_HOMEWORK) {
+                    if ($otherCan || $createdBy || $model->type == Contest::TYPE_HOMEWORK || ($userInContest && $model->getRunStatus() == Contest::STATUS_ENDED)) {
                         return Html::a($solution->getResult(),
                             ['/solution/result', 'id' => $solution->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
