@@ -3,7 +3,7 @@
         <div class="queueList">
             <div id="dndArea" class="placeholder">
                 <div id="filePicker"></div>
-                <p><?= Yii::t('webuploader', 'Or Drag files here, a single optional up to 300') ?></p>
+                <p><?= Yii::t('webuploader', 'Or Drag files here, a single optional up to 1000') ?></p>
             </div>
         </div>
         <div class="statusBar" style="display:none;">
