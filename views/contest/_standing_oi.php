@@ -6,12 +6,12 @@ use yii\bootstrap\Modal;
 use app\models\Contest;
 
 /* @var $model app\models\Contest */
+/* @var $rankResult array */
 
 $problems = $model->problems;
-$rank_result = $model->getOIRankData(true, time());
-$first_blood = $rank_result['first_blood'];
-$result = $rank_result['rank_result'];
-$submit_count = $rank_result['submit_count'];
+$first_blood = $rankResult['first_blood'];
+$result = $rankResult['rank_result'];
+$submit_count = $rankResult['submit_count'];
 ?>
 <?php if ($model->isScoreboardFrozen()) {
     echo '<p>待赛后再揭晓</p>';

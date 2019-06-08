@@ -361,8 +361,11 @@ class ContestController extends Controller
 
     /**
      * 比赛榜单
-     * @param integer $id
-     * @return mixed
+     * @param $id
+     * @return string
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionStanding($id)
     {
@@ -371,8 +374,19 @@ class ContestController extends Controller
         if (!$model->canView()) {
             return $this->render('/contest/forbidden', ['model' => $model]);
         }
+        $showStandingBeforeEnd = 0;
+        if (Yii::$app->request->get('showStandingBeforeEnd')) {
+            $showStandingBeforeEnd = Yii::$app->request->get('showStandingBeforeEnd');
+        }
+        if ($showStandingBeforeEnd) {
+            $rankResult = $model->getRankData(true);
+        } else {
+            $rankResult = $model->getRankData(true, time());
+        }
         return $this->render('/contest/standing', [
-            'model' => $model
+            'model' => $model,
+            'rankResult' => $rankResult,
+            'showStandingBeforeEnd' => $showStandingBeforeEnd
         ]);
     }
 

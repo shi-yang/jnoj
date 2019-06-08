@@ -16,6 +16,16 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
 
 <div class="wrap">
     <div class="container">
+        <div class="alert alert-warning alert-dismissible fade in hidden-print" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <p>提示：</p>
+            <ul>
+                <li>可以使用浏览器自带的打印功能（Chrome 浏览器可在页面上鼠标“右键”-“打印”，其它浏览器请自行利用搜索引擎获取使用方法），
+                    可以选择将此页面导出为 PDF 格式。此提示信息不会出现在浏览器的打印窗口中。</li>
+                <li>比赛期间，若设了封榜，即使到了封榜期间，此榜单依然为实时榜单。</li>
+                <li>比赛结束后，由于前台依然能够开放提交，此榜单为比赛期间的榜单。</li>
+            </ul>
+        </div>
         <div class="row">
             <div class="col-md-3 text-left">
                 <strong>Start </strong>

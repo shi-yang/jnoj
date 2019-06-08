@@ -6,12 +6,12 @@ use yii\bootstrap\Modal;
 use app\models\User;
 
 /* @var $model app\models\Contest */
+/* @var $rankResult array */
 
 $problems = $model->problems;
-$rank_result = $model->getRankData(true, time());
-$first_blood = $rank_result['first_blood'];
-$result = $rank_result['rank_result'];
-$submit_count = $rank_result['submit_count'];
+$first_blood = $rankResult['first_blood'];
+$result = $rankResult['rank_result'];
+$submit_count = $rankResult['submit_count'];
 ?>
 <?php if ($model->isScoreboardFrozen()): ?>
     <p>现已是封榜状态，榜单将不再实时更新，待赛后再揭晓</p>
