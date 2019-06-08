@@ -276,7 +276,7 @@ class ProblemController extends Controller
                     rename($dataOldName, $dataNewName);
                     Solution::updateAll(['problem_id' => $newID], ['problem_id' => $oldID]);
                     ContestProblem::updateAll(['problem_id' => $newID], ['problem_id' => $oldID]);
-                    Discuss::updateAll(['entity_id' => $newID], ['entity_id' => $newID, 'entity' => Discuss::ENTITY_PROBLEM]);
+                    Discuss::updateAll(['entity_id' => $newID], ['entity_id' => $oldID, 'entity' => Discuss::ENTITY_PROBLEM]);
                 }
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
