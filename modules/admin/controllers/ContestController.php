@@ -390,7 +390,7 @@ class ContestController extends Controller
 
         $this->layout = 'basic';
 
-        if ($model->type == Contest::TYPE_OI) {
+        if ($model->type == Contest::TYPE_OI || $model->type == Contest::TYPE_IOI) {
             return $this->render('oi_rank', [
                 'model' => $model,
             ]);
