@@ -89,7 +89,7 @@ $userInContest = $model->isUserInContest();
             ],
             [
                 'attribute' => 'score',
-                'visible' => (Yii::$app->setting->get('oiMode') && $model->type != Contest::TYPE_OI) ||
+                'visible' => $model->type == Contest::TYPE_IOI || $model->type == Contest::TYPE_HOMEWORK ||
                             ($model->type == Contest::TYPE_OI && $model->getRunStatus() == Contest::STATUS_ENDED)
             ],
             [
