@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($model->title), 'url' 
 $this->params['breadcrumbs'][] = Yii::t('app', 'Setting');
 $this->params['model'] = $model;
 $problems = $model->problems;
+$scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
 ?>
 <div class="homework-update">
     <div class="col-md-9">
@@ -43,6 +44,15 @@ $problems = $model->problems;
                     'type' => 'datetime'
                 ]
             ]) ?>
+
+            <?= $form->field($model, 'lock_board_time')->widget('app\widgets\laydate\LayDate', [
+                'clientOptions' => [
+                    'istoday' => true,
+                    'type' => 'datetime'
+                ]
+            ])->hint("如果不需要封榜请留空，当前会在比赛结束{$scoreboardFrozenTime}小时后才会自动在前台页面解除封榜限制。
+                如需提前结束封榜也可选择清空该表单项。
+                <p class='text-danger'>注意：比赛类型为OI时，如果不填写“封榜时间”则会成为实时榜单。如需要非实时榜单，则填写为开始时间或开始时间之前的时间即可。</p>") ?>
 
             <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
 

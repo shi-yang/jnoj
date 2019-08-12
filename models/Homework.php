@@ -46,6 +46,7 @@ class Homework extends Contest
             'created_by' => Yii::t('app', 'Created By'),
             'description' => Yii::t('app', 'Description'),
             'editorial' => Yii::t('app', 'Editorial'),
+            'lock_board_time' => Yii::t('app', 'Lock Board Time'),
         ];
     }
 

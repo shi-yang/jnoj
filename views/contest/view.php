@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\models\Contest;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contest */
@@ -65,12 +66,18 @@ $submissionStatistics = $model->getSubmissionStatistics();
                     ?>
                     <td><?= Html::a(Html::encode($p['title']), ['/contest/problem', 'id' => $model->id, 'pid' => $key, '#' => 'problem-anchor']) ?></td>
                     <th>
-                        <?= $submissionStatistics[$p['problem_id']]['solved'] ?> / <?= $submissionStatistics[$p['problem_id']]['submit'] ?>
+                        <?php
+                            if ($model->type == Contest::TYPE_OI && $model->getRunStatus() == Contest::STATUS_RUNNING) {
+                                echo '? / ' . $submissionStatistics[$p['problem_id']]['submit'];
+                            } else {
+                                echo $submissionStatistics[$p['problem_id']]['solved'] . ' / ' . $submissionStatistics[$p['problem_id']]['submit'];
+                            }
+                        ?>
                     </th>
                     <th>
                         <?php if (!isset($loginUserProblemSolvingStatus[$p['problem_id']])): ?>
 
-                        <?php elseif ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() == \app\models\Contest::STATUS_RUNNING): ?>
+                        <?php elseif ($model->type == Contest::TYPE_OI && $model->getRunStatus() == Contest::STATUS_RUNNING): ?>
                             <span class="glyphicon glyphicon-question-sign"></span>
                         <?php elseif ($loginUserProblemSolvingStatus[$p['problem_id']] == \app\models\Solution::OJ_AC): ?>
                             <span class="glyphicon glyphicon-ok text-success" title="正确解答"></span>

@@ -290,6 +290,26 @@ class Solution extends ActiveRecord
 
         $contest = self::getContestInfo($this->contest_id);
 
+        // 作业模式无限制
+        if ($contest['type'] == Contest::TYPE_HOMEWORK) {
+            return true;
+        }
+
+        // 小组
+        if ($contest['group_id'] && !Yii::$app->user->isGuest) {
+            $role = Yii::$app->db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
+                ':uid' => Yii::$app->user->id,
+                ':gid' => $contest['group_id']
+            ])->queryScalar();
+            // 小组管理员
+            if ($role == GroupUser::ROLE_LEADER || $role == GroupUser::ROLE_MANAGER) {
+                return true;
+            }
+            if ($role != GroupUser::ROLE_MEMBER) {
+                return false;
+            }
+        }
+
         // OI 模式比赛结束时才可以看
         if ($contest['type'] != Contest::TYPE_OI || time() >= strtotime($contest['end_time'])) {
             return true;
@@ -322,6 +342,20 @@ class Solution extends ActiveRecord
             if (time() >= strtotime($contest['end_time'])) {
                 return true;
             }
+            // 小组
+            if ($contest['group_id'] && !Yii::$app->user->isGuest) {
+                $role = Yii::$app->db->createCommand('SELECT role FROM {{%group_user}} WHERE user_id=:uid AND group_id=:gid', [
+                    ':uid' => Yii::$app->user->id,
+                    ':gid' => $contest['group_id']
+                ])->queryScalar();
+                // 小组管理员
+                if ($role == GroupUser::ROLE_LEADER || $role == GroupUser::ROLE_MANAGER) {
+                    return true;
+                }
+                if ($role != GroupUser::ROLE_MEMBER) {
+                    return false;
+                }
+            }
         }
         return false;
     }
@@ -332,7 +366,7 @@ class Solution extends ActiveRecord
         $cache = Yii::$app->cache;
         $contest = $cache->get($key);
         if ($contest === false) {
-            $contest = Yii::$app->db->createCommand('SELECT end_time, type FROM {{%contest}} WHERE id = :id', [
+            $contest = Yii::$app->db->createCommand('SELECT `id`, `start_time`, `end_time`, `type`, `group_id` FROM  {{%contest}} WHERE id = :id', [
                 ':id' => $contestID
             ])->queryOne();
             $cache->set($key, $contest, 60);
