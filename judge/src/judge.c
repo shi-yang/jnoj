@@ -1236,8 +1236,8 @@ subtask_struct * read_oi_mode_substask_configfile(char * configfile_path)
                 snprintf(subtask_node->test_input_name[j], NAME_MAX,"%s%d.in", name_prefix, i);
             }
         } else {
-            subtask_node->test_input_name[j] = (char *)malloc(sizeof(char) * NAME_MAX);
-            snprintf(subtask_node->test_input_name[j], NAME_MAX, "%s.in", name_prefix);
+            subtask_node->test_input_name[0] = (char *)malloc(sizeof(char) * NAME_MAX);
+            snprintf(subtask_node->test_input_name[0], NAME_MAX, "%s.in", name_prefix);
         }
         subtask_rear->next = subtask_node;
         subtask_rear = subtask_node; 
