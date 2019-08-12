@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </tbody>
     </table>
 </div>
-<?php if (!Yii::$app->setting->get('oiMode')): ?>
+<?php if ($model->canViewResult()): ?>
     <hr>
     <h3>Tests(<?= $model->getPassedTestCount() ?>/<?= $model->getTestCount() ?>):</h3>
     <h3>
