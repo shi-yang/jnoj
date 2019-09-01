@@ -2,25 +2,25 @@
 #define JUDGE_LANGUAGE_H
 
 struct language {
-	char name[10];
-	char * compile_cmd[20];
-    char * run_cmd[20];
-    char file_ext[10];
-    bool is_vmrun;
+    char name[10]; // 语言名字
+    char * compile_cmd[20]; // 编译命令
+    char * run_cmd[20]; // 运行命令
+    char file_ext[10]; // 文件后缀
+    bool is_vmrun; // 该语言是否以虚拟机方式运行
 };
 
 struct language languages[] = {
-	{
-		"c",
-		{"gcc", "Main.c", "-o", "Main", "-Wall", "-O2", "-lm", "--static", "-std=c99",
+    {
+        "c",
+        {"gcc", "Main.c", "-o", "Main", "-Wall", "-O2", "-lm", "--static", "-std=c99",
          "-DONLINE_JUDGE", NULL},
         {"./Main", NULL},
         "c",
         false
-	},
-	{
-		"c++",
-		{"g++", "-fno-asm", "-O2", "-Wall", "-lm", "--static", "-std=c++11",
+    },
+    {
+        "c++",
+        {"g++", "-fno-asm", "-O2", "-Wall", "-lm", "--static", "-std=c++11",
          "-DONLINE_JUDGE", "-o", "Main", "Main.cc", NULL},
         {"./Main", NULL},
         "cc",
