@@ -54,7 +54,7 @@ class UploadForm extends Model
 
     public static function importFPS($tempFile)
     {
-        $xmlDoc = simplexml_load_file($tempFile);
+        $xmlDoc = simplexml_load_file($tempFile, 'SimpleXMLElement', LIBXML_PARSEHUGE);
         $searchNodes = $xmlDoc->xpath("/fps/item");
         set_time_limit(0);
         ob_end_clean();
