@@ -268,17 +268,17 @@ class GroupController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if ($model->getRole() != GroupUser::ROLE_LEADER) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        if (!Yii::$app->user->isGuest && ($model->getRole() == GroupUser::ROLE_LEADER || Yii::$app->user->identity->isAdmin())) {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('update', [
+                'model' => $model,
+            ]);
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+        throw new ForbiddenHttpException('You are not allowed to perform this action.');
     }
 
     /**
@@ -349,7 +349,7 @@ class GroupController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        if ($model->created_by === Yii::$app->user->id) {
+        if (!Yii::$app->user->isGuest && ($model->created_by === Yii::$app->user->id || Yii::$app->user->identity->isAdmin())) {
             $model->delete();
             Yii::$app->session->setFlash('success', '已删除');
             return $this->redirect(['index']);
