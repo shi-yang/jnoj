@@ -186,6 +186,12 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
                 </tbody>
             </table>
         </div>
+        <hr>
+        <?= Html::a('删除该比赛', ['/homework/delete', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data-confirm' => '此操作不可恢复，你确定要删除吗？',
+            'data-method' => 'post',
+        ]) ?>
     </div>
 
 </div>

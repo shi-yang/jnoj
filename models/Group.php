@@ -88,6 +88,16 @@ class Group extends ActiveRecord
         }
     }
 
+    public function beforeDelete()
+    {
+        $contests = Contest::findAll(['group_id' => $this->id]);
+        foreach ($contests as $contest) {
+            $contest->delete();
+        }
+        GroupUser::deleteAll(['group_id' => $this->id]);
+        return parent::beforeDelete();
+    }
+
     /**
      * {@inheritdoc}
      * @return GroupQuery the active query used by this AR class.

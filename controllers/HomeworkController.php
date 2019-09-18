@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Contest;
 use app\models\ContestProblem;
+use app\models\ContestUser;
 use app\models\Problem;
 use app\models\Solution;
 use app\models\User;
@@ -199,6 +200,18 @@ class HomeworkController extends ContestController
             'announcements' => $announcements,
             'newAnnouncement' => $newAnnouncement
         ]);
+    }
+
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        ContestUser::deleteAll(['contest_id' => $model->id]);
+        ContestProblem::deleteAll(['contest_id' => $model->id]);
+        Solution::deleteAll(['contest_id' => $model->id]);
+        $groupId = $model->group_id;
+        $model->delete();
+        Yii::$app->session->setFlash('success', Yii::t('app', '已删除'));
+        return $this->redirect(['/group/view', 'id' => $groupId]);
     }
 
     /**

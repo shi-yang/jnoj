@@ -339,6 +339,26 @@ class GroupController extends Controller
     }
 
     /**
+     * @param $id
+     * @return \yii\web\Response
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->created_by === Yii::$app->user->id) {
+            $model->delete();
+            Yii::$app->session->setFlash('success', '已删除');
+            return $this->redirect(['index']);
+        }
+
+        throw new ForbiddenHttpException('You are not allowed to perform this action.');
+    }
+
+    /**
      * Finds the Group model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id

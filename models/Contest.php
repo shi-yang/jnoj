@@ -122,6 +122,14 @@ class Contest extends \yii\db\ActiveRecord
         }
     }
 
+    public function beforeDelete()
+    {
+        ContestUser::deleteAll(['contest_id' => $this->id]);
+        ContestProblem::deleteAll(['contest_id' => $this->id]);
+        Solution::deleteAll(['contest_id' => $this->id]);
+        return parent::beforeDelete();
+    }
+
     public function getSolutions()
     {
         return $this->hasMany(Solution::className(), ['problem_id' => 'problem_id'])
