@@ -121,7 +121,7 @@ function updateVerdictByKey(submission) {
             var obj = JSON.parse(data);
             submission.attr("waiting", obj.waiting);
             submission.text(obj.result);
-            if (obj.result === "Accepted") {
+            if (obj.verdict === "4") {
                 submission.attr("class", "text-success")
             }
             if (obj.waiting === "true") {
