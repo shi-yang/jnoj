@@ -210,5 +210,20 @@ return [
     'Platinum' => '铂金',
     'Diamond' => '钻石',
     'Master' => '王者',
-    'Challenger' => '大师'
+    'Challenger' => '大师',
+
+    'Pending' => '等待测评',
+    'Pending Rejudge' => '等待重测',
+    'Compiling' => '正在编译',
+    'Running & Judging' => '正在测评',
+    'Accepted' => '通过',
+    'Presentation Error' => '输出格式错误',
+    'Wrong Answer' => '解答错误',
+    'Time Limit Exceeded' => '运行超时',
+    'Memory Limit Exceeded' => '内存超限',
+    'Output Limit Exceeded' => '输出超限',
+    'Runtime Error' => '运行出错',
+    'Compile Error' => '编译错误',
+    'System Error' => '系统错误',
+    'No Test Data' => '无测评数据'
 ];

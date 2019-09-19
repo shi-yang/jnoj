@@ -199,8 +199,26 @@ class Solution extends ActiveRecord
             $loadingImg = "";
         }
         $innerHtml =  'data-verdict="' . $this->result . '" data-submissionid="' . $this->id . '" ' . $waitingHtmlDom;
-        $cssClass = $this->result == Solution::OJ_AC ? 'text-success' : 'text-danger';
-        return "<strong class=\"$cssClass\" $innerHtml>{$res}{$loadingImg}</strong>";
+
+        // 定义各个测评状态的颜色
+        // https://v3.bootcss.com/css/#helper-classes
+        $cssClass = [
+            "text-muted", // Pending
+            "text-muted",
+            "text-muted",
+            "text-muted",
+            "text-success", // AC
+            "text-warning", // PE
+            "text-danger",  // WA
+            "text-warning", // TLE
+            "text-warning", // MLE
+            "text-warning", // OLE
+            "text-warning", // RE
+            "text-warning", // CE
+            "text-danger",  // SE
+            "text-danger", // No Test Data
+        ];
+        return "<strong class=" . $cssClass[$this->result] . " $innerHtml>{$res}{$loadingImg}</strong>";
     }
 
     public static function getResultList($res = '')
