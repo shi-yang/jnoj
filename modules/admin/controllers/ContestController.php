@@ -449,6 +449,21 @@ class ContestController extends Controller
     }
 
     /**
+     * 下载比赛期间提交记录
+     */
+    public function actionDownloadSolution($id)
+    {
+        $model = $this->findModel($id);
+        $zipFile = $model->saveContestSolutionToFile();
+        if (!$zipFile) {
+            Yii::$app->session->setFlash('error', '保存失败。可能是系统未安装 zip 命令。');
+            return $this->redirect(['status', 'id' => $id]);
+        }
+        Yii::$app->response->on(\yii\web\Response::EVENT_AFTER_SEND, function($event) { unlink($event->data); }, $zipFile);
+        return Yii::$app->response->sendFile($zipFile, $model->id . '-' . $model->title . '.zip');
+    }
+
+    /**
      * Displays a single Contest model.
      * @param integer $id
      * @return mixed

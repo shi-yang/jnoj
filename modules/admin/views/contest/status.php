@@ -40,7 +40,11 @@ foreach ($problems as $key => $p) {
         <?php Modal::end(); ?>
 
         <?= Html::a('在前台隐藏提交记录', ['/admin/contest/status', 'id' => $model->id, 'active' => 2], ['class' => 'btn btn-default']) ?>
-
+        <?= Html::a(
+            '下载比赛期间提交记录',
+            ['/admin/contest/download-solution', 'id' => $model->id],
+            ['class' => 'btn btn-primary', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => '下载比赛期间正确解答的代码，可用于查重']
+        ); ?>
         <?php Pjax::begin() ?>
         <div class="solution-index" style="margin-top: 20px">
             <?= $this->render('_status_search', ['model' => $searchModel, 'nav' => $nav, 'contest_id' => $model->id]); ?>
@@ -131,6 +135,8 @@ foreach ($problems as $key => $p) {
 $url = \yii\helpers\Url::toRoute(['/solution/verdict']);
 $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
 $js = <<<EOF
+$('[data-toggle="tooltip"]').tooltip();
+
 $('[data-click=solution_info]').click(function() {
     $.ajax({
         url: $(this).attr('href'),

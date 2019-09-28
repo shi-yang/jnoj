@@ -186,6 +186,33 @@ class Solution extends ActiveRecord
         return $res;
     }
 
+    /**
+     * 获取语言对应的文件后缀
+     *
+     * @return string
+     */
+    public static function getLangFileExtension($lang)
+    {
+        switch ($lang) {
+            case Solution::CLANG:
+                $res = 'c';
+                break;
+            case Solution::CPPLANG:
+                $res = 'cpp';
+                break;
+            case Solution::JAVALANG:
+                $res = 'java';
+                break;
+            case Solution::PYLANG:
+                $res = 'py';
+                break;
+            default:
+                $res = 'txt';
+                break;
+        }
+        return $res;
+    }
+
     public function getResult()
     {
         $res = self::getResultList($this->result);

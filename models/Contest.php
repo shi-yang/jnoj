@@ -3,9 +3,10 @@
 namespace app\models;
 
 use Yii;
-use yii\caching\TagDependency;
-use yii\db\Expression;
 use yii\db\Query;
+use yii\db\Expression;
+use yii\helpers\FileHelper;
+use yii\caching\TagDependency;
 
 /**
  * This is the model class for table "{{%contest}}".
@@ -266,6 +267,54 @@ class Contest extends \yii\db\ActiveRecord
             LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id ORDER BY `s`.`id`
         ', [':id' => $this->id])->queryAll();
+    }
+
+    /**
+     * 将比赛期间成功解答的提交保存到文件。
+     * 用于下载进行查重。成功返回用于下载的路径。
+     * 
+     * @return bool|string
+     */
+    public function saveContestSolutionToFile()
+    {
+        $solutions = Yii::$app->db->createCommand('
+            SELECT u.id as user_id, username, result, s.problem_id, s.created_at, s.id, s.score, s.language, s.source
+            FROM `solution` `s`
+            LEFT JOIN `user` `u` ON u.id=s.created_by
+            WHERE `contest_id`=:id AND `result`=:result AND s.created_at <= :end
+        ', [':id' => $this->id, ':result' => Solution::OJ_AC, ':end' => $this->end_time])->queryAll();
+
+        $problems = $this->getProblems();
+        foreach ($problems as $p) {
+            $problems[$p['problem_id']] = $p;
+        }
+        $workDir = Yii::$app->getRuntimePath() . '/contest/' . $this->id . '/';
+        foreach ($solutions as $solution) {
+            // 问题号
+            $problemIndex = chr(65 + $problems[$solution['problem_id']]['num']);
+            $path = $workDir . $problemIndex . '/';
+            if (!is_dir($path)) {
+                FileHelper::createDirectory($path);
+            }
+            // 问题号_运行ID[id]_用户名[username].语言
+            $fileName = $problemIndex
+                . '_RunID[' . $solution['id'] . ']'
+                . '_Username[' . $solution['username'] . ']'
+                . '.' . Solution::getLangFileExtension($solution['language']);
+            
+            $fp = fopen($path . $fileName, 'w');
+            fputs($fp, $solution['source']);
+            fclose($fp);
+        }
+
+        // 压缩。调用系统命令来压缩。
+        $zipName = Yii::$app->getRuntimePath() . '/oj_contest_' . $this->id . '.zip';
+        exec("zip -jqr $zipName $workDir");
+        FileHelper::removeDirectory($workDir);
+        if (!file_exists($zipName)) {
+            return false;
+        }
+        return $zipName;
     }
 
     /**
