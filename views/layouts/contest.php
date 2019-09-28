@@ -157,8 +157,6 @@ $status = $model->getRunStatus();
                         'label' => '<span class="glyphicon glyphicon-signal"></span> ' . Yii::t('app' , 'Status'),
                         'url' => ['contest/status', 'id' => $model->id],
                         'linkOptions' => ['data-pjax' => 0],
-                        // OI 模式不可见
-                        //'visible' => $model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED
                     ],
                     [
                         'label' => '<span class="glyphicon glyphicon-glass"></span> ' . Yii::t('app', 'Standing'),
@@ -175,7 +173,7 @@ $status = $model->getRunStatus();
                         'url' => ['/contest/print', 'id' => $model->id]
                     ];
                 }
-                if ($model->getRunStatus() == $model::STATUS_ENDED) {
+                if ($model->isContestEnd()) {
                     $menuItems[] = [
                         'label' => '<span class="glyphicon glyphicon-info-sign"></span> ' . Yii::t('app', 'Editorial'),
                         'url' => ['contest/editorial', 'id' => $model->id]

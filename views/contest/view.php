@@ -46,7 +46,7 @@ $submissionStatistics = $model->getSubmissionStatistics();
             <tr>
                 <th width="70px">#</th>
                 <?php
-                if ($model->getRunStatus() == $model::STATUS_ENDED) {
+                if ($model->isContestEnd()) {
                     echo "<th width='100px'>题号</th>";
                 }
                 ?>
@@ -60,7 +60,7 @@ $submissionStatistics = $model->getSubmissionStatistics();
                 <tr>
                     <th><?= Html::a(chr(65 + $key), ['/contest/problem', 'id' => $model->id, 'pid' => $key, '#' => 'problem-anchor']) ?></th>
                     <?php
-                    if ($model->getRunStatus() == $model::STATUS_ENDED) {
+                    if ($model->isContestEnd()) {
                         echo "<th>" . Html::a($p['problem_id'], ['/problem/view', 'id' => $p['problem_id']]) . "</th>";
                     }
                     ?>

@@ -95,7 +95,7 @@ $submit_count = $rankResult['submit_count'];
                 if ($model->isScoreboardFrozen() && isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
                     $num = $rank['ce_count'][$p['problem_id']] + $rank['wa_count'][$p['problem_id']] . "+" .  $rank['pending'][$p['problem_id']];
                 }
-                if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == \app\models\Contest::STATUS_ENDED) {
+                if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->isContestEnd()) {
                     $url = Url::toRoute([
                         '/contest/submission',
                         'pid' => $p['problem_id'],

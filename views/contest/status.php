@@ -28,7 +28,7 @@ $userInContest = $model->isUserInContest();
         <p class="text-center">现已是封榜状态，榜单将不再实时更新，只显示封榜前的提交及您个人的所有提交记录。</p>
     <?php endif; ?>
     <?php Pjax::begin() ?>
-    <?php if ($model->type != \app\models\Contest::TYPE_OI || $model->getRunStatus() == \app\models\Contest::STATUS_ENDED): ?>
+    <?php if ($model->type != \app\models\Contest::TYPE_OI || $model->isContestEnd()): ?>
     <?= $this->render('_status_search', ['model' => $searchModel, 'nav' => $nav, 'contest_id' => $model->id]); ?>
     <?php endif; ?>
 
@@ -71,12 +71,12 @@ $userInContest = $model->isUserInContest();
                 'attribute' => 'result',
                 'value' => function ($solution, $key, $index, $column) use ($model, $userInContest) {
                     // OI 比赛模式未结束时不返回具体结果
-                    if ($model->type == Contest::TYPE_OI && $model->getRunStatus() != Contest::STATUS_ENDED) {
+                    if ($model->type == Contest::TYPE_OI && !$model->isContestEnd()) {
                         return "Pending";
                     }
                     $otherCan = ($solution->status == 1 && Yii::$app->setting->get('isShareCode'));
                     $createdBy = (!Yii::$app->user->isGuest && ($model->created_by == Yii::$app->user->id || Yii::$app->user->id == $solution->created_by));
-                    if ($otherCan || $createdBy || $model->type == Contest::TYPE_HOMEWORK || ($userInContest && $model->getRunStatus() == Contest::STATUS_ENDED)) {
+                    if ($otherCan || $createdBy || $model->type == Contest::TYPE_HOMEWORK || ($userInContest && $model->isContestEnd())) {
                         return Html::a($solution->getResult(),
                             ['/solution/result', 'id' => $solution->id],
                             ['onclick' => 'return false', 'data-click' => "solution_info", 'data-pjax' => 0]
@@ -90,13 +90,13 @@ $userInContest = $model->isUserInContest();
             [
                 'attribute' => 'score',
                 'visible' => $model->type == Contest::TYPE_IOI || $model->type == Contest::TYPE_HOMEWORK ||
-                            ($model->type == Contest::TYPE_OI && $model->getRunStatus() == Contest::STATUS_ENDED)
+                            ($model->type == Contest::TYPE_OI && $model->isContestEnd())
             ],
             [
                 'attribute' => 'time',
                 'value' => function ($solution, $key, $index, $column) use ($model) {
                     // OI 比赛模式未结束时不返回具体结果
-                    if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                    if ($model->type == \app\models\Contest::TYPE_OI && !$model->isContestEnd()) {
                         return "－";
                     }
                     return $solution->time . ' MS';
@@ -107,7 +107,7 @@ $userInContest = $model->isUserInContest();
                 'attribute' => 'memory',
                 'value' => function ($solution, $key, $index, $column) use ($model) {
                     // OI 比赛模式未结束时不返回具体结果
-                    if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                    if ($model->type == \app\models\Contest::TYPE_OI && !$model->isContestEnd()) {
                         return "－";
                     }
                     return $solution->memory . ' KB';

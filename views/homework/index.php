@@ -33,7 +33,7 @@ $this->title = Yii::t('app', 'Homework');
                         $link = '<span class="well-done">' . Yii::t('app', 'Registration completed') . '</span>';
                     }
                     if ($model->status == Contest::STATUS_VISIBLE &&
-                        $model->getRunStatus() != Contest::STATUS_ENDED &&
+                        !$model->isContestEnd() &&
                         $model->scenario == Contest::SCENARIO_ONLINE) {
                         $column = $model->getRunStatus(true) . ' ' . $link;
                     } else {

@@ -419,6 +419,10 @@ class ContestController extends Controller
                 Yii::$app->session->setFlash('error', 'The contest has not started.');
                 return $this->refresh();
             }
+            if ($model->isContestEnd() && time() < strtotime($model->end_time) + 5 * 60) {
+                Yii::$app->session->setFlash('error', '比赛已结束。比赛结束五分钟后开放提交。');
+                return $this->refresh();
+            }
             $solution->problem_id = $problem['id'];
             $solution->contest_id = $model->id;
             $solution->status = Solution::STATUS_HIDDEN;

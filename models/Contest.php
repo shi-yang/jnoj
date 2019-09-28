@@ -127,6 +127,9 @@ class Contest extends \yii\db\ActiveRecord
         ContestUser::deleteAll(['contest_id' => $this->id]);
         ContestProblem::deleteAll(['contest_id' => $this->id]);
         Solution::deleteAll(['contest_id' => $this->id]);
+        Discuss::deleteAll(['entity' => Discuss::ENTITY_CONTEST, 'entity_id' => $this->id]);
+        ContestPrint::deleteAll(['contest_id' => $this->id]);
+        ContestAnnouncement::deleteAll(['contest_id' => $this->id]);
         return parent::beforeDelete();
     }
 
@@ -200,6 +203,15 @@ class Contest extends \yii\db\ActiveRecord
                 return Contest::STATUS_ENDED;
             }
         }
+    }
+
+    /**
+     * 比赛是否结束
+     * @return bool
+     */
+    public function isContestEnd()
+    {
+        return time() > strtotime($this->end_time);
     }
 
     public static function getContestList()

@@ -20,9 +20,9 @@ EOT;
 $this->registerJs($js);
 ?>
 <div class="contest-overview text-center center-block">
-    <?php if ($model->type != Contest::TYPE_OI || $model->getRunStatus() == Contest::STATUS_ENDED): ?>
+    <?php if ($model->type != Contest::TYPE_OI || $model->isContestEnd()): ?>
     <div class="legend-strip">
-        <?php if ($model->getRunStatus() == Contest::STATUS_ENDED): ?>
+        <?php if ($model->isContestEnd()): ?>
             <?= Html::beginForm(
                     ['/contest/standing', 'id' => $model->id],
                     'get',

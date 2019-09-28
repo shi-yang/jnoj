@@ -601,12 +601,7 @@ class ContestController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-        Solution::deleteAll(['contest_id' => $id]);
-        ContestUser::deleteAll(['contest_id' => $id]);
-        Discuss::deleteAll(['entity' => Discuss::ENTITY_CONTEST, 'entity_id' => $id]);
-        ContestProblem::deleteAll(['contest_id' => $id]);
-        ContestPrint::deleteAll(['contest_id' => $id]);
-        ContestAnnouncement::deleteAll(['contest_id' => $id]);
+        Yii::$app->session->setFlash('success', Yii::t('app', '已删除'));
         return $this->redirect(['index']);
     }
 

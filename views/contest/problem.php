@@ -155,7 +155,7 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
                                 $loadingImg = "";
                             }
                             // OI 比赛过程中结果不可见
-                            if ($model->type == \app\models\Contest::TYPE_OI && $model->getRunStatus() != \app\models\Contest::STATUS_ENDED) {
+                            if ($model->type == \app\models\Contest::TYPE_OI && !$model->isContestEnd()) {
                                 $waitingHtmlDom = 'waiting="false"';
                                 $loadingImg = "";
                                 $sub['result'] = 0;
@@ -202,7 +202,7 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
     'size' => Modal::SIZE_LARGE,
     'options' => ['id' => 'submit-solution']
 ]); ?>
-<?php if ($model->getRunStatus() == app\models\Contest::STATUS_ENDED && time() < strtotime($model->end_time) + 5 * 60): ?>
+<?php if ($model->isContestEnd() && time() < strtotime($model->end_time) + 5 * 60): ?>
     比赛已结束。比赛结束五分钟后开放提交。
 <?php else: ?>
 

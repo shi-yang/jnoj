@@ -95,7 +95,7 @@ $submit_count = $rankResult['submit_count'];
                     $score = "";
                     $max_score = "";
                 }
-                if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->getRunStatus() == Contest::STATUS_ENDED) {
+                if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->isContestEnd()) {
                     $url = Url::toRoute([
                         '/contest/submission',
                         'pid' => $p['problem_id'],

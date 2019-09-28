@@ -107,7 +107,7 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
                                 $link = '<span class="well-done">' . Yii::t('app', 'Registration completed') . '</span>';
                             }
                             if ($model->status == Contest::STATUS_VISIBLE &&
-                                $model->getRunStatus() != Contest::STATUS_ENDED &&
+                                !$model->isContestEnd() &&
                                 $model->scenario == Contest::SCENARIO_ONLINE) {
                                 $column = $model->getRunStatus(true) . ' ' . $link;
                             } else {
