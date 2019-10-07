@@ -37,7 +37,7 @@ $this->title = Yii::t('app', 'Status');
                 'attribute' => 'problem_id',
                 'value' => function ($model, $key, $index, $column) {
                     if (isset($model->problem)) {
-                        return Html::a($model->problem_id . ' - ' . $model->problem->title, ['/problem/view', 'id' => $model->problem_id]);
+                        return Html::a($model->problem_id . ' - ' . Html::encode($model->problem->title), ['/problem/view', 'id' => $model->problem_id]);
                     }
                 },
                 'format' => 'raw'

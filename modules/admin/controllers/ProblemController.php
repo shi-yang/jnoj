@@ -118,6 +118,7 @@ class ProblemController extends Controller
         echo '<pre>';
         echo file_get_contents(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
         echo '</pre>';
+        die;
     }
 
     /**

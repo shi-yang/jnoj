@@ -48,32 +48,32 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
             <div class="sample-test">
                 <div class="input">
                     <h4><?= Yii::t('app', 'Input') ?></h4>
-                    <pre><?= $model->sample_input ?></pre>
+                    <pre><?= Html::encode($model->sample_input) ?></pre>
                 </div>
                 <div class="output">
                     <h4><?= Yii::t('app', 'Output') ?></h4>
-                    <pre><?= $model->sample_output ?></pre>
+                    <pre><?= Html::encode($model->sample_output) ?></pre>
                 </div>
 
                 <?php if ($model->sample_input_2 != '' || $model->sample_output_2 != ''):?>
                     <div class="input">
                         <h4><?= Yii::t('app', 'Input') ?></h4>
-                        <pre><?= $model->sample_input_2 ?></pre>
+                        <pre><?= Html::encode($model->sample_input_2) ?></pre>
                     </div>
                     <div class="output">
                         <h4><?= Yii::t('app', 'Output') ?></h4>
-                        <pre><?= $model->sample_output_2 ?></pre>
+                        <pre><?= Html::encode($model->sample_output_2) ?></pre>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($model->sample_input_3 != '' || $model->sample_output_3 != ''):?>
                     <div class="input">
                         <h4><?= Yii::t('app', 'Input') ?></h4>
-                        <pre><?= $model->sample_input_3 ?></pre>
+                        <pre><?= Html::encode($model->sample_input_3) ?></pre>
                     </div>
                     <div class="output">
                         <h4><?= Yii::t('app', 'Output') ?></h4>
-                        <pre><?= $model->sample_output_3 ?></pre>
+                        <pre><?= Html::encode($model->sample_output_3) ?></pre>
                     </div>
                 <?php endif; ?>
             </div>

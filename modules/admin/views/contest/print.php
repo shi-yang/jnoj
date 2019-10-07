@@ -62,8 +62,8 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
             </thead>
             <tbody>
             <tr>
-                <td><pre><?= $sample_input[0] ?></pre></td>
-                <td><pre><?= $sample_output[0] ?></pre></td>
+                <td><pre><?= Html::encode($sample_input[0]) ?></pre></td>
+                <td><pre><?= Html::encode($sample_output[0]) ?></pre></td>
             </tr>
             </tbody>
         </table>
@@ -77,8 +77,8 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                 </thead>
                 <tbody>
                 <tr>
-                    <td><pre><?= $sample_input[1] ?></pre></td>
-                    <td><pre><?= $sample_output[1] ?></pre></td>
+                    <td><pre><?= Html::encode($sample_input[1]) ?></pre></td>
+                    <td><pre><?= Html::encode($sample_output[1]) ?></pre></td>
                 </tr>
                 </tbody>
             </table>
@@ -93,8 +93,8 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                 </thead>
                 <tbody>
                 <tr>
-                    <td><pre><?= $sample_input[2] ?></pre></td>
-                    <td><pre><?= $sample_output[2] ?></pre></td>
+                    <td><pre><?= Html::encode($sample_input[2]) ?></pre></td>
+                    <td><pre><?= Html::encode($sample_output[2]) ?></pre></td>
                 </tr>
                 </tbody>
             </table>

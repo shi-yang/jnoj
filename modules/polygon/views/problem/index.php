@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'title',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->title, ['problem/view', 'id' => $key]);
+                    return Html::a(Html::encode($model->title), ['problem/view', 'id' => $key]);
                 },
                 'format' => 'raw',
             ],
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'created_by',
                 'value' => function ($model, $key, $index, $column) {
                     if ($model->user) {
-                        return Html::a($model->user->nickname, ['/user/view', 'id' => $model->user->id]);
+                        return Html::a(Html::encode($model->user->nickname), ['/user/view', 'id' => $model->user->id]);
                     }
                     return '';
                 },

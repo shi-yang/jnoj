@@ -10,6 +10,7 @@ use app\models\User;
 use app\modules\polygon\models\Problem;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -217,6 +218,10 @@ class ProblemController extends Controller
             ':pid' => $model->id
         ])->queryOne();
         if (Yii::$app->request->isPost) {
+            $ext = substr(strrchr($_FILES["file"]["name"], '.'), 1);
+            if ($ext != 'in' && $ext != 'out' && $ext != 'ans') {
+                throw new BadRequestHttpException($ext);
+            }
             $inputFile = file_get_contents($_FILES["file"]["tmp_name"]);
             file_put_contents($_FILES["file"]["tmp_name"], preg_replace("(\r\n)","\n", $inputFile));
             @move_uploaded_file($_FILES["file"]["tmp_name"], Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $_FILES["file"]["name"]);
@@ -287,6 +292,7 @@ class ProblemController extends Controller
         echo '<pre>';
         echo file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
         echo '</pre>';
+        die;
     }
 
     /**
