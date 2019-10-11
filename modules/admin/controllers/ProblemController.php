@@ -11,6 +11,7 @@ use yii\data\ActiveDataProvider;
 use yii\db\Exception;
 use yii\db\Expression;
 use yii\db\Query;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
@@ -89,6 +90,7 @@ class ProblemController extends Controller
     public function actionDeletefile($id, $name)
     {
         $model = $this->findModel($id);
+        $name = basename($name);
         if ($name == 'in') {
             $files = $model->getDataFiles();
             foreach ($files as $file) {
@@ -106,7 +108,7 @@ class ProblemController extends Controller
                     @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $file['name']);
                 }
             }
-        } else {
+        } else if (strpos($name, '.in') || strpos($name, '.out') || strpos($name, '.ans')) {
             @unlink(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
         }
         return $this->redirect(['test-data', 'id' => $model->id]);
@@ -115,9 +117,12 @@ class ProblemController extends Controller
     public function actionViewfile($id, $name)
     {
         $model = $this->findModel($id);
-        echo '<pre>';
-        echo file_get_contents(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
-        echo '</pre>';
+        $name = basename($name);
+        if (strpos($name, '.in') || strpos($name, '.out') || strpos($name, '.ans')) {
+            echo '<pre>';
+            echo file_get_contents(Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $name);
+            echo '</pre>';
+        }
         die;
     }
 
@@ -309,6 +314,10 @@ class ProblemController extends Controller
         $this->layout = 'problem';
         $model = $this->findModel($id);
         if (Yii::$app->request->isPost) {
+            $ext = substr(strrchr($_FILES["file"]["name"], '.'), 1);
+            if ($ext != 'in' && $ext != 'out' && $ext != 'ans') {
+                throw new BadRequestHttpException($ext);
+            }
             $fileContent = file_get_contents($_FILES["file"]["tmp_name"]);
             file_put_contents($_FILES["file"]["tmp_name"], preg_replace("(\r\n)","\n", $fileContent));
             @move_uploaded_file($_FILES["file"]["tmp_name"], Yii::$app->params['judgeProblemDataPath'] . $model->id . '/' . $_FILES["file"]["name"]);

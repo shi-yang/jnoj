@@ -263,6 +263,7 @@ class ProblemController extends Controller
     public function actionDeletefile($id, $name)
     {
         $model = $this->findModel($id);
+        $name = basename($name);
         if ($name == 'in') {
             $files = $model->getDataFiles();
             foreach ($files as $file) {
@@ -280,7 +281,7 @@ class ProblemController extends Controller
                     @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $file['name']);
                 }
             }
-        } else {
+        } else if (strpos($name, '.in') || strpos($name, '.out') || strpos($name, '.ans')) {
             @unlink(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
         }
         return $this->redirect(['tests', 'id' => $model->id]);
@@ -289,9 +290,12 @@ class ProblemController extends Controller
     public function actionViewfile($id, $name)
     {
         $model = $this->findModel($id);
-        echo '<pre>';
-        echo file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
-        echo '</pre>';
+        $name = basename($name);
+        if (strpos($name, '.in') || strpos($name, '.out') || strpos($name, '.ans')) {
+            echo '<pre>';
+            echo file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+            echo '</pre>';
+        }
         die;
     }
 
