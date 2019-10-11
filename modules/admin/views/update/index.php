@@ -6,7 +6,7 @@
 /* @var $form yii\widgets\ActiveForm */
 $this->title = Yii::t('app', 'Update');
 ?>
-<h3>当前版本：<?= Yii::$app->setting->getVersion() ?> (<?= date("Y-m-d", filemtime(Yii::getAlias('@app/CHANGELOG.md'))) ?>)</h3>
+<h1>当前版本：<?= date("Y.m.d", filemtime(Yii::getAlias('@app/CHANGELOG.md'))) ?></h1>
 <p>更新方法：<a href="https://github.com/shi-yang/jnoj/blob/master/docs/update.md" target="_blank">更新OJ教程</a></p>
 <p>
     如果你在使用过程中发现 Bug，或者希望增加一些额外的功能，欢迎使用
