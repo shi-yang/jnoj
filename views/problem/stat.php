@@ -19,37 +19,37 @@ $stats = $model->getStatisticsData();
 <h1><?= Html::a(Html::encode($model->title), ['/problem/view', 'id' => $model->id]) ?></h1>
 <hr>
 <div class="stats-content" style="padding: 0 50px">
-    <h2>Problem statistics</h2>
+    <h2>提交统计</h2>
     <div class="row">
         <div class="left-list col-md-6">
             <ul class="stat-list">
                 <li>
-                    <strong>Submissions</strong><span> <?= $stats['submission_count'] ?></span>
+                    <strong>提交总数</strong><span> <?= $stats['submission_count'] ?></span>
                 </li>
                 <li>
-                    <strong>Accepted submissions</strong><span> <?= $stats['accepted_count'] ?></span>
+                    <strong>通过总数</strong><span> <?= $stats['accepted_count'] ?></span>
                 </li>
                 <li>
-                    <strong>Submission ratio</strong><span> <?= $stats['submission_count'] == 0 ? 0 : number_format($stats['accepted_count'] / $stats['submission_count'] * 100, 2) ?> %</span>
+                    <strong>通过率</strong><span> <?= $stats['submission_count'] == 0 ? 0 : number_format($stats['accepted_count'] / $stats['submission_count'] * 100, 2) ?> %</span>
                 </li>
                 <li>
-                    <strong>Authors</strong><span> <?= $stats['user_count'] ?></span>
+                    <strong>参与作者</strong><span> <?= $stats['user_count'] ?></span>
                 </li>
             </ul>
         </div>
         <div class="right-list col-md-6">
             <ul class="stat-list">
                 <li>
-                    <strong>Accepted</strong><span> <?= $stats['accepted_count'] ?></span>
+                    <strong>通过总数</strong><span> <?= $stats['accepted_count'] ?></span>
                 </li>
                 <li>
-                    <strong>Wrong Answer</strong><span> <?= $stats['wa_submission'] ?></span>
+                    <strong>错误解答</strong><span> <?= $stats['wa_submission'] ?></span>
                 </li>
                 <li>
-                    <strong>Time Limit Exceeded</strong><span> <?= $stats['tle_submission'] ?></span>
+                    <strong>时间超限</strong><span> <?= $stats['tle_submission'] ?></span>
                 </li>
                 <li>
-                    <strong>Compile Error</strong><span> <?= $stats['ce_submission'] ?></span>
+                    <strong>编译错误</strong><span> <?= $stats['ce_submission'] ?></span>
                 </li>
             </ul>
         </div>
@@ -58,7 +58,7 @@ $stats = $model->getStatisticsData();
 
 <hr>
 <div class="solution-index" style="padding: 0 50px">
-    <h2>Submission Rank</h2>
+    <h2>提交排行</h2>
     <?= GridView::widget([
         'layout' => '{items}{pager}',
         'dataProvider' => $dataProvider,

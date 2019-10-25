@@ -170,14 +170,14 @@ $this->registerJs($plotJS);
             </div>
         </div>
         <hr>
-        <h3><?= Yii::t('app', 'Solved Problem') ?> <small>(<?= count($solutionStats['solved_problem']) ?>)</small></h3>
+        <h3>已解答 <small>(<?= count($solutionStats['solved_problem']) ?>)</small></h3>
         <ul>
             <?php foreach ($solutionStats['solved_problem'] as $p): ?>
                 <li class="label label-default"><?= Html::a($p, ['/problem/view', 'id' => $p], ['style' => 'color:#fff']) ?></li>
             <?php endforeach; ?>
         </ul>
         <hr>
-        <h3><?= Yii::t('app', 'Unsolved Problem') ?> <small>(<?= count($solutionStats['unsolved_problem']) ?>)</small></h3>
+        <h3>未解答 <small>(<?= count($solutionStats['unsolved_problem']) ?>)</small></h3>
         <ul>
             <?php foreach ($solutionStats['unsolved_problem'] as $p): ?>
                 <li class="label label-default"><?= Html::a($p, ['/problem/view', 'id' => $p], ['style' => 'color:#fff']) ?></li>
@@ -185,18 +185,18 @@ $this->registerJs($plotJS);
         </ul>
 
         <hr>
-        <h2>Statistics</h2>
+        <h2>统计</h2>
         <div class="row">
             <div class="left-list col-md-6">
                 <ul class="stat-list">
                     <li>
-                        <strong>Submissions</strong><span> <?= $solutionStats['all_count'] ?></span>
+                        <strong>提交总数</strong><span> <?= $solutionStats['all_count'] ?></span>
                     </li>
                     <li>
-                        <strong>Accepted submissions</strong><span> <?= $solutionStats['ac_count'] ?></span>
+                        <strong>通过</strong><span> <?= $solutionStats['ac_count'] ?></span>
                     </li>
                     <li>
-                        <strong>Submission ratio</strong>
+                        <strong>通过率</strong>
                         <span>
                             <?= $solutionStats['all_count'] == 0 ? 0 : number_format($solutionStats['ac_count'] / $solutionStats['all_count'] * 100, 2) ?> %
                         </span>
@@ -206,13 +206,13 @@ $this->registerJs($plotJS);
             <div class="right-list col-md-6">
                 <ul class="stat-list">
                     <li>
-                        <strong>Wrong Answer</strong><span> <?= $solutionStats['wa_count'] ?></span>
+                        <strong>错误解答</strong><span> <?= $solutionStats['wa_count'] ?></span>
                     </li>
                     <li>
-                        <strong>Time Limit Exceeded</strong><span> <?= $solutionStats['tle_count'] ?></span>
+                        <strong>时间超限</strong><span> <?= $solutionStats['tle_count'] ?></span>
                     </li>
                     <li>
-                        <strong>Compile Error</strong><span> <?= $solutionStats['ce_count'] ?></span>
+                        <strong>编译错误</strong><span> <?= $solutionStats['ce_count'] ?></span>
                     </li>
                 </ul>
             </div>
