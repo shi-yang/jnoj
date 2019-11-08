@@ -292,9 +292,15 @@ class ProblemController extends Controller
         $model = $this->findModel($id);
         $name = basename($name);
         if (strpos($name, '.in') || strpos($name, '.out') || strpos($name, '.ans')) {
+            $filepath = Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name;
+            $fp = fopen($filepath, 'r');
             echo '<pre>';
-            echo file_get_contents(Yii::$app->params['polygonProblemDataPath'] . $model->id . '/' . $name);
+            while (!feof($fp)) {
+                $content = fread($fp, 1024);
+                echo $content;
+            }
             echo '</pre>';
+            fclose($fp);
         }
         die;
     }
