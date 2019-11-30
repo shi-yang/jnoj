@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id
         <?php $form = ActiveForm::begin(); ?>
 
         <?= $form->field($generatorForm, 'prefix')->textInput([
-                'maxlength' => true, 'value' => 'user' . $model->id, 'disabled' => true
+                'maxlength' => true, 'value' => 'c' . $model->id . 'user', 'disabled' => true
         ])->hint('前缀不应更改，不同比赛的前缀都不一样，是为了可以一直保留比赛榜单。') ?>
 
         <?= $form->field($generatorForm, 'team_number')->textInput(['maxlength' => true, 'value' => '50']) ?>

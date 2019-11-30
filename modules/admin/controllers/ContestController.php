@@ -180,7 +180,7 @@ class ContestController extends Controller
 
         if ($generatorForm->load(Yii::$app->request->post())) {
             $generatorForm->contest_id = $model->id;
-            $generatorForm->prefix = 'user' . $model->id;
+            $generatorForm->prefix = 'c' . $model->id . 'user';
             $generatorForm->save();
             return $this->refresh();
         }
