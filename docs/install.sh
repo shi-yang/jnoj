@@ -139,7 +139,7 @@ install_dependencies(){
             nginx
             php72w-cli php72w-fpm php72w-gd php72w-mbstring php72w-mysqlnd php72w-xml
             mariadb mariadb-devel mariadb-server
-            gcc-c++ mysql-devel glibc-static libstdc++-static git
+            gcc-c++ mysql-devel glibc-static libstdc++-static git make gcc g++
             java-1.8.0-openjdk java-1.8.0-openjdk-devel
             python36
         )
@@ -152,7 +152,7 @@ install_dependencies(){
             nginx
             mysql-server
             php-fpm php-mysql php-common php-gd php-zip php-mbstring php-xml
-            libmysqlclient-dev libmysql++-dev git
+            libmysqlclient-dev libmysql++-dev git make gcc g++
         )
         ver=`echo "$(getversion)" | awk -F '.' '{print $1}'`
         if [ $ver -le 16 ]; then
