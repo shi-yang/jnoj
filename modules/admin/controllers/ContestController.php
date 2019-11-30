@@ -427,7 +427,7 @@ class ContestController extends Controller
      * @param integer $active 该值等于 0 就什么也不做，等于 1 就将所有提交记录显示在前台的提交记录列表，等于 2 就隐藏提交记录
      * @return mixed
      */
-    public function actionStatus($id, $active = 0)
+    public function actionStatus($id, $active = 0, $autoRefresh = 0)
     {
         $this->layout = 'basic';
         $model = $this->findModel($id);
@@ -442,6 +442,7 @@ class ContestController extends Controller
         }
 
         return $this->render('status', [
+            'autoRefresh' => $autoRefresh,
             'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model->id)
