@@ -90,7 +90,7 @@ class ContestController extends Controller
     }
 
     /**
-     * 显示用户在某道题上的提交
+     * 显示用户在某道题上的提交列表
      * @param $pid
      * @param $cid
      * @return mixed
@@ -102,15 +102,17 @@ class ContestController extends Controller
         $this->layout = false;
         $model = $this->findModel($cid);
 
-        // 访问权限检查，代码仅作者可见
-        if ($model->getRunStatus() != Contest::STATUS_ENDED && !Yii::$app->user->isGuest && Yii::$app->user->id != $model->created_by) {
+        // 访问权限检查，比赛结束前提交列表仅作者可见，比赛结束后所有人可见
+        if (!$model->isContestEnd() && $model->type == Contest::TYPE_OI) {
+            throw new ForbiddenHttpException('You are not allowed to perform this action.');
+        }
+        if ((!$model->isContestEnd() || $model->isScoreboardFrozen()) && (Yii::$app->user->isGuest || Yii::$app->user->id != $model->created_by)) {
             throw new ForbiddenHttpException('You are not allowed to perform this action.');
         }
         $submissions = Yii::$app->db->createCommand(
             'SELECT id, result, created_at FROM {{%solution}} WHERE problem_id=:pid AND contest_id=:cid AND created_by=:uid ORDER BY id DESC',
             [':pid' => $pid, ':cid' => $model->id, ':uid' => $uid]
         )->queryAll();
-
         return $this->render('submission', [
             'submissions' => $submissions
         ]);
