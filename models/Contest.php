@@ -361,23 +361,35 @@ class Contest extends \yii\db\ActiveRecord
     {
         $userSolutions = $this->getUsersSolution();
         $problems = $this->getProblems();
+        $isScoreboardFrozen = $this->isScoreboardFrozen();
+        $contestEndTime = strtotime($this->end_time);
+        if ($isScoreboardFrozen) {
+            $lockBoardTime = strtotime($this->lock_board_time);
+        }
         $res = [];
         foreach ($problems as $problem) {
             $res[$problem['problem_id']]['solved'] = 0;
             $res[$problem['problem_id']]['submit'] = 0;
         }
         foreach ($userSolutions as $solution) {
+            $createdAt = strtotime($solution['created_at']);
             $pid = $solution['problem_id'];
             // 初始化数据信息
-            if (!isset($res[$pid]['solved']))
+            if (!isset($res[$pid]['solved'])) {
                 $res[$pid]['solved'] = 0;
-            if (!isset($res[$pid]['submit']))
+            }
+            if (!isset($res[$pid]['submit'])) {
                 $res[$pid]['submit'] = 0;
-
+            }
+            $res[$pid]['submit']++;
+            // 不记录封榜后提交情况
+            if ($isScoreboardFrozen && $createdAt > $lockBoardTime &&
+                $createdAt < $contestEndTime) {
+                continue;
+            }
             if ($solution['result'] == Solution::OJ_AC) {
                 $res[$pid]['solved']++;
             }
-            $res[$pid]['submit']++;
         }
         return $res;
     }
