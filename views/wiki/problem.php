@@ -50,14 +50,14 @@ use yii\bootstrap\Modal;
             <p>在 Katex 中，使用 $ 符号包含的为行内公式，使用 $$ 符号包含的为单行公式（即这个公式会占据一整行，并居中显示）。</p>
         </blockquote>
     </li>
-    <li><b>数字大小的描述采用数学公式语法</b>。写成10的次方形式。
+    <li><b>数字大小的描述采用数学公式语法</b>。即写成10的次方形式。
         如 300000 应写成 <span class="katex math inline">3 \cdot 10^5</span>、100,000,000 应写成<span class="katex math inline">10^{8}</span>。
         不应采用 <span class="katex math inline">3e5</span> 这样的格式。
         <blockquote>
             <p>举例，对于 200000<p>
-            <p>正确表述：<span class="katex math inline">2 \cdot 10^5</span>（Katex 语法写成：$ 2 \cdot 10^5 $）</p>
-            <p>不规范表述：<span class="katex math inline">2e5、200000、200,000</span>
-        </blockquote>    
+            <p>应表述为：<span class="katex math inline">2 \cdot 10^5</span>（Katex 语法写成：$ 2 \cdot 10^5 $）</p>
+            <p><b>不应</b>表述为：<span class="katex math inline">2e5、200000、200,000</span>
+        </blockquote>
     </li>
     <li>如果是中文题面的题目，请正确使用标点符号，不要混用中英文标点(中文应使用全角，英文应使用半角)。</li>
     <li>如果是中文题面，<b>出现的变量或者英文要与中文之间要有一个空格</b></li>
