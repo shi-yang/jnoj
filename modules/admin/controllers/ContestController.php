@@ -350,9 +350,9 @@ class ContestController extends Controller
             $query = (new Query())->select('s.id, u.username, u.nickname, s.result, s.created_at, p.num')
                 ->from('{{%solution}} as s')
                 ->leftJoin('{{%user}} as u', 'u.id=s.created_by')
-                ->leftJoin('{{%contest_problem}} as p', 'p.problem_id=s.problem_id')
+                ->leftJoin('{{%contest_problem}} as p', 'p.problem_id=s.problem_id AND p.contest_id=s.contest_id')
                 ->where(['s.contest_id' => $model->id])
-                ->distinct();
+                ->andWhere(['between', 's.created_at', $model->start_time, $model->end_time]);
             if ($model->scenario == Contest::SCENARIO_OFFLINE) {
                 $query->andWhere(['u.role' => User::ROLE_PLAYER]);
             }
