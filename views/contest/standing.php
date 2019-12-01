@@ -24,12 +24,15 @@ $this->registerJs($js);
     <div class="legend-strip">
         <?php if ($model->isContestEnd()): ?>
             <?= Html::beginForm(
-                    ['/contest/standing', 'id' => $model->id],
-                    'get',
-                    ['class' => 'toggle-show-contest-standing pull-left', 'style' => 'margin-top: 6px;']
+                ['/contest/standing', 'id' => $model->id],
+                'get',
+                ['class' => 'toggle-show-contest-standing pull-left', 'style' => 'margin-top: 6px;']
             ); ?>
             <div class="checkbox">
                 <label>
+                    <?php if ($showStandingBeforeEnd): ?>
+                        <?= Html::hiddenInput('showStandingBeforeEnd', 0) ?>
+                    <?php endif; ?>
                     <?= Html::checkbox('showStandingBeforeEnd', $showStandingBeforeEnd) ?>
                     显示比赛期间榜单
                 </label>

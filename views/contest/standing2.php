@@ -5,13 +5,6 @@ use yii\helpers\Html;
 /* @var $model app\models\Contest */
 
 $this->title = $model->title;
-$problems = $model->problems;
-$rank_result = $model->getRankData(false);
-$first_blood = $rank_result['first_blood'];
-$result = $rank_result['rank_result'];
-$submit_count = $rank_result['submit_count'];
-
-$this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
 ?>
 
 <div class="wrap">
@@ -32,7 +25,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
         <?php echo $this->render('standing', [
             'model' => $model,
             'rankResult' => $rankResult,
-            'showStandingBeforeEnd' => true
+            'showStandingBeforeEnd' => $showStandingBeforeEnd
         ]); ?> 
     </div>
 </div>

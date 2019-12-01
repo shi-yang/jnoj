@@ -369,16 +369,12 @@ class ContestController extends Controller
      * @throws NotFoundHttpException
      * @throws \yii\db\Exception
      */
-    public function actionStanding($id)
+    public function actionStanding($id, $showStandingBeforeEnd = 1)
     {
         $model = $this->findModel($id);
         // 访问权限检查
         if (!$model->canView()) {
             return $this->render('/contest/forbidden', ['model' => $model]);
-        }
-        $showStandingBeforeEnd = 0;
-        if (Yii::$app->request->get('showStandingBeforeEnd')) {
-            $showStandingBeforeEnd = Yii::$app->request->get('showStandingBeforeEnd');
         }
         if ($showStandingBeforeEnd) {
             $rankResult = $model->getRankData(true);
@@ -395,7 +391,7 @@ class ContestController extends Controller
     /**
      * 比赛期间可对外公布的榜单。任何用户均可访问。
      */
-    public function actionStanding2($id)
+    public function actionStanding2($id, $showStandingBeforeEnd = 1)
     {
         $this->layout = 'basic';
         $model = $this->findModel($id);
@@ -405,10 +401,6 @@ class ContestController extends Controller
         }
         $rankResult = $model->getRankData(true);
 
-        $showStandingBeforeEnd = 1;
-        if (Yii::$app->request->get('showStandingBeforeEnd')) {
-            $showStandingBeforeEnd = Yii::$app->request->get('showStandingBeforeEnd');
-        }
         if ($showStandingBeforeEnd) {
             $rankResult = $model->getRankData(true);
         } else {
@@ -417,7 +409,7 @@ class ContestController extends Controller
         return $this->render('/contest/standing2', [
             'model' => $model,
             'rankResult' => $rankResult,
-            'showStandingBeforeEnd' => true
+            'showStandingBeforeEnd' => $showStandingBeforeEnd
         ]);
     }
 
