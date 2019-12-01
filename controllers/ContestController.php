@@ -391,6 +391,35 @@ class ContestController extends Controller
     }
 
     /**
+     * 比赛期间可对外公布的榜单。任何用户均可访问。
+     */
+    public function actionStanding2($id)
+    {
+        $this->layout = 'basic';
+        $model = $this->findModel($id);
+        // 访问权限检查
+        if ($model->status != Contest::STATUS_VISIBLE) {
+            return $this->render('/contest/forbidden', ['model' => $model]);
+        }
+        $rankResult = $model->getRankData(true);
+
+        $showStandingBeforeEnd = 1;
+        if (Yii::$app->request->get('showStandingBeforeEnd')) {
+            $showStandingBeforeEnd = Yii::$app->request->get('showStandingBeforeEnd');
+        }
+        if ($showStandingBeforeEnd) {
+            $rankResult = $model->getRankData(true);
+        } else {
+            $rankResult = $model->getRankData(true, time());
+        }
+        return $this->render('/contest/standing2', [
+            'model' => $model,
+            'rankResult' => $rankResult,
+            'showStandingBeforeEnd' => true
+        ]);
+    }
+
+    /**
      * 显示比赛问题
      * @param integer $id Contest Id
      * @param integer $pid Problem Id

@@ -65,7 +65,8 @@ $config = [
             'rules' => [
                 //'<controller:[\w-]+>/<id:\d+>' => '<controller>/view',
                 'p/<id:\d+>' => '/problem/view',
-                'status/index' => '/solution/index'
+                'status/index' => '/solution/index',
+                'standing/<id:\d+>' => '/contest/standing2'
             ],
         ],
     ],

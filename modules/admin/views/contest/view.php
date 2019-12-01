@@ -43,6 +43,7 @@ $problems = $model->problems;
     <p>
         <?= Html::a(Yii::t('app', 'Print Problem'), ['print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?>
         <?= Html::a(Yii::t('app', 'Print Rank'), ['rank', 'id' => $model->id], ['class' => 'btn btn-success', 'target' => '_blank']) ?>
+        <?= Html::a('任何用户均可访问的榜单链接', ['/contest/standing2', 'id' => $model->id], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
     <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
         <?php Modal::begin([
