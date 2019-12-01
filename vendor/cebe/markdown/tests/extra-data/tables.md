@@ -54,3 +54,77 @@ Escaped \\ | Pipe | Broken | Blank
 | :----- | ----- |
 | 3      | 4     |
 3      | 4
+5
+
+Mixed | Table
+------ | -----
+| 1      | 2
+3      | 4
+
+| Mixed | Table
+------ | -----
+| 1      | 2
+3      | 4
+
+ Mixed | Table
+|------ | ----- |
+ 1      | 2
+| 3      | 4 |
+
+some text
+
+| single col |
+| -- |  -- |
+| 1 |
+2
+3
+
+| Table | With | Empty | Cells |
+| ----- | ---- | ----- | ----- |
+|       |      |       |       |
+|   a   |      |   b   |       |
+|       |  a   |       |   b   |
+|   a   |      |       |   b   |
+|       |  a   |   b   |       |
+
+   |
+-- | --
+   |
+   
+|   |   |
+| - | - |
+|   |   |
+
+ | Table | Indentation |
+ | ----- | ---- |
+   | A     | B    |
+
+  | Table | Indentation |
+  | ----- | ---- |
+   | A     | B    |
+
+ | Table | Indentation |
+   | ----- | ---- |
+ | A     | B    |
+
+    | Table | Indentation |
+   | ----- | ---- |
+ | A     | B    |
+
+| Table | Indentation |
+    | :----- | ---- |
+    | A     | B    |
+
+| Item      | Value |
+| --------- | -----:|
+| Computer  | $1600 |
+| Phone     |   $12 |
+| Pipe      |    $1 |
+
+| a | b | c |
+|:-:|:-:|:-:|
+| 1 | 2 | 3 |
+
+| a | b | c | d |
+|:--|:-:|:--|:-:|
+| 1 | 2 | 3 | 4 |

@@ -69,7 +69,7 @@ class MarkdownExtra extends Markdown
 
 	protected function identifyReference($line)
 	{
-		return ($line[0] === ' ' || $line[0] === '[') && preg_match('/^ {0,3}\[(.+?)\]:\s*([^\s]+?)(?:\s+[\'"](.+?)[\'"])?\s*('.$this->_specialAttributesRegex.')?\s*$/', $line);
+		return ($line[0] === ' ' || $line[0] === '[') && preg_match('/^ {0,3}\[[^\[](.*?)\]:\s*([^\s]+?)(?:\s+[\'"](.+?)[\'"])?\s*('.$this->_specialAttributesRegex.')?\s*$/', $line);
 	}
 
 	/**
@@ -109,7 +109,7 @@ class MarkdownExtra extends Markdown
 		$block = [
 			'code',
 		];
-		$line = rtrim($lines[$current]);
+		$line = trim($lines[$current]);
 		if (($pos = strrpos($line, '`')) === false) {
 			$pos = strrpos($line, '~');
 		}
@@ -117,7 +117,7 @@ class MarkdownExtra extends Markdown
 		$block['attributes'] = substr($line, $pos);
 		$content = [];
 		for($i = $current + 1, $count = count($lines); $i < $count; $i++) {
-			if (rtrim($line = $lines[$i]) !== $fence) {
+			if (($pos = strpos($line = $lines[$i], $fence)) === false || $pos > 3) {
 				$content[] = $line;
 			} else {
 				break;
@@ -223,6 +223,9 @@ class MarkdownExtra extends Markdown
 			if (($ref = $this->lookupReference($block['refkey'])) !== false) {
 				$block = array_merge($block, $ref);
 			} else {
+				if (strncmp($block['orig'], '[', 1) === 0) {
+					return '[' . $this->renderAbsy($this->parseInline(substr($block['orig'], 1)));
+				}
 				return $block['orig'];
 			}
 		}
@@ -238,6 +241,9 @@ class MarkdownExtra extends Markdown
 			if (($ref = $this->lookupReference($block['refkey'])) !== false) {
 				$block = array_merge($block, $ref);
 			} else {
+				if (strncmp($block['orig'], '![', 2) === 0) {
+					return '![' . $this->renderAbsy($this->parseInline(substr($block['orig'], 2)));
+				}
 				return $block['orig'];
 			}
 		}

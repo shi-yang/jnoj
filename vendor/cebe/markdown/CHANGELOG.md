@@ -1,6 +1,26 @@
 CHANGELOG
 =========
 
+Version 1.2.1 on 26. Mar. 2018
+------------------------------
+
+- Improved handling of inline HTML with URL and email tags.
+- Improved handling of custom syntax with `[[`, references should not use `[` as the first character in the reference name.
+
+Version 1.2.0 on 14. Mar. 2018
+------------------------------
+
+- #50 Do not render empty emphs.
+- #69 Improve ABSY for tables, make column and row information directly available in absy (@NathanBaulch)
+- #89 Lists should be separated by a HR (@bieleckim)
+- #95 Added `TableTrait::composeTable($head, $body)`, for easier overriding of table layout (@maximal, @cebe)
+- #111 Improve rendering of successive strongs (@wogsland)
+- #132 Improve detection and rendering of fenced code blocks in lists.
+- #134 Fix Emph and Strong to allow escaping `*` or `_` inside them.
+- #135 GithubMarkdown was not parsing inline code when there are square brackets around it.
+- #151 Fixed table rendering for lines begining with | for GFM (@GenaBitu)
+- Improved table rendering, allow single column tables.
+
 Version 1.1.2 on 16. Jul 2017
 -----------------------------
 
@@ -31,13 +51,13 @@ Version 1.1.0 on 06. Mar. 2015
 - Lines containing "0" where skipped or considered empty in some cases (@tanakahisateru)
 - #54 escape characters are now also considered inside of urls
 
-Version 1.0.1 on 25. Okt. 2014
+Version 1.0.1 on 25. Oct. 2014
 ------------------------------
 
 - Fixed the `bin/markdown` script to work with composer autoloader (c497bada0e15f61873ba6b2e29f4bb8b3ef2a489)
 - #74 fixed a bug that caused a bunch of broken characters when non-ASCII input was given. Parser now handles UTF-8 input correctly. Other encodings are currently untested, UTF-8 is recommended.
 
-Version 1.0.0 on 12. Okt. 2014
+Version 1.0.0 on 12. Oct. 2014
 ------------------------------
 
 This is the first stable release of version 1.0 which is incompatible to the 0.9.x branch regarding the internal API which is used when extending the Markdown parser. The external API has no breaking changes. The rendered Markdown however has changed in some edge cases and some rendering issues have been fixed.
@@ -50,7 +70,7 @@ You can try it out on the website: <http://markdown.cebe.cc/try>
 
 The parser is now also regsitered on the [Babelmark 2 page](http://johnmacfarlane.net/babelmark2/?normalize=1&text=Hello+**World**!) by [John MacFarlane](http://johnmacfarlane.net/) which you can use to compare Markdown output of different parsers.
 
-Version 1.0.0-rc on 10. Okt. 2014
+Version 1.0.0-rc on 10. Oct. 2014
 ---------------------------------
 
 - #21 speed up inline parsing using [strpbrk](http://www.php.net/manual/de/function.strpbrk.php) about 20% speedup compared to parsing before.

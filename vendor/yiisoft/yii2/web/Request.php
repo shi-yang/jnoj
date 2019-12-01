@@ -291,6 +291,23 @@ class Request extends \yii\base\Request
      */
     protected function filterHeaders(HeaderCollection $headerCollection)
     {
+        $trustedHeaders = $this->getTrustedHeaders();
+
+        // remove all secure headers unless they are trusted
+        foreach ($this->secureHeaders as $secureHeader) {
+            if (!in_array($secureHeader, $trustedHeaders)) {
+                $headerCollection->remove($secureHeader);
+            }
+        }
+    }
+
+    /**
+     * Trusted headers according to the [[trustedHosts]].
+     * @return array
+     * @since 2.0.28
+     */
+    protected function getTrustedHeaders()
+    {
         // do not trust any of the [[secureHeaders]] by default
         $trustedHeaders = [];
 
@@ -310,13 +327,7 @@ class Request extends \yii\base\Request
                 }
             }
         }
-
-        // filter all secure headers unless they are trusted
-        foreach ($this->secureHeaders as $secureHeader) {
-            if (!in_array($secureHeader, $trustedHeaders)) {
-                $headerCollection->remove($secureHeader);
-            }
-        }
+        return $trustedHeaders;
     }
 
     /**
@@ -371,7 +382,12 @@ class Request extends \yii\base\Request
      */
     public function getMethod()
     {
-        if (isset($_POST[$this->methodParam])) {
+        if (
+            isset($_POST[$this->methodParam])
+            // Never allow to downgrade request from WRITE methods (POST, PATCH, DELETE, etc)
+            // to read methods (GET, HEAD, OPTIONS) for security reasons.
+            && !in_array(strtoupper($_POST[$this->methodParam]), ['GET', 'HEAD', 'OPTIONS'], true)
+        ) {
             return strtoupper($_POST[$this->methodParam]);
         }
 
@@ -683,7 +699,7 @@ class Request extends \yii\base\Request
      *
      * By default this value is based on the user request information. This method will
      * return the value of `$_SERVER['HTTP_HOST']` if it is available or `$_SERVER['SERVER_NAME']` if not.
-     * You may want to check out the [PHP documentation](http://php.net/manual/en/reserved.variables.server.php)
+     * You may want to check out the [PHP documentation](https://secure.php.net/manual/en/reserved.variables.server.php)
      * for more information on these variables.
      *
      * You may explicitly specify it by setting the [[setHostInfo()|hostInfo]] property.
@@ -710,7 +726,7 @@ class Request extends \yii\base\Request
             $http = $secure ? 'https' : 'http';
 
             if ($this->headers->has('X-Forwarded-Host')) {
-                $this->_hostInfo = $http . '://' . $this->headers->get('X-Forwarded-Host');
+                $this->_hostInfo = $http . '://' . trim(explode(',', $this->headers->get('X-Forwarded-Host'))[0]);
             } elseif ($this->headers->has('Host')) {
                 $this->_hostInfo = $http . '://' . $this->headers->get('Host');
             } elseif (isset($_SERVER['SERVER_NAME'])) {
@@ -922,7 +938,7 @@ class Request extends \yii\base\Request
             | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
             )*$%xs', $pathInfo)
         ) {
-            $pathInfo = utf8_encode($pathInfo);
+            $pathInfo = $this->utf8Encode($pathInfo);
         }
 
         $scriptUrl = $this->getScriptUrl();
@@ -937,11 +953,31 @@ class Request extends \yii\base\Request
             throw new InvalidConfigException('Unable to determine the path info of the current request.');
         }
 
-        if (substr($pathInfo, 0, 1) === '/') {
+        if (strncmp($pathInfo, '/', 1) === 0) {
             $pathInfo = substr($pathInfo, 1);
         }
 
         return (string) $pathInfo;
+    }
+
+    /**
+     * Encodes an ISO-8859-1 string to UTF-8
+     * @param string $s
+     * @return string the UTF-8 translation of `s`.
+     * @see https://github.com/symfony/polyfill-php72/blob/master/Php72.php#L24
+     */
+    private function utf8Encode($s)
+    {
+        $s .= $s;
+        $len = \strlen($s);
+        for ($i = $len >> 1, $j = 0; $i < $len; ++$i, ++$j) {
+            switch (true) {
+                case $s[$i] < "\x80": $s[$j] = $s[$i]; break;
+                case $s[$i] < "\xC0": $s[$j] = "\xC2"; $s[++$j] = $s[$i]; break;
+                default: $s[$j] = "\xC3"; $s[++$j] = \chr(\ord($s[$i]) - 64); break;
+            }
+        }
+        return substr($s, 0, $j);
     }
 
     /**
@@ -1100,19 +1136,76 @@ class Request extends \yii\base\Request
     }
 
     /**
+     * Returns the user IP address from [[ipHeaders]].
+     * @return string|null user IP address, null if not available
+     * @see $ipHeaders
+     * @since 2.0.28
+     */
+    protected function getUserIpFromIpHeaders() {
+        foreach($this->ipHeaders as $ipHeader) {
+            if ($this->headers->has($ipHeader)) {
+                $ip = $this->getUserIpFromIpHeader($this->headers->get($ipHeader));
+                if ($ip !== null) {
+                    return $ip;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the user IP address.
      * The IP is determined using headers and / or `$_SERVER` variables.
      * @return string|null user IP address, null if not available
      */
     public function getUserIP()
     {
-        foreach ($this->ipHeaders as $ipHeader) {
-            if ($this->headers->has($ipHeader)) {
-                return trim(explode(',', $this->headers->get($ipHeader))[0]);
+        $ip = $this->getUserIpFromIpHeaders();
+        return $ip === null ? $this->getRemoteIP() : $ip;
+    }
+
+    /**
+     * Return user IP's from IP header.
+     *
+     * @param string $ips comma separated IP list
+     * @return string|null IP as string. Null is returned if IP can not be determined from header.
+     * @see $getUserHost
+     * @see $ipHeader
+     * @see $trustedHeaders
+     * @since 2.0.28
+     */
+    protected function getUserIpFromIpHeader($ips)
+    {
+        $ips = trim($ips);
+        if ($ips === '') {
+            return null;
+        }
+        $ips = preg_split('/\s*,\s*/', $ips, -1, PREG_SPLIT_NO_EMPTY);
+        krsort($ips);
+        $validator = $this->getIpValidator();
+        $resultIp = null;
+        foreach ($ips as $ip) {
+            $validator->setRanges('any');
+            if (!$validator->validate($ip) /* checking IP format */) {
+                break;
+            }
+            $resultIp = $ip;
+            $isTrusted = false;
+            foreach ($this->trustedHosts as $trustedCidr => $trustedCidrOrHeaders) {
+                if (!is_array($trustedCidrOrHeaders)) {
+                    $trustedCidr = $trustedCidrOrHeaders;
+                }
+                $validator->setRanges($trustedCidr);
+                if ($validator->validate($ip) /* checking trusted range */) {
+                    $isTrusted = true;
+                    break;
+                }
+            }
+            if (!$isTrusted) {
+                break;
             }
         }
-
-        return $this->getRemoteIP();
+        return $resultIp;
     }
 
     /**
@@ -1122,13 +1215,11 @@ class Request extends \yii\base\Request
      */
     public function getUserHost()
     {
-        foreach ($this->ipHeaders as $ipHeader) {
-            if ($this->headers->has($ipHeader)) {
-                return gethostbyaddr(trim(explode(',', $this->headers->get($ipHeader))[0]));
-            }
+        $userIp = $this->getUserIpFromIpHeaders();
+        if($userIp === null) {
+            return $this->getRemoteHost();
         }
-
-        return $this->getRemoteHost();
+        return gethostbyaddr($userIp);
     }
 
     /**
@@ -1561,7 +1652,11 @@ class Request extends \yii\base\Request
                 if ($data === false) {
                     continue;
                 }
-                $data = @unserialize($data);
+                if (defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 70000) {
+                    $data = @unserialize($data, ['allowed_classes' => false]);
+                } else {
+                    $data = @unserialize($data);
+                }
                 if (is_array($data) && isset($data[0], $data[1]) && $data[0] === $name) {
                     $cookies[$name] = Yii::createObject([
                         'class' => 'yii\web\Cookie',
@@ -1712,6 +1807,6 @@ class Request extends \yii\base\Request
 
         $security = Yii::$app->security;
 
-        return $security->unmaskToken($clientSuppliedToken) === $security->unmaskToken($trueToken);
+        return $security->compareString($security->unmaskToken($clientSuppliedToken), $security->unmaskToken($trueToken));
     }
 }

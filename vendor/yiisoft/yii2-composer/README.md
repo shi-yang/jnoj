@@ -50,7 +50,7 @@ the Yii 2 application is responding to a request. For example,
 
 The `Installer` class also implements a static method `postCreateProject()` that can be called after
 a Yii 2 project is created, through the `post-create-project-cmd` composer script.
-A similar method exists for running tasks after each `composer install` call, which sis `postInstall()`.
+A similar method exists for running tasks after each `composer install` call, which is `postInstall()`.
 These methods allow to run other `Installer` class methods like `setPermission()` or `generateCookieValidationKey()`, 
 depending on the corresponding parameters set in the `extra` section of the `composer.json` file.
 For example,

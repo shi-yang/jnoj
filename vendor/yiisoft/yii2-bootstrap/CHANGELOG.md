@@ -1,6 +1,18 @@
 Yii Framework 2 bootstrap extension Change Log
 ==============================================
 
+2.0.10 April 23, 2019
+---------------------
+
+- Bug #253: Fixed missing initial class `collapsed` of an `a` element in heading in `yii\bootstrap\Collapse` widget (evil1)
+
+
+2.0.9 January 29, 2019
+----------------------
+
+- Chg #17016: Upgraded Twitter Bootstrap to 3.4.x (leoshtika)
+
+
 2.0.8 February 16, 2018
 -----------------------
 

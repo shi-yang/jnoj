@@ -1,17 +1,17 @@
 [
     {
         "name": "bower-asset/bootstrap",
-        "version": "v3.3.7",
-        "version_normalized": "3.3.7.0",
+        "version": "v3.4.1",
+        "version_normalized": "3.4.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/twbs/bootstrap.git",
-            "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86"
+            "url": "git@github.com:twbs/bootstrap.git",
+            "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/twbs/bootstrap/zipball/0b9c4a4007c44201dce9a6cc1a38407005c26c86",
-            "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+            "url": "https://api.github.com/repos/twbs/bootstrap/zipball/68b0d231a13201eb14acd3dc84e51543d16e5f7e",
+            "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e",
             "shasum": null
         },
         "require": {
@@ -49,17 +49,17 @@
     },
     {
         "name": "bower-asset/jquery",
-        "version": "3.2.1",
-        "version_normalized": "3.2.1.0",
+        "version": "3.4.1",
+        "version_normalized": "3.4.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/jquery/jquery-dist.git",
-            "reference": "77d2a51d0520d2ee44173afdf4e40a9201f5964e"
+            "reference": "15bc73803f76bc53b654b9fdbbbc096f56d7c03d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/77d2a51d0520d2ee44173afdf4e40a9201f5964e",
-            "reference": "77d2a51d0520d2ee44173afdf4e40a9201f5964e",
+            "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/15bc73803f76bc53b654b9fdbbbc096f56d7c03d",
+            "reference": "15bc73803f76bc53b654b9fdbbbc096f56d7c03d",
             "shasum": null
         },
         "type": "bower-asset",
@@ -74,7 +74,7 @@
         "version_normalized": "1.3.2.0",
         "source": {
             "type": "git",
-            "url": "git@github.com:bestiejs/punycode.js.git",
+            "url": "https://github.com/bestiejs/punycode.js.git",
             "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3"
         },
         "dist": {
@@ -112,17 +112,17 @@
     },
     {
         "name": "cebe/markdown",
-        "version": "1.1.2",
-        "version_normalized": "1.1.2.0",
+        "version": "1.2.1",
+        "version_normalized": "1.2.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/cebe/markdown.git",
-            "reference": "25b28bae8a6f185b5030673af77b32e1163d5c6e"
+            "reference": "9bac5e971dd391e2802dca5400bbeacbaea9eb86"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/cebe/markdown/zipball/25b28bae8a6f185b5030673af77b32e1163d5c6e",
-            "reference": "25b28bae8a6f185b5030673af77b32e1163d5c6e",
+            "url": "https://api.github.com/repos/cebe/markdown/zipball/9bac5e971dd391e2802dca5400bbeacbaea9eb86",
+            "reference": "9bac5e971dd391e2802dca5400bbeacbaea9eb86",
             "shasum": ""
         },
         "require": {
@@ -134,14 +134,14 @@
             "facebook/xhprof": "*@dev",
             "phpunit/phpunit": "4.1.*"
         },
-        "time": "2017-07-16T21:13:23+00:00",
+        "time": "2018-03-26T11:24:36+00:00",
         "bin": [
             "bin/markdown"
         ],
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.1.x-dev"
+                "dev-master": "1.2.x-dev"
             }
         },
         "installation-source": "dist",
@@ -174,26 +174,26 @@
     },
     {
         "name": "ezyang/htmlpurifier",
-        "version": "v4.10.0",
-        "version_normalized": "4.10.0.0",
+        "version": "v4.12.0",
+        "version_normalized": "4.12.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/ezyang/htmlpurifier.git",
-            "reference": "d85d39da4576a6934b72480be6978fb10c860021"
+            "reference": "a617e55bc62a87eec73bd456d146d134ad716f03"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/d85d39da4576a6934b72480be6978fb10c860021",
-            "reference": "d85d39da4576a6934b72480be6978fb10c860021",
+            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/a617e55bc62a87eec73bd456d146d134ad716f03",
+            "reference": "a617e55bc62a87eec73bd456d146d134ad716f03",
             "shasum": ""
         },
         "require": {
             "php": ">=5.2"
         },
         "require-dev": {
-            "simpletest/simpletest": "^1.1"
+            "simpletest/simpletest": "dev-master#72de02a7b80c6bb8864ef9bf66d41d2f58f826bd"
         },
-        "time": "2018-02-23T01:58:20+00:00",
+        "time": "2019-10-28T03:44:26+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -206,7 +206,7 @@
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "LGPL"
+            "LGPL-2.1-or-later"
         ],
         "authors": [
             {
@@ -358,27 +358,27 @@
         "source": {
             "type": "git",
             "url": "https://github.com/walkor/phpsocket.io.git",
-            "reference": "c3c48a67e3c3a43291f33852c4df41325f28c2f5"
+            "reference": "5c13dd9739564c590a184e46e135826c85ce738d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/c3c48a67e3c3a43291f33852c4df41325f28c2f5",
-            "reference": "c3c48a67e3c3a43291f33852c4df41325f28c2f5",
+            "url": "https://api.github.com/repos/walkor/phpsocket.io/zipball/5c13dd9739564c590a184e46e135826c85ce738d",
+            "reference": "5c13dd9739564c590a184e46e135826c85ce738d",
             "shasum": ""
         },
         "require": {
             "workerman/channel": ">=1.0.0",
             "workerman/workerman": ">=3.5.16"
         },
-        "time": "2018-11-30T01:34:58+00:00",
+        "time": "2019-11-21T02:33:20+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "PHPSocketIO\\": "./src"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
+        "notification-url": "https://packagist.jp/downloads/",
         "license": [
             "MIT"
         ],
@@ -394,12 +394,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/walkor/Workerman.git",
-            "reference": "823aa7c9dd185ae2648f8c7164fbe934bc5e0ef4"
+            "reference": "ddb2aefdf4dad8a940e16b2a473c7ac5fb90f279"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/walkor/Workerman/zipball/823aa7c9dd185ae2648f8c7164fbe934bc5e0ef4",
-            "reference": "823aa7c9dd185ae2648f8c7164fbe934bc5e0ef4",
+            "url": "https://api.github.com/repos/walkor/Workerman/zipball/ddb2aefdf4dad8a940e16b2a473c7ac5fb90f279",
+            "reference": "ddb2aefdf4dad8a940e16b2a473c7ac5fb90f279",
             "shasum": ""
         },
         "require": {
@@ -408,15 +408,15 @@
         "suggest": {
             "ext-event": "For better performance. "
         },
-        "time": "2018-12-10T08:30:33+00:00",
+        "time": "2019-11-30T02:56:13+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "Workerman\\": "./"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
+        "notification-url": "https://packagist.jp/downloads/",
         "license": [
             "MIT"
         ],
@@ -437,25 +437,25 @@
     },
     {
         "name": "yiisoft/yii2",
-        "version": "2.0.15.1",
-        "version_normalized": "2.0.15.1",
+        "version": "2.0.30",
+        "version_normalized": "2.0.30.0",
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/yii2-framework.git",
-            "reference": "ed3a9e1c4abe206e1c3ce48a6b3624119b79850d"
+            "reference": "dfeeaf4dbdd23c9cd29b9246921e8a9ca2dbabe4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/ed3a9e1c4abe206e1c3ce48a6b3624119b79850d",
-            "reference": "ed3a9e1c4abe206e1c3ce48a6b3624119b79850d",
+            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/dfeeaf4dbdd23c9cd29b9246921e8a9ca2dbabe4",
+            "reference": "dfeeaf4dbdd23c9cd29b9246921e8a9ca2dbabe4",
             "shasum": ""
         },
         "require": {
             "bower-asset/inputmask": "~3.2.2 | ~3.3.5",
-            "bower-asset/jquery": "3.2.*@stable | 3.1.*@stable | 2.2.*@stable | 2.1.*@stable | 1.11.*@stable | 1.12.*@stable",
+            "bower-asset/jquery": "3.4.*@stable | 3.3.*@stable | 3.2.*@stable | 3.1.*@stable | 2.2.*@stable | 2.1.*@stable | 1.11.*@stable | 1.12.*@stable",
             "bower-asset/punycode": "1.3.*",
             "bower-asset/yii2-pjax": "~2.0.1",
-            "cebe/markdown": "~1.0.0 | ~1.1.0",
+            "cebe/markdown": "~1.0.0 | ~1.1.0 | ~1.2.0",
             "ext-ctype": "*",
             "ext-mbstring": "*",
             "ezyang/htmlpurifier": "~4.6",
@@ -463,7 +463,7 @@
             "php": ">=5.4.0",
             "yiisoft/yii2-composer": "~2.0.4"
         },
-        "time": "2018-03-21T18:36:53+00:00",
+        "time": "2019-11-19T21:22:20+00:00",
         "bin": [
             "yii"
         ],
@@ -479,7 +479,7 @@
                 "yii\\": ""
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
+        "notification-url": "https://packagist.jp/downloads/",
         "license": [
             "BSD-3-Clause"
         ],
@@ -539,24 +539,27 @@
     },
     {
         "name": "yiisoft/yii2-bootstrap",
-        "version": "2.0.8",
-        "version_normalized": "2.0.8.0",
+        "version": "2.0.10",
+        "version_normalized": "2.0.10.0",
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/yii2-bootstrap.git",
-            "reference": "3f49c47924bb9fa5363c3fc7b073d954168cf438"
+            "reference": "073c9ab0a4eb71f2485d84c96a1967130300d8fc"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/3f49c47924bb9fa5363c3fc7b073d954168cf438",
-            "reference": "3f49c47924bb9fa5363c3fc7b073d954168cf438",
+            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/073c9ab0a4eb71f2485d84c96a1967130300d8fc",
+            "reference": "073c9ab0a4eb71f2485d84c96a1967130300d8fc",
             "shasum": ""
         },
         "require": {
-            "bower-asset/bootstrap": "3.3.* | 3.2.* | 3.1.*",
+            "bower-asset/bootstrap": "3.4.* | 3.3.* | 3.2.* | 3.1.*",
             "yiisoft/yii2": "~2.0.6"
         },
-        "time": "2018-02-16T10:41:52+00:00",
+        "require-dev": {
+            "phpunit/phpunit": "<7"
+        },
+        "time": "2019-04-23T13:18:43+00:00",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
@@ -569,7 +572,7 @@
                 "yii\\bootstrap\\": "src"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
+        "notification-url": "https://packagist.jp/downloads/",
         "license": [
             "BSD-3-Clause"
         ],
@@ -601,26 +604,27 @@
     },
     {
         "name": "yiisoft/yii2-composer",
-        "version": "2.0.7",
-        "version_normalized": "2.0.7.0",
+        "version": "2.0.8",
+        "version_normalized": "2.0.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/yii2-composer.git",
-            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534"
+            "reference": "5c7ca9836cf80b34db265332a7f2f8438eb469b9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/1439e78be1218c492e6cde251ed87d3f128b9534",
-            "reference": "1439e78be1218c492e6cde251ed87d3f128b9534",
+            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/5c7ca9836cf80b34db265332a7f2f8438eb469b9",
+            "reference": "5c7ca9836cf80b34db265332a7f2f8438eb469b9",
             "shasum": ""
         },
         "require": {
             "composer-plugin-api": "^1.0"
         },
         "require-dev": {
-            "composer/composer": "^1.0"
+            "composer/composer": "^1.0",
+            "phpunit/phpunit": "<7"
         },
-        "time": "2018-07-05T15:44:47+00:00",
+        "time": "2019-07-16T13:22:30+00:00",
         "type": "composer-plugin",
         "extra": {
             "class": "yii\\composer\\Plugin",

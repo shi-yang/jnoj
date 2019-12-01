@@ -12,17 +12,15 @@ namespace cebe\markdown\block;
  */
 trait TableTrait
 {
-	private $_tableCellTag = 'td';
-	private $_tableCellCount = 0;
-	private $_tableCellAlign = [];
-
 	/**
 	 * identify a line as the beginning of a table block.
 	 */
 	protected function identifyTable($line, $lines, $current)
 	{
 		return strpos($line, '|') !== false && isset($lines[$current + 1])
-			&& preg_match('~^\\s*\\|?(\\s*:?-[\\-\\s]*:?\\s*\\|\\s*:?-[\\-\\s]*:?\\s*)+\\|?\\s*$~', $lines[$current + 1]);
+			&& preg_match('~^\\s*\\|?(\\s*:?-[\\-\\s]*:?\\s*\\|?)*\\s*$~', $lines[$current + 1])
+			&& strpos($lines[$current + 1], '|') !== false
+			&& isset($lines[$current + 2]) && trim($lines[$current + 1]) !== '';
 	}
 
 	/**
@@ -37,9 +35,8 @@ trait TableTrait
 			'cols' => [],
 			'rows' => [],
 		];
-		$beginsWithPipe = $lines[$current][0] === '|';
 		for ($i = $current, $count = count($lines); $i < $count; $i++) {
-			$line = rtrim($lines[$i]);
+			$line = trim($lines[$i]);
 
 			// extract alignment from second line
 			if ($i == $current+1) {
@@ -65,7 +62,7 @@ trait TableTrait
 
 				continue;
 			}
-			if ($line === '' || $beginsWithPipe && $line[0] !== '|') {
+			if ($line === '' || substr($lines[$i], 0, 4) === '    ') {
 				break;
 			}
 			if ($line[0] === '|') {
@@ -74,7 +71,24 @@ trait TableTrait
 			if (substr($line, -1, 1) === '|' && (substr($line, -2, 2) !== '\\|' || substr($line, -3, 3) === '\\\\|')) {
 				$line = substr($line, 0, -1);
 			}
-			$block['rows'][] = $line;
+
+			array_unshift($this->context, 'table');
+			$row = $this->parseInline($line);
+			array_shift($this->context);
+
+			$r = count($block['rows']);
+			$c = 0;
+			$block['rows'][] = [];
+			foreach ($row as $absy) {
+				if (!isset($block['rows'][$r][$c])) {
+					$block['rows'][$r][] = [];
+				}
+				if ($absy[0] === 'tableBoundary') {
+					$c++;
+				} else {
+					$block['rows'][$r][$c][] = $absy;
+				}
+			}
 		}
 
 		return [$block, --$i];
@@ -85,23 +99,45 @@ trait TableTrait
 	 */
 	protected function renderTable($block)
 	{
-		$content = '';
-		$this->_tableCellAlign = $block['cols'];
-		$content .= "<thead>\n";
+		$head = '';
+		$body = '';
+		$cols = $block['cols'];
 		$first = true;
 		foreach($block['rows'] as $row) {
-			$this->_tableCellTag = $first ? 'th' : 'td';
-			$align = empty($this->_tableCellAlign[$this->_tableCellCount]) ? '' : ' align="' . $this->_tableCellAlign[$this->_tableCellCount] . '"';
-			$this->_tableCellCount++;
-			$tds = "<$this->_tableCellTag$align>" . trim($this->renderAbsy($this->parseInline($row))) . "</$this->_tableCellTag>"; // TODO move this to the consume step
-			$content .= "<tr>$tds</tr>\n";
+			$cellTag = $first ? 'th' : 'td';
+			$tds = '';
+			foreach ($row as $c => $cell) {
+				$align = empty($cols[$c]) ? '' : ' align="' . $cols[$c] . '"';
+				$tds .= "<$cellTag$align>" . trim($this->renderAbsy($cell)) . "</$cellTag>";
+			}
 			if ($first) {
-				$content .= "</thead>\n<tbody>\n";
+				$head .= "<tr>$tds</tr>\n";
+			} else {
+				$body .= "<tr>$tds</tr>\n";
 			}
 			$first = false;
-			$this->_tableCellCount = 0;
 		}
-		return "<table>\n$content</tbody>\n</table>\n";
+		return $this->composeTable($head, $body);
+	}
+
+	/**
+	 * This method composes a table from parsed body and head HTML.
+	 *
+	 * You may override this method to customize the table rendering, for example by
+	 * adding a `class` to the table tag:
+	 *
+	 * ```php
+	 * return "<table class="table table-striped">\n<thead>\n$head</thead>\n<tbody>\n$body</tbody>\n</table>\n"
+	 * ```
+	 *
+	 * @param string $head table head HTML.
+	 * @param string $body table body HTML.
+	 * @return string the complete table HTML.
+	 * @since 1.2.0
+	 */
+	protected function composeTable($head, $body)
+	{
+		return "<table>\n<thead>\n$head</thead>\n<tbody>\n$body</tbody>\n</table>\n";
 	}
 
 	/**
@@ -110,9 +146,7 @@ trait TableTrait
 	protected function parseTd($markdown)
 	{
 		if (isset($this->context[1]) && $this->context[1] === 'table') {
-			$align = empty($this->_tableCellAlign[$this->_tableCellCount]) ? '' : ' align="' . $this->_tableCellAlign[$this->_tableCellCount] . '"';
-			$this->_tableCellCount++;
-			return [['text', "</$this->_tableCellTag><$this->_tableCellTag$align>"], isset($markdown[1]) && $markdown[1] === ' ' ? 2 : 1]; // TODO make a absy node
+			return [['tableBoundary'], isset($markdown[1]) && $markdown[1] === ' ' ? 2 : 1];
 		}
 		return [['text', $markdown[0]], 1];
 	}

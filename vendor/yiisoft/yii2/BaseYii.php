@@ -93,7 +93,7 @@ class BaseYii
      */
     public static function getVersion()
     {
-        return '2.0.15.1';
+        return '2.0.30';
     }
 
     /**
@@ -343,14 +343,26 @@ class BaseYii
     {
         if (is_string($type)) {
             return static::$container->get($type, $params);
-        } elseif (is_array($type) && isset($type['class'])) {
+        }
+
+        if (is_array($type) && isset($type['class'])) {
             $class = $type['class'];
             unset($type['class']);
             return static::$container->get($class, $params, $type);
-        } elseif (is_callable($type, true)) {
+        }
+
+        if (is_array($type) && isset($type['__class'])) {
+            $class = $type['__class'];
+            unset($type['__class']);
+            return static::$container->get($class, $params, $type);
+        }
+
+        if (is_callable($type, true)) {
             return static::$container->invoke($type, $params);
-        } elseif (is_array($type)) {
-            throw new InvalidConfigException('Object configuration must be an array containing a "class" element.');
+        }
+
+        if (is_array($type)) {
+            throw new InvalidConfigException('Object configuration must be an array containing a "class" or "__class" element.');
         }
 
         throw new InvalidConfigException('Unsupported configuration type: ' . gettype($type));
@@ -510,7 +522,7 @@ class BaseYii
      * echo \Yii::t('app', 'Hello, {username}!', ['username' => $username]);
      * ```
      *
-     * Further formatting of message parameters is supported using the [PHP intl extensions](http://www.php.net/manual/en/intro.intl.php)
+     * Further formatting of message parameters is supported using the [PHP intl extensions](https://secure.php.net/manual/en/intro.intl.php)
      * message formatter. See [[\yii\i18n\I18N::translate()]] for more details.
      *
      * @param string $category the message category.

@@ -189,7 +189,7 @@ class Installer extends LibraryInstaller
         file_put_contents($file, "<?php\n\n\$vendorDir = dirname(__DIR__);\n\nreturn $array;\n");
         // invalidate opcache of extensions.php if exists
         if (function_exists('opcache_invalidate')) {
-            opcache_invalidate($file, true);
+            @opcache_invalidate($file, true);
         }
     }
 
