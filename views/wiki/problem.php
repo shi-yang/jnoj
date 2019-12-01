@@ -50,7 +50,7 @@ use yii\bootstrap\Modal;
             <p>在 Katex 中，使用 $ 符号包含的为行内公式，使用 $$ 符号包含的为单行公式（即这个公式会占据一整行，并居中显示）。</p>
         </blockquote>
     </li>
-    <li><b>数字大小的描述采用数学公式语法</b>。即写成10的次方形式。
+    <li><b>数字大小的描述采用数学公式语法</b>。应写成10的 n 次方形式（建议在数字达一万或一万以上时遵循此规范，一万以内可遵循可不遵循，一千以内直接写数字就好）。
         如 300000 应写成 <span class="katex math inline">3 \cdot 10^5</span>、100,000,000 应写成<span class="katex math inline">10^{8}</span>。
         不应采用 <span class="katex math inline">3e5</span> 这样的格式。
         <blockquote>
