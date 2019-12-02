@@ -5,11 +5,13 @@
 <p>SPJ 是一个用C、C++写的可执行程序，其返回值决定着判断结果，成功返回(0)表示AC，其他非零值表示WA。</p>
 <p>SPJ 的编译参数为：g++ -fno-asm -std=c++11 -O2 ，即已经开启C++11以及O2优化。</p>
 <p>请确保 SPJ 程序的正确运行，也<b>未调用与判题无关的系统函数</b>，当 SPJ 在 OJ 中编译出错或运行出错时，OJ 不会给出反馈。</p>
+<p> spj 输出到 <code>stderr(标准错误)</code> 的内容将会被记录到用户错误数据点中。
 
 <p>下面给出两种写 SPJ 的方法，采用其中一种即可。</p>
 <hr>
 <h3>示例一：</h3>
 <div class="pre"><p>#include &lt;stdio.h&gt;
+<iostream>
 #define AC 0
 #define WA 1
 const double eps = 1e-4;
@@ -31,6 +33,8 @@ int main(int argc,char *args[])
         fscanf(f_user, “%lf”, &x); //从读取用户输出
         if(fabs(a-x) > eps) {
             ret = WA;//Wrong Answer
+            // 或使用 fprintf(stderr, "结果误差过大\n"); 输出到 标准错误 时，会被错误数据点记录下来
+            std::cerr << "答案：" << a << "  你的输出：" << x << "。结果误差过大" << std::endl;
             break;
         }
     }
