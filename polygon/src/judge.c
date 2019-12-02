@@ -560,7 +560,8 @@ struct problem_struct get_problem_info(int p_id)
     MYSQL_RES *res;
     MYSQL_ROW row;
     sprintf(sql,
-            "SELECT spj, spj_source, spj_lang, solution_lang, solution_source FROM polygon_problem WHERE id=%d",
+            "SELECT spj, spj_source, spj_lang, solution_lang, solution_source, "
+            "time_limit, memory_limit FROM polygon_problem WHERE id=%d",
             p_id);
     mysql_real_query(conn, sql, strlen(sql));
     res = mysql_store_result(conn);
@@ -573,6 +574,8 @@ struct problem_struct get_problem_info(int p_id)
     if (!is_verify) {
         _create_solution_file(row[4], problem.solution_lang);
     }
+    problem.time_limit = atoi(row[5]);
+    problem.memory_limit = atoi(row[6]);
     if (res != NULL) {
         mysql_free_result(res); // free the memory
         res = NULL;
@@ -1089,10 +1092,8 @@ int main(int argc, char** argv)
     chdir(work_dir);
     get_solution_info(solution_id, &problem_id, &lang);
 
-    //get the limit
+    //get the problem info
     problem = get_problem_info(problem_id);
-    problem.time_limit = 60;
-    problem.memory_limit = 1024;
 
     if (!is_verify) {
         lang = problem.solution_lang;
