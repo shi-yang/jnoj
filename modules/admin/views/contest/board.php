@@ -70,7 +70,7 @@ var board = new Board(
 );
 board.showInitBoard();
 $('html').keydown(function(e) {
-    if (e.keyCode == 13 || e.keyCode == 32) {
+    if (e.keyCode == 13) {
         board.keydown();
     }
 });
