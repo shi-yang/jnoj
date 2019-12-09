@@ -1,51 +1,38 @@
-LAMP 环境搭建
---------------
+环境搭建
+--------
 
-> 这里只介绍 Ubuntu 系统下的环境搭建。
+您可以选择安装 LNMP 或者 LAMP。选择一个即可。建议安装 LNMP。
 
-#### Apache 安装（你也可以选择 Ｎginx）
+## LNMP 环境搭建（建议）
+
+> LNMP 指 Linux、Nginx、MySQL、PHP
+
+> 这里只介绍 Ubuntu 系统下的环境搭建。其它 Linux 系统不会可以上网搜一下。
+
+#### Nginx 安装
+
 1. 获取最新资源包
     ```bash
     sudo apt-get update 
     ```
-2. 安装Apache
+2. 安装 Nginx
     ```bash
-    sudo apt install apache2 -y
-    ```
-3. 检查是否开启Apache，一般安装完会默认开启。
-    ```bash
-    sudo systemctl status apache2
+    sudo apt install nginx -y
     ```
 
 #### 数据库安装
 
-这里安装 MySQL：
+这里安装 MySQL。（也可以选择安装 MariaDB）
+
 ```bash
 sudo apt install mysql-server mysql-client
 ```
-在安装过程中，它会要求你设置 mysql 服务器 root 帐户的密码。 
 
-#### PHP 脚本语言的安装
+#### PHP 的安装
 
-这里选择安装 PHP 7.2 版本，并不一定 7.2 版本，建议 7.0 或以上都可以。
+> 注意：PHP 要求 7.0 以上。执行下列命令后，在让你确认 `Do you want to continue? [Y/n]` 前会有提示：`The following NEW packages will be installed:`。若列举的包里面包含 `php7.` 开头则直接回车即可。若在一些较老的系统上执行可能会有 `php5.` 的提示，则需要另寻其它办法安装。
+
 
 ```bash
-sudo apt install php7.2-mysql php7.2-curl php7.2-json php7.2-cgi php7.2 libapache2-mod-php7.2 php7.2-mbstring php7.2-gd php7.2-xml
+sudo apt install php-fpm php-mysql php-common php-gd php-zip php-mbstring php-xml
 ```
-
-安装完后，需要开启Apache Rewrite功能
---------------------------------
-1. 启用 rewrite
-    ```bash
-    sudo a2enmod rewrite
-    ```
-2. 修改apache2.conf配置文件
-    
-    将其中的AllowOverride None 全部替换为 AllowOverride All
-    ```bash
-    sudo vim /etc/apache2/apache2.conf
-    ```
-3. 重启 Apache
-    ```bash
-    sudo service apache2 restart
-    ```
