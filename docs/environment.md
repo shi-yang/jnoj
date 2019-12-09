@@ -22,11 +22,13 @@
 
 #### 数据库安装
 
-这里安装 MySQL。（也可以选择安装 MariaDB）
+这里安装 MySQL。（也可以选择安装 MariaDB，某些操作系统上会是 MariaDB）
 
 ```bash
 sudo apt install mysql-server mysql-client
 ```
+
+安装 MySQL 数据库后。执行 `mysql_secure_installation` 命令，根据提示设置 `root` 用户的密码。
 
 #### PHP 的安装
 
