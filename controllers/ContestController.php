@@ -79,13 +79,13 @@ class ContestController extends Controller
             return $this->renderAjax('/contest/status', [
                 'model' => $model,
                 'searchModel' => $searchModel,
-                'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model->id)
+                'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model)
             ]);
         }
         return $this->render('/contest/status', [
             'model' => $model,
             'searchModel' => $searchModel,
-            'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model->id)
+            'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model)
         ]);
     }
 

@@ -38,7 +38,7 @@ class RatingController extends Controller
     {
         $query = (new Query())->select('u.id, u.nickname, u.rating, s.solved')
             ->from('{{%user}} AS u')
-            ->innerJoin('(SELECT COUNT(DISTINCT problem_id) AS solved, created_by FROM {{%solution}} WHERE result=4 GROUP BY created_by ORDER BY solved DESC) as s',
+            ->innerJoin('(SELECT COUNT(DISTINCT problem_id) AS solved, created_by FROM {{%solution}} WHERE result=4 AND status=1 GROUP BY created_by ORDER BY solved DESC) as s',
                 'u.id=s.created_by')
             ->orderBy('solved DESC, id');
         $top3users = $query->limit(3)->all();

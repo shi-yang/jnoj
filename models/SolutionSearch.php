@@ -39,28 +39,26 @@ class SolutionSearch extends Solution
      * Creates data provider instance with search query applied
      *
      * @param array $params
-     * @param integer $contest_id
+     * @param app\models\Contest | null $contest
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $contest_id = NULL)
+    public function search($params, $contest = NULL)
     {
         $query = Solution::find()->with('user')->with('problem');
 
-        if ($contest_id != NULL) {
-            $query = $query->where(['contest_id' => $contest_id])->with([
-                'contestProblem' => function (\yii\db\ActiveQuery $query) use ($contest_id) {
-                    $query->andWhere(['contest_id' => $contest_id]);
+        if ($contest != NULL) {
+            $contestId = $contest->id;
+            $query = $query->where(['contest_id' => $contestId])->with([
+                'contestProblem' => function (\yii\db\ActiveQuery $query) use ($contestId) {
+                    $query->andWhere(['contest_id' => $contestId]);
                 }
             ]);
             if (Yii::$app->user->isGuest || Yii::$app->user->identity->role != User::ROLE_ADMIN) {
-                $contest = Yii::$app->db->createCommand('SELECT lock_board_time, end_time, type FROM {{%contest}} WHERE id = :id', [
-                    ':id' => $contest_id
-                ])->queryOne();
-                $lockTime = strtotime($contest['lock_board_time']);
-                $endTime = strtotime($contest['end_time']);
+                $lockTime = strtotime($contest->lock_board_time);
+                $endTime = strtotime($contest->end_time);
                 $currentTime = time();
-                $type = $contest['type'];
+                $type = $contest->type;
 
                 // OI 模式比赛未结束时只查当前用户的提交记录
                 if ($type == Contest::TYPE_OI && $currentTime <= $endTime) {
@@ -68,10 +66,10 @@ class SolutionSearch extends Solution
                         ':uid' => Yii::$app->user->id
                     ]);
                 // 设定了封榜时间则查询封榜时间前的提交记录
-                } else if (!empty($lockTime) && $lockTime <= time() && time() <= $endTime + Yii::$app->setting->get('scoreboardFrozenTime')) {
+                } else if (!empty($lockTime) && $lockTime <= $currentTime && $currentTime <= $endTime + Yii::$app->setting->get('scoreboardFrozenTime')) {
                     $query->andWhere('created_by=:uid OR created_at < :lock_board_time', [
                         ':uid' => Yii::$app->user->id,
-                        ':lock_board_time' => $contest['lock_board_time']
+                        ':lock_board_time' => $contest->lock_board_time
                     ]);
                 }
             }

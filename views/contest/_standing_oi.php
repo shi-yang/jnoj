@@ -13,7 +13,7 @@ $first_blood = $rankResult['first_blood'];
 $result = $rankResult['rank_result'];
 $submit_count = $rankResult['submit_count'];
 ?>
-<?php if ($model->isScoreboardFrozen()) {
+<?php if ($model->isScoreboardFrozen() || ($model->type == Contest::TYPE_OI && !$model->isContestEnd())) {
     echo '<p>待赛后再揭晓</p>';
     return;
 }

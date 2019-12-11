@@ -25,11 +25,11 @@ $userInContest = $model->isUserInContest();
 $isContestEnd = $model->isContestEnd();
 ?>
 <div class="solution-index" style="margin-top: 20px">
-    <?php if ($model->type != \app\models\Contest::TYPE_OI && $model->isScoreboardFrozen()) :?>
+    <?php if ($model->isScoreboardFrozen()) :?>
         <p class="text-center">现已是封榜状态，榜单将不再实时更新，只显示封榜前的提交及您个人的所有提交记录。</p>
     <?php endif; ?>
     <?php Pjax::begin() ?>
-    <?php if ($model->type != \app\models\Contest::TYPE_OI || $isContestEnd): ?>
+    <?php if ($model->type != Contest::TYPE_OI || $isContestEnd): ?>
     <?= $this->render('_status_search', ['model' => $searchModel, 'nav' => $nav, 'contest_id' => $model->id]); ?>
     <?php endif; ?>
 
