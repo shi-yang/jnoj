@@ -23,6 +23,9 @@ $this->title = Yii::$app->setting->get('ojName') . ' Online Judge';
                         <span class="glyphicon glyphicon-time"></span> <?= Yii::$app->formatter->asDate($v['created_at']) ?></p>
                 </div>
             <?php endforeach; ?>
+            <?= \yii\widgets\LinkPager::widget([
+                'pagination' => $pages,
+            ]); ?>
         </div>
     </div>
     <div class="col-md-4">
