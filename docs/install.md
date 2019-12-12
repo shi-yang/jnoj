@@ -5,10 +5,29 @@
 
 搭建 LNMP (或 LAMP) 环境：PHP 7.x、MySQL、Nginx / Apache2
 
-可以参考：[LNMP 环境搭建](environment.md)。
+本教程分为 **一键安装脚本**、**手动安装过程**。这两个过程选择其中一个即可。
 
-安装过程
+一键安装脚本
+-----------
+
+> 适合在纯净的系统或未运行 Web 有关服务的系统中。
+
+**注意！！！此方法目前仅在 Ubuntu 18.04 中测试过。更多Linux系统还需测试。**
+
+执行以下命令，进行安装：
+```
+wget https://raw.githubusercontent.com/shi-yang/jnoj/master/docs/install.sh
+sudo bash install.sh
+```
+
+该脚本将 OJ 安装在 `/home/judge/jnoj` 目录下。
+
+
+手动安装过程
 ------------
+
+搭建 LNMP (或 LAMP) 环境，可以参考：[LNMP 环境搭建](environment.md)。
+
 1. 下载　`jnoj`。
     运行命令：
     ~~~

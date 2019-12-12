@@ -124,22 +124,22 @@ error_detect_depends(){
 
 install_dependencies(){
     if check_sys packageManager yum; then
+        echo 'not supported run on Centos' && exit 1
         echo -e "[${green}Info${plain}] Checking the EPEL repository..."
-        if [ ! -f /etc/yum.repos.d/epel.repo ]; then
-            yum install -y epel-release > /dev/null 2>&1
-        fi
+        yum install -y epel-release
         [ ! -f /etc/yum.repos.d/epel.repo ] && echo -e "[${red}Error${plain}] Install EPEL repository failed, please check it." && exit 1
         [ ! "$(command -v yum-config-manager)" ] && yum install -y yum-utils > /dev/null 2>&1
         [ x"$(yum-config-manager epel | grep -w enabled | awk '{print $3}')" != x"True" ] && yum-config-manager --enable epel > /dev/null 2>&1
         rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
         rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+        
         echo -e "[${green}Info${plain}] Checking the EPEL repository complete..."
 
         yum_depends=(
             nginx
             php72w-cli php72w-fpm php72w-gd php72w-mbstring php72w-mysqlnd php72w-xml
             mariadb mariadb-devel mariadb-server
-            gcc-c++ mysql-devel glibc-static libstdc++-static git make gcc g++
+            gcc-c++ mysql-devel glibc-static libstdc++-static git make gcc
             java-1.8.0-openjdk java-1.8.0-openjdk-devel
             python36
         )
