@@ -12,10 +12,12 @@ $problems = $model->problems;
 $first_blood = $rankResult['first_blood'];
 $result = $rankResult['rank_result'];
 $submit_count = $rankResult['submit_count'];
-?>
-<?php if ($model->isScoreboardFrozen() || ($model->type == Contest::TYPE_OI && !$model->isContestEnd())) {
-    echo '<p>待赛后再揭晓</p>';
-    return;
+
+if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
+    if ($model->isScoreboardFrozen() || ($model->type == Contest::TYPE_OI && !$model->isContestEnd())) {
+        echo '<p>待赛后再揭晓</p>';
+        return;
+    }
 }
 ?>
 <table class="table table-bordered table-rank" style="margin-top: 15px">
