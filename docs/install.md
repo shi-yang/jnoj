@@ -37,21 +37,28 @@
     
     3. 修改 `/etc/nginx/sites-enabled/default` 文件，需要修改的配置：
         ```
-        # 修改 root 后的路径为 jnoj/web 目录所对应的路径。看你具体把 jnoj 目录放到哪里。
-        root /var/www/html;
-        index index.php;
-        location / {
-                # First attempt to serve request as file, then
-                # as directory, then fall back to displaying a 404.
-                # 安装后默认为：try_files $uri $uri/ =404;
-                try_files \$uri \$uri/ /index.php?\$args;
-        }
-        location ~ \.php$ {
-                include snippets/fastcgi-php.conf;
-                fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
-        }
+        server {
+                listen 80 default_server;
+                listen [::]:80 default_server;
 
+                # 修改 root 后的路径为 jnoj/web 目录所对应的路径。看你具体把 jnoj 目录放到哪里。
+                root /home/judge/jnoj/web;
+
+                index index.php;
+
+                server_name _;
+
+                location / {
+                        try_files $uri $uri/ /index.php?$args;
+                }
+
+                location ~ \.php$ {
+                        include snippets/fastcgi-php.conf;
+                        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+                }
+        }
         ```
+        修改后使用 `sudo nginx -s reload` 重现加载配置
     做好以上步骤后便可以使用 Web 端：
     
     ~~~
