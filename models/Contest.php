@@ -684,7 +684,9 @@ class Contest extends \yii\db\ActiveRecord
         }
 
         usort($result, function($a, $b) {
-            if ($a['total_score'] != $b['total_score']) { // 优先测评总分
+            if ($a['solved'] != $b['solved']) { //优先解题数
+                return $a['solved'] < $b['solved'];
+            } else if ($a['total_score'] != $b['total_score']) { // 优先测评总分
                 return $a['total_score'] < $b['total_score'];
             } else { //订正总分
                 return $a['correction_score'] < $b['correction_score'];
