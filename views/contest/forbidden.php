@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use app\models\Contest;
 
 /* @var $this yii\web\View */
@@ -21,6 +22,11 @@ $this->params['model'] = $model;
 <?php else: ?>
     <h2 class="text-center">您尚未报名参加该比赛，请先参赛，或比赛结束后再来访问</h2>
     <hr>
+    <?php if ($model->getRunStatus() == Contest::STATUS_RUNNING): ?>
+        <a href="<?= Url::toRoute(['/contest/standing2', 'id' => $model->id]) ?>">
+            <h3 class="text-center">查看榜单</h3>
+        </a>
+    <?php endif; ?>
     <?php if ($model->scenario == Contest::SCENARIO_OFFLINE): ?>
         <p>该比赛为线下赛，如需参赛，请联系管理员</p>
     <?php else: ?>
