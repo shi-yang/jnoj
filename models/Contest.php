@@ -633,6 +633,10 @@ class Contest extends \yii\db\ActiveRecord
             if ($created_at <= $contest_end_time) {
                 $result[$user]['score'][$pid] = $score;
             }
+            // 已经 AC
+            if (isset($result[$user]['solved_flag'][$pid])) {
+                continue;
+            }
             // 记录提交时间。仅记录比赛期间的提交时间。
             if (!isset($result[$user]['submit_time'][$pid]) && $created_at < $contest_end_time) {
                 $result[$user]['submit_time'][$pid] = ($created_at - $start_time) / 60;
