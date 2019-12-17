@@ -20,10 +20,10 @@ class AppAsset extends AssetBundle
     public $css = [
         'css/site.css',
         'js/katex/katex.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/monokai_sublime.min.css',
+        'js/highlight/styles/monokai-sublime.css',
     ];
     public $js = [
-        'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js',
+        'js/highlight/highlight.pack.js',
         'js/katex/katex.min.js',
         'js/socket.io.js',
         'js/clipboard.min.js',
