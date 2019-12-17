@@ -418,23 +418,27 @@ int compile(int lang, char * work_dir)
     pid_t pid = fork();
     if (pid == 0) {
         struct rlimit LIM;
-        LIM.rlim_max = 6;
-        LIM.rlim_cur = 6;
+        int cpu = 20;
+        if (lang == LANG_JAVA) {
+            cpu = 30;
+        }
+        LIM.rlim_max = cpu;
+        LIM.rlim_cur = cpu;
         setrlimit(RLIMIT_CPU, &LIM);
-        alarm(6);
-        LIM.rlim_max = 40 * STD_MB;
-        LIM.rlim_cur = 40 * STD_MB;
+        alarm(cpu);
+        LIM.rlim_max = 100 * STD_MB;
+        LIM.rlim_cur = 100 * STD_MB;
         setrlimit(RLIMIT_FSIZE, &LIM);
 
-        if (lang == LANG_JAVA) {
+        if (lang != LANG_JAVA) {
             LIM.rlim_max = STD_MB << 11;
-            LIM.rlim_cur = STD_MB << 11;    
-        } else {
-            LIM.rlim_max = STD_MB * 512;
-            LIM.rlim_cur = STD_MB * 512;
+            LIM.rlim_cur = STD_MB << 11;
+            setrlimit(RLIMIT_AS, &LIM);
         }
-        setrlimit(RLIMIT_AS, &LIM);
+        
         freopen("ce.txt", "w", stderr);
+        execute_cmd("/bin/chown judge %s ", work_dir);
+        execute_cmd("/bin/chmod 700 %s ", work_dir);
 
         if (compile_chroot && lang != LANG_JAVA && lang != LANG_PYTHON3) {
             execute_cmd("mkdir -p bin usr lib lib64 etc/alternatives proc tmp dev");
