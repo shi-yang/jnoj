@@ -11,8 +11,8 @@ use yii\widgets\DetailView;
 $this->title = $model->nickname;
 $solutionStats = $model->getSolutionStats();
 $recentSubmission = $model->getRecentSubmission();
-$this->registerJsFile("https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js", ['depends' => 'yii\web\JqueryAsset']);
-$this->registerJsFile("https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.time.js", ['depends' => 'yii\web\JqueryAsset']);
+$this->registerJsFile("/js/flot/jquery.flot.js", ['depends' => 'yii\web\JqueryAsset']);
+$this->registerJsFile("/js/flot/jquery.flot.time.js", ['depends' => 'yii\web\JqueryAsset']);
 $plotJS = <<<EOT
 var contests_json = {$contests};
 var data1 = new Array();

@@ -15,7 +15,7 @@ use app\models\Contest;
 
 AppAsset::register($this);
 
-$this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js', ['depends' => 'yii\web\JqueryAsset']);
+$this->registerJsFile('/js/jquery.countdown.min.js', ['depends' => 'yii\web\JqueryAsset']);
 $model = $this->params['model'];
 $status = $model->getRunStatus();
 ?>
