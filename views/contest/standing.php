@@ -95,7 +95,7 @@ $this->registerJs($js);
         ?>
     </div>
     <?php if ($model->type == Contest::TYPE_IOI): ?>
-    <p class="float-left">注：表格第一个数字为所通过样例的得分。第二个数字为最好一次解答时距离比赛开始提交的时间（单位：分钟）。若无第二个数字，则表明是比赛结束后的提交。</p>
+    <p class="float-left">注：表格第一个数字为所通过样例的得分。第二个数字为最好一次解答时距离比赛开始提交的时间。若无第二个数字，则表明是比赛结束后的提交。</p>
     <?php elseif ($model->type == Contest::TYPE_OI): ?>
     <p>注：表格第一个数字为最后一次提交时所通过样例的得分。第二个数字为所有提交中通过样例最大的得分。</p>
     <?php else: ?>

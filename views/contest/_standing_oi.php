@@ -29,6 +29,7 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
         <th width="80px">测评总分</th>
         <th width="80px">订正总分</th>
         <?php else: ?>
+        <th width="80px">解答</th>
         <th width="80px">总分</th>
         <?php endif; ?>
         <?php foreach($problems as $key => $p): ?>
@@ -76,6 +77,10 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
             <th class="score-solved">
                 <?= $rank['total_score'] ?>
             </th>
+            <?php else: ?>
+            <th>
+                <?= $rank['solved'] ?>
+            </th>
             <?php endif ?>
             <th class="score-time">
                 <?= $rank['correction_score'] ?>
@@ -106,7 +111,8 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
                     } else if ($model->type == Contest::TYPE_IOI) {
                         $first = $max_score;
                         if (isset($rank['submit_time'][$p['problem_id']])) {
-                            $second = intval($rank['submit_time'][$p['problem_id']]);
+                            $min = intval($rank['submit_time'][$p['problem_id']]);
+                            $second = sprintf("%02d:%02d", $min / 60, $min % 60);
                         }
                     }
                 }
