@@ -66,14 +66,14 @@ $submit_count = $rankResult['submit_count'];
                 <?= $rank['solved'] ?>
             </th>
             <th class="score-time">
-                <?= intval($rank['time'] / 60) ?>
+                <?= min(intval($rank['time'] / 60), 99999) ?>
             </th>
             <?php
             foreach($problems as $key => $p) {
                 $css_class = '';
                 $num = 0;
                 $time = '';
-                if (isset($rank['ac_time'][$p['problem_id']]) && $rank['ac_time'][$p['problem_id']] > 0) {
+                if (isset($rank['ac_time'][$p['problem_id']]) && $rank['ac_time'][$p['problem_id']] != -1) {
                     if ($first_blood[$p['problem_id']] == $rank['user_id']) {
                         $css_class = 'solved-first';
                     } else {

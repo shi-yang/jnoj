@@ -212,6 +212,13 @@ return [
     'Master' => '王者',
     'Challenger' => '大师',
 
+    'First to solve problem' => '最快解答',
+    'Solved problem' => '正确解答',
+    'All correct' => '全部通过',
+    'Partially correct' => '部分通过',
+    'Attempted problem' => '尝试解答',
+    'Pending judgement' => '等待测评',
+
     'Pending' => '等待测评',
     'Pending Rejudge' => '等待重测',
     'Compiling' => '正在编译',

@@ -25,8 +25,12 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
     <tr>
         <th width="60px">Rank</th>
         <th width="200px">Who</th>
+        <?php if ($model->type == Contest::TYPE_OI): ?>
         <th width="80px">测评总分</th>
         <th width="80px">订正总分</th>
+        <?php else: ?>
+        <th width="80px">总分</th>
+        <?php endif; ?>
         <?php foreach($problems as $key => $p): ?>
             <th>
                 <?= Html::a(chr(65 + $key), ['/contest/problem', 'id' => $model->id, 'pid' => $key]) ?>
@@ -68,34 +72,43 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
             <th>
                 <?= Html::a(Html::encode($rank['nickname']), ['/user/view', 'id' => $rank['user_id']]) ?>
             </th>
+            <?php if ($model->type == Contest::TYPE_OI): ?>
             <th class="score-solved">
                 <?= $rank['total_score'] ?>
             </th>
+            <?php endif ?>
             <th class="score-time">
                 <?= $rank['correction_score'] ?>
             </th>
             <?php
             foreach($problems as $key => $p) {
-                $score = "";
-                $max_score = "";
-                $css_class = '';
-                if (isset($rank['ac_time'][$p['problem_id']])) {
-                    $css_class = 'solved-first';
+                $score = '';
+                $max_score = '';
+                $css_class = ''; // CSS 颜色
+                $first = ''; // 题目对应的排名表格第一行字的内容
+                $second = ''; // 第二行字的内容
+                if (isset($rank['solved_flag'][$p['problem_id']])) {
+                    $css_class = 'solved-first'; // 全部正确
                 } else if (isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
-                    $css_class = 'pending';
-                } else if (isset($rank['score'][$p['problem_id']]) && $rank['score'][$p['problem_id']] > 0) {
-                    $css_class = 'solved';
-                } else if (isset($rank['score'][$p['problem_id']]) && $rank['score'][$p['problem_id']] == 0) {
-                    $css_class = 'attempted';
+                    $css_class = 'pending'; // 等待测评
+                } else if (isset($rank['score'][$p['problem_id']]) && $rank['max_score'][$p['problem_id']] > 0) {
+                    $css_class = 'solved'; // 部分正确
+                } else if (isset($rank['score'][$p['problem_id']]) && $rank['max_score'][$p['problem_id']] == 0) {
+                    $css_class = 'attempted'; // 尝试中
                 }
                 if (isset($rank['score'][$p['problem_id']])) {
                     $score = $rank['score'][$p['problem_id']];
                     $max_score = $rank['max_score'][$p['problem_id']];
-                }
-                // 封榜的显示
-                if ($model->isScoreboardFrozen() && isset($rank['pending'][$p['problem_id']]) && $rank['pending'][$p['problem_id']]) {
-                    $score = "";
-                    $max_score = "";
+                    if ($model->type == Contest::TYPE_OI) {
+                        $first = $score;
+                        $second = $max_score;
+                    // IOI 模式下没必要记录最后一次得分，显示解答时间与得分
+                    } else if ($model->type == Contest::TYPE_IOI) {
+                        $first = $max_score;
+                        if (isset($rank['submit_time'][$p['problem_id']])) {
+                            $second = intval($rank['submit_time'][$p['problem_id']]);
+                        }
+                    }
                 }
                 if ((!Yii::$app->user->isGuest && $model->created_by == Yii::$app->user->id) || $model->isContestEnd()) {
                     $url = Url::toRoute([
@@ -104,17 +117,16 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
                         'cid' => $model->id,
                         'uid' => $rank['user_id']
                     ]);
-                    echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>{$score}<br><small>{$max_score}</small></th>";
+                    echo "<th class=\"table-problem-cell {$css_class}\" style=\"cursor:pointer\" data-click='submission' data-href='{$url}'>"
+                        . "{$first}<br><small>{$second}</small></th>";
                 } else {
-                    echo "<th class=\"table-problem-cell {$css_class}\">{$score}<br><small>{$max_score}</small></th>";
+                    echo "<th class=\"table-problem-cell {$css_class}\">{$first}<br><small>{$second}</small></th>";
                 }
             }
             ?>
         </tr>
     <?php endfor; ?>
-    </tbody>
 </table>
-
 <?php
 $js = "
 $('[data-click=submission]').click(function() {
