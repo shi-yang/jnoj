@@ -486,6 +486,9 @@ class Contest extends \yii\db\ActiveRecord
             // 最快解题
             if (!isset($first_blood[$pid]))
                 $first_blood[$pid] = '';
+            // 解题数目
+            if (!isset($result[$user]['solved']))
+                $result[$user]['solved'] = 0;
 
             // 已经 Accepted
             if ($result[$user]['ac_time'][$pid] > 0) {
@@ -628,6 +631,8 @@ class Contest extends \yii\db\ActiveRecord
                 $result[$user]['score'][$pid] = 0;
             if (!isset($result[$user]['max_score'][$pid]))
                 $result[$user]['max_score'][$pid] = 0;
+            if (!isset($result[$user]['solved']))
+                $result[$user]['solved'] = 0;
 
             // 针对 OI 榜单，需要记录最后一次提交的分数
             if ($created_at <= $contest_end_time) {
