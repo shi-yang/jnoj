@@ -489,9 +489,12 @@ class Contest extends \yii\db\ActiveRecord
             // 解题数目
             if (!isset($result[$user]['solved']))
                 $result[$user]['solved'] = 0;
+            // 罚时、分数
+            if (!isset($result[$user]['time']))
+                $result[$user]['time'] = 0;
 
             // 已经 Accepted
-            if ($result[$user]['ac_time'][$pid] > 0) {
+            if ($result[$user]['ac_time'][$pid] >= 0) {
                 continue;
             }
 
