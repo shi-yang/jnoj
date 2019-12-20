@@ -262,7 +262,7 @@ class Contest extends \yii\db\ActiveRecord
     public function getUsersSolution()
     {
         return Yii::$app->db->createCommand('
-            SELECT u.id as user_id, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
+            SELECT u.id as user_id, role, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
             FROM `solution` `s`
             LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id ORDER BY `s`.`id`
