@@ -262,7 +262,7 @@ class Contest extends \yii\db\ActiveRecord
     public function getUsersSolution()
     {
         return Yii::$app->db->createCommand('
-            SELECT u.id as user_id, role, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
+            SELECT u.id as user_id, username, nickname, result, s.problem_id, s.created_at, s.id, s.score
             FROM `solution` `s`
             LEFT JOIN `user` `u` ON u.id=s.created_by
             WHERE `contest_id`=:id ORDER BY `s`.`id`
@@ -486,12 +486,6 @@ class Contest extends \yii\db\ActiveRecord
             // 最快解题
             if (!isset($first_blood[$pid]))
                 $first_blood[$pid] = '';
-            // 解题数目
-            if (!isset($result[$user]['solved']))
-                $result[$user]['solved'] = 0;
-            // 罚时、分数
-            if (!isset($result[$user]['time']))
-                $result[$user]['time'] = 0;
 
             // 已经 Accepted
             if ($result[$user]['ac_time'][$pid] >= 0) {
@@ -634,8 +628,6 @@ class Contest extends \yii\db\ActiveRecord
                 $result[$user]['score'][$pid] = 0;
             if (!isset($result[$user]['max_score'][$pid]))
                 $result[$user]['max_score'][$pid] = 0;
-            if (!isset($result[$user]['solved']))
-                $result[$user]['solved'] = 0;
 
             // 针对 OI 榜单，需要记录最后一次提交的分数
             if ($created_at <= $contest_end_time) {
