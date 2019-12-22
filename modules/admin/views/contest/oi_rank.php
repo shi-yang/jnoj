@@ -46,6 +46,12 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                 <th width="120px">Nickname</th>
                 <th width="80px">测评总分</th>
                 <th width="80px">订正总分</th>
+                <th>
+                    用时
+                    <span data-toggle="tooltip" data-placement="top" title="仅统计所有通过题目所需要的总时间（单位：分钟）">
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                    </span>
+                </th>
                 <?php foreach($problems as $key => $p): ?>
                     <th>
                         <?= chr(65 + $key) ?>
@@ -95,6 +101,9 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
                     </th>
                     <th class="score-time">
                         <?= $rank['correction_score'] ?>
+                    </th>
+                    <th>
+                        <?= intval($rank['total_time']) ?>
                     </th>
                     <?php
                     foreach($problems as $key => $p) {

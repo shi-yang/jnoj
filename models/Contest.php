@@ -592,10 +592,11 @@ class Contest extends \yii\db\ActiveRecord
             $result[$user['user_id']]['rating'] = $user['rating'];
             $result[$user['user_id']]['solved'] = 0;
             $result[$user['user_id']]['total_score'] = 0; // 测评总分
-            $result[$user['user_id']]['score'] = [];
-            $result[$user['user_id']]['max_score'] = [];
+            $result[$user['user_id']]['score'] = []; // 记录每道题最后一次得分（OI专属）
+            $result[$user['user_id']]['max_score'] = []; // 记录每道题最大得分
             $result[$user['user_id']]['correction_score'] = 0; //订正总分
             $result[$user['user_id']]['student_number'] = $user['student_number'];
+            $result[$user['user_id']]['total_time'] = 0; // 记录 AC 的题目的总时间
         }
 
         foreach ($problems as $problem) {
@@ -669,6 +670,7 @@ class Contest extends \yii\db\ActiveRecord
                 $result[$user]['pending'][$pid] = 0;
                 $result[$user]['solved_flag'][$pid] = 1; // 标记该题已解答
                 $result[$user]['solved']++; // 解题数目
+                $result[$user]['total_time'] += ($created_at - $start_time) / 60;
                 if (empty($first_blood[$pid])) {
                     $first_blood[$pid] = $user;
                 }
@@ -687,13 +689,24 @@ class Contest extends \yii\db\ActiveRecord
             }
         }
 
-        usort($result, function($a, $b) {
-            if ($a['solved'] != $b['solved']) { //优先解题数
-                return $a['solved'] < $b['solved'];
-            } else if ($a['total_score'] != $b['total_score']) { // 优先测评总分
-                return $a['total_score'] < $b['total_score'];
-            } else { //订正总分
-                return $a['correction_score'] < $b['correction_score'];
+        $type = $this->type;
+        usort($result, function($a, $b) use ($type) {
+            if ($type == self::TYPE_OI) {
+                if ($a['total_score'] != $b['total_score']) { // 优先测评总分
+                    return $a['total_score'] < $b['total_score'];
+                } else if ($a['correction_score'] != $b['correction_score']) { //订正总分
+                    return $a['correction_score'] < $b['correction_score'];
+                } else {
+                    return $a['total_time'] > $b['total_time'];
+                }
+            } else { // IOI 只需要最大值的总分排序。
+                if ($a['solved'] != $b['solved']) { //优先解题数
+                    return $a['solved'] < $b['solved'];
+                } else if ($a['correction_score'] != $b['correction_score']) {
+                    return $a['correction_score'] < $b['correction_score'];
+                } else {
+                    return $a['total_time'] > $b['total_time'];
+                }
             }
         });
 
