@@ -124,7 +124,6 @@ error_detect_depends(){
 
 install_dependencies(){
     if check_sys packageManager yum; then
-        echo 'not supported run on Centos' && exit 1
         echo -e "[${green}Info${plain}] Checking the EPEL repository..."
         yum install -y epel-release
         [ ! -f /etc/yum.repos.d/epel.repo ] && echo -e "[${red}Error${plain}] Install EPEL repository failed, please check it." && exit 1
@@ -139,14 +138,14 @@ install_dependencies(){
             nginx
             php72w-cli php72w-fpm php72w-gd php72w-mbstring php72w-mysqlnd php72w-xml
             mariadb mariadb-devel mariadb-server
-            gcc-c++ mysql-devel glibc-static libstdc++-static git make gcc
+            gcc-c++ glibc-static libstdc++-static git make gcc
             java-1.8.0-openjdk java-1.8.0-openjdk-devel
             python36
         )
         for depend in ${yum_depends[@]}; do
             error_detect_depends "yum -y install ${depend}"
         done
-        ln -s /usr/bin/python3.6 /usr/bin/python3
+        ln -s /usr/bin/python3.6 /usr/bin/python3 > /dev/null 2>&1
     elif check_sys packageManager apt; then
         apt_depends=(
             nginx
@@ -180,39 +179,68 @@ config_jnoj(){
     DBNAME="jnoj"
     DBUSER="root"
     DBPASS="123456"
+    PHP_VERSION=7.`php -v>&1|awk '{print $2}'|awk -F '.' '{print $2}'`
+
     if check_sys sysRelease centos; then
+        mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.back
+        cat>/etc/nginx/conf.d/jnoj.conf<<EOF
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        root /home/judge/jnoj/web;
+        index index.php;
+        server_name _;
+        client_max_body_size    128M;
+        location / {
+                try_files \$uri \$uri/ /index.php?\$args;
+        }
+        location ~ \.php$ {
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                fastcgi_pass 127.0.0.1:9000;
+        }
+}
+EOF
         DBUSER="root"
-        DBPASS=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
-        service mariadb start
+        systemctl start mariadb
         mysqladmin -u root password $DBPASS
-        sed -i "s/post_max_size = 8M/post_max_size = 64M/g" /etc/php.ini
-        sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 64M/g" /etc/php.ini
+        sed -i "s/post_max_size = 8M/post_max_size = 128M/g" /etc/php.ini
+        sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 128M/g" /etc/php.ini
+        chmod 755 /home/judge
+        chown nginx -R /home/judge/jnoj
     else
+        cat>/etc/nginx/conf.d/jnoj.conf<<EOF
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        root /home/judge/jnoj/web;
+        index index.php;
+        server_name _;
+        client_max_body_size    128M;
+        location / {
+                try_files \$uri \$uri/ /index.php?\$args;
+        }
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php${PHP_VERSION}-fpm.sock;
+        }
+}
+EOF
+        rm /etc/nginx/sites-enabled/default
         DBUSER=`cat /etc/mysql/debian.cnf |grep user|head -1|awk  '{print $3}'`
         DBPASS=`cat /etc/mysql/debian.cnf |grep password|head -1|awk  '{print $3}'`
-        PHP_VERSION=7.`php -v>&1|awk '{print $2}'|awk -F '.' '{print $2}'`
         sed -i "s/post_max_size = 8M/post_max_size = 128M/g" /etc/php/${PHP_VERSION}/fpm/php.ini
         sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 128M/g" /etc/php/${PHP_VERSION}/fpm/php.ini
-
-        sed -i "s:root /var/www/html;:root /home/judge/jnoj/web;:g" /etc/nginx/sites-enabled/default
-        sed -i "s:try_files \$uri \$uri/ =404;:try_files \$uri \$uri/ /index.php?\$args;:g" /etc/nginx/sites-enabled/default
-        sed -i "s:index index.html:index index.php:g" /etc/nginx/sites-enabled/default
-        sed -i "s:#location ~ \\\.php\\$:location ~ \\\.php\\$:g" /etc/nginx/sites-enabled/default
-        sed -i "s:#\tinclude snippets:\tinclude snippets:g" /etc/nginx/sites-enabled/default
-        sed -i "s|#\tfastcgi_pass unix|\tfastcgi_pass unix|g" /etc/nginx/sites-enabled/default
-        sed -i "s:}#added_by_jnoj::g" /etc/nginx/sites-enabled/default
-        sed -i "s:php7.0:php${PHP_VERSION}:g" /etc/nginx/sites-enabled/default
-        sed -i "s|# deny access to .htaccess files|}#added by jnoj\n\n\n\t# deny access to .htaccess files|g" /etc/nginx/sites-enabled/default
-        /etc/init.d/nginx restart
-        sed -i "s/post_max_size = 8M/post_max_size = 80M/g" /etc/php/${PHP_VERSION}/fpm/php.ini
-        sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 80M/g" /etc/php/${PHP_VERSION}/fpm/php.ini
+        systemctl restart nginx
+        systemctl restart php${PHP_VERSION}-fpm
     fi
-
-    # Modify database information
-    sed -i "s/root/$DBUSER/g" /home/judge/jnoj/config/db.php
-    sed -i "s/123456/$DBPASS/g" /home/judge/jnoj/config/db.php
-
+    
     mysql -h localhost -u$DBUSER -p$DBPASS -e "create database jnoj;"
+    if [ $? -eq 0 ]; then
+        # Modify database information
+        sed -i "s/root/$DBUSER/g" /home/judge/jnoj/config/db.php
+        sed -i "s/123456/$DBPASS/g" /home/judge/jnoj/config/db.php
+    fi
 }
 
 config_firewall(){
@@ -227,13 +255,19 @@ enable_server(){
     PHP_VERSION=7.`php -v>&1|awk '{print $2}'|awk -F '.' '{print $2}'`
     # startup service
     systemctl start nginx
-    systemctl start mysql
-    systemctl start php${PHP_VERSION}-fpm
-
+    
     # startup service when booting.
     systemctl enable nginx
-    systemctl enable mysql
-    systemctl enable php${PHP_VERSION}-fpm
+
+    if check_sys sysRelease centos; then
+        systemctl start mariadb
+        systemctl start php-fpm
+        systemctl enable php-fpm
+        systemctl enable mariadb
+    else
+        systemctl enable php${PHP_VERSION}-fpm
+        systemctl enable mysql
+    fi
 }
 
 install_jnoj(){
@@ -262,11 +296,10 @@ install_jnoj(){
     make
     ./polygon
 
-    ip=`curl ip.6655.com/ip.aspx`
     echo
     echo "Successful installation"
     echo "App running at:"
-    echo "http://${ip}"
+    echo "http://your_ip_address"
     echo
     echo -e "[${green}Administrator account${plain}] admin"
     echo -e "[${green}Password${plain}] ${adminPass}"
