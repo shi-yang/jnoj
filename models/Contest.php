@@ -670,7 +670,9 @@ class Contest extends \yii\db\ActiveRecord
                 $result[$user]['pending'][$pid] = 0;
                 $result[$user]['solved_flag'][$pid] = 1; // 标记该题已解答
                 $result[$user]['solved']++; // 解题数目
-                $result[$user]['total_time'] += ($created_at - $start_time) / 60;
+                if ($created_at < $contest_end_time) {
+                    $result[$user]['total_time'] += ($created_at - $start_time) / 60;
+                }
                 if (empty($first_blood[$pid])) {
                     $first_blood[$pid] = $user;
                 }

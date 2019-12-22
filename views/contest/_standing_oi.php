@@ -34,7 +34,7 @@ if (Yii::$app->user->isGuest || !Yii::$app->user->identity->isAdmin()) {
         <?php endif; ?>
         <th>
             用时
-            <span data-toggle="tooltip" data-placement="top" title="仅统计所有通过题目所需要的总时间（单位：分钟）">
+            <span data-toggle="tooltip" data-placement="top" title="仅统计比赛期间所有通过题目所需要的总时间（单位：分钟）">
                 <span class="glyphicon glyphicon-question-sign"></span>
             </span>
         </th>
