@@ -445,7 +445,7 @@ class ContestController extends Controller
             'autoRefresh' => $autoRefresh,
             'model' => $model,
             'searchModel' => $searchModel,
-            'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model->id)
+            'dataProvider' => $searchModel->search(Yii::$app->request->queryParams, $model)
         ]);
     }
 
