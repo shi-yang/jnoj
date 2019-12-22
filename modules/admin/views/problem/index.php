@@ -31,6 +31,9 @@ $this->title = Yii::t('app', 'Problems');
         <a id="private" class="btn btn-success" href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="前台题目列表会出现题目标题，但只有VIP用户才能查看题目信息">
             设为私有
         </a>
+        <a id="delete" class="btn btn-danger" href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="不可恢复">
+            删除
+        </a>
     </p>
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
     <?= GridView::widget([
@@ -115,6 +118,16 @@ $this->title = Yii::t('app', 'Problems');
            dataType: \'json\',
            data: {keylist: keys}
         });
+    });
+    $("#delete").on("click", function () {
+        if (confirm("确定要删除？此操作不可恢复！")) {
+            var keys = $("#grid").yiiGridView("getSelectedRows");
+            $.post({
+               url: "'.\yii\helpers\Url::to(['/admin/problem/index', 'action' => 'delete']).'", 
+               dataType: \'json\',
+               data: {keylist: keys}
+            });
+        }
     });
     ');
     ?>

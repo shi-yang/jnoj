@@ -74,10 +74,26 @@ class ProblemController extends Controller
             $keys = Yii::$app->request->post('keylist');
             $action = Yii::$app->request->get('action');
             foreach ($keys as $key) {
-                Yii::$app->db->createCommand()->update('{{%problem}}', [
-                    'status' => $action
-                ], ['id' => $key])->execute();
+                if ($action == 'delete') {
+                    $model = $this->findModel($key);
+                    try {
+                        // 删除题目测试数据
+                        $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+                        rmdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
+                    } catch (\ErrorException $e) {
+                        Yii::$app->session->setFlash('error', '删除失败:' . $e->getMessage());
+                        return $this->redirect(['index']);
+                    }
+                    $model->delete();
+                } else {
+                    foreach ($keys as $key) {
+                        Yii::$app->db->createCommand()->update('{{%problem}}', [
+                            'status' => $action
+                        ], ['id' => $key])->execute();
+                    }
+                }
             }
+
             return $this->refresh();
         }
 
@@ -482,8 +498,6 @@ class ProblemController extends Controller
             Yii::$app->session->setFlash('error', '删除失败:' . $e->getMessage());
             return $this->redirect(['index']);
         }
-        Solution::deleteAll(['problem_id' => $id]);
-        ContestProblem::deleteAll(['problem_id' => $id]);
         $model->delete();
         Yii::$app->session->setFlash('success', Yii::t('app', '删除成功'));
         return $this->redirect(['index']);

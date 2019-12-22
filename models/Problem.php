@@ -146,6 +146,13 @@ class Problem extends ActiveRecord
         }
     }
 
+    public function beforeDelete()
+    {
+        Solution::deleteAll(['problem_id' => $this->id]);
+        ContestProblem::deleteAll(['problem_id' => $this->id]);
+        return parent::beforeDelete();
+    }
+
     /**
      * 将序列化保存后的数组解出来
      */
