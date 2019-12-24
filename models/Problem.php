@@ -236,4 +236,26 @@ class Problem extends ActiveRecord
             'user_count' => $user_count
         ];
     }
+
+    /**
+     * 获取当前问题的上一个问题的 ID
+     * @return false|string|null
+     * @throws \yii\db\Exception
+     */
+    public function getPreviousProblemID() {
+        return Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE id < :id AND status = :status LIMIT 1')
+            ->bindValues([':id' => $this->id, ':status' => Problem::STATUS_VISIBLE])
+            ->queryScalar();
+    }
+
+    /**
+     * 获取当前问题的下一个问题的 ID
+     * @return false|string|null
+     * @throws \yii\db\Exception
+     */
+    public function getNextProblemID() {
+        return Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE id > :id AND status = :status LIMIT 1')
+            ->bindValues([':id' => $this->id, ':status' => Problem::STATUS_VISIBLE])
+            ->queryScalar();
+    }
 }

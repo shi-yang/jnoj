@@ -21,6 +21,8 @@ if (!Yii::$app->user->isGuest) {
 $model->setSamples();
 
 $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
+$previousProblemID = $model->getPreviousProblemID();
+$nextProblemID = $model->getNextProblemID();
 ?>
 <div class="row">
 
@@ -150,7 +152,19 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
         <?php endif; ?>
         <?= Html::a('<span class="glyphicon glyphicon-signal"></span> ' . Yii::t('app', 'Stats'),
             ['/problem/statistics', 'id' => $model->id],
-            ['class' => 'btn btn-default', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Problem statistics']
+            ['class' => 'btn btn-default']
+        )?>
+
+        <hr />
+
+        <?= Html::a('<span class="glyphicon glyphicon-arrow-left"></span> 上一题',
+            ['/problem/view', 'id' => $previousProblemID],
+            ['class' => 'btn btn-default', 'style' => 'width: 40%', 'disabled' => !$previousProblemID]
+        )?>
+
+        <?= Html::a('<span class="glyphicon glyphicon-arrow-right"></span> 下一题',
+            ['/problem/view', 'id' => $nextProblemID],
+            ['class' => 'btn btn-default', 'style' => 'width: 50%', 'disabled' => !$nextProblemID]
         )?>
 
         <?php if (!Yii::$app->user->isGuest && !empty($submissions)): ?>
