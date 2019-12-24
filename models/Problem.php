@@ -243,7 +243,7 @@ class Problem extends ActiveRecord
      * @throws \yii\db\Exception
      */
     public function getPreviousProblemID() {
-        return Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE id < :id AND status = :status LIMIT 1')
+        return Yii::$app->db->createCommand('SELECT id FROM {{%problem}} WHERE id < :id AND status = :status ORDER BY id DESC limit 1')
             ->bindValues([':id' => $this->id, ':status' => Problem::STATUS_VISIBLE])
             ->queryScalar();
     }
