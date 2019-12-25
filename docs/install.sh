@@ -286,9 +286,7 @@ install_jnoj(){
     enable_server
 
     cd /home/judge/jnoj
-    adminPass=`cat /proc/sys/kernel/random/uuid | sed 's/[^a-zA-Z0-9]//g'`
-    adminPass=${adminPass:1:9}
-    echo -e "yes" "\n" "admin" "\n" "${adminPass}" "\n" "admin@jnoj.org" | ./yii install
+    echo -e "yes" "\n" "admin" "\n" "123456" "\n" "admin@jnoj.org" | ./yii install
     cd /home/judge/jnoj/judge
     make
     ./dispatcher
@@ -302,7 +300,7 @@ install_jnoj(){
     echo "http://your_ip_address"
     echo
     echo -e "[${green}Administrator account${plain}] admin"
-    echo -e "[${green}Password${plain}] ${adminPass}"
+    echo -e "[${green}Password${plain}] 123456"
     echo
     echo "Enjoy it!"
     echo "Welcome to visit: https://www.jnoj.org"
