@@ -30,7 +30,7 @@ $this->title = Yii::t('app', 'Setting');
         <p class="hint-block">
             注意，如需启动 OI 模式，除了在此处选择是外，还需要在启动判题服务时加上 -o 参数。
         </p>
-        <p class="hint-block">即需要在 jnoj/judge 目录下通过 <code>sudo ./disptacher -o</code>来启动判题服务。</p>
+        <p class="hint-block">即需要在 jnoj/judge 目录下通过 <code>sudo ./dispatcher -o</code>来启动判题服务。</p>
     </div>
 
     <div class="form-group">
