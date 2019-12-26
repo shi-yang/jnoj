@@ -2,17 +2,24 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use yii\db\Query;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
+use yii\web\BadRequestHttpException;
+use yii\base\InvalidArgumentException;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\SignupForm;
 use app\models\Contest;
 use app\models\Discuss;
+use app\models\ResendVerificationEmailForm;
+use app\models\PasswordResetRequestForm;
+use app\models\ResetPasswordForm;
+use app\models\VerifyEmailForm;
 
 class SiteController extends Controller
 {
@@ -114,14 +121,23 @@ class SiteController extends Controller
             $model->scenario = 'withCaptcha';
         }
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->login()) {
-                return $this->goBack();
+            if ($model->getUser()->status == User::STATUS_INACTIVE) {
+                $url = Yii::$app->urlManager->createAbsoluteUrl(['/site/resend-verification-email']);
+                $a = "<a href=\"$url\">$url</a>";
+                Yii::$app->session->setFlash('error', '该用户尚未激活，无法登陆。请先验证邮箱：' . $a);
+            } else if ($model->getUser()->status == User::STATUS_DISABLE) {
+                Yii::$app->session->setFlash('error', '该用户已被禁用');
             } else {
-                Yii::$app->session->set('attempts-login', Yii::$app->session->get('attempts-login', 0) + 1);
-                if (Yii::$app->session->get('attempts-login') > 2) {
-                    $model->scenario = 'withCaptcha';
+                if ($model->login()) {
+                    return $this->goBack();
+                } else {
+                    Yii::$app->session->set('attempts-login', Yii::$app->session->get('attempts-login', 0) + 1);
+                    if (Yii::$app->session->get('attempts-login') > 2) {
+                        $model->scenario = 'withCaptcha';
+                    }
                 }
             }
+
         }
         return $this->render('login', [
             'model' => $model,
@@ -134,6 +150,12 @@ class SiteController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
+                if (Yii::$app->setting->get('mustVerifyEmail')) {
+                    $url = Yii::$app->urlManager->createAbsoluteUrl(['/site/resend-verification-email']);
+                    $a = "<a href=\"$url\">没有收到？</a>";
+                    Yii::$app->session->setFlash('success', '欢迎注册使用！请检查你的邮箱收件箱，对邮箱进行验证。' . $a);
+                    return $this->goHome();
+                }
                 if (Yii::$app->getUser()->login($user)) {
                     return $this->goHome();
                 }
@@ -183,5 +205,98 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Requests password reset.
+     *
+     * @return mixed
+     */
+    public function actionRequestPasswordReset()
+    {
+        $model = new PasswordResetRequestForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail()) {
+                Yii::$app->session->setFlash('success', '重置密码的链接已发送到您的邮箱。请检查您的邮箱获取重置密码的链接。');
+
+                return $this->goHome();
+            } else {
+                Yii::$app->session->setFlash('error', '根据提供的邮箱无法发送重置密码链接。可能原因：1. 该邮箱不存在；2. 本网站系统邮箱配置信息有误，需联系管理员检查系统的发送邮箱配置信息。');
+            }
+        }
+
+        return $this->render('request_password_reset_token', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Resets password.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionResetPassword($token)
+    {
+        try {
+            $model = new ResetPasswordForm($token);
+        } catch (InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
+            Yii::$app->session->setFlash('success', 'New password saved.');
+
+            return $this->goHome();
+        }
+
+        return $this->render('reset_password', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Verify email address
+     *
+     * @param string $token
+     * @throws BadRequestHttpException
+     * @return yii\web\Response
+     */
+    public function actionVerifyEmail($token)
+    {
+        try {
+            $model = new VerifyEmailForm($token);
+        } catch (InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+        if ($user = $model->verifyEmail()) {
+            Yii::$app->session->setFlash('success', '已验证您的邮箱');
+            return $this->goHome();
+        }
+
+        Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account with provided token.');
+        return $this->goHome();
+    }
+
+    /**
+     * Resend verification email
+     *
+     * @return mixed
+     */
+    public function actionResendVerificationEmail()
+    {
+        $model = new ResendVerificationEmailForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail()) {
+                Yii::$app->session->setFlash('success', '检查您的邮箱去获取验证链接');
+                return $this->goHome();
+            }
+            Yii::$app->session->setFlash('error', '验证邮箱发送失败。可能原因：1. 该邮箱不存在；2. 本网站系统邮箱配置信息有误，需联系管理员检查系统的发送邮箱配置信息。');
+        }
+
+        return $this->render('resend_verification_email', [
+            'model' => $model
+        ]);
     }
 }

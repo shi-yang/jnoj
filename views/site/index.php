@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $contests array */
 /* @var $news app\models\Discuss */
 
-$this->title = Yii::$app->setting->get('ojName') . ' Online Judge';
+$this->title = Yii::$app->setting->get('ojName');
 ?>
 <div class="row blog">
     <div class="col-md-8">

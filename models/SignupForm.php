@@ -61,24 +61,59 @@ class SignupForm extends Model
     /**
      * Signs user up.
      *
-     * @return User|null the saved model or null if saving fails
+     * @return null whether the creating new account was successful and email was sent
+     * @throws \yii\db\Exception
      */
     public function signup()
     {
-        if ($this->validate()) {
-            $user = new User();
-            $user->username = $this->username;
-            $user->nickname = $this->username;
-            $user->email = $this->email;
-            $user->setPassword($this->password);
-            $user->generateAuthKey();
-            $user->save();
-            Yii::$app->db->createCommand()->insert('{{%user_profile}}', [
-                'user_id' => $user->id,
-                'student_number' => $this->studentNumber
-            ])->execute();
-            return $user;
+        if (!$this->validate()) {
+            return null;
         }
-        return null;
+        $user = new User();
+        $user->username = $this->username;
+        $user->nickname = $this->username;
+        $user->email = $this->email;
+        $user->is_verify_email = User::VERIFY_EMAIL_NO;
+        $user->setPassword($this->password);
+        $user->generateAuthKey();
+        if (Yii::$app->setting->get('mustVerifyEmail')) {
+            // 发送邮箱
+            $user->generateEmailVerificationToken();
+            if (!$this->sendEmail($user)) {
+                Yii::$app->session->setFlash('error',
+                    '验证邮箱发送失败。可能原因：1. 该邮箱不存在；2. 本网站系统邮箱配置信息有误，需联系管理员检查系统的发送邮箱配置信息。');
+                return null;
+            }
+            $user->status = User::STATUS_INACTIVE;
+        } else {
+            $user->status = User::STATUS_ACTIVE;
+        }
+        if (!$user->save()) {
+            return null;
+        }
+        Yii::$app->db->createCommand()->insert('{{%user_profile}}', [
+            'user_id' => $user->id,
+            'student_number' => $this->studentNumber
+        ])->execute();
+        return $user;
+    }
+
+    /**
+     * Sends confirmation email to user
+     * @param User $user user model to with email should be send
+     * @return bool whether the email was sent
+     */
+    protected function sendEmail($user)
+    {
+        return Yii::$app
+            ->mailer
+            ->compose(
+                ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'],
+                ['user' => $user]
+            )
+            ->setFrom([Yii::$app->setting->get('emailUsername') => Yii::$app->setting->get('ojName')])
+            ->setTo($this->email)
+            ->setSubject('帐号注册 - ' . Yii::$app->setting->get('ojName'))
+            ->send();
     }
 }

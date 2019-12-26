@@ -25,10 +25,14 @@ use yii\web\IdentityInterface;
  * @property string $updated_at
  * @property string $password write-only password
  * @property integer $rating
+ * @property integer $is_verify_email
+ * @property string $verification_token
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
+    const STATUS_DISABLE = 8;
+    const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
     /**
@@ -45,6 +49,12 @@ class User extends ActiveRecord implements IdentityInterface
     public $oldPassword;
     public $newPassword;
     public $verifyPassword;
+
+    /**
+     * 是否已经验证邮箱
+     */
+    const VERIFY_EMAIL_NO = 0;
+    const VERIFY_EMAIL_YES = 1;
 
     /**
      * @inheritdoc
@@ -70,8 +80,8 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            [['language', 'rating', 'role'], 'integer'],
+            [['language', 'rating', 'role', 'is_verify_email'], 'integer'],
+            ['verification_token', 'string'],
             [['username', 'nickname'], 'required'],
             [['nickname'], 'string', 'max' => 16],
             ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
@@ -79,7 +89,7 @@ class User extends ActiveRecord implements IdentityInterface
                 return $model->role != User::ROLE_PLAYER;
             }],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED, self::STATUS_INACTIVE]],
             ['role', 'in', 'range' => [self::ROLE_PLAYER, self::ROLE_USER, self::ROLE_VIP, self::ROLE_ADMIN]],
 
             // oldPassword is validated by validateOldPassword()
@@ -148,21 +158,22 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Finds user by username
+     * 登陆时输入的字符串
+     * Finds user by loginID
      *
-     * @param string $username
-     * @return static|null
+     * @param $loginID
+     * @return User|null
      */
-    public static function findByUsername($username)
+    public static function findByLoginID($loginID)
     {
-        if (is_numeric($username)) {
+        if (is_numeric($loginID)) {
             $param = 'id';
-        } elseif (strpos($username, '@')) {
+        } elseif (strpos($loginID, '@')) {
             $param = 'email';
         } else {
             $param = 'username';
         }
-        return static::findOne([$param => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne([$param => $loginID]);
     }
 
     /**
@@ -184,6 +195,18 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Finds user by verification email token
+     *
+     * @param string $token verify email token
+     * @return static|null
+     */
+    public static function findByVerificationToken($token) {
+        return static::findOne([
+            'verification_token' => $token,
+        ]);
+    }
+
+    /**
      * Finds out if password reset token is valid
      *
      * @param string $token password reset token
@@ -196,7 +219,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        $expire = Yii::$app->setting->get('passwordResetTokenExpire');
         return $timestamp + $expire >= time();
     }
 
@@ -267,6 +290,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function generatePasswordResetToken()
     {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    /**
+     * Generates new token for email verification
+     */
+    public function generateEmailVerificationToken()
+    {
+        $this->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
     /**
@@ -453,7 +484,16 @@ class User extends ActiveRecord implements IdentityInterface
         return "<span class=\"{$tmp} rated-user\">{$nickname}</span>";
     }
 
-    public function isAdmin() {
+    public function isAdmin()
+    {
         return $this->role == self::ROLE_ADMIN;
+    }
+
+    /**
+     * 是否已经验证邮箱
+     */
+    public function isVerifyEmail()
+    {
+        return $this->is_verify_email == self::VERIFY_EMAIL_YES;
     }
 }

@@ -48,7 +48,7 @@ AppAsset::register($this);
     </header>
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->setting->get('ojName') . ' OJ',
+        'brandLabel' => Yii::$app->setting->get('ojName'),
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-default',
@@ -78,7 +78,7 @@ AppAsset::register($this);
         $menuItems[] = ['label' => '<span class="glyphicon glyphicon-new-window"></span> ' . Yii::t('app', 'Signup'), 'url' => ['/site/signup']];
         $menuItems[] = ['label' => '<span class="glyphicon glyphicon-log-in"></span> ' . Yii::t('app', 'Login'), 'url' => ['/site/login']];
     } else {
-        if (Yii::$app->user->identity->role == \app\models\User::ROLE_ADMIN) {
+        if (Yii::$app->user->identity->isAdmin()) {
             $menuItems[] = [
                 'label' => '<span class="glyphicon glyphicon-cog"></span> ' . Yii::t('app', 'Backend'),
                 'url' => ['/admin'],
@@ -102,6 +102,13 @@ AppAsset::register($this);
         'activateParents' => true
     ]);
     NavBar::end();
+    ?>
+
+    <?php
+    if (!Yii::$app->user->isGuest && Yii::$app->setting->get('mustVerifyEmail') && !Yii::$app->user->identity->isVerifyEmail()) {
+        $a = Html::a('个人设置', ['/user/setting', 'action' => 'account']);
+        echo "<div class=\"container\"><p class=\"bg-danger\">请前往设置页面验证您的邮箱：{$a}</p></div>";
+    }
     ?>
 
     <div class="container">
