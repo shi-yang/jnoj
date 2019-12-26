@@ -34,6 +34,7 @@ class UserController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
+                'only' => ['setting', 'verify-email'],
                 'rules' => [
                     [
                         'actions' => ['setting', 'verify-email'],
