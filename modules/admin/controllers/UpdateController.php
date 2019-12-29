@@ -46,7 +46,7 @@ class UpdateController extends Controller
      */
     public function actionIndex()
     {
-        $changelog = file_get_contents('https://raw.githubusercontent.com/shi-yang/jnoj/master/CHANGELOG.md');
+        $changelog = file_get_contents('https://gitee.com/shi-yang/jnoj/raw/master/CHANGELOG.md');
         return $this->render('index', [
             'changelog' => $changelog
         ]);
