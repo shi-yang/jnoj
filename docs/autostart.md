@@ -14,6 +14,7 @@ After=network.target
 Wants=mysql.service
 
 [Service]
+# 根据安装修改为对应的安装路径，你应该要能在该路径找到可执行文件 dispatcher
 ExecStart=-/home/judge/jnoj/judge/dispatcher
 RemainAfterExit=yes
 KillMode=control-group
@@ -35,6 +36,7 @@ After=network.target
 Wants=mysql.service
 
 [Service]
+# 根据安装修改为对应的安装路径，你应该要能在该路径找到可执行文件 polygon
 ExecStart=-/home/judge/jnoj/polygon/polygon
 RemainAfterExit=yes
 KillMode=control-group
