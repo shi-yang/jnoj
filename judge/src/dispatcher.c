@@ -428,15 +428,22 @@ void turbo_mode2()
 
 void set_path()
 {
-    getcwd(oj_home, sizeof(oj_home));
-    int cnt = strlen(oj_home);
-    oj_home[cnt] = '/';
-    oj_home[cnt + 1] = '\0';
+    // Get current path
+    int cnt = readlink("/proc/self/exe", oj_home, BUFFER_SIZE);
+    if (cnt < 0 || cnt >= BUFFER_SIZE) {
+        printf("Get work dir error\n");
+        exit(1);
+    }
+    while (oj_home[cnt] != '/' && cnt > 0) {
+        cnt--;
+    }
+    oj_home[++cnt] = '\0';
 
     strcpy(judge_path, oj_home);
     int len = strlen(judge_name);
     for (int i = 0; i < len; i++) {
-        judge_path[++cnt] = judge_name[i];
+        judge_path[cnt] = judge_name[i];
+        cnt++;
     }
     judge_path[++cnt] = '\0';
 }

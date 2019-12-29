@@ -1027,10 +1027,16 @@ void init_parameters(int argc, char ** argv, int * solution_id, int * runner_id)
     }
     DEBUG = argc > 4;
 
-    getcwd(oj_home, sizeof(oj_home));
-    int len = strlen(oj_home);
-    oj_home[len] = '/';
-    oj_home[len + 1] = '\0';
+    int cnt = readlink("/proc/self/exe", oj_home, BUFFER_SIZE);
+    if (cnt < 0 || cnt >= BUFFER_SIZE) {
+        printf("Get work dir error\n");
+        exit(1);
+    }
+    while (oj_home[cnt] != '/' && cnt > 0) {
+        cnt--;
+    }
+    oj_home[++cnt] = '\0';
+    chdir(oj_home); // change the dir
 
     chdir(oj_home); // change the dir
 
