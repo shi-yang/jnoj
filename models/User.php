@@ -84,7 +84,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['verification_token', 'string'],
             [['username', 'nickname'], 'required'],
             [['nickname'], 'string', 'max' => 16],
-            ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,32}$)[a-z\d_]{4,32}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间'],
+            ['password', 'string', 'min' => 6, 'max' => 16],
+            ['username', 'match', 'pattern' => '/^(?!_)(?!.*?_$)(?!\d{4,16}$)[a-z\d_]{4,16}$/i', 'message' => '用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 16 位之间'],
             ['username', 'match', 'pattern' => '/^(?!c[\d]+user[\d])/', 'message' => '以c+数字+user+数字作为账户名系统保留', 'when' => function($model) {
                 return $model->role != User::ROLE_PLAYER;
             }],
@@ -95,7 +96,8 @@ class User extends ActiveRecord implements IdentityInterface
             // oldPassword is validated by validateOldPassword()
             [['oldPassword'], 'validateOldPassword'],
             [['verifyPassword'], 'compare', 'compareAttribute' => 'newPassword'],
-            [['oldPassword', 'verifyPassword', 'newPassword'], 'required']
+            [['oldPassword', 'verifyPassword', 'newPassword'], 'required'],
+            ['newPassword', 'min' => 6, 'max' => 16]
         ];
     }
 
