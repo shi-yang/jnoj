@@ -97,7 +97,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['oldPassword'], 'validateOldPassword'],
             [['verifyPassword'], 'compare', 'compareAttribute' => 'newPassword'],
             [['oldPassword', 'verifyPassword', 'newPassword'], 'required'],
-            ['newPassword', 'min' => 6, 'max' => 16]
+            ['newPassword', 'string', 'min' => 6, 'max' => 16]
         ];
     }
 
