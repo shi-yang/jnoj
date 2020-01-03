@@ -10,11 +10,11 @@ use yii\widgets\ActiveForm;
 
 <?php $form = ActiveForm::begin(); ?>
 
-<?= $form->field($model, 'oldPassword')->textInput() ?>
+<?= $form->field($model, 'oldPassword')->passwordInput() ?>
 
-<?= $form->field($model, 'newPassword')->textInput() ?>
+<?= $form->field($model, 'newPassword')->passwordInput() ?>
 
-<?= $form->field($model, 'verifyPassword')->textInput() ?>
+<?= $form->field($model, 'verifyPassword')->passwordInput() ?>
 
 <div class="form-group">
     <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => 'btn btn-primary']) ?>
