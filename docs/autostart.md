@@ -27,7 +27,7 @@ WantedBy=multi-user.target
 
 ### 2. Polygon
 
-将以下内容保存创建为 `jnoj-polygon.service`，保存为 `/etc/systemd/system/jnoj-judge.service`
+将以下内容保存创建为 `jnoj-polygon.service`，保存为 `/etc/systemd/system/jnoj-polygon.service`
 
 ```
 [Unit]
