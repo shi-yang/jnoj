@@ -101,6 +101,7 @@ $this->registerCss("
     }
     .problem-right .problem-editor .code-input {
         height: 100%;
+        overflow: hidden;
     }
     .problem-wrap {
         display: flex;
