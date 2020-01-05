@@ -47,13 +47,16 @@ class CodeMirror extends InputWidget
             indentUnit: 4,
             autofocus: true,
             matchBrackets: true,
-            autoRefresh: true
+            autoRefresh: true,
+            lineWrapping: true, //代码折叠
+            foldGutter: true,
+            autoCloseBrackets: true
         });
 EOF;
         $this->view->registerCss("
         .CodeMirror {
             border: 1px solid black;
-            font-size: 13px;
+            font-size: 15px;
         }
         ");
         $this->view->registerJs($script);

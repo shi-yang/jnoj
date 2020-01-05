@@ -154,7 +154,7 @@ class ProblemController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($id, $view = 'view')
     {
         $model = $this->findModel($id);
         $solution = new Solution();
@@ -181,8 +181,9 @@ class ProblemController extends Controller
             Yii::$app->session->setFlash('success', Yii::t('app', 'Submitted successfully'));
             return $this->refresh();
         }
+        $view = ($view == 'view' ? 'view' : 'classic');
 
-        return $this->render('view', [
+        return $this->render($view, [
             'solution' => $solution,
             'model' => $model,
             'submissions' => $submissions
