@@ -49,7 +49,9 @@ $isContestEnd = $model->isContestEnd();
             [
                 'attribute' => 'who',
                 'value' => function ($model, $key, $index, $column) {
-                    return Html::a($model->user->colorname, ['/user/view', 'id' => $model->created_by]);
+                    if (isset($model->user)) {
+                        return Html::a($model->user->colorname, ['/user/view', 'id' => $model->created_by]);
+                    }
                 },
                 'format' => 'raw'
             ],
