@@ -121,23 +121,22 @@ class SiteController extends Controller
             $model->scenario = 'withCaptcha';
         }
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->getUser()->status == User::STATUS_INACTIVE) {
-                $url = Yii::$app->urlManager->createAbsoluteUrl(['/site/resend-verification-email']);
-                $a = "<a href=\"$url\">$url</a>";
-                Yii::$app->session->setFlash('error', '该用户尚未激活，无法登陆。请先验证邮箱：' . $a);
-            } else if ($model->getUser()->status == User::STATUS_DISABLE) {
-                Yii::$app->session->setFlash('error', '该用户已被禁用');
+            if ($model->login()) {
+                $status = $model->getUser()->status;
+                if ($status == User::STATUS_INACTIVE) {
+                    $url = Yii::$app->urlManager->createAbsoluteUrl(['/site/resend-verification-email']);
+                    $a = "<a href=\"$url\">$url</a>";
+                    Yii::$app->session->setFlash('error', '该用户尚未激活，无法登陆。请先验证邮箱：' . $a);
+                } else if ($status == User::STATUS_DISABLE) {
+                    Yii::$app->session->setFlash('error', '该用户已被禁用');
+                }
+                return $this->goBack();
             } else {
-                if ($model->login()) {
-                    return $this->goBack();
-                } else {
-                    Yii::$app->session->set('attempts-login', Yii::$app->session->get('attempts-login', 0) + 1);
-                    if (Yii::$app->session->get('attempts-login') > 2) {
-                        $model->scenario = 'withCaptcha';
-                    }
+                Yii::$app->session->set('attempts-login', Yii::$app->session->get('attempts-login', 0) + 1);
+                if (Yii::$app->session->get('attempts-login') > 2) {
+                    $model->scenario = 'withCaptcha';
                 }
             }
-
         }
         return $this->render('login', [
             'model' => $model,
