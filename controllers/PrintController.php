@@ -2,13 +2,13 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use app\models\User;
 use app\models\Contest;
 use app\models\ContestPrint;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
@@ -16,7 +16,7 @@ use yii\filters\VerbFilter;
 /**
  * PrintController implements the CRUD actions for PrintSource model.
  */
-class PrintController extends Controller
+class PrintController extends BaseController
 {
     /**
      * @inheritdoc

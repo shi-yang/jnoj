@@ -2,9 +2,9 @@
 
 namespace app\controllers;
 
-use yii\web\Controller;
+use app\components\BaseController;
 
-class WikiController extends Controller
+class WikiController extends BaseController
 {
     public $layout = 'wiki';
 

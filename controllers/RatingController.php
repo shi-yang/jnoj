@@ -2,14 +2,12 @@
 
 namespace app\controllers;
 
-use app\models\Solution;
+use app\components\BaseController;
 use app\models\User;
-use Yii;
 use yii\db\Query;
-use yii\web\Controller;
 use yii\data\Pagination;
 
-class RatingController extends Controller
+class RatingController extends BaseController
 {
     public function actionIndex()
     {

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use Yii;
 use app\models\Group;
 use app\models\GroupUser;
@@ -10,7 +11,6 @@ use app\models\Contest;
 use yii\data\SqlDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,7 +21,7 @@ use yii\data\ActiveDataProvider;
 /**
  * GroupController implements the CRUD actions for Group model.
  */
-class GroupController extends Controller
+class GroupController extends BaseController
 {
     /**
      * {@inheritdoc}

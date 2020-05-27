@@ -2,10 +2,10 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use app\models\User;
 use Yii;
 use yii\db\Query;
-use yii\web\Controller;
 use yii\web\Response;
 use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
@@ -21,7 +21,7 @@ use app\models\PasswordResetRequestForm;
 use app\models\ResetPasswordForm;
 use app\models\VerifyEmailForm;
 
-class SiteController extends Controller
+class SiteController extends BaseController
 {
     /**
      * @inheritdoc

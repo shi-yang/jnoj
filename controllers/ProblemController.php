@@ -2,16 +2,15 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use Yii;
 use yii\db\Query;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\data\Pagination;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use app\models\Problem;
-use app\models\ProblemSearch;
 use app\models\Solution;
 use app\models\User;
 use justinvoelker\tagging\TaggingQuery;
@@ -20,7 +19,7 @@ use app\models\Discuss;
 /**
  * ProblemController implements the CRUD actions for Problem model.
  */
-class ProblemController extends Controller
+class ProblemController extends BaseController
 {
     /**
      * @inheritdoc

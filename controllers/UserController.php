@@ -2,14 +2,13 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use app\models\Contest;
 use app\models\UserProfile;
 use Yii;
 use app\models\User;
-use yii\base\Model;
 use yii\helpers\Json;
 use yii\helpers\Url;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
@@ -18,7 +17,7 @@ use yii\filters\AccessControl;
 /**
  * UserController implements the CRUD actions for User model.
  */
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * @inheritdoc
@@ -138,7 +137,7 @@ class UserController extends Controller
     {
         $user = User::findOne(Yii::$app->user->id);
         $user->generateEmailVerificationToken();
-        $user->save();
+        $user->update(false);
         $res = Yii::$app
             ->mailer
             ->compose(

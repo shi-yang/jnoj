@@ -2,14 +2,13 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use app\models\ContestPrint;
 use app\models\User;
 use Yii;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\data\ActiveDataProvider;
-use yii\helpers\Html;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
@@ -23,7 +22,7 @@ use app\models\Discuss;
 /**
  * ContestController implements the CRUD actions for Contest model.
  */
-class ContestController extends Controller
+class ContestController extends BaseController
 {
     public $layout = 'contest';
     /**

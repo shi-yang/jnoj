@@ -31,7 +31,7 @@ $this->title = Yii::t('app', 'Problems');
                         return $solve . Html::a($model->id, ['/problem/view', 'id' => $key]);
                     },
                     'format' => 'raw',
-                    'options' => ['width' => '80px']
+                    'options' => ['width' => '100px']
                 ],
                 [
                     'attribute' => 'title',

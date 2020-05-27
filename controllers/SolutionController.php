@@ -2,12 +2,11 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use app\models\Contest;
 use Yii;
-use app\models\User;
 use app\models\Solution;
 use app\models\SolutionSearch;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
@@ -15,7 +14,7 @@ use yii\filters\VerbFilter;
 /**
  * SolutionController implements the CRUD actions for Solution model.
  */
-class SolutionController extends Controller
+class SolutionController extends BaseController
 {
     /**
      * @inheritdoc

@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\Contest;
+use app\components\BaseController;
 use app\models\ContestProblem;
 use app\models\ContestUser;
 use app\models\Problem;
@@ -21,7 +21,7 @@ use yii\web\NotFoundHttpException;
 /**
  * HomeworkController implements the CRUD actions for Homework model.
  */
-class HomeworkController extends ContestController
+class HomeworkController extends BaseController
 {
     public function init()
     {

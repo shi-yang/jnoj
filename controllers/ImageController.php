@@ -2,15 +2,15 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use Yii;
-use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use app\components\Uploader;
 
 /**
  * 用来接收 CKeditor 编辑器上传的图片
  */
-class ImageController extends Controller
+class ImageController extends BaseController
 {
     public $enableCsrfValidation = false;
     public function actionUpload()

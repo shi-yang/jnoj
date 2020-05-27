@@ -2,11 +2,11 @@
 
 namespace app\controllers;
 
+use app\components\BaseController;
 use app\models\User;
 use Yii;
 use app\models\Discuss;
 use yii\data\Pagination;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\db\Expression;
@@ -15,7 +15,7 @@ use yii\filters\VerbFilter;
 /**
  * PrintController implements the CRUD actions for PrintSource model.
  */
-class DiscussController extends Controller
+class DiscussController extends BaseController
 {
     /**
      * @inheritdoc
