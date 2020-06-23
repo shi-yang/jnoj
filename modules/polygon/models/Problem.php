@@ -124,10 +124,12 @@ class Problem extends \yii\db\ActiveRecord
             if (empty($hint)) {
                 $this->hint = $hint;
             }
-            //标签分割
-            $tags = trim($this->tags);
-            $explodeTags = array_unique(explode(',', str_replace('，', ',', $tags)));
-            $explodeTags = array_slice($explodeTags, 0, 10);
+            //标签处理
+            $tagArr = explode(',', str_replace('，', ',', $this->tags));
+            foreach ($tagArr as &$tag) {
+                $tag = trim($tag);
+            }
+            $explodeTags = array_unique($tagArr);
             $this->tags = implode(',', $explodeTags);
             return true;
         } else {
