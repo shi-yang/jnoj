@@ -28,44 +28,6 @@ class SystemInfo
         return array_slice($array, 1);
     }
 
-    public static function getCpuInfo()
-    {
-        $info = [];
-
-        if (!($str = @file("/proc/cpuinfo")))
-            return false;
-
-        $str = implode("", $str);
-        @preg_match_all("/processor\s{0,}\:+\s{0,}([\w\s\)\(\@.-]+)([\r\n]+)/s", $str, $processor);
-        @preg_match_all("/model\s+name\s{0,}\:+\s{0,}([\w\s\)\(\@.-]+)([\r\n]+)/s", $str, $model);
-
-        if (count($model[0]) == 0) {
-            @preg_match_all("/Hardware\s{0,}\:+\s{0,}([\w\s\)\(\@.-]+)([\r\n]+)/s", $str, $model);
-        }
-        @preg_match_all("/cpu\s+MHz\s{0,}\:+\s{0,}([\d\.]+)[\r\n]+/", $str, $mhz);
-
-        if (count($mhz[0]) == 0) {
-            $values = @file("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq");
-            $mhz = array("", array(sprintf('%.3f', intval($values[0]) / 1000)));
-        }
-
-        @preg_match_all("/cache\s+size\s{0,}\:+\s{0,}([\d\.]+\s{0,}[A-Z]+[\r\n]+)/", $str, $cache);
-        @preg_match_all("/(?i)bogomips\s{0,}\:+\s{0,}([\d\.]+)[\r\n]+/", $str, $bogomips);
-
-        $zh = (substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) === 'zh');
-
-        if (is_array($model[1])) {
-            $info['num'] = sizeof($processor[1]);
-            $info['model'] = $model[1][0];
-            $info['frequency'] = $mhz[1][0];
-            $info['bogomips'] = $bogomips[1][0];
-            if (count($cache[0]) > 0)
-                $info['l2cache'] = trim($cache[1][0]);
-        }
-
-        return $info;
-    }
-
     public static function getUpTime()
     {
         if (!($str = @file('/proc/uptime')))
@@ -92,19 +54,6 @@ class SystemInfo
         $uptime .= $min . $muint;
 
         return $uptime;
-    }
-
-    public static function getTempInfo()
-    {
-        $info = ['cpu' => 0, 'gpu' => 'null'];
-
-        if ($str = @file('/sys/class/thermal/thermal_zone0/temp'))
-            $info['cpu'] = doubleval($str[0])  / 1000.0;
-
-        if ($str = @file('/sys/class/thermal/thermal_zone10/temp'))
-            $info['gpu'] = doubleval($str[0]) / 1000.0;
-
-        return $info;
     }
 
     public static function getMemInfo()

@@ -73,24 +73,7 @@ function __($message)
             <td><span id="uptime"><?= $uptime; ?></span></td>
         </tr>
         <tr>
-            <td><?php __('CPU Model'); ?> [<?= $cpuinfo['num']; ?>x]</td>
-            <td colspan="3">
-                <?= $cpuinfo['model']; ?>
-                | <?php __('Frequency'); ?>: <?= $cpuinfo['frequency']; ?> MHz
-                | <?php __('L2 Cache'); ?>：<?= $cpuinfo['l2cache']; ?>
-                | Bogomips: <?= $cpuinfo['bogomips']; ?> ×<?= $cpuinfo['num']; ?>
-            </td>
         </tr>
-        <tr>
-        </tr>
-        <?php if (isset($tempinfo['cpu'])) : ?>
-            <tr>
-                <td><?php __('CPU Temperature'); ?></td>
-                <td><span id="cpu_temp"><?= $tempinfo['cpu']; ?></span></td>
-                <td><?php __('GPU Temperature'); ?></td>
-                <td><span id="gpu_temp"><?= $tempinfo['gpu']; ?></span></td>
-            </tr>
-        <?php endif; ?>
         <tr>
             <td><?php __('CPU Usage'); ?></td>
             <td colspan="3">
@@ -279,11 +262,6 @@ function __($message)
         $.getJSON('?method=sysinfo', function (data) {
             $('#uptime').html(data.uptime)
             $('#stime').html(data.stime)
-
-            if (data.tempinfo.cpu)
-                $('#cpu_temp').html(data.tempinfo.cpu + ' ℃')
-            if (data.tempinfo.gpu)
-                $('#gpu_temp').html(data.tempinfo.gpu + ' ℃')
 
             stat_total = 0
             for (var i = 0; i < data.stat.length; i++) {
