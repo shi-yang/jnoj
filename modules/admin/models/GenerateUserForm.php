@@ -96,4 +96,39 @@ class GenerateUserForm extends Model
         echo "帐号生成完毕";
         exit('<script>location.replace(location.href);</script>');
     }
+
+    public function generateUsers()
+    {
+        $pieces = explode("\n", trim($this->names));
+        $count = count($pieces);
+
+        set_time_limit(0);
+        ob_end_clean();
+        echo "生成帐号需要一定时间，在此期间请勿刷新或关闭该页面<br>";
+        for ($i = 1; $i <= count($pieces); ++$i) {
+            if (empty($pieces[$i - 1]))
+                continue;
+            $u = explode(' ', trim($pieces[$i - 1]));
+            $username = $u[0];
+            $password = $u[1];
+            $user = new User();
+            $user->username = $username;
+            $user->nickname = $username;
+            $user->email = $username . '@jnoj.org';
+            $user->role = User::ROLE_USER;
+            $user->setPassword($password);
+            $user->generateAuthKey();
+            if ($user->save()) {
+                echo "帐号数{$i}/{$count}：帐号 {$username} 创建成功";
+            } else {
+                $err = $user->getErrors();
+                echo "帐号数{$i}/{$count}：帐号 {$username} 创建失败！！！！！ 失败原因：";
+                print_r($err);
+            }
+            echo '<br>';
+            flush();
+        }
+        echo "帐号生成完毕";
+        die; //exit('<script>location.replace(location.href);</script>');
+    }
 }

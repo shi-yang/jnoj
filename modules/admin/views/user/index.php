@@ -19,6 +19,25 @@ $this->title = Yii::t('app', 'Users');
 
     <hr>
     <p>
+        <?php Modal::begin([
+            'header' => '<h2>' . Yii::t('app', '批量创建用户') . '</h2>',
+            'toggleButton' => ['label' => Yii::t('app', '批量创建用户'), 'class' => 'btn btn-success'],
+        ]);?>
+        <?php $form = ActiveForm::begin(['options' => ['target' => '_blank']]); ?>
+
+        <p class="hint-block">1. 一个用户占据一行，每行格式为<code>username password</code>，即用户名与密码之间有一个空格。自行删除多余的空行。</p>
+        <p class="hint-block">2. 用户名只能以数字、字母、下划线，且非纯数字，长度在 4 - 32 位之间</p>
+        <p class="hint-block">3. 密码至少六位</p>
+
+        <?= $form->field($generatorForm, 'names')->textarea(['rows' => 10])  ?>
+
+        <div class="form-group">
+            <?= Html::submitButton(Yii::t('app', 'Generate'), ['class' => 'btn btn-success']) ?>
+        </div>
+
+        <?php ActiveForm::end(); ?>
+        <?php Modal::end(); ?>
+
         选中项：
         <a id="general-user" class="btn btn-success" href="javascript:void(0);">
             设为普通用户

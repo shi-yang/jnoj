@@ -8,6 +8,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\components\AccessRule;
+use app\modules\admin\models\GenerateUserForm;
 use app\models\User;
 use app\models\UserSearch;
 
@@ -54,9 +55,16 @@ class UserController extends Controller
     public function actionIndex()
     {
         $searchModel = new UserSearch();
+        $generatorForm = new GenerateUserForm();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        if (Yii::$app->request->isPost) {
+
+        if ($generatorForm->load(Yii::$app->request->post())) {
+            $generatorForm->generateUsers();
+            return $this->refresh();
+        }
+
+        if (Yii::$app->request->get('action')) {
             $keys = Yii::$app->request->post('keylist');
             $action = Yii::$app->request->get('action');
             foreach ($keys as $key) {
@@ -69,6 +77,7 @@ class UserController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'generatorForm' => $generatorForm
         ]);
     }
 
