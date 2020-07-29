@@ -37,7 +37,7 @@ $submissionStatistics = $model->getSubmissionStatistics();
         </table>
     </div>
     <div class="contest-desc">
-        <?= Yii::$app->formatter->asHtml($model->description) ?>
+        <?= Yii::$app->formatter->asMarkdown($model->description) ?>
     </div>
     <hr>
     <div class="table-responsive">
@@ -108,7 +108,7 @@ $submissionStatistics = $model->getSubmissionStatistics();
                 [
                     'attribute' => Yii::t('app', 'Announcement'),
                     'value' => function ($model, $key, $index, $column) {
-                        return Yii::$app->formatter->asHtml($model->content);
+                        return Yii::$app->formatter->asMarkdown($model->content);
                     },
                     'format' => 'html',
                 ],

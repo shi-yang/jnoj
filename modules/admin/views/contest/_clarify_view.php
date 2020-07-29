@@ -25,7 +25,7 @@ use yii\bootstrap\Modal;
     <div class="well">
         <?= Html::encode($clarify->title) ?>
         <hr>
-        <?= Yii::$app->formatter->asHtml($clarify->content) ?>
+        <?= Yii::$app->formatter->asMarkdown($clarify->content) ?>
         <hr>
         <span class="glyphicon glyphicon-user"></span> <?= $clarify->user->username ?>
         &nbsp;•&nbsp;
@@ -33,7 +33,7 @@ use yii\bootstrap\Modal;
     </div>
     <?php foreach ($clarify->reply as $reply): ?>
         <div class="well">
-            <?= Yii::$app->formatter->asHtml($reply->content) ?>
+            <?= Yii::$app->formatter->asMarkdown($reply->content) ?>
             <hr>
             <span class="glyphicon glyphicon-user"></span> <?= Html::encode($reply->user->username) ?>
             &nbsp;•&nbsp;
@@ -43,7 +43,7 @@ use yii\bootstrap\Modal;
     <div class="well">
         <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($new_clarify, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
+        <?= $form->field($new_clarify, 'content')->widget('app\widgets\editormd\Editormd'); ?>
 
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>

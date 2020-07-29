@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
     <?php endif; ?>
 
-    <?= $form->field($model, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
+    <?= $form->field($model, 'content')->widget('app\widgets\editormd\Editormd'); ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>

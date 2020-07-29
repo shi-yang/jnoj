@@ -26,7 +26,7 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
             <?php endif; ?>
             <hr>
             <p>
-                <?= Yii::$app->formatter->asHtml($model->description); ?>
+                <?= Yii::$app->formatter->asMarkdown($model->description); ?>
             </p>
             <hr>
             <p><?= Yii::t('app', 'Join Policy') ?>: <?= $model->getJoinPolicy() ?></p>

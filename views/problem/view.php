@@ -181,17 +181,17 @@ $nextProblemID = $model->getNextProblemID();
                         </div>
                     </div>
                     <div class="content-wrapper">
-                        <?= Yii::$app->formatter->asHtml($model->description) ?>
+                        <?= Yii::$app->formatter->asMarkdown($model->description) ?>
                     </div>
 
                     <h4><?= Yii::t('app', 'Input') ?></h4>
                     <div class="content-wrapper">
-                        <?= Yii::$app->formatter->asHtml($model->input) ?>
+                        <?= Yii::$app->formatter->asMarkdown($model->input) ?>
                     </div>
 
                     <h4><?= Yii::t('app', 'Output') ?></h4>
                     <div class="content-wrapper">
-                        <?= Yii::$app->formatter->asHtml($model->output) ?>
+                        <?= Yii::$app->formatter->asMarkdown($model->output) ?>
                     </div>
 
                     <h4><?= Yii::t('app', 'Examples') ?></h4>
@@ -233,14 +233,14 @@ $nextProblemID = $model->getNextProblemID();
                     <?php if (!empty($model->hint)): ?>
                         <h4><?= Yii::t('app', 'Hint') ?></h4>
                         <div class="content-wrapper">
-                            <?= Yii::$app->formatter->asHtml($model->hint) ?>
+                            <?= Yii::$app->formatter->asMarkdown($model->hint) ?>
                         </div>
                     <?php endif; ?>
 
                     <?php if (!empty($model->source)): ?>
                         <h4><?= Yii::t('app', 'Source') ?></h4>
                         <div class="content-wrapper">
-                            <?= Yii::$app->formatter->asHtml($model->source) ?>
+                            <?= Yii::$app->formatter->asMarkdown($model->source) ?>
                         </div>
                     <?php endif; ?>
                 </div>

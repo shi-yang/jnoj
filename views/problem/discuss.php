@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ])->textInput(['maxlength' => 128, 'autocomplete'=>'off'])
         ?>
 
-        <?= $form->field($newDiscuss, 'content')->widget('app\widgets\ckeditor\CKeditor'); ?>
+        <?= $form->field($newDiscuss, 'content')->widget('app\widgets\editormd\Editormd'); ?>
 
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Create'), ['class' => 'btn btn-success']) ?>

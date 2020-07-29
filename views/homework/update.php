@@ -54,9 +54,9 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
                 如需提前结束封榜也可选择清空该表单项。
                 <p class='text-danger'>注意：比赛类型为OI时，如果不填写“封榜时间”则会成为实时榜单。如需要非实时榜单，则填写为开始时间或开始时间之前的时间即可。</p>") ?>
 
-            <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
+            <?= $form->field($model, 'description')->widget('app\widgets\editormd\Editormd'); ?>
 
-            <?= $form->field($model, 'editorial')->widget('app\widgets\ckeditor\CKeditor'); ?>
+            <?= $form->field($model, 'editorial')->widget('app\widgets\editormd\Editormd'); ?>
 
             <?= $form->field($model, 'type')->radioList([
                 Contest::TYPE_RANK_SINGLE => Yii::t('app', 'Single Ranked'),

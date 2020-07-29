@@ -47,70 +47,91 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
         ]) ?>
     </div>
     <div class="row">
-        <?php if ($this->beginCache('contest_problem_view' . $model->id . '_' . $problem['num'] . '_ '. $problem['id'])): ?>
         <div class="col-md-8 problem-view">
-            <h1><?= Html::encode(chr(65 + $problem['num']) . '. ' . $problem['title']) ?></h1>
+            <?php if ($this->beginCache('contest_problem_view' . $model->id . '_' . $problem['num'] . '_ '. $problem['id'])): ?>
+                <h1><?= Html::encode(chr(65 + $problem['num']) . '. ' . $problem['title']) ?></h1>
 
-            <h3><?= Yii::t('app', 'Description') ?></h3>
-            <div class="content-wrapper">
-                <?= Yii::$app->formatter->asHtml($problem['description']) ?>
-            </div>
-
-            <h3><?= Yii::t('app', 'Input') ?></h3>
-            <div class="content-wrapper">
-                <?= Yii::$app->formatter->asHtml($problem['input']) ?>
-            </div>
-
-            <h3><?= Yii::t('app', 'Output') ?></h3>
-            <div class="content-wrapper">
-                <?= Yii::$app->formatter->asHtml($problem['output']) ?>
-            </div>
-
-            <h3><?= Yii::t('app', 'Examples') ?></h3>
-            <div class="content-wrapper">
-                <div class="sample-test">
-                    <div class="input">
-                        <h4><?= Yii::t('app', 'Input') ?></h4>
-                        <pre><?= $sample_input[0] ?></pre>
-                    </div>
-                    <div class="output">
-                        <h4><?= Yii::t('app', 'Output') ?></h4>
-                        <pre><?= $sample_output[0] ?></pre>
-                    </div>
-
-                    <?php if ($sample_input[1] != '' || $sample_output[1] != ''):?>
-                        <div class="input">
-                            <h4><?= Yii::t('app', 'Input') ?></h4>
-                            <pre><?= $sample_input[1] ?></pre>
-                        </div>
-                        <div class="output">
-                            <h4><?= Yii::t('app', 'Output') ?></h4>
-                            <pre><?= $sample_output[1] ?></pre>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if ($sample_input[2] != '' || $sample_output[2] != ''):?>
-                        <div class="input">
-                            <h4><?= Yii::t('app', 'Input') ?></h4>
-                            <pre><?= $sample_input[2] ?></pre>
-                        </div>
-                        <div class="output">
-                            <h4><?= Yii::t('app', 'Output') ?></h4>
-                            <pre><?= $sample_output[2] ?></pre>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <?php if (!empty($problem['hint'])): ?>
-                <h3><?= Yii::t('app', 'Hint') ?></h3>
+                <h3><?= Yii::t('app', 'Description') ?></h3>
                 <div class="content-wrapper">
-                    <?= Yii::$app->formatter->asHtml($problem['hint']) ?>
+                    <?= Yii::$app->formatter->asMarkdown($problem['description']) ?>
                 </div>
+
+                <h3><?= Yii::t('app', 'Input') ?></h3>
+                <div class="content-wrapper">
+                    <?= Yii::$app->formatter->asMarkdown($problem['input']) ?>
+                </div>
+
+                <h3><?= Yii::t('app', 'Output') ?></h3>
+                <div class="content-wrapper">
+                    <?= Yii::$app->formatter->asMarkdown($problem['output']) ?>
+                </div>
+
+                <h3><?= Yii::t('app', 'Examples') ?></h3>
+                <div class="content-wrapper">
+                    <div class="sample-test">
+                        <div class="input">
+                            <h4><?= Yii::t('app', 'Input') ?></h4>
+                            <pre><?= $sample_input[0] ?></pre>
+                        </div>
+                        <div class="output">
+                            <h4><?= Yii::t('app', 'Output') ?></h4>
+                            <pre><?= $sample_output[0] ?></pre>
+                        </div>
+
+                        <?php if ($sample_input[1] != '' || $sample_output[1] != ''):?>
+                            <div class="input">
+                                <h4><?= Yii::t('app', 'Input') ?></h4>
+                                <pre><?= $sample_input[1] ?></pre>
+                            </div>
+                            <div class="output">
+                                <h4><?= Yii::t('app', 'Output') ?></h4>
+                                <pre><?= $sample_output[1] ?></pre>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($sample_input[2] != '' || $sample_output[2] != ''):?>
+                            <div class="input">
+                                <h4><?= Yii::t('app', 'Input') ?></h4>
+                                <pre><?= $sample_input[2] ?></pre>
+                            </div>
+                            <div class="output">
+                                <h4><?= Yii::t('app', 'Output') ?></h4>
+                                <pre><?= $sample_output[2] ?></pre>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php if (!empty($problem['hint'])): ?>
+                    <h3><?= Yii::t('app', 'Hint') ?></h3>
+                    <div class="content-wrapper">
+                        <?= Yii::$app->formatter->asMarkdown($problem['hint']) ?>
+                    </div>
+                <?php endif; ?>
+                <?php $this->endCache(); ?>
             <?php endif; ?>
+            <hr>
+            <h3 id="submit-code">Submit</h3>
+            <div class="content-wrapper">
+                <?php if ($model->isContestEnd() && time() < strtotime($model->end_time) + 5 * 60): ?>
+                    比赛已结束。比赛结束五分钟后开放提交。
+                <?php else: ?>
+                    <?php if (Yii::$app->user->isGuest): ?>
+                        <?= app\widgets\login\Login::widget(); ?>
+                    <?php else: ?>
+                        <?php $form = ActiveForm::begin(); ?>
+
+                        <?= $form->field($solution, 'language')->dropDownList($solution::getLanguageList()) ?>
+
+                        <?= $form->field($solution, 'source')->widget('app\widgets\codemirror\CodeMirror'); ?>
+
+                        <div class="form-group">
+                            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+                        </div>
+                        <?php ActiveForm::end(); ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
-        <?php $this->endCache(); ?>
-        <?php endif; ?>
         <div class="col-md-4 problem-info">
             <div class="panel panel-default">
                 <!-- Table -->
@@ -130,9 +151,9 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
                 </table>
             </div>
 
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#submit-solution">
+            <a class="btn btn-success" href="#submit-code">
                 <span class="glyphicon glyphicon-plus"></span> <?= Yii::t('app', 'Submit') ?>
-            </button>
+            </a>
 
             <?php if (!Yii::$app->user->isGuest && !empty($submissions)): ?>
             <div class="panel panel-default" style="margin-top: 40px">
@@ -195,34 +216,6 @@ $loadingImgUrl = Yii::getAlias('@web/images/loading.gif');
 ]); ?>
 <div id="solution-content">
 </div>
-<?php Modal::end(); ?>
-
-<?php Modal::begin([
-    'header' => '<h3>' . Yii::t('app','Submit') . '：' . Html::encode(chr(65 + $problem['num']) . '. ' . $problem['title']) . '</h3>',
-    'size' => Modal::SIZE_LARGE,
-    'options' => ['id' => 'submit-solution']
-]); ?>
-<?php if ($model->isContestEnd() && time() < strtotime($model->end_time) + 5 * 60): ?>
-    比赛已结束。比赛结束五分钟后开放提交。
-<?php else: ?>
-
-    <?php if (Yii::$app->user->isGuest): ?>
-        <?= app\widgets\login\Login::widget(); ?>
-    <?php else: ?>
-        <?php $form = ActiveForm::begin(); ?>
-
-        <?= $form->field($solution, 'language')->dropDownList($solution::getLanguageList()) ?>
-
-        <?= $form->field($solution, 'source')->widget('app\widgets\codemirror\CodeMirror'); ?>
-
-        <div class="form-group">
-            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
-        </div>
-        <?php ActiveForm::end(); ?>
-    <?php endif; ?>
-
-<?php endif; ?>
-
 <?php Modal::end(); ?>
 
 <?php

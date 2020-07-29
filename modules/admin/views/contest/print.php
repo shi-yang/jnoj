@@ -38,15 +38,15 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
             Memory limit: <?= $problem['memory_limit'] ?> MB
         </p>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asHtml($problem['description']) ?>
+            <?= Yii::$app->formatter->asMarkdown($problem['description']) ?>
         </div>
         <h4><?= Yii::t('app', 'Input') ?></h4>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asHtml($problem['input']) ?>
+            <?= Yii::$app->formatter->asMarkdown($problem['input']) ?>
         </div>
         <h4><?= Yii::t('app', 'Output') ?></h4>
         <div class="content-wrapper">
-            <?= Yii::$app->formatter->asHtml($problem['output']) ?>
+            <?= Yii::$app->formatter->asMarkdown($problem['output']) ?>
         </div>
         <h4><?= Yii::t('app', 'Sample') ?></h4>
         <?php
@@ -102,7 +102,7 @@ $this->registerAssetBundle('yii\bootstrap\BootstrapPluginAsset');
         <?php if (!empty($problem['hint'])): ?>
             <h4><?= Yii::t('app', 'Hint') ?></h4>
             <div class="content-wrapper">
-                <?= Yii::$app->formatter->asHtml($problem['hint']) ?>
+                <?= Yii::$app->formatter->asMarkdown($problem['hint']) ?>
             </div>
         <?php endif; ?>
         <div style="page-break-after: always"></div>

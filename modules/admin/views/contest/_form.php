@@ -58,9 +58,7 @@ $scoreboardFrozenTime = Yii::$app->setting->get('scoreboardFrozenTime') / 3600;
         Contest::TYPE_IOI => Yii::t('app', 'IOI'),
     ])->hint('不同类型的区别只在于榜单的排名方式。详见：' . Html::a('比赛类型', ['/wiki/contest'], ['target' => '_blank']) . '。如需使用OI比赛，请在后台设置页面启用OI模式。') ?>
 
-
-    <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
-
+    <?= $form->field($model, 'description')->widget('app\widgets\editormd\Editormd')->label(); ?>
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
     </div>

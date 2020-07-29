@@ -24,7 +24,7 @@ $this->params['model'] = $model;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'solution')->widget('app\widgets\ckeditor\CKeditor')->label(false) ?>
+    <?= $form->field($model, 'solution')->widget('app\widgets\editormd\Editormd')->label(false) ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>

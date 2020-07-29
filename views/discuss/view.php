@@ -33,12 +33,12 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($model->problem->title
             <?php endif; ?>
         </p>
         <hr>
-        <?= Yii::$app->formatter->asHtml($model->content) ?>
+        <?= Yii::$app->formatter->asMarkdown($model->content) ?>
         <hr>
         <p><?= Yii::t('app', 'Comments') ?>:</p>
         <?php foreach ($replies as $reply): ?>
             <div class="well">
-                <?= Yii::$app->formatter->asHtml($reply->content) ?>
+                <?= Yii::$app->formatter->asMarkdown($reply->content) ?>
                 <hr>
                 <span class="glyphicon glyphicon-user"></span> <?= Html::a(Html::encode($reply->user->nickname), ['/user/view', 'id' => $reply->user->id]) ?>
                 &nbsp;•&nbsp;
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($model->problem->title
         <div class="well">
             <?php $form = ActiveForm::begin(); ?>
 
-            <?= $form->field($newDiscuss, 'content')->widget('app\widgets\ckeditor\CKeditor')->label(false); ?>
+            <?= $form->field($newDiscuss, 'content')->widget('app\widgets\editormd\Editormd')->label(false); ?>
 
             <div class="form-group">
                 <?= Html::submitButton(Yii::t('app', 'Reply'), ['class' => 'btn btn-primary']) ?>

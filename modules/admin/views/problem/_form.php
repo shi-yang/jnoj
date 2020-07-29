@@ -33,11 +33,11 @@ use yii\helpers\Url;
         2 => Yii::t('app', 'Private')
     ])->hint(Yii::t('app', '可见：题目将在首页展示，任何用户可见。隐藏：题目仅在后台显示。私有：题目标题在前台可见，但信息仅VIP用户可见')) ?>
 
-    <?= $form->field($model, 'description')->widget('app\widgets\ckeditor\CKeditor'); ?>
+    <?= $form->field($model, 'description')->widget('app\widgets\editormd\Editormd'); ?>
 
-    <?= $form->field($model, 'input')->widget('app\widgets\ckeditor\CKeditor'); ?>
+    <?= $form->field($model, 'input')->widget('app\widgets\editormd\Editormd'); ?>
 
-    <?= $form->field($model, 'output')->widget('app\widgets\ckeditor\CKeditor'); ?>
+    <?= $form->field($model, 'output')->widget('app\widgets\editormd\Editormd'); ?>
 
     <div class="row">
         <div class="col-md-6">
@@ -68,7 +68,7 @@ use yii\helpers\Url;
     ]) ?>
 
 
-    <?= $form->field($model, 'hint')->widget('app\widgets\ckeditor\CKeditor'); ?>
+    <?= $form->field($model, 'hint')->widget('app\widgets\editormd\Editormd'); ?>
 
     <?= $form->field($model, 'source')->textarea(['maxlength' => true]) ?>
 
