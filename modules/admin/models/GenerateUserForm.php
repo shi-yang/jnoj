@@ -119,6 +119,9 @@ class GenerateUserForm extends Model
             $user->setPassword($password);
             $user->generateAuthKey();
             if ($user->save()) {
+                Yii::$app->db->createCommand()->insert('{{%user_profile}}', [
+                    'user_id' => $user->id
+                ])->execute();
                 echo "帐号数{$i}/{$count}：帐号 {$username} 创建成功";
             } else {
                 $err = $user->getErrors();

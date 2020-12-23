@@ -45,3 +45,9 @@ tests/_support/_generated
 
 #db
 /config/db.php
+
+
+#二进制文件 curve
+/judge/dispatcher
+/judge/judge
+/polygon/judge
