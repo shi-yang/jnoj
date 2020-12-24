@@ -139,6 +139,13 @@ $this->registerJs($plotJS);
                             'format' => 'raw'
                         ],
                         [
+                            'attribute' => Yii::t('app', 'class'),
+                            'value' => function ($model, $widget) {
+                                return Html::encode($model->profile->class);
+                            },
+                            'format' => 'raw'
+                        ],
+                        [
                             'attribute' => Yii::t('app', 'Student Number'),
                             'value' => function ($model, $widget) {
                                 return $model->profile->student_number;

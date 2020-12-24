@@ -89,6 +89,7 @@ return [
     'Verify Password' => '确认密码',
     'Female' => '女',
     'Major' => '专业',
+    'class' => '班级',
     'Contest' => '比赛',
     'Title' => '标题',
     'Type' => '类型',
