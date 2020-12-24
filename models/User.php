@@ -50,6 +50,7 @@ class User extends ActiveRecord implements IdentityInterface
     public $newPassword;
     public $verifyPassword;
 
+    public $newNickname;
     /**
      * 是否已经验证邮箱
      */
@@ -97,7 +98,9 @@ class User extends ActiveRecord implements IdentityInterface
             [['oldPassword'], 'validateOldPassword'],
             [['verifyPassword'], 'compare', 'compareAttribute' => 'newPassword'],
             [['oldPassword', 'verifyPassword', 'newPassword'], 'required'],
-            ['newPassword', 'string', 'min' => 6, 'max' => 16]
+            ['newPassword', 'string', 'min' => 6, 'max' => 16],
+
+            [['newNickname'], 'string', 'max' => 16]
         ];
     }
 
@@ -120,6 +123,7 @@ class User extends ActiveRecord implements IdentityInterface
             'id' => Yii::t('app', 'ID'),
             'username' => Yii::t('app', 'Username'),
             'nickname' => Yii::t('app', 'Nickname'),
+            'newNickname' => Yii::t('app', 'New Nickname'),
             'password' => Yii::t('app', 'Password'),
             'oldPassword' => Yii::t('app', 'Old Password'),
             'newPassword' => Yii::t('app', 'New Password'),

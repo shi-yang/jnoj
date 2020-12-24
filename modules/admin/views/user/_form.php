@@ -12,6 +12,8 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->field($model, 'newNickname')->textInput() ?>
+
     <?= $form->field($model, 'newPassword')->textInput() ?>
 
     <?= $form->field($model, 'role')->radioList([
