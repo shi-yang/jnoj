@@ -22,8 +22,15 @@ $this->title = Yii::t('app', 'Setting');
     <div class="form-group">
         <?= Html::label('注册功能', 'SigninMode') ?>
         <?= Html::radioList('SigninMode', $settings['SigninMode'], [
-            1 => '是',
-            0 => '否'
+            1 => '启用',
+            0 => '禁用'
+        ]) ?>
+    </div>
+    <div class="form-group">
+        <?= Html::label('小组功能', 'GroupMode') ?>
+        <?= Html::radioList('GroupMode', $settings['GroupMode'], [
+            1 => '启用',
+            0 => '禁用'
         ]) ?>
     </div>
     <div class="form-group">

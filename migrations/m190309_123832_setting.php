@@ -19,6 +19,7 @@ class m190309_123832_setting extends Migration
         $this->insert('{{%setting}}', ['key' => 'isShareCode', 'value' => '1']);
         $this->insert('{{%setting}}', ['key' => 'oiMode', 'value' => '0']);
         $this->insert('{{%setting}}', ['key' => 'SigninMode', 'value' => '1']);
+        $this->insert('{{%setting}}', ['key' => 'GroupMode', 'value' => '1']);
     }
 
     /**
