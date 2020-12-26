@@ -18,6 +18,7 @@ class m190309_123832_setting extends Migration
         $this->insert('{{%setting}}', ['key' => 'scoreboardFrozenTime', 'value' => '7200']);
         $this->insert('{{%setting}}', ['key' => 'isShareCode', 'value' => '1']);
         $this->insert('{{%setting}}', ['key' => 'oiMode', 'value' => '0']);
+        $this->insert('{{%setting}}', ['key' => 'SigninMode', 'value' => '1']);
     }
 
     /**
@@ -30,6 +31,7 @@ class m190309_123832_setting extends Migration
         $this->delete('{{%setting}}', ['key' => 'scoreboardFrozenTime']);
         $this->delete('{{%setting}}', ['key' => 'isShareCode']);
         $this->delete('{{%setting}}', ['key' => 'oiMode']);
+        $this->delete('{{%setting}}', ['key' => 'SigninMode']);
         $this->dropColumn('{{%setting}}', 'id');
     }
 
