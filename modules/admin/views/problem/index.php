@@ -59,6 +59,13 @@ $this->title = Yii::t('app', 'Problems');
                 'format' => 'raw'
             ],
             [
+                'attribute' => 'tags',
+                'value' => function ($model, $key, $index, $column) {
+                    return Html::a(Html::encode($model->tags), ['problem/view', 'id' => $key]);
+                },
+                'format' => 'raw'
+            ],
+            [
                 'attribute' => 'status',
                 'value' => function ($model, $key, $index, $column) {
                     if ($model->status == \app\models\Problem::STATUS_VISIBLE) {
