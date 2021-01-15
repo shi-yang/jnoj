@@ -31,6 +31,15 @@ var OJ_VERDICT_COLOR = new Array(
     "text-danger",  // SE
     "text-danger"
 );
+
+function HTMLEncode(html) {
+  var temp = document.createElement("div");
+  (temp.textContent != null) ? (temp.textContent = html) : (temp.innerText = html);
+  var output = temp.innerHTML;
+  temp = null;
+  return output;
+}
+
 function testHtml(id, caseJsonObject)
 {
   return '<div class="panel panel-default test-for-popup"> \
@@ -52,16 +61,16 @@ function testHtml(id, caseJsonObject)
                 <div class="sample-test">\
                     <div class="input">\
                         <h4>输入</h4>\
-                        <pre>' + caseJsonObject.input + '</pre>\
+                        <pre>' + HTMLEncode(caseJsonObject.input) + '</pre>\
                     </div>\
                     <div class="output">\
                         <h4>输出</h4>\
-                        <pre>' + caseJsonObject.user_output + '</pre>\
+                        <pre>' + HTMLEncode(caseJsonObject.user_output) + '</pre>\
                     </div>\
                     <div class="output">\
                         <h4>答案</h4>\
-                        <pre>' + caseJsonObject.output + '</pre>\
-                    </div>' + (caseJsonObject.checker_log == "" ? "" :  '<div class="output"><h4>检查日志</h4><pre>' + caseJsonObject.checker_log + '</pre></div>')
+                        <pre>' + HTMLEncode(caseJsonObject.output) + '</pre>\
+                    </div>' + (caseJsonObject.checker_log == "" ? "" :  '<div class="output"><h4>检查日志</h4><pre>' + HTMLEncode(caseJsonObject.checker_log) + '</pre></div>')
       + '<div class="output">\
                         <h4>系统信息</h4>\
                         <pre>exit code: ' + caseJsonObject.exit_code + ', checker exit code: ' + caseJsonObject.checker_exit_code + '</pre>\
