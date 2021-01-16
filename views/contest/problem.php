@@ -12,7 +12,7 @@ use yii\bootstrap\Nav;
 /* @var $problem array */
 /* @var $submissions array */
 
-$this->title = Html::encode($model->title) . ' - ' . $problem['title'];
+$this->title = Html::encode($model->title) . ' - ' . ($problem['title'] ?? null);
 $this->params['model'] = $model;
 
 if (!Yii::$app->user->isGuest) {
