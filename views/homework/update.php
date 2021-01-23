@@ -14,7 +14,7 @@ use app\models\Homework;
 $this->title = Html::encode($model->title);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Group'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => Html::encode($model->group->name), 'url' => ['/group/view', 'id' => $model->group->id]];
-$this->params['breadcrumbs'][] = ['label' => Html::encode($model->title), 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => Html::encode($model->title), 'url' => ['/contest/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Setting');
 $this->params['model'] = $model;
 $problems = $model->problems;
