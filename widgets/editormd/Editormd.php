@@ -42,7 +42,7 @@ class Editormd extends InputWidget
             'tex' => true,
             'flowChart' => true,
             'sequenceDiagram' => true,
-            'imageUploadURL' => Url::to(['img_upload']),
+            'imageUploadURL' => Url::to(['/image/upload']),
             'autoFocus' => false,
         ];
         $this->clientOptions = ArrayHelper::merge($this->_options, $this->clientOptions);

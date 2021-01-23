@@ -8,7 +8,7 @@ use yii\web\ForbiddenHttpException;
 use app\components\Uploader;
 
 /**
- * 用来接收 CKeditor 编辑器上传的图片
+ * 用来接收 Editormd 编辑器上传的图片
  */
 class ImageController extends BaseController
 {
@@ -16,13 +16,13 @@ class ImageController extends BaseController
     public function actionUpload()
     {
         if (Yii::$app->request->isPost && !Yii::$app->user->isGuest) {
-            $up = new Uploader('upload');
+            $up = new Uploader('editormd-image-file');
             $info = $up->getFileInfo();
             if ($info['state'] == 'SUCCESS') {
                 $info['url'] = Yii::getAlias('@web') . '/' . $info['url'];
-                $info['uploaded'] = true;
+                $info['success'] = 1;
             } else {
-                $info['uploaded'] = false;
+                $info['success'] = 0;
             }
             echo json_encode($info);
         } else {
