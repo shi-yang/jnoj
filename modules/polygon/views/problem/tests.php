@@ -42,11 +42,13 @@ $files = $model->getDataFiles();
         </thead>
         <tbody>
         <tr>
-            <th><?= Html::a($solutionStatus['id'], ['/polygon/problem/solution-detail', 'id' => $model->id, 'sid' => $solutionStatus['id']]) ?></th>
-            <th><?= Problem::getResultList($solutionStatus['result']) ?></th>
-            <th><?= $solutionStatus['time'] ?>MS</th>
-            <th><?= $solutionStatus['memory'] ?>KB</th>
-            <th><?= $solutionStatus['created_at'] ?></th>
+            <?php if (!empty($solutionStatus)): ?>
+                <th><?= Html::a($solutionStatus['id'], ['/polygon/problem/solution-detail', 'id' => $model->id, 'sid' => $solutionStatus['id']]) ?></th>
+                <th><?= Problem::getResultList($solutionStatus['result']) ?></th>
+                <th><?= $solutionStatus['time'] ?>MS</th>
+                <th><?= $solutionStatus['memory'] ?>KB</th>
+                <th><?= $solutionStatus['created_at'] ?></th>
+            <?php endif; ?>
         </tr>
         </tbody>
     </table>

@@ -457,7 +457,7 @@ class ContestController extends BaseController
             $submissions = (new Query())->select('created_at, result, id')
                 ->from('{{%solution}}')
                 ->where([
-                    'problem_id' => $problem['id'],
+                    'problem_id' => $problem['id'] ?? null,
                     'contest_id' => $model->id,
                     'created_by' => Yii::$app->user->id
                 ])
