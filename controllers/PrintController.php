@@ -163,7 +163,7 @@ class PrintController extends BaseController
      */
     protected function findModel($id)
     {
-        if (($model = ContestPrint::findOne($id)) !== null || !Yii::$app->user->isGuest) {
+        if (($model = ContestPrint::findOne($id)) !== null && !Yii::$app->user->isGuest) {
             if ($model->user_id == Yii::$app->user->id || Yii::$app->user->identity->role == User::ROLE_ADMIN) {
                 return $model;
             }
