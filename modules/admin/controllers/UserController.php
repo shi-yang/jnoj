@@ -64,7 +64,7 @@ class UserController extends Controller
             return $this->refresh();
         }
 
-        if (Yii::$app->request->get('action')) {
+        if (Yii::$app->request->get('action') && Yii::$app->request->isPost) {
             $keys = Yii::$app->request->post('keylist');
             $action = Yii::$app->request->get('action');
             foreach ($keys as $key) {
