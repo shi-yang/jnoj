@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  myadminfortest:
+    image: phpmyadmin/phpmyadmin
+    container_name: myadminfortest
+    ports:
+      - 8888:80
+    depends_on:
+      - mysql
+    environment: 
+      PMA_USER: root
+      PMA_PASSWORD: 123456
+    links:
+      - mysql:db
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    volumes:
+      - ./data/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: jnoj
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: Asia/Shanghai
+
+  php:
+    image: yiisoftware/yii2-php:7.4-apache
+    volumes:
+      - ./:/app:delegated
+    ports:
+      - '8000:80'
