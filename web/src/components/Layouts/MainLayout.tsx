@@ -1,0 +1,23 @@
+import React from 'react';
+import { Layout } from '@arco-design/web-react';
+import { Outlet } from 'react-router-dom';
+import LayoutHeader from './LayoutHeader';
+import styles from './style/main-layouts.module.less'
+
+const { Header, Footer, Content } = Layout;
+
+const App = () => {
+  return (
+    <Layout className={styles.layout}>
+      <Header>
+        <LayoutHeader />
+      </Header>
+      <Content className={styles['layout-content']}>
+        <Outlet />
+      </Content>
+      <Footer>Footer</Footer>
+    </Layout>
+  );
+};
+
+export default React.memo(App);
