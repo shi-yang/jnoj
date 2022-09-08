@@ -3,7 +3,7 @@ import { Button } from '@arco-design/web-react';
 import styles from './style/icon-button.module.less';
 import cs from 'classnames';
 
-function IconButton(props, ref) {
+function IconButton(props :any, ref:any) {
   const { icon, className, ...rest } = props;
 
   return (

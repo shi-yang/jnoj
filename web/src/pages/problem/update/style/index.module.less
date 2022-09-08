@@ -1,0 +1,51 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f7f7;
+}
+
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  .title {
+    margin-bottom: 1em;
+    padding:0 20px;
+  }
+}
+
+.tabs-container {
+  height: 100%;
+  .tabs-pane {
+    height: 100%;
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.code-header {
+  height: 40px;
+  ::before {
+    content: '';
+    clear: both;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--color-neutral-3);
+    display: block;
+  }
+}

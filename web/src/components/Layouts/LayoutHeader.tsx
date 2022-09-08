@@ -9,6 +9,7 @@ import defaultLocale from '@/locale';
 import { GlobalState } from '@/reducers';
 import { useSelector, useDispatch } from 'react-redux';
 import useStorage from '@/utils/useStorage';
+import { Link } from 'react-router-dom';
 
 const MenuItem = Menu.Item;
 
@@ -92,16 +93,16 @@ const LayoutHeader = () => {
             />
           </MenuItem>
           <MenuItem key='1'>
-            { t['menu.home'] }
+            <Link to='/'>{ t['menu.home'] }</Link>
           </MenuItem>
           <MenuItem key='2'>
-            { t['menu.problem'] }
+            <Link to='/problems'>{ t['menu.problem'] }</Link>
           </MenuItem>
           <MenuItem key='3'>
-            { t['menu.contest'] }
+            <Link to='/contests'>{ t['menu.contest'] }</Link>
           </MenuItem>
           <MenuItem key='4'>
-            { t['menu.about'] }
+            <Link to='/about'>{ t['menu.about'] }</Link>
           </MenuItem>
         </Menu>
       </div>

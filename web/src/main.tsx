@@ -10,6 +10,7 @@ import { GlobalContext } from './context';
 import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux';
 import rootReducer from './reducers';
+import './style/global.less';
 
 const store = configureStore({
   reducer: rootReducer

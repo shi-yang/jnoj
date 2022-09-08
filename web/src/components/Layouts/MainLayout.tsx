@@ -12,10 +12,10 @@ const App = () => {
       <Header>
         <LayoutHeader />
       </Header>
-      <Content className={styles['layout-content']}>
+      <Content>
         <Outlet />
       </Content>
-      <Footer>Footer</Footer>
+      <Footer className={styles.footer}>Footer</Footer>
     </Layout>
   );
 };

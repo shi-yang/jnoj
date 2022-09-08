@@ -1,0 +1,40 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  background-color: var(--color-bg-1);
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+body[arco-theme='dark'] {
+  .chart-wrapper {
+    .bizcharts-tooltip {
+      background: linear-gradient(
+        304.17deg,
+        rgba(90, 92, 95, 60%) -6.04%,
+        rgba(87, 87, 87, 60%) 85.2%
+      ) !important;
+      backdrop-filter: blur(10px);
+      border-radius: 6px;
+      box-shadow: none !important;
+    }
+  }
+}
+
+.arco-tabs-content {
+  padding: 0;
+  height: 100%;
+  .arco-tabs-content-inner {
+    height: 100%;
+    .arco-tabs-content-item {
+      height: 100%;
+    }
+  }
+}
