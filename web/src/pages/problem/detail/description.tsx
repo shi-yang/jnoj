@@ -8,22 +8,22 @@ const Description = (props) => {
   return (
     <div className={styles.descriptionContent}>
       <div className={styles.description}>
-        <Typography>
+        <Typography className={styles.content}>
           <Paragraph type='secondary' spacing='close'>
             {t['timeLimit']}：{props.problem.timeLimit / 1000}s
             <Divider type='vertical' />
             {t['memoryLimit']}：{props.problem.memoryLimit / 1024 / 1024}MB
           </Paragraph>
           <Paragraph>
-            {props.problem.description}
+            {props.problem.statements[props.language].legend}
           </Paragraph>
           <Title heading={5}>{t['input']}</Title>
           <Paragraph>
-            {props.problem.input}
+            {props.problem.statements[props.language].input}
           </Paragraph>
           <Title heading={5}>{t['output']}</Title>
           <Paragraph>
-            {props.problem.output}
+            {props.problem.statements[props.language].output}
           </Paragraph>
           <Title heading={5}>{t['sample']}</Title>
           {
@@ -35,7 +35,7 @@ const Description = (props) => {
                     <pre>{item.input}</pre>
                   </div>
                   <div className={styles.output}>
-                    <h4>{t['sample']}</h4>
+                    <h4>{t['output']}</h4>
                     <pre>{ item.output }</pre>
                   </div>
                 </div>
@@ -44,7 +44,7 @@ const Description = (props) => {
           }
           <Title heading={5}>{t['notes']}</Title>
           <Paragraph>
-            {props.problem.notes}
+            {props.problem.statements[props.language].notes}
           </Paragraph>
         </Typography>
       </div>

@@ -55,7 +55,7 @@ export function getColumns(
           size="small"
           onClick={() => callback(record, 'view')}
         >
-          <Link to="/problems/123">
+          <Link to={`/problems/${record.id}`}>
             {t['problem.columns.operations.view']}
           </Link>
         </Button>

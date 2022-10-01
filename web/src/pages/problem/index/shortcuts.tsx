@@ -2,8 +2,6 @@ import React from 'react';
 import { Card, Message } from '@arco-design/web-react';
 import {
   IconFile,
-  IconStorage,
-  IconSettings,
 } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -17,16 +15,6 @@ function Shortcuts() {
       title: t['problem.createProblem'],
       key: '/problem/create',
       icon: <IconFile />,
-    },
-    {
-      title: t['problem.createProblem'],
-      key: 'Content Statistic',
-      icon: <IconStorage />,
-    },
-    {
-      title: t['problem.createProblem'],
-      key: 'Advanced Management',
-      icon: <IconSettings />,
     },
   ];
 

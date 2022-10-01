@@ -4,7 +4,9 @@ import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 const FormItem = Form.Item;
+const Option = Select.Option;
 
+const options = ['中文', 'English'];
 function App() {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
@@ -33,10 +35,10 @@ function App() {
   return (
     <div>
       <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
-        {t['searchTable.operations.add']}
+        添加
       </Button>
       <Modal
-        title='创建题目'
+        title='创建题目描述'
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
@@ -52,14 +54,20 @@ function App() {
             style: { flexBasis: 'calc(100% - 90px)' },
           }}
         >
-          <FormItem label='题目名称' required field='name' rules={[{ required: true }]}>
-            <Input placeholder='' />
-          </FormItem>
-          <FormItem label='题目类型' required field='radio' rules={[{ required: true }]}>
-            <Radio.Group>
-              <Radio value='a'>标准输入输出</Radio>
-              <Radio value='b' disabled>函数题目</Radio>
-            </Radio.Group>
+          <FormItem label={t['language']}>
+            <Select
+              placeholder='Please select'
+              style={{ width: 154 }}
+              onChange={(value) =>
+                console.log(value)
+              }
+            >
+              {options.map((option, index) => (
+                <Option key={option} value={option}>
+                  {option}
+                </Option>
+              ))}
+            </Select>
           </FormItem>
         </Form>
       </Modal>

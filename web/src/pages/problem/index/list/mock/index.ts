@@ -6,13 +6,9 @@ import setupMock from '@/utils/setupMock';
 const { list } = Mock.mock({
   'list|100': [
     {
-      id: /[0-9]{8}[-][0-9]{4}/,
+      id: /[0-9]{8}/,
       name: () =>
-        Mock.Random.pick([
-          '每日推荐视频集',
-          '抖音短视频候选集',
-          '国际新闻集合',
-        ]),
+      Mock.Random.ctitle(),
       'contentType|0-2': 0,
       'filterType|0-1': 0,
       'count|0-2000': 0,
@@ -80,7 +76,7 @@ const filterData = (
 
 setupMock({
   setup: () => {
-    Mock.mock(new RegExp('/api/list'), (params) => {
+    Mock.mock(new RegExp('/problems$'), (params) => {
       const {
         page = 1,
         pageSize = 10,

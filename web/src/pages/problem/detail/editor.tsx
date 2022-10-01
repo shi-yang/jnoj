@@ -1,8 +1,8 @@
-import React from "react";
-import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
+import React from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 import styles from './style/editor.module.less';
-import { Button } from "@arco-design/web-react";
+import { Button } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 
@@ -24,7 +24,8 @@ export default function App() {
         onChange={onChange}
       />
       <div className={styles.footer}>
-        <div className={styles.left}></div>
+        <div className={styles.left}>
+        </div>
         <div className={styles.right}>
           <Button type='primary'>{t['submit']}</Button>
         </div>

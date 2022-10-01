@@ -5,6 +5,7 @@ import IconHorizontalVideo from './icons/horizontal.svg';
 import IconVerticalVideo from './icons/vertical.svg';
 import dayjs from 'dayjs';
 import styles from './style/index.module.less';
+import { Link } from 'react-router-dom';
 
 const { Text } = Typography;
 
@@ -56,9 +57,8 @@ export function getColumns(
         <Button
           type="text"
           size="small"
-          onClick={() => callback(record, 'view')}
         >
-          {t['searchTable.columns.operations.view']}
+          <Link to='/problem/update/123'>{t['searchTable.columns.operations.view']}</Link>
         </Button>
       ),
     },

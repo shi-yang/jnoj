@@ -1,17 +1,22 @@
 import Mock from 'mockjs';
 import setupMock from '@/utils/setupMock';
+import { Random } from 'mockjs';
 
 setupMock({
   setup: () => {
-    Mock.mock(new RegExp('/problems/123'), () => {
+    Mock.mock(/\/problems\/\d*$/, () => {
       return {
         id: 10002,
-        name: 'Hello, world',
-        description: '请输出 Hello, world',
-        input: '没有输入',
-        output: '输出一个字符串 Hello, world',
         timeLimit: 2000,
         memoryLimit: 268435456,
+        statements: [{
+          language: 'zh-CN',
+          name: 'Hello, world',
+          legend: '请输出 Hello, world',
+          input: '没有输入',
+          output: '输出一个字符串 Hello, world',
+          notes: 'In the first example $5$ is also a valid answer because the elements with indices $[1, 3, 4, 6]$ is less than or equal to $5$ and obviously less than or equal to $6$.\r\n\r\nIn the second example you cannot choose any number that only $2$ elements of the given sequence will be less than or equal to this number because $3$ elements of the given sequence will be also less than or equal to this number.',
+        }],
         sampleTests: [
           {
             input: '8',
@@ -22,53 +27,98 @@ setupMock({
             output: '7 2\r\n3 7 5 1 10 3 20\r\n'
           }
         ],
-        notes: 'In the first example $5$ is also a valid answer because the elements with indices $[1, 3, 4, 6]$ is less than or equal to $5$ and obviously less than or equal to $6$.\r\n\r\nIn the second example you cannot choose any number that only $2$ elements of the given sequence will be less than or equal to this number because $3$ elements of the given sequence will be also less than or equal to this number.'
       }
     })
-    Mock.mock(new RegExp('/api/basicProfile'), () => {
+    Mock.mock(/\/problems\/\d*\/solutions/, () => {
+      return [
+        {
+          id: 1,
+          name: 'main.cpp',
+          length: 233,
+          created_at: Random.date(),
+          language: 'C++',
+          type: 'Main correct solution',
+        },
+        {
+          id: 2,
+          name: 'haha.cpp',
+          length: 233,
+          language: 'C++',
+          created_at: Random.date(),
+          type: 'Correct',
+        }
+      ]
+    })
+    Mock.mock(/\/problems\/\d*\/statements/, () => {
       return {
-        status: 2,
-        video: {
-          mode: '自定义',
-          acquisition: {
-            resolution: '720*1280',
-            frameRate: 15,
+        data: [
+          {
+            id: 1,
+            language: 'English',
+            name: 'hello, world',
+            legend: '请输入 Hello, world',
+            input: '没有输入',
+            output: '没有输出',
+            created_at: Random.date(),
           },
-          encoding: {
-            resolution: '720*1280',
-            rate: {
-              min: 300,
-              max: 800,
-              default: 1500,
-            },
-            frameRate: 15,
-            profile: 'high',
+          {
+            id: 2,
+            language: '中文',
+            name: 'haha.cpp',
+            legend: '请输入 Hello, world',
+            input: '没有输入',
+            output: '没有输出',
+            created_at: Random.date(),
+          }
+        ]
+      }
+    })
+    Mock.mock(/\/problems\/\d*\/tests/, () => {
+      return {
+        data: [
+          {
+            id: '1',
+            content: 'Jane Doe',
+            size: 23000,
+            remark: '32 Park Road, London',
+            example: true,
+            created_at: Random.datetime(),
           },
-        },
-        audio: {
-          mode: '自定义',
-          acquisition: {
-            channels: 8,
+          {
+            id: '2',
+            content: 'Alisa Ross',
+            size: 25000,
+            remark: '35 Park Road, London',
+            example: true,
+            created_at: Random.datetime(),
           },
-          encoding: {
-            channels: 8,
-            rate: 128,
-            profile: 'ACC-LC',
+          {
+            id: '3',
+            content: 'Kevin Sandra',
+            size: 22000,
+            remark: '31 Park Road, London',
+            example: true,
+            created_at: Random.datetime(),
           },
-        },
-      };
-    });
-
-    Mock.mock(new RegExp('/api/adjustment'), () => {
-      return new Array(2).fill('0').map(() => ({
-        contentId: `${Mock.Random.pick([
-          '视频类',
-          '音频类',
-        ])}${Mock.Random.natural(1000, 9999)}`,
-        content: '视频参数变更，音频参数变更',
-        status: Mock.Random.natural(0, 1),
-        updatedTime: Mock.Random.datetime('yyyy-MM-dd HH:mm:ss'),
-      }));
-    });
+          {
+            id: '4',
+            content: 'Ed Hellen',
+            size: 17000,
+            remark: '42 Park Road, London',
+            example: false,
+            created_at: Random.datetime(),
+          },
+          {
+            id: '5',
+            content: 'William Smith',
+            size: 27000,
+            remark: '62 Park Road, London',
+            example: false,
+            created_at: Random.datetime(),
+          },
+        ],
+        total: 12,
+      }
+    })
   },
 });

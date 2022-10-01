@@ -7,6 +7,10 @@ const i18n = {
     'notes': 'Notes',
     'timeLimit': 'Time Limit',
     'memoryLimit': 'Memory Limit',
+    'run': 'Run',
+    'language': 'Language',
+    'action': 'Action',
+    'createdAt': 'Created At',
   },
   'zh-CN': {
     'submit': '提交',
@@ -16,6 +20,10 @@ const i18n = {
     'notes': '提示',
     'timeLimit': '时间限制',
     'memoryLimit': '内存限制',
+    'run': '运行',
+    'language': '语言',
+    'action': '操作',
+    'createdAt': '创建时间',
   },
 };
 

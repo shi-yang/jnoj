@@ -1,17 +1,30 @@
-import Mock from 'mockjs';
+import Mock, { Random } from 'mockjs';
 import setupMock from '@/utils/setupMock';
 
+const { submissions } = Mock.mock({
+  'submissions|100': [
+    {
+      id: /[0-9]{8}/,
+      name: () => Mock.Random.ctitle(),
+      created_at: () => Random.datetime(),
+    },
+  ],
+});
 setupMock({
   setup: () => {
-    Mock.mock(new RegExp('/problems/123'), () => {
+    Mock.mock(/^\/problems\/\d*$/, () => {
       return {
         id: 10002,
-        name: 'Hello, world',
-        description: '请输出 Hello, world',
-        input: '没有输入',
-        output: '输出一个字符串 Hello, world',
         timeLimit: 2000,
         memoryLimit: 268435456,
+        statements: [{
+          language: 'zh-CN',
+          name: Random.ctitle(),
+          legend: Random.cparagraph(8, 12),
+          input: Random.cparagraph(),
+          output: Random.cparagraph(),
+          notes: Random.cparagraph(),
+        }],
         sampleTests: [
           {
             input: '8',
@@ -22,53 +35,13 @@ setupMock({
             output: '7 2\r\n3 7 5 1 10 3 20\r\n'
           }
         ],
-        notes: 'In the first example $5$ is also a valid answer because the elements with indices $[1, 3, 4, 6]$ is less than or equal to $5$ and obviously less than or equal to $6$.\r\n\r\nIn the second example you cannot choose any number that only $2$ elements of the given sequence will be less than or equal to this number because $3$ elements of the given sequence will be also less than or equal to this number.'
+      }
+    });
+    Mock.mock(/^\/submissions$/, () => {
+      return {
+        data: submissions,
+        total: submissions.length,
       }
     })
-    Mock.mock(new RegExp('/api/basicProfile'), () => {
-      return {
-        status: 2,
-        video: {
-          mode: '自定义',
-          acquisition: {
-            resolution: '720*1280',
-            frameRate: 15,
-          },
-          encoding: {
-            resolution: '720*1280',
-            rate: {
-              min: 300,
-              max: 800,
-              default: 1500,
-            },
-            frameRate: 15,
-            profile: 'high',
-          },
-        },
-        audio: {
-          mode: '自定义',
-          acquisition: {
-            channels: 8,
-          },
-          encoding: {
-            channels: 8,
-            rate: 128,
-            profile: 'ACC-LC',
-          },
-        },
-      };
-    });
-
-    Mock.mock(new RegExp('/api/adjustment'), () => {
-      return new Array(2).fill('0').map(() => ({
-        contentId: `${Mock.Random.pick([
-          '视频类',
-          '音频类',
-        ])}${Mock.Random.natural(1000, 9999)}`,
-        content: '视频参数变更，音频参数变更',
-        status: Mock.Random.natural(0, 1),
-        updatedTime: Mock.Random.datetime('yyyy-MM-dd HH:mm:ss'),
-      }));
-    });
   },
 });

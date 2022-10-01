@@ -7,7 +7,7 @@ import {
   Space,
   Typography,
 } from '@arco-design/web-react';
-import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
+import { IconDownload } from '@arco-design/web-react/icon';
 import axios from 'axios';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
@@ -15,6 +15,7 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
+import CreateModal from './create';
 
 const { Title } = Typography;
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
@@ -87,10 +88,7 @@ function SearchTable() {
       <SearchForm onSearch={handleSearch} />
       <div className={styles['button-group']}>
         <Space>
-          <Button type="primary" icon={<IconPlus />}>
-            {t['searchTable.operations.add']}
-          </Button>
-          <Button>{t['searchTable.operations.upload']}</Button>
+          <CreateModal />
         </Space>
         <Space>
           <Button icon={<IconDownload />}>
