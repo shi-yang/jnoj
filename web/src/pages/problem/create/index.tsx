@@ -32,7 +32,7 @@ function SearchTable() {
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
 
   const [data, setData] = useState([]);
-  const [pagination, setPatination] = useState<PaginationProps>({
+  const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
     pageSize: 10,
@@ -59,7 +59,7 @@ function SearchTable() {
       })
       .then((res) => {
         setData(res.data.list);
-        setPatination({
+        setPagination({
           ...pagination,
           current,
           pageSize,
@@ -70,7 +70,7 @@ function SearchTable() {
   }
 
   function onChangeTable({ current, pageSize }) {
-    setPatination({
+    setPagination({
       ...pagination,
       current,
       pageSize,
@@ -78,7 +78,7 @@ function SearchTable() {
   }
 
   function handleSearch(params) {
-    setPatination({ ...pagination, current: 1 });
+    setPagination({ ...pagination, current: 1 });
     setFormParams(params);
   }
 

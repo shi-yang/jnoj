@@ -17,7 +17,7 @@ const UserView = lazy(() => import('@/pages/user/view'))
 
 const ContestIndex = lazy(() => import('@/pages/contest/list'))
 const ContestDetail = lazy(() => import('@/pages/contest/detail'))
-const ContestSetting = lazy(() => import('@/pages/contest/settings'))
+const ContestUpdate = lazy(() => import('@/pages/contest/update'))
 
 const routeList = [
   {
@@ -32,8 +32,8 @@ const routeList = [
       { path: '/problem/update/:id', element: <ProblemUpdate /> },
 
       { path: '/contests', element: <ContestIndex /> },
-      { path: '/contests/:id', element: <ContestDetail /> },
-      { path: '/contests/:id/setting', element: <ContestSetting /> },
+      { path: '/contests/:id/*', element: <ContestDetail /> },
+      { path: '/contests/:id/setting', element: <ContestUpdate /> },
 
       { path: '/login', element: <UserLogin /> },
       { path: '/register', element: <UserRegister /> },
