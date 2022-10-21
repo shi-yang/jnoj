@@ -19,6 +19,13 @@ service SubmissionService {
             get: "/submissions/{id}"
         };
     };
+    // 创建提交
+    rpc CreateSubmission (CreateSubmissionRequest) returns (Submission) {
+        option (google.api.http) = {
+            post: "/submissions"
+            body: "*"
+        };
+    };
 }
 
 // 题目
@@ -34,5 +41,9 @@ message ListSubmissionsResponse {
 }
 
 message GetSubmissionRequest {
+    
+}
+
+message CreateSubmissionRequest {
     
 }

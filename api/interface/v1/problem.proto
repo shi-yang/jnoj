@@ -19,10 +19,144 @@ service ProblemService {
             get: "/problems/{id}"
         };
     };
+    // 创建题目
+    rpc CreateProblem (CreateProblemRequest) returns (CreateProblemResponse) {
+        option (google.api.http) = {
+            post: "/problems"
+            body: "*"
+        };
+    };
+
+    // 获取题目描述列表
+    rpc ListProblemStatements (ListProblemStatementsRequest) returns (ListProblemStatementsResponse) {
+        option (google.api.http) = {
+            get: "/problems/{id}/statements"
+        };
+    };
+    // 获取题目描述详情
+    rpc GetProblemStatement (GetProblemStatementRequest) returns (ProblemStatement) {
+        option (google.api.http) = {
+            get: "/problems/{id}/statements"
+        };
+    };
+    // 创建题目描述
+    rpc CreateProblemStatement (CreateProblemStatementRequest) returns (ProblemStatement) {
+        option (google.api.http) = {
+            post: "/problems/{id}/statements"
+            body: "*"
+        };
+    };
+    // 更新题目描述
+    rpc UpdateProblemStatement (UpdateProblemStatementRequest) returns (ProblemStatement) {
+        option (google.api.http) = {
+            put: "/problems/{id}/statements"
+            body: "*"
+        };
+    }
+    // 删除题目描述
+    rpc DeleteProblemStatement (DeleteProblemStatementRequest) returns (ProblemStatement) {
+        option (google.api.http) = {
+            delete: "/problems/{id}/statements"
+        };
+    }
+
+    // 获取题目裁判程序列表
+    rpc ListProblemCheckers (ListProblemCheckersRequest) returns (ListProblemCheckersResponse) {
+        option (google.api.http) = {
+            get: "/problems/{id}/checkers"
+        };
+    };
+    // 获取题目裁判程序
+    rpc GetProblemChecker (GetProblemCheckerRequest) returns (ProblemChecker) {
+        option (google.api.http) = {
+            get: "/problems/{id}/checkers"
+        };
+    };
+    // 创建题目裁判程序
+    rpc CreateProblemChecker (CreateProblemCheckerRequest) returns (ProblemChecker) {
+        option (google.api.http) = {
+            post: "/problems/{id}/checkers"
+            body: "*"
+        };
+    };
+    // 更新题目裁判程序
+    rpc UpdateProblemChecker (UpdateProblemCheckerRequest) returns (ProblemChecker) {
+        option (google.api.http) = {
+            put: "/problems/{id}/checkers"
+            body: "*"
+        };
+    }
+
+    // 获取题目测试点列表
+    rpc ListProblemTests (ListProblemTestsRequest) returns (ListProblemTestsResponse) {
+        option (google.api.http) = {
+            get: "/problems/{id}/tests"
+        };
+    };
+    // 获取题目测试点详情
+    rpc GetProblemTest (GetProblemTestRequest) returns (ProblemTest) {
+        option (google.api.http) = {
+            get: "/problems/{id}/tests"
+        };
+    };
+    // 创建题目测试点
+    rpc CreateProblemTest (CreateProblemTestRequest) returns (ProblemTest) {
+        option (google.api.http) = {
+            post: "/problems/{id}/tests"
+            body: "*"
+        };
+    };
+    // 更新题目测试点
+    rpc UpdateProblemTest (UpdateProblemTestRequest) returns (ProblemTest) {
+        option (google.api.http) = {
+            put: "/problems/{id}/tests"
+            body: "*"
+        };
+    }
+    // 删除题目测试点
+    rpc DeleteProblemTest (DeleteProblemTestRequest) returns (ProblemTest) {
+        option (google.api.http) = {
+            delete: "/problems/{id}/tests"
+        };
+    }
+
+    // 获取题目解答程序列表
+    rpc ListProblemSolutions (ListProblemSolutionsRequest) returns (ListProblemSolutionsResponse) {
+        option (google.api.http) = {
+            get: "/problems/{id}/solution"
+        };
+    };
+    // 获取题目解答程序详情
+    rpc GetProblemSolution (GetProblemSolutionRequest) returns (ProblemSolution) {
+        option (google.api.http) = {
+            get: "/problems/{id}/solution"
+        };
+    };
+    // 创建题目解答程序
+    rpc CreateProblemSolution (CreateProblemSolutionRequest) returns (ProblemSolution) {
+        option (google.api.http) = {
+            post: "/problems/{id}/solution"
+            body: "*"
+        };
+    };
+    // 更新题目解答程序
+    rpc UpdateProblemSolution (UpdateProblemSolutionRequest) returns (ProblemSolution) {
+        option (google.api.http) = {
+            put: "/problems/{id}/solution"
+            body: "*"
+        };
+    }
+    // 删除题目解答程序
+    rpc DeleteProblemSolution (DeleteProblemSolutionRequest) returns (ProblemSolution) {
+        option (google.api.http) = {
+            delete: "/problems/{id}/solution"
+        };
+    }
 }
 
 // 题目
 message Problem {
+    // 题目ID
     int32 id = 1;
     // 时间限制
     int32 time_limit = 2;
@@ -62,4 +196,119 @@ message ListProblemsResponse {
 
 message GetProblemRequest {
     int32 id = 1;
+}
+
+message CreateProblemRequest {
+    // 题目名称
+    string name = 1;
+    // 题目类型
+    int32 type = 2;
+}
+
+message CreateProblemResponse {
+    int32 id = 1;
+}
+
+message ListProblemStatementsRequest {
+
+}
+
+message ListProblemStatementsResponse {
+
+}
+
+message GetProblemStatementRequest {
+
+}
+
+message CreateProblemStatementRequest {
+
+}
+
+message UpdateProblemStatementRequest {
+
+}
+
+message DeleteProblemStatementRequest {
+
+}
+
+message ListProblemCheckersRequest {
+
+}
+
+message ListProblemCheckersResponse {
+
+}
+
+message GetProblemCheckerRequest {
+
+}
+
+message ProblemChecker {
+
+}
+
+message CreateProblemCheckerRequest {
+
+}
+
+message UpdateProblemCheckerRequest {
+
+}
+
+message ListProblemTestsRequest {
+
+}
+
+message ListProblemTestsResponse {
+
+}
+
+message GetProblemTestRequest {
+
+}
+
+message ProblemTest {
+
+}
+
+message CreateProblemTestRequest {
+
+}
+
+message UpdateProblemTestRequest {
+
+}
+
+message DeleteProblemTestRequest {
+
+}
+
+message ListProblemSolutionsRequest {
+
+}
+
+message ListProblemSolutionsResponse {
+
+}
+
+message GetProblemSolutionRequest {
+
+}
+
+message ProblemSolution {
+
+}
+
+message CreateProblemSolutionRequest {
+
+}
+
+message UpdateProblemSolutionRequest {
+
+}
+
+message DeleteProblemSolutionRequest {
+    
 }

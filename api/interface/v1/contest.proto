@@ -19,6 +19,24 @@ service ContestService {
             get: "/contests/{id}"
         };
     };
+    // 获取比赛题目列表
+    rpc ListContestProblems (ListContestProblemsRequest) returns (ListContestProblemsResponse) {
+        option (google.api.http) = {
+            get: "/contests/{id}/problems"
+        };
+    };
+    // 获取比赛题目
+    rpc GetContestProblem (GetContestProblemRequest) returns (ContestProblem) {
+        option (google.api.http) = {
+            get: "/contests/{id}/problems/{key}"
+        };
+    };
+    // 获取比赛用户
+    rpc ListContestUsers (ListContestUsersRequest) returns (ListContestUsersResponse) {
+        option (google.api.http) = {
+            get: "/contests/{id}/users"
+        };
+    }
 }
 
 message ListContestsRequest {
@@ -33,5 +51,29 @@ message GetContestRequest {
 }
 
 message Contest {
+    
+}
+
+message ListContestProblemsRequest {
+
+}
+
+message ListContestProblemsResponse {
+
+}
+
+message GetContestProblemRequest{
+
+}
+
+message ContestProblem {
+
+}
+
+message ListContestUsersRequest {
+
+}
+
+message ListContestUsersResponse {
     
 }
