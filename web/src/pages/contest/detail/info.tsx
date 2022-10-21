@@ -1,3 +1,4 @@
+import { listContestProblems } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
 import {
   Grid,
@@ -6,8 +7,9 @@ import {
   Table,
   TableColumnProps,
 } from '@arco-design/web-react';
-import { IconCalendar } from '@arco-design/web-react/icon';
-import { ReactNode, useState } from 'react';
+import { IconCalendar, IconCheckCircle, IconMinusCircle } from '@arco-design/web-react/icon';
+import { ReactNode, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import locale from './locale';
 import styles from './style/info.module.less';
 const { Row, Col } = Grid;
@@ -37,28 +39,56 @@ function StatisticItem(props: StatisticItemType) {
     </div>
   );
 }
-export default (props) => {
+
+const columns: TableColumnProps[] = [
+  {
+    title: 'Problem',
+    dataIndex: 'name',
+    render: (col, record, index) => (
+      <>
+        {String.fromCharCode(65 + record.key)}. {record.name}
+      </>
+    ),
+  },
+  {
+    title: 'Accepted / Submitted',
+    dataIndex: 'accpeted',
+    align: 'center',
+    render: (col, record, index) => (
+      <>
+        {record.accepted} / {record.attempted}
+      </>
+    ),
+  },
+  {
+    title: 'Solved',
+    dataIndex: 'solved',
+    align: 'center',
+    render: (col, record, index) => (
+      <>
+        {record.is_solved && (<IconCheckCircle />)}
+      </>
+    ),
+  },
+];
+export default () => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState({ data: [], total: 0 })
-  const columns: TableColumnProps[] = [
-    {
-      title: '#',
-      dataIndex: 'name',
-    },
-    {
-      title: 'Problem Name',
-      dataIndex: 'salary',
-    },
-    {
-      title: 'Accepted / Submitted',
-      dataIndex: 'address',
-    },
-    {
-      title: 'Solved',
-      dataIndex: 'solved',
-    },
-  ];
+  const [problems, setProblems] = useState([])
+  const params = useParams();
+  function fetchData() {
+    setLoading(true);
+    listContestProblems(params.id)
+      .then((res) => {
+        setProblems(res.data.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <div>
       <Row>
@@ -99,7 +129,9 @@ export default (props) => {
         </Col>
       </Row>
       <Divider />
-      <Table columns={columns} data={data.data} />;
+      <div style={{ maxWidth: '1200px', margin: '0 auto'}}>
+        <Table columns={columns} data={problems} pagination={false} />
+      </div>
     </div>
   )
 }

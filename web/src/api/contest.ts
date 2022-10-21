@@ -19,3 +19,11 @@ export function listContestStatuses(id) {
 export function listContestUsers(id) {
   return axios.get(`/contests/${id}/users`)
 }
+
+export function getContestProblem(id, pkey) {
+  return axios.get(`/contests/${id}/problems/${pkey}`)
+}
+
+export function listContestSubmissions(id, params) {
+  return axios.get(`/contests/${id}/submissions`, params)
+}

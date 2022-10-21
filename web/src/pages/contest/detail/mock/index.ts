@@ -5,11 +5,12 @@ const { problems } = Mock.mock({
   'problems|12': [
     {
       id: /[0-9]{8}/,
-      'key|+1': 1,
-      name: () => Mock.Random.ctitle(),
-      attempted: () => Mock.Random.integer(0, 300),
-      accepted: () => Mock.Random.integer(0, 300),
+      'key|+1': 0,
+      name: () => Random.ctitle(),
+      attempted: () => Random.integer(0, 300),
+      accepted: () => Random.integer(0, 300),
       created_at: () => Random.datetime(),
+      is_solved: () => Random.boolean(),
     },
   ],
 });
@@ -18,18 +19,32 @@ const { standings } = Mock.mock({
     {
       'id|+1': 1,
       'rank|+1': 1,
-      who: () => Mock.Random.cname(),
-      solved: () => Mock.Random.integer(0, 12),
-      score: () => Mock.Random.integer(0, 900),
+      who: () => Random.cname(),
+      solved: () => Random.integer(0, 12),
+      score: () => Random.integer(0, 900),
       'problems|12': [
         {
-          is_solved: Mock.Random.boolean(),
-          attempted: Mock.Random.integer(0, 12),
+          is_solved: Random.boolean(),
+          attempted: Random.integer(0, 12),
         }
       ]
     }
   ]
 })
+const { submissions } = Mock.mock({
+  'submissions|100': [
+    {
+      id: /[0-9]{8}/,
+      name: () => Random.ctitle(),
+      verdict: () => Random.integer(0, 12),
+      user: {
+        id: () => Random.integer(100, 10000),
+        nickname: () => Random.cname(),
+      },
+      created_at: () => Random.datetime(),
+    },
+  ],
+});
 const { users } = Mock.mock({
   'users|200': [
     {
@@ -47,7 +62,7 @@ const { status } = Mock.mock({
   'status|2000': [
     {
       'id|+1': 1,
-      problem_id: () => Random.integer(1, 12),
+      problem_id: () => Random.integer(0, 11),
       status: () => statusMap[Random.integer(0, 2)],
       user_id: () => Random.integer(1, 200),
       score: () => Random.integer(0, 100),
@@ -93,6 +108,38 @@ setupMock({
       return {
         data: users,
         total: users.length,
+      }
+    })
+    Mock.mock(/^\/contests\/\d*\/problems\/[A-Z]$/, () => {
+      return {
+        id: 10002,
+        key: 0,
+        timeLimit: 2000,
+        memoryLimit: 268435456,
+        statements: [{
+          language: 'zh-CN',
+          name: Random.ctitle(),
+          legend: Random.cparagraph(8, 12),
+          input: Random.cparagraph(),
+          output: Random.cparagraph(),
+          notes: Random.cparagraph(),
+        }],
+        sampleTests: [
+          {
+            input: '8',
+            output: '7 4\r\n3 7 5 1 10 3 20\r\n'
+          },
+          {
+            input: '-1\r\n',
+            output: '7 2\r\n3 7 5 1 10 3 20\r\n'
+          }
+        ],
+      }
+    });
+    Mock.mock(/^\/contests\/\d*\/submissions$/, () => {
+      return {
+        data: submissions,
+        total: submissions.length,
       }
     })
   },

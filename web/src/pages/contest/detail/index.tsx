@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Layout, Menu, Progress, Typography, Grid, Slider } from '@arco-design/web-react';
-import { IconHome, IconCalendar } from '@arco-design/web-react/icon';
+import { Layout, Menu, Typography, Grid, Slider } from '@arco-design/web-react';
+import { IconHome, IconOrderedList, IconFile, IconSelectAll } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
-import { getContest } from '@/api/contest';
+import { getContest, listContestProblems } from '@/api/contest';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import Info from './info';
 import Problem from './problem';
 import Standings from './standings';
+import Submission from './submission';
 
 import './mock';
 import useLocale from '@/utils/useLocale';
@@ -27,6 +28,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [siderWidth, setSiderWidth] = useState(normalWidth);
+  const [problems, setProblems] = useState([]);
   const params = useParams();
   const navigate = useNavigate();
 
@@ -34,12 +36,15 @@ function App() {
     setLoading(true);
     getContest(params.id)
       .then((res) => {
-        console.log(res)
+        console.log(res.data)
         setData(res.data);
       })
       .finally(() => {
         setLoading(false);
       });
+    listContestProblems(params.id).then(res => {
+      setProblems(res.data.data)
+    })
   }
 
   useEffect(() => {
@@ -107,23 +112,24 @@ function App() {
                 信息
               </MenuItem>
               <MenuItem key='standings'>
-                <IconCalendar />
+                <IconOrderedList />
                 榜单
               </MenuItem>
-              <MenuItem key='status'>
-                <IconCalendar />
-                状态
+              <MenuItem key='submission'>
+                <IconFile />
+                提交
               </MenuItem>
               <SubMenu
                 key='layout'
                 title={
                   <span>
-                    <IconCalendar /> 题目
+                    <IconSelectAll /> 题目
                   </span>
                 }
               >
-                <MenuItem key='11'>栅格</MenuItem>
-                <MenuItem key='12'>分隔符</MenuItem>
+                {problems.map(value => {
+                  return <MenuItem key={`problem/${String.fromCharCode(65 + value.key)}`}>{String.fromCharCode(65 + value.key)}. {value.name}</MenuItem>
+                })}
               </SubMenu>
             </Menu>
           </Sider>
@@ -131,8 +137,9 @@ function App() {
             <Routes>
               <Route index element={ <Info /> }></Route>
               <Route path='info' element={ <Info /> }></Route>
-              <Route path='problem' element={ <Problem /> }></Route>
+              <Route path='problem/:key' element={ <Problem /> }></Route>
               <Route path='standings' element={ <Standings /> }></Route>
+              <Route path='submission' element={ <Submission /> }></Route>
             </Routes>
           </Content>
         </Layout>

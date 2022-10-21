@@ -76,7 +76,7 @@ const filterData = (
 
 setupMock({
   setup: () => {
-    Mock.mock(new RegExp('/problems$'), (params) => {
+    Mock.mock(/^\/problems$/, (params) => {
       const {
         page = 1,
         pageSize = 10,
