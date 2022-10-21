@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service ProblemService {
+    // 题目列表
+    rpc ListProblems (ListProblemsRequest) returns (ListProblemsResponse) {
+        option (google.api.http) = {
+            get: "/problems"
+        };
+    };
+    // 题目详情
+    rpc GetProblem (GetProblemRequest) returns (Problem) {
+        option (google.api.http) = {
+            get: "/problems/{id}"
+        };
+    };
+}
+
+// 题目
+message Problem {
+    int32 id = 1;
+    // 时间限制
+    int32 time_limit = 2;
+    // 内存限制
+    int32 memory_limit = 3;
+    // 题目描述
+    repeated ProblemStatement statements = 4;
+    // 样例
+    message SampleTest {
+        string input = 1;
+        string output = 2;
+    }
+    SampleTest sample_test = 5;
+}
+
+// 题目描述
+message ProblemStatement {
+    int32 id = 1;
+    int32 problem_id = 2;
+    int32 language = 3;
+    string name = 4;
+    string legend = 5;
+    string input = 6;
+    string output = 7;
+    string note = 8;
+}
+
+message ListProblemsRequest {
+    int32 page = 1;
+    int32 per_page = 2;
+}
+
+message ListProblemsResponse {
+    repeated Problem data = 1; // 题目列表
+    int64 count = 2; // 总数
+}
+
+message GetProblemRequest {
+    int32 id = 1;
+}

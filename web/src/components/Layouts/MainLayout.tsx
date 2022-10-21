@@ -15,7 +15,11 @@ const App = () => {
       <Content>
         <Outlet />
       </Content>
-      <Footer className={styles.footer}>Footer</Footer>
+      <Footer className={styles.footer}>
+        <div className='container'>
+          ©2022 JNOJ
+        </div>
+      </Footer>
     </Layout>
   );
 };

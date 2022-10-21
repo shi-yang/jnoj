@@ -6,6 +6,7 @@ import {
   Button,
   Space,
   Typography,
+  Message,
 } from '@arco-design/web-react';
 import { IconDownload } from '@arco-design/web-react/icon';
 import axios from 'axios';
@@ -91,7 +92,7 @@ function SearchTable() {
           <CreateModal />
         </Space>
         <Space>
-          <Button icon={<IconDownload />}>
+          <Button icon={<IconDownload />} onClick={() => {Message.info('开发中，尽情期待')}}>
             {t['searchTable.operation.download']}
           </Button>
         </Space>

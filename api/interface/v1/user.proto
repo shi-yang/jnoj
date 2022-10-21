@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service UserService {
+    // 登录
+    rpc Login (LoginRequest) returns (LoginResponse) {
+        option (google.api.http) = {
+            post: "/login"
+            body: "*"
+        };
+    };
+    // 获取登录用户信息
+    rpc GetUserInfo (GetUserInfoRequest) returns (User) {
+        option (google.api.http) = {
+            get: "/user/info"
+        };
+    };
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string token = 1;
+}
+
+message GetUserInfoRequest {
+
+}
+message User {
+    
+}

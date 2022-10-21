@@ -25,7 +25,7 @@ export function getColumns(
     {
       title: t['problem.columns.id'],
       dataIndex: 'id',
-      render: (value) => <Text copyable>{value}</Text>,
+      align: 'center',
       width: 200,
     },
     {
@@ -35,6 +35,7 @@ export function getColumns(
     {
       title: t['problem.columns.submitAndPass'],
       dataIndex: 'count',
+      align: 'center',
       sorter: (a, b) => a.count - b.count,
       render(x) {
         return (
@@ -48,6 +49,7 @@ export function getColumns(
     {
       title: t['problem.columns.operations'],
       dataIndex: 'operations',
+      align: 'center',
       headerCellStyle: { paddingLeft: '15px' },
       render: (_, record) => (
         <Button

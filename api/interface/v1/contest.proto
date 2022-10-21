@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service ContestService {
+    // 比赛列表
+    rpc ListContests (ListContestsRequest) returns (ListContestsResponse) {
+        option (google.api.http) = {
+            get: "/contests"
+        };
+    };
+    // 比赛详情
+    rpc GetContest (GetContestRequest) returns (Contest) {
+        option (google.api.http) = {
+            get: "/contests/{id}"
+        };
+    };
+}
+
+message ListContestsRequest {
+
+}
+message ListContestsResponse {
+    
+}
+
+message GetContestRequest {
+
+}
+
+message Contest {
+    
+}
