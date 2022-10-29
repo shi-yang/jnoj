@@ -26,6 +26,13 @@ service ProblemService {
             body: "*"
         };
     };
+    // 创建题目
+    rpc UpdateProblem (UpdateProblemRequest) returns (Problem) {
+        option (google.api.http) = {
+            post: "/problems"
+            body: "*"
+        };
+    };
 
     // 获取题目描述列表
     rpc ListProblemStatements (ListProblemStatementsRequest) returns (ListProblemStatementsResponse) {
@@ -209,8 +216,14 @@ message CreateProblemResponse {
     int32 id = 1;
 }
 
-message ListProblemStatementsRequest {
+message UpdateProblemRequest {
+    int32 id = 1;
+    int64 time_limit = 2;
+    int64 memory_limit = 3;
+}
 
+message ListProblemStatementsRequest {
+    int32 id = 1;
 }
 
 message ListProblemStatementsResponse {
@@ -218,23 +231,25 @@ message ListProblemStatementsResponse {
 }
 
 message GetProblemStatementRequest {
-
+    int32 id = 1;
 }
 
 message CreateProblemStatementRequest {
-
+    int32 id = 1;
+    string language = 2;
 }
 
 message UpdateProblemStatementRequest {
-
+    int32 id = 1;
 }
 
 message DeleteProblemStatementRequest {
-
+    int32 id = 1;
+    int32 statement_id = 2;
 }
 
 message ListProblemCheckersRequest {
-
+    int32 id = 1;
 }
 
 message ListProblemCheckersResponse {
@@ -242,7 +257,7 @@ message ListProblemCheckersResponse {
 }
 
 message GetProblemCheckerRequest {
-
+    int32 id = 1;
 }
 
 message ProblemChecker {
@@ -250,15 +265,15 @@ message ProblemChecker {
 }
 
 message CreateProblemCheckerRequest {
-
+    int32 id = 1;
 }
 
 message UpdateProblemCheckerRequest {
-
+    int32 id = 1;
 }
 
 message ListProblemTestsRequest {
-
+    int32 id = 1;
 }
 
 message ListProblemTestsResponse {
@@ -266,7 +281,7 @@ message ListProblemTestsResponse {
 }
 
 message GetProblemTestRequest {
-
+    int32 id = 1;
 }
 
 message ProblemTest {
@@ -274,27 +289,27 @@ message ProblemTest {
 }
 
 message CreateProblemTestRequest {
-
+    int32 id = 1;
 }
 
 message UpdateProblemTestRequest {
-
+    int32 id = 1;
 }
 
 message DeleteProblemTestRequest {
-
+    int32 id = 1;
 }
 
 message ListProblemSolutionsRequest {
-
+    int32 id = 1;
 }
 
 message ListProblemSolutionsResponse {
-
+    int32 id = 1;
 }
 
 message GetProblemSolutionRequest {
-
+    int32 id = 1;
 }
 
 message ProblemSolution {
@@ -302,13 +317,13 @@ message ProblemSolution {
 }
 
 message CreateProblemSolutionRequest {
-
+    int32 id = 1;
 }
 
 message UpdateProblemSolutionRequest {
-
+    int32 id = 1;
 }
 
 message DeleteProblemSolutionRequest {
-    
+    int32 id = 1;
 }

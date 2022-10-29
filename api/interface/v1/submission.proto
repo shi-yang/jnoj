@@ -41,7 +41,7 @@ message ListSubmissionsResponse {
 }
 
 message GetSubmissionRequest {
-    
+    int32 id = 1;
 }
 
 message CreateSubmissionRequest {

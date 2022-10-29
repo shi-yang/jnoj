@@ -47,7 +47,7 @@ message ListContestsResponse {
 }
 
 message GetContestRequest {
-
+    int32 id = 1;
 }
 
 message Contest {
@@ -55,7 +55,7 @@ message Contest {
 }
 
 message ListContestProblemsRequest {
-
+    int32 id = 1;
 }
 
 message ListContestProblemsResponse {
@@ -63,7 +63,8 @@ message ListContestProblemsResponse {
 }
 
 message GetContestProblemRequest{
-
+    int32 id = 1;
+    string key = 2;
 }
 
 message ContestProblem {
@@ -71,7 +72,7 @@ message ContestProblem {
 }
 
 message ListContestUsersRequest {
-
+    int32 id = 1;
 }
 
 message ListContestUsersResponse {
