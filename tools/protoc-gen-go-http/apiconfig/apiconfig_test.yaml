@@ -1,0 +1,5 @@
+rules:
+- selector: "*"
+  middleware: "middlewares/auth.Guest"
+- selector: "12"
+  middleware: "middlewares/auth.Guest"
