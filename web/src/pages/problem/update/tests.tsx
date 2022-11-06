@@ -77,15 +77,14 @@ const App = (props) => {
   return (
     <Card>
       <div className={styles['button-group']}>
-        <Space>
         <Upload
+          style={{width: '100%'}}
           drag
           multiple
           accept='text/*'
           autoUpload={false}
           onDrop={(e) => createTest(e)}
         />
-        </Space>
       </div>
       <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
     </Card>

@@ -3,6 +3,7 @@ syntax = "proto3";
 package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -14,10 +15,23 @@ service UserService {
             body: "*"
         };
     };
+    // 注册
+    rpc Register (RegisterRequest) returns (RegisterResponse) {
+        option (google.api.http) = {
+            post: "/register"
+            body: "*"
+        };
+    };
     // 获取登录用户信息
-    rpc GetUserInfo (GetUserInfoRequest) returns (User) {
+    rpc GetUserInfo (google.protobuf.Empty) returns (GetUserInfoResponse) {
         option (google.api.http) = {
             get: "/user/info"
+        };
+    };
+    // 获取用户主页信息
+    rpc GetUser (GetUserRequest) returns (User) {
+        option (google.api.http) = {
+            get: "/user/{id}"
         };
     };
 }
@@ -31,9 +45,31 @@ message LoginResponse {
     string token = 1;
 }
 
-message GetUserInfoRequest {
-
+message RegisterRequest {
+    // 手机号
+    string phone = 1;
+    // 验证码
+    string captcha = 2;
+    // 密码
+    string password = 3;
 }
+
+message RegisterResponse {
+    // 用户ID
+    int32 id = 1;
+    // 登录 token
+    string token = 2;
+}
+
+message GetUserInfoResponse {
+    int32 id = 1;
+    string nickname = 2;
+}
+
 message User {
-    
+}
+
+
+message GetUserRequest {
+    int32 id = 1;
 }

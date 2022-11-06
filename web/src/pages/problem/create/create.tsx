@@ -55,10 +55,10 @@ function App() {
           <FormItem label='题目名称' required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
           </FormItem>
-          <FormItem label='题目类型' required field='radio' rules={[{ required: true }]}>
-            <Radio.Group>
-              <Radio value='a'>标准输入输出</Radio>
-              <Radio value='b' disabled>函数题目</Radio>
+          <FormItem label='题目类型' field='type'>
+            <Radio.Group defaultValue='1'>
+              <Radio value='1'>标准输入输出</Radio>
+              <Radio value='2' disabled>函数题目</Radio>
             </Radio.Group>
           </FormItem>
         </Form>

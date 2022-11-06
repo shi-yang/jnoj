@@ -21,7 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 题目
+// 提交
 type Submission struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

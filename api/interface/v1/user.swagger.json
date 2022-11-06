@@ -49,10 +49,66 @@
         ]
       }
     },
+    "/register": {
+      "post": {
+        "summary": "注册",
+        "operationId": "UserService_Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RegisterRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/user/info": {
       "get": {
         "summary": "获取登录用户信息",
         "operationId": "UserService_GetUserInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "summary": "获取用户主页信息",
+        "operationId": "UserService_GetUser",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -67,6 +123,15 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
         "tags": [
           "UserService"
         ]
@@ -101,6 +166,9 @@
         }
       }
     },
+    "v1GetUserInfoResponse": {
+      "type": "object"
+    },
     "v1LoginRequest": {
       "type": "object",
       "properties": {
@@ -119,6 +187,22 @@
           "type": "string"
         }
       }
+    },
+    "v1RegisterRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string",
+          "title": "手机号"
+        },
+        "captcha": {
+          "type": "string",
+          "title": "验证码"
+        }
+      }
+    },
+    "v1RegisterResponse": {
+      "type": "object"
     },
     "v1User": {
       "type": "object"

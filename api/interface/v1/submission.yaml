@@ -1,0 +1,3 @@
+rules:
+- selector: "/submissions/*"
+  middleware: "jnoj/internal/middleware/auth.Server()"

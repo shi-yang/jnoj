@@ -1,7 +1,24 @@
 import Mock from 'mockjs';
 import setupMock from '@/utils/setupMock';
 import { Random } from 'mockjs';
-
+const { userChekcers } = Mock.mock({
+  'userChekcers|3': [
+    {
+      id: /[0-9]{8}/,
+      name: () => Random.ctitle(),
+      description: () => Random.ctitle(),
+    },
+  ],
+});
+const { stdChekcers } = Mock.mock({
+  'stdChekcers|12': [
+    {
+      id: /[0-9]{8}/,
+      name: () => Random.ctitle(),
+      description: () => Random.ctitle(),
+    },
+  ],
+});
 setupMock({
   setup: () => {
     Mock.mock(/\/problems\/\d*$/, () => {
@@ -29,7 +46,7 @@ setupMock({
         ],
       }
     })
-    Mock.mock(/\/problems\/\d*\/solutions/, () => {
+    Mock.mock(/\/problems\/\d*\/solutions$/, () => {
       return [
         {
           id: 1,
@@ -49,31 +66,33 @@ setupMock({
         }
       ]
     })
-    Mock.mock(/\/problems\/\d*\/statements/, () => {
+    Mock.mock(/\/problems\/\d*\/statements$/, () => {
       return {
         data: [
           {
             id: 1,
             language: 'English',
-            name: 'hello, world',
-            legend: '请输入 Hello, world',
-            input: '没有输入',
-            output: '没有输出',
+            name: Random.title(),
+            legend: Random.paragraph(),
+            input: Random.paragraph(),
+            output: Random.paragraph(),
             created_at: Random.date(),
+            notes: Random.paragraph()
           },
           {
             id: 2,
             language: '中文',
-            name: 'haha.cpp',
-            legend: '请输入 Hello, world',
-            input: '没有输入',
-            output: '没有输出',
+            name: Random.ctitle(),
+            legend: Random.cparagraph(),
+            input: Random.cparagraph(),
+            output: Random.cparagraph(),
             created_at: Random.date(),
+            notes: Random.paragraph()
           }
         ]
       }
     })
-    Mock.mock(/\/problems\/\d*\/tests/, () => {
+    Mock.mock(/\/problems\/\d*\/tests$/, () => {
       return {
         data: [
           {
@@ -118,6 +137,12 @@ setupMock({
           },
         ],
         total: 12,
+      }
+    })
+    Mock.mock(/\/problems\/\d*\/checkers$/, () => {
+      return {
+        std_checkers: stdChekcers,
+        user_checkers: userChekcers,
       }
     })
   },

@@ -84,7 +84,7 @@ function SearchTable() {
   }
 
   return (
-    <Card>
+    <Card className='container'>
       <Title heading={6}>{t['menu.list.searchTable']}</Title>
       <SearchForm onSearch={handleSearch} />
       <div className={styles['button-group']}>

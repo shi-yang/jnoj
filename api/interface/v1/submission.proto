@@ -28,7 +28,7 @@ service SubmissionService {
     };
 }
 
-// 题目
+// 提交
 message Submission {
 }
 

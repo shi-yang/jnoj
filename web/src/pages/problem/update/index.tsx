@@ -60,7 +60,7 @@ function Index(props) {
               <Statement problem={data} />
             </TabPane>
             <TabPane key='checker' title={t['tab.checker']}>
-              <Checker />
+              <Checker problem={data} />
             </TabPane>
             <TabPane key='tests' title={t['tab.tests']}>
               <Tests problem={data} />

@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	showVersion = flag.Bool("version", false, "print the version and exit")
-	omitempty   = flag.Bool("omitempty", true, "omit if google.api is empty")
+	showVersion      = flag.Bool("version", false, "print the version and exit")
+	omitempty        = flag.Bool("omitempty", true, "omit if google.api is empty")
+	APIConfiguration = flag.String("api_configuration", "", "path to API Configuration in YAML format")
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 			if !f.Generate {
 				continue
 			}
-			generateFile(gen, f, *omitempty)
+			generateFile(gen, f, *omitempty, *APIConfiguration)
 		}
 		return nil
 	})

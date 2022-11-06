@@ -36,7 +36,6 @@ function App() {
     setLoading(true);
     getContest(params.id)
       .then((res) => {
-        console.log(res.data)
         setData(res.data);
       })
       .finally(() => {
@@ -71,80 +70,82 @@ function App() {
   }
 
   return (
-    <div className={styles['contest-layout-basic']}>
-      <Layout style={{height: '100%'}}>
-        <Header>
-          <Typography.Title className={styles.title}>{data.title}</Typography.Title>
-          <Row style={{padding: '20px 20px 0 20px'}}>
-            <Col md={8}>
-              <div>
-                <strong>开始</strong> {data.start_time}
-              </div>
-            </Col>
-            <Col md={8}>
-              <div style={{textAlign: 'center'}}><strong>当前</strong> {data.end_time}</div>
-            </Col>
-            <Col md={8} style={{textAlign: 'right'}}>
-              <div>
-                <strong>结束</strong> {data.end_time}
-              </div>
-            </Col>
-          </Row>
-          <Slider defaultValue={20} />
-        </Header>
+    (!loading &&
+      <div className={styles['contest-layout-basic']}>
         <Layout style={{height: '100%'}}>
-          <Sider
-            collapsible
-            theme='light'
-            style={{height: '100%'}}
-            onCollapse={onCollapse}
-            collapsed={collapsed}
-            width={siderWidth}
-            resizeBoxProps={{
-              directions: ['right'],
-              onMoving: handleMoving,
-            }}
-          >
-            <div className='logo' />
-            <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
-              <MenuItem key='info'>
-                <IconHome />
-                信息
-              </MenuItem>
-              <MenuItem key='standings'>
-                <IconOrderedList />
-                榜单
-              </MenuItem>
-              <MenuItem key='submission'>
-                <IconFile />
-                提交
-              </MenuItem>
-              <SubMenu
-                key='layout'
-                title={
-                  <span>
-                    <IconSelectAll /> 题目
-                  </span>
-                }
-              >
-                {problems.map(value => {
-                  return <MenuItem key={`problem/${String.fromCharCode(65 + value.key)}`}>{String.fromCharCode(65 + value.key)}. {value.name}</MenuItem>
-                })}
-              </SubMenu>
-            </Menu>
-          </Sider>
-          <Content style={{ textAlign: 'center', padding: '30px' }}>
-            <Routes>
-              <Route index element={ <Info /> }></Route>
-              <Route path='info' element={ <Info /> }></Route>
-              <Route path='problem/:key' element={ <Problem /> }></Route>
-              <Route path='standings' element={ <Standings /> }></Route>
-              <Route path='submission' element={ <Submission /> }></Route>
-            </Routes>
-          </Content>
+          <Header>
+            <Typography.Title className={styles.title}>{data.title}</Typography.Title>
+            <Row style={{padding: '20px 20px 0 20px'}}>
+              <Col md={8}>
+                <div>
+                  <strong>开始</strong> {data.start_time}
+                </div>
+              </Col>
+              <Col md={8}>
+                <div style={{textAlign: 'center'}}><strong>当前</strong> {data.end_time}</div>
+              </Col>
+              <Col md={8} style={{textAlign: 'right'}}>
+                <div>
+                  <strong>结束</strong> {data.end_time}
+                </div>
+              </Col>
+            </Row>
+            <Slider defaultValue={20} />
+          </Header>
+          <Layout style={{height: '100%'}}>
+            <Sider
+              collapsible
+              theme='light'
+              style={{height: '100%'}}
+              onCollapse={onCollapse}
+              collapsed={collapsed}
+              width={siderWidth}
+              resizeBoxProps={{
+                directions: ['right'],
+                onMoving: handleMoving,
+              }}
+            >
+              <div className='logo' />
+              <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
+                <MenuItem key='info'>
+                  <IconHome />
+                  信息
+                </MenuItem>
+                <MenuItem key='standings'>
+                  <IconOrderedList />
+                  榜单
+                </MenuItem>
+                <MenuItem key='submission'>
+                  <IconFile />
+                  提交
+                </MenuItem>
+                <SubMenu
+                  key='layout'
+                  title={
+                    <span>
+                      <IconSelectAll /> 题目
+                    </span>
+                  }
+                >
+                  {problems.map(value => {
+                    return <MenuItem key={`problem/${String.fromCharCode(65 + value.key)}`}>{String.fromCharCode(65 + value.key)}. {value.name}</MenuItem>
+                  })}
+                </SubMenu>
+              </Menu>
+            </Sider>
+            <Content style={{ textAlign: 'center', padding: '30px' }}>
+              <Routes>
+                <Route index element={ <Info /> }></Route>
+                <Route path='info' element={ <Info /> }></Route>
+                <Route path='problem/:key' element={ <Problem /> }></Route>
+                <Route path='standings' element={ <Standings /> }></Route>
+                <Route path='submission' element={ <Submission /> }></Route>
+              </Routes>
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
-    </div>
+      </div>
+    )
   );
 }
 

@@ -14,10 +14,10 @@ const ProblemDetail = lazy(() => import('@/pages/problem/detail'))
 const UserLogin = lazy(() => import('@/pages/user/login/index'))
 const UserRegister = lazy(() => import('@/pages/user/register'))
 const UserView = lazy(() => import('@/pages/user/view'))
+const UserSetting = lazy(() => import('@/pages/user/setting'))
 
 const ContestIndex = lazy(() => import('@/pages/contest/list'))
 const ContestDetail = lazy(() => import('@/pages/contest/detail'))
-const ContestUpdate = lazy(() => import('@/pages/contest/update'))
 
 const routeList = [
   {
@@ -33,11 +33,11 @@ const routeList = [
 
       { path: '/contests', element: <ContestIndex /> },
       { path: '/contests/:id/*', element: <ContestDetail /> },
-      { path: '/contests/:id/setting', element: <ContestUpdate /> },
 
       { path: '/login', element: <UserLogin /> },
       { path: '/register', element: <UserRegister /> },
       { path: '/users/:id', element: <UserView /> },
+      { path: '/user/setting', element: <UserSetting /> },
     ],
   },
 ];

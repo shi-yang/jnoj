@@ -61,9 +61,9 @@ func buildMiddleware(rule *apiconfig.Rules) *middlewareDesc {
 	}
 }
 
-func getAPIConfigFilePath(file *protogen.File, g *protogen.GeneratedFile) string {
-	filenames := strings.Split(strings.Trim(file.GoImportPath.String(), "\""), "/")
-	path := strings.Join(filenames[1:], "/")
+// TODO can not get the relative path
+func getAPIConfigFilePath(path string, file *protogen.File) string {
 	generatedFilenamePath := strings.Split(file.GeneratedFilenamePrefix, "/")
-	return filepath.Join(path, generatedFilenamePath[len(generatedFilenamePath)-1]+".yaml")
+	yamlFilename := generatedFilenamePath[len(generatedFilenamePath)-1] + ".yaml"
+	return filepath.Join(path, yamlFilename)
 }

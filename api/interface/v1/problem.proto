@@ -3,6 +3,7 @@ syntax = "proto3";
 package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -213,6 +214,7 @@ message CreateProblemRequest {
 }
 
 message CreateProblemResponse {
+    // 题目ID
     int32 id = 1;
 }
 
@@ -277,7 +279,8 @@ message ListProblemTestsRequest {
 }
 
 message ListProblemTestsResponse {
-
+    repeated ProblemTest data = 1;
+    int64 count = 2;
 }
 
 message GetProblemTestRequest {
@@ -285,7 +288,14 @@ message GetProblemTestRequest {
 }
 
 message ProblemTest {
-
+    int64 id = 1;
+    string content = 2;
+    int64 size = 3;
+    string remark = 4;
+    int32 user_id = 5;
+    bool is_example = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
 }
 
 message CreateProblemTestRequest {

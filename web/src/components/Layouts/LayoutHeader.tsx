@@ -9,7 +9,7 @@ import defaultLocale from '@/locale';
 import { GlobalState } from '@/reducers';
 import { useSelector, useDispatch } from 'react-redux';
 import useStorage from '@/utils/useStorage';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MenuItem = Menu.Item;
 
@@ -17,6 +17,7 @@ const LayoutHeader = () => {
   const t = useLocale();
   const userInfo = useSelector((state: GlobalState) => state.userInfo);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   const [_, setUserStatus] = useStorage('userStatus');
 
@@ -31,7 +32,7 @@ const LayoutHeader = () => {
     if (key === 'logout') {
       logout();
     } else {
-      Message.info(`You clicked ${key}`);
+      navigate(`/user/${key}`);
     }
   }
 
@@ -52,20 +53,6 @@ const LayoutHeader = () => {
         <IconSettings className={styles['dropdown-icon']} />
         {t['menu.user.setting']}
       </Menu.Item>
-      <Menu.SubMenu
-        key="more"
-        title={
-          <div style={{ width: 80 }}>
-            <IconExperiment className={styles['dropdown-icon']} />
-            {t['message.seeMore']}
-          </div>
-        }
-      >
-        <Menu.Item key="workplace">
-          <IconDashboard className={styles['dropdown-icon']} />
-          {t['menu.dashboard.workplace']}
-        </Menu.Item>
-      </Menu.SubMenu>
       <Divider style={{ margin: '4px 0' }} />
       <Menu.Item key="logout">
         <IconPoweroff className={styles['dropdown-icon']} />
@@ -101,9 +88,9 @@ const LayoutHeader = () => {
           <MenuItem key='3'>
             <Link to='/contests'>{ t['menu.contest'] }</Link>
           </MenuItem>
-          <MenuItem key='4'>
+          {/* <MenuItem key='4'>
             <Link to='/about'>{ t['menu.about'] }</Link>
-          </MenuItem>
+          </MenuItem> */}
         </Menu>
       </div>
       <ul className={styles.right}>

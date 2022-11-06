@@ -1,0 +1,18 @@
+FROM ubuntu:22.04
+
+COPY sources.list /etc/apt/sources.list
+
+ENV GOVERSION 1.19.1
+ENV GOROOT /opt/go
+ENV GOPATH /go
+ENV GOPROXY https://goproxy.cn,direct
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates wget make gcc g++ openjdk-11-jdk python3 && \
+    cd /opt && wget https://mirrors.aliyun.com/golang/go${GOVERSION}.linux-amd64.tar.gz && \
+    tar zxf go${GOVERSION}.linux-amd64.tar.gz && rm go${GOVERSION}.linux-amd64.tar.gz && \
+    ln -s /opt/go/bin/go /usr/bin/ && \
+    mkdir -p /go/src/sandbox /go/bin && \
+    chmod -R 777 /go
+
+WORKDIR /go/src/sandbox

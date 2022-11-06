@@ -9,13 +9,11 @@ import (
 
 // ContestService is a contest service.
 type ContestService struct {
-	v1.UnimplementedContestServiceServer
-
-	uc *biz.GreeterUsecase
+	uc *biz.ContestUsecase
 }
 
 // NewContestService new a contest service.
-func NewContestService(uc *biz.GreeterUsecase) *ContestService {
+func NewContestService(uc *biz.ContestUsecase) *ContestService {
 	return &ContestService{uc: uc}
 }
 
@@ -36,6 +34,7 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 
 // GetContestProblem 获取比赛题目
 func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetContestProblemRequest) (*v1.ContestProblem, error) {
+	s.uc.GetContestProblem(ctx, int(req.Id))
 	return nil, nil
 }
 

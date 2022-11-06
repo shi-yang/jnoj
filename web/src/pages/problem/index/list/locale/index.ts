@@ -29,8 +29,8 @@ const i18n = {
     'searchTable.operations.add': '新建',
     'searchTable.operations.upload': '批量导入',
     'searchTable.operation.download': '下载',
-    'searchForm.id.placeholder': '请输入集合编号',
-    'searchForm.name.placeholder': '请输入集合名称',
+    'searchForm.id.placeholder': '请输入题目编号',
+    'searchForm.name.placeholder': '请输入题目名称',
     'searchForm.all.placeholder': '全部',
   },
 };

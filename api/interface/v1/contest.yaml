@@ -1,0 +1,3 @@
+rules:
+- selector: "/contests/*"
+  middleware: "jnoj/internal/middleware/auth.Server()"

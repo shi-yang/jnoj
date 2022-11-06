@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: deployments/Dockerfile
+    command: bash -c "cd app/interface && make build && ./bin/server -conf ./configs/config.yaml"
+    environment:
+      MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
+      REDIS_ADDR: redis:6379
+    ports:
+      - 8092:8000
+    volumes:
+      - .:/go/src/jnoj
+    depends_on:
+      - mysql
+      - redis
+    restart: always
+
+  redis:
+    image: redis:5.0-alpine
+    container_name: redis
+    command: redis-server
+    volumes:
+      - ./data/redis:/data
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 9500:80
+    depends_on:
+      - mysql
+    environment: 
+      PMA_USER: root
+      PMA_PASSWORD: 123456
+    links:
+      - mysql:db
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    volumes:
+      - ./data/mysql/logs:/logs
+      - ./data/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: jnoj
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: Asia/Shanghai

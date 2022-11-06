@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+import "errors/errors.proto";
+
+option go_package = "api/interface/v1;v1";
+
+enum ProblemErrorReason {
+    option (errors.default_code) = 500;
+
+    UNKNOWN_ERROR = 0;
+    PERMISSION_DENIED = 1 [(errors.code) = 403];
+}

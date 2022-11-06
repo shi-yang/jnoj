@@ -8,8 +8,8 @@ server:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test
+    source: "${MYSQL_SOURCE}"
   redis:
-    addr: 127.0.0.1:6379
+    addr: "${REDIS_ADDR}"
     read_timeout: 0.2s
     write_timeout: 0.2s

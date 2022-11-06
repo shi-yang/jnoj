@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2/apiconfig"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"google.golang.org/genproto/googleapis/api/annotations"
@@ -24,7 +25,7 @@ const (
 var methodSets = make(map[string]int)
 
 // generateFile generates a _http.pb.go file containing kratos errors definitions.
-func generateFile(gen *protogen.Plugin, file *protogen.File, omitempty bool) *protogen.GeneratedFile {
+func generateFile(gen *protogen.Plugin, file *protogen.File, omitempty bool, APIConfiguration string) *protogen.GeneratedFile {
 	if len(file.Services) == 0 || (omitempty && !hasHTTPRule(file.Services)) {
 		return nil
 	}
@@ -42,12 +43,12 @@ func generateFile(gen *protogen.Plugin, file *protogen.File, omitempty bool) *pr
 	g.P()
 	g.P("package ", file.GoPackageName)
 	g.P()
-	generateFileContent(gen, file, g, omitempty)
+	generateFileContent(gen, file, g, omitempty, APIConfiguration)
 	return g
 }
 
 // generateFileContent generates the kratos errors definitions, excluding the package statement.
-func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, omitempty bool) {
+func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, omitempty bool, APIConfiguration string) {
 	if len(file.Services) == 0 {
 		return
 	}
@@ -58,12 +59,18 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 	g.P("const _ = ", transportHTTPPackage.Ident("SupportPackageIsVersion1"))
 	g.P()
 
+	apiconfig, err := loadAPIConfigFromYAML(getAPIConfigFilePath(APIConfiguration, file))
+	if err == nil {
+		importAPIConfigPackage(g, apiconfig)
+	} else {
+		panic(err)
+	}
 	for _, service := range file.Services {
-		genService(gen, file, g, service, omitempty)
+		genService(gen, file, g, service, omitempty, apiconfig)
 	}
 }
 
-func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, omitempty bool) {
+func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, omitempty bool, config *apiconfig.Config) {
 	if service.Desc.Options().(*descriptorpb.ServiceOptions).GetDeprecated() {
 		g.P("//")
 		g.P(deprecationComment)
@@ -74,12 +81,8 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 		ServiceName: string(service.Desc.FullName()),
 		Metadata:    file.Desc.Path(),
 	}
-	apiconfig, err := loadAPIConfigFromYAML(getAPIConfigFilePath(file, g))
-	if err == nil {
-		for _, rule := range apiconfig.Rules {
-			sd.MiddlewareSets = append(sd.MiddlewareSets, buildMiddleware(rule))
-		}
-		importAPIConfigPackage(g, apiconfig)
+	for _, rule := range config.Rules {
+		sd.MiddlewareSets = append(sd.MiddlewareSets, buildMiddleware(rule))
 	}
 	for _, method := range service.Methods {
 		if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
