@@ -236,10 +236,20 @@ EOF
     fi
     
     mysql -h localhost -u$DBUSER -p$DBPASS -e "create database jnoj;"
+
+    # Modify database information
     if [ $? -eq 0 ]; then
-        # Modify database information
         sed -i "s/root/$DBUSER/g" /home/judge/jnoj/config/db.php
         sed -i "s/123456/$DBPASS/g" /home/judge/jnoj/config/db.php
+        sed -i "s/host=mysql/host=localhost/g" /home/judge/jnoj/config/db.php
+        
+        sed -i "s/root/$DBUSER/g" /home/judge/jnoj/judge/config.ini
+        sed -i "s/123456/$DBPASS/g" /home/judge/jnoj/judge/config.ini
+        sed -i "s/OJ_HOST_NAME=mysql/OJ_HOST_NAME=localhost/g" /home/judge/jnoj/judge/config.ini
+
+        sed -i "s/root/$DBUSER/g" /home/judge/jnoj/polygon/config.ini
+        sed -i "s/123456/$DBPASS/g" /home/judge/jnoj/polygon/config.ini
+        sed -i "s/OJ_HOST_NAME=mysql/OJ_HOST_NAME=localhost/g" /home/judge/jnoj/polygon/config.ini
     fi
 }
 

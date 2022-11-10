@@ -162,12 +162,12 @@ class Problem extends ActiveRecord
     {
         $input = unserialize($this->sample_input);
         $output = unserialize($this->sample_output);
-        $this->sample_input = $input[0];
-        $this->sample_output = $output[0];
-        $this->sample_input_2 = $input[1];
-        $this->sample_output_2 = $output[1];
-        $this->sample_input_3 = $input[2];
-        $this->sample_output_3 = $output[2];
+        $this->sample_input = $input[0] ?? null;
+        $this->sample_output = $output[0] ?? null;
+        $this->sample_input_2 = $input[1] ?? null;
+        $this->sample_output_2 = $output[1] ?? null;
+        $this->sample_input_3 = $input[2] ?? null;
+        $this->sample_output_3 = $output[2] ?? null;
     }
 
     public function getDataFiles()
