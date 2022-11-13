@@ -7,4 +7,7 @@ var ProviderSet = wire.NewSet(
 	NewContestUsecase,
 	NewProblemUsecase,
 	NewUserUsecase,
+	NewDiscovery,
+	NewSandboxClient,
+	NewSubmissionUsecase,
 )

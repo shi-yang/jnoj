@@ -33,12 +33,15 @@ function Index() {
         setLoading(false);
       });
   }
+  function onChangeLanguage(e) {
+    console.log(e)
+  }
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const languageOptions = ['C++', 'C', 'Java', 'Python']
+  const languageOptions = ['C', 'C++', 'Java', 'Python']
 
   return (
     <>
@@ -69,17 +72,17 @@ function Index() {
                 </div>,
                 <div key='second' className={styles.right}>
                   <div className={styles['code-header']}>
-                    <Select placeholder='请选择语言' style={{ width: 154 }} className={styles['aaa']}>
+                    <Select defaultValue={1} placeholder='请选择语言' style={{ width: 154 }} className={styles['aaa']} onChange={(e) => onChangeLanguage(e)}>
                       {languageOptions.map((item, index) => {
                         return (
-                          <Select.Option key={item} value={item}>
+                          <Select.Option key={item} value={index}>
                             {item}
                           </Select.Option>
                         )
                       })}
                     </Select>
                   </div>
-                  <Editor />
+                  <Editor problem={data} language={language} />
                 </div>,
               ]}
             />

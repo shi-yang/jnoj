@@ -2,17 +2,26 @@ syntax = "proto3";
 
 package jnoj.sandbox.v1;
 
-import "google/api/annotations.proto";
-
 option go_package = "api/sandbox/v1;v1";
 
 service SandboxService {
-    rpc Run (RunRequest) returns (RunResponse) {
-    };
+    rpc Run (RunRequest) returns (RunResponse) {};
 }
 
 message RunRequest {
+    string source = 1;
+    string stdin = 2;
+    int32 language = 3;
+    int64 memory_limit = 4;
+    int64 time_limit = 5;
 }
 
 message RunResponse {
+    string stdout = 1;
+    string stderr = 2;
+    int64 time = 3;
+    int64 memory = 4;
+    int32 exit_code = 5;
+    string compile_msg = 6;
+    string err_msg = 7;
 }

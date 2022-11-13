@@ -34,6 +34,29 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
         "tags": [
           "SubmissionService"
         ]
@@ -132,14 +155,66 @@
       }
     },
     "v1CreateSubmissionRequest": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "problemId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "题目ID"
+        },
+        "language": {
+          "type": "integer",
+          "format": "int32",
+          "title": "编程语言"
+        },
+        "source": {
+          "type": "string",
+          "title": "源码"
+        }
+      }
     },
     "v1ListSubmissionsResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Submission"
+          }
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
     },
     "v1Submission": {
       "type": "object",
-      "title": "题目"
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "problemId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "题目ID"
+        },
+        "language": {
+          "type": "integer",
+          "format": "int32",
+          "title": "编程语言"
+        },
+        "source": {
+          "type": "string",
+          "title": "源码"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "提交"
     }
   }
 }

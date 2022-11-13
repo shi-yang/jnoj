@@ -17,6 +17,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import CreateModal from './create';
+import { listProblems } from '@/api/problem';
 
 const { Title } = Typography;
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
@@ -50,16 +51,13 @@ function SearchTable() {
   function fetchData() {
     const { current, pageSize } = pagination;
     setLoading(true);
-    axios
-      .get('/api/list', {
-        params: {
-          page: current,
-          pageSize,
-          ...formParams,
-        },
-      })
+    listProblems({
+      page: current,
+      pageSize,
+      ...formParams,
+    })
       .then((res) => {
-        setData(res.data.list);
+        setData(res.data.data);
         setPagination({
           ...pagination,
           current,

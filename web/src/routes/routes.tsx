@@ -11,7 +11,7 @@ const ProblemCreate = lazy(() => import('@/pages/problem/create'))
 const ProblemUpdate = lazy(() => import('@/pages/problem/update'))
 const ProblemDetail = lazy(() => import('@/pages/problem/detail'))
 
-const UserLogin = lazy(() => import('@/pages/user/login/index'))
+const UserLogin = lazy(() => import('@/pages/user/login'))
 const UserRegister = lazy(() => import('@/pages/user/register'))
 const UserView = lazy(() => import('@/pages/user/view'))
 const UserSetting = lazy(() => import('@/pages/user/setting'))

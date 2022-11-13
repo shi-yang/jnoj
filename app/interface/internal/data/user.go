@@ -2,10 +2,13 @@ package data
 
 import (
 	"context"
+	"time"
 
 	"jnoj/app/interface/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type userRepo struct {
@@ -21,8 +24,50 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 	}
 }
 
-func (r *userRepo) CreateUser(ctx context.Context, g *biz.User) (*biz.User, error) {
-	return g, nil
+type User struct {
+	ID        int
+	Username  string
+	Nickname  string
+	Password  string
+	Email     string
+	Phone     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt
+}
+
+func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) {
+	res := User{}
+	err := r.data.db.WithContext(ctx).
+		Where(&User{
+			Username: u.Username,
+			Phone:    u.Phone,
+		}).
+		First(&res).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &biz.User{
+		ID:       res.ID,
+		Username: res.Username,
+		Phone:    res.Phone,
+		Password: res.Password,
+	}, nil
+}
+
+func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
+	res := User{
+		Username: u.Username,
+		Password: u.Password,
+		Phone:    u.Phone,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Create(&res).Error
+	return &biz.User{
+		ID: res.ID,
+	}, err
 }
 
 func (r *userRepo) Update(ctx context.Context, g *biz.User) (*biz.User, error) {
@@ -30,9 +75,5 @@ func (r *userRepo) Update(ctx context.Context, g *biz.User) (*biz.User, error) {
 }
 
 func (r *userRepo) FindByID(context.Context, int) (*biz.User, error) {
-	return nil, nil
-}
-
-func (r *userRepo) FindByUsername(context.Context, string) (*biz.User, error) {
 	return nil, nil
 }

@@ -167,7 +167,16 @@
       }
     },
     "v1GetUserInfoResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nickname": {
+          "type": "string"
+        }
+      }
     },
     "v1LoginRequest": {
       "type": "object",
@@ -195,14 +204,33 @@
           "type": "string",
           "title": "手机号"
         },
+        "username": {
+          "type": "string",
+          "title": "用户名"
+        },
         "captcha": {
           "type": "string",
           "title": "验证码"
+        },
+        "password": {
+          "type": "string",
+          "title": "密码"
         }
       }
     },
     "v1RegisterResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "用户ID"
+        },
+        "token": {
+          "type": "string",
+          "title": "登录 token"
+        }
+      }
     },
     "v1User": {
       "type": "object"

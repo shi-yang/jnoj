@@ -25,6 +25,7 @@ const i18n = {
     'type': 'Type',
     'createdAt': 'Created At',
     'save': 'Save',
+    'isExample': 'Is Example?',
   },
   'zh-CN': {
     'tab.baseInfo': '基本信息',
@@ -52,6 +53,7 @@ const i18n = {
     'type': '类型',
     'createdAt': '创建时间',
     'save': '保存',
+    'isExample': '是否样例？',
   },
 };
 

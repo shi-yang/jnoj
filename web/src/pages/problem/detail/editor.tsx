@@ -1,16 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import styles from './style/editor.module.less';
-import { Button } from '@arco-design/web-react';
+import { Button, Message } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
+import { createSubmission } from '@/api/submission';
 
-export default function App() {
+export default function App(props) {
   const t = useLocale(locale);
+  const [value, setValue] = useState('')
   const onChange = React.useCallback((value, viewUpdate) => {
-    console.log("value:", value);
+    setValue(value)
   }, []);
+  const onSubmit = () => {
+    const data = {
+      problemId: props.problem.id,
+      source: value,
+      language: props.language,
+    }
+    createSubmission(data).then(res => {
+      Message.success('已提交')
+    })
+  }
   return (
     <div className={styles.container}>
       <CodeMirror
@@ -27,7 +39,7 @@ export default function App() {
         <div className={styles.left}>
         </div>
         <div className={styles.right}>
-          <Button type='primary'>{t['submit']}</Button>
+          <Button type='primary' onClick={(e) => onSubmit()}>{t['submit']}</Button>
         </div>
       </div>
     </div>

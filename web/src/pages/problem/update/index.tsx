@@ -23,7 +23,7 @@ const TabPane = Tabs.TabPane;
 function Index(props) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Problem>({id:'', statements: []});
+  const [data, setData] = useState<Problem>({id:'', statements: [], name: ''});
   const [language, setLanguage] = useState(0);
   const params = useParams();
   function fetchData() {
@@ -48,13 +48,13 @@ function Index(props) {
           <Grid.Row className={styles.header} justify="space-between" align="center">
             <Grid.Col span={24}>
               <Typography.Title className={styles.title} heading={5}>
-              { data.id } - { data.statements.length > 0 && data.statements[language].name }
+              { data.id } - { data.name }
               </Typography.Title>
             </Grid.Col>
           </Grid.Row>
           <Tabs defaultActiveTab='preview'>
             <TabPane key='preview' title={t['tab.baseInfo']}>
-              <Info />
+              <Info problem={data} />
             </TabPane>
             <TabPane key='statement' title={t['tab.statement']}>
               <Statement problem={data} />

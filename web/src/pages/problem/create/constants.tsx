@@ -35,9 +35,8 @@ export function getColumns(
     },
     {
       title: t['searchTable.columns.createdTime'],
-      dataIndex: 'createdTime',
-      render: (x) => dayjs().subtract(x, 'days').format('YYYY-MM-DD HH:mm:ss'),
-      sorter: (a, b) => b.createdTime - a.createdTime,
+      dataIndex: 'createdAt',
+      sorter: (a, b) => b.createdAt - a.createdAt,
     },
     {
       title: t['searchTable.columns.status'],
@@ -58,7 +57,7 @@ export function getColumns(
           type="text"
           size="small"
         >
-          <Link to='/problem/update/123'>{t['searchTable.columns.operations.view']}</Link>
+          <Link to={`/problem/update/${record.id}`}>{t['searchTable.columns.operations.view']}</Link>
         </Button>
       ),
     },

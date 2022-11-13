@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import Logo from '@/assets/logo.svg';
-import LoginForm from './form';
-import LoginBanner from './banner';
-import styles from './style/index.module.less';
+import LoginForm from './login-form';
+import LoginBanner from './login-banner';
+import styles from './style/login.module.less';
 
 function Login() {
   useEffect(() => {

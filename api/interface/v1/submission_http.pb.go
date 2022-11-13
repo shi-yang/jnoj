@@ -23,11 +23,13 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 const OperationSubmissionServiceCreateSubmission = "/jnoj.interface.v1.SubmissionService/CreateSubmission"
 const OperationSubmissionServiceGetSubmission = "/jnoj.interface.v1.SubmissionService/GetSubmission"
+const OperationSubmissionServiceGetSubmissionInfo = "/jnoj.interface.v1.SubmissionService/GetSubmissionInfo"
 const OperationSubmissionServiceListSubmissions = "/jnoj.interface.v1.SubmissionService/ListSubmissions"
 
 type SubmissionServiceHTTPServer interface {
 	CreateSubmission(context.Context, *CreateSubmissionRequest) (*Submission, error)
 	GetSubmission(context.Context, *GetSubmissionRequest) (*Submission, error)
+	GetSubmissionInfo(context.Context, *GetSubmissionInfoRequest) (*SubmissionInfo, error)
 	ListSubmissions(context.Context, *ListSubmissionsRequest) (*ListSubmissionsResponse, error)
 }
 
@@ -37,6 +39,7 @@ func RegisterSubmissionServiceHTTPServer(s *http.Server, srv SubmissionServiceHT
 	r.GET("/submissions", _SubmissionService_ListSubmissions0_HTTP_Handler(srv))
 	r.GET("/submissions/{id}", _SubmissionService_GetSubmission0_HTTP_Handler(srv))
 	r.POST("/submissions", _SubmissionService_CreateSubmission0_HTTP_Handler(srv))
+	r.GET("/submissions/{id}/info", _SubmissionService_GetSubmissionInfo0_HTTP_Handler(srv))
 }
 
 func _SubmissionService_ListSubmissions0_HTTP_Handler(srv SubmissionServiceHTTPServer) func(ctx http.Context) error {
@@ -99,9 +102,32 @@ func _SubmissionService_CreateSubmission0_HTTP_Handler(srv SubmissionServiceHTTP
 	}
 }
 
+func _SubmissionService_GetSubmissionInfo0_HTTP_Handler(srv SubmissionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetSubmissionInfoRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSubmissionServiceGetSubmissionInfo)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetSubmissionInfo(ctx, req.(*GetSubmissionInfoRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*SubmissionInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
 type SubmissionServiceHTTPClient interface {
 	CreateSubmission(ctx context.Context, req *CreateSubmissionRequest, opts ...http.CallOption) (rsp *Submission, err error)
 	GetSubmission(ctx context.Context, req *GetSubmissionRequest, opts ...http.CallOption) (rsp *Submission, err error)
+	GetSubmissionInfo(ctx context.Context, req *GetSubmissionInfoRequest, opts ...http.CallOption) (rsp *SubmissionInfo, err error)
 	ListSubmissions(ctx context.Context, req *ListSubmissionsRequest, opts ...http.CallOption) (rsp *ListSubmissionsResponse, err error)
 }
 
@@ -131,6 +157,19 @@ func (c *SubmissionServiceHTTPClientImpl) GetSubmission(ctx context.Context, in 
 	pattern := "/submissions/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSubmissionServiceGetSubmission))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *SubmissionServiceHTTPClientImpl) GetSubmissionInfo(ctx context.Context, in *GetSubmissionInfoRequest, opts ...http.CallOption) (*SubmissionInfo, error) {
+	var out SubmissionInfo
+	pattern := "/submissions/{id}/info"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSubmissionServiceGetSubmissionInfo))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

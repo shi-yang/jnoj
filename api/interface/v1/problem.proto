@@ -4,6 +4,7 @@ package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -30,11 +31,10 @@ service ProblemService {
     // 创建题目
     rpc UpdateProblem (UpdateProblemRequest) returns (Problem) {
         option (google.api.http) = {
-            post: "/problems"
+            put: "/problems/{id}"
             body: "*"
         };
     };
-
     // 获取题目描述列表
     rpc ListProblemStatements (ListProblemStatementsRequest) returns (ListProblemStatementsResponse) {
         option (google.api.http) = {
@@ -57,17 +57,16 @@ service ProblemService {
     // 更新题目描述
     rpc UpdateProblemStatement (UpdateProblemStatementRequest) returns (ProblemStatement) {
         option (google.api.http) = {
-            put: "/problems/{id}/statements"
+            put: "/problems/{id}/statements/{sid}"
             body: "*"
         };
     }
     // 删除题目描述
     rpc DeleteProblemStatement (DeleteProblemStatementRequest) returns (ProblemStatement) {
         option (google.api.http) = {
-            delete: "/problems/{id}/statements"
+            delete: "/problems/{id}/statements/{sid}"
         };
     }
-
     // 获取题目裁判程序列表
     rpc ListProblemCheckers (ListProblemCheckersRequest) returns (ListProblemCheckersResponse) {
         option (google.api.http) = {
@@ -94,7 +93,6 @@ service ProblemService {
             body: "*"
         };
     }
-
     // 获取题目测试点列表
     rpc ListProblemTests (ListProblemTestsRequest) returns (ListProblemTestsResponse) {
         option (google.api.http) = {
@@ -117,47 +115,54 @@ service ProblemService {
     // 更新题目测试点
     rpc UpdateProblemTest (UpdateProblemTestRequest) returns (ProblemTest) {
         option (google.api.http) = {
-            put: "/problems/{id}/tests"
+            put: "/problems/{id}/tests/{tid}"
             body: "*"
         };
     }
     // 删除题目测试点
-    rpc DeleteProblemTest (DeleteProblemTestRequest) returns (ProblemTest) {
+    rpc DeleteProblemTest (DeleteProblemTestRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/problems/{id}/tests"
+            delete: "/problems/{id}/tests/{tid}"
         };
     }
 
     // 获取题目解答程序列表
     rpc ListProblemSolutions (ListProblemSolutionsRequest) returns (ListProblemSolutionsResponse) {
         option (google.api.http) = {
-            get: "/problems/{id}/solution"
+            get: "/problems/{id}/solutions"
         };
     };
     // 获取题目解答程序详情
     rpc GetProblemSolution (GetProblemSolutionRequest) returns (ProblemSolution) {
         option (google.api.http) = {
-            get: "/problems/{id}/solution"
+            get: "/problems/{id}/solutions/{sid}"
         };
     };
     // 创建题目解答程序
     rpc CreateProblemSolution (CreateProblemSolutionRequest) returns (ProblemSolution) {
         option (google.api.http) = {
-            post: "/problems/{id}/solution"
+            post: "/problems/{id}/solutions"
             body: "*"
         };
     };
     // 更新题目解答程序
     rpc UpdateProblemSolution (UpdateProblemSolutionRequest) returns (ProblemSolution) {
         option (google.api.http) = {
-            put: "/problems/{id}/solution"
+            put: "/problems/{id}/solutions/{sid}"
             body: "*"
         };
     }
     // 删除题目解答程序
     rpc DeleteProblemSolution (DeleteProblemSolutionRequest) returns (ProblemSolution) {
         option (google.api.http) = {
-            delete: "/problems/{id}/solution"
+            delete: "/problems/{id}/solutions/{sid}"
+        };
+    }
+    // 运行题目解答程序
+    rpc RunProblemSolution (RunProblemSolutionRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problem_solutions/{sid}/run"
+            body: "*"
         };
     }
 }
@@ -166,25 +171,31 @@ service ProblemService {
 message Problem {
     // 题目ID
     int32 id = 1;
+    // 名称
+    string name = 2;
     // 时间限制
-    int32 time_limit = 2;
+    int32 time_limit = 3;
     // 内存限制
-    int32 memory_limit = 3;
+    int32 memory_limit = 4;
     // 题目描述
-    repeated ProblemStatement statements = 4;
+    repeated ProblemStatement statements = 5;
+    int32 accepted_count = 6;
+    int32 submit_count = 7;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    SampleTest sample_test = 5;
+    repeated SampleTest sample_tests = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
 }
 
 // 题目描述
 message ProblemStatement {
     int32 id = 1;
     int32 problem_id = 2;
-    int32 language = 3;
+    string language = 3;
     string name = 4;
     string legend = 5;
     string input = 6;
@@ -193,8 +204,10 @@ message ProblemStatement {
 }
 
 message ListProblemsRequest {
-    int32 page = 1;
-    int32 per_page = 2;
+    string name = 1;
+    int32 user_id = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }
 
 message ListProblemsResponse {
@@ -226,10 +239,13 @@ message UpdateProblemRequest {
 
 message ListProblemStatementsRequest {
     int32 id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
 }
 
 message ListProblemStatementsResponse {
-
+    repeated ProblemStatement data = 1;
+    int64 total = 2;
 }
 
 message GetProblemStatementRequest {
@@ -243,11 +259,18 @@ message CreateProblemStatementRequest {
 
 message UpdateProblemStatementRequest {
     int32 id = 1;
+    int32 sid = 2;
+    string language = 3;
+    string name = 4;
+    string input = 5;
+    string output = 6;
+    string note = 7;
+    string legend = 8;
 }
 
 message DeleteProblemStatementRequest {
     int32 id = 1;
-    int32 statement_id = 2;
+    int32 sid = 2;
 }
 
 message ListProblemCheckersRequest {
@@ -255,7 +278,8 @@ message ListProblemCheckersRequest {
 }
 
 message ListProblemCheckersResponse {
-
+    repeated ProblemChecker data = 1;
+    int64 total = 2;
 }
 
 message GetProblemCheckerRequest {
@@ -276,6 +300,8 @@ message UpdateProblemCheckerRequest {
 
 message ListProblemTestsRequest {
     int32 id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
 }
 
 message ListProblemTestsResponse {
@@ -288,9 +314,9 @@ message GetProblemTestRequest {
 }
 
 message ProblemTest {
-    int64 id = 1;
+    string id = 1;
     string content = 2;
-    int64 size = 3;
+    int64 input_size = 3;
     string remark = 4;
     int32 user_id = 5;
     bool is_example = 6;
@@ -300,40 +326,68 @@ message ProblemTest {
 
 message CreateProblemTestRequest {
     int32 id = 1;
+    bytes input_file_content = 2;
+    string filename = 3;
 }
 
 message UpdateProblemTestRequest {
     int32 id = 1;
+    string tid = 2;
+    bool is_example = 3;
+    string remark = 4;
 }
 
 message DeleteProblemTestRequest {
     int32 id = 1;
+    string tid = 2;
 }
 
 message ListProblemSolutionsRequest {
     int32 id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
 }
 
 message ListProblemSolutionsResponse {
-    int32 id = 1;
+    repeated ProblemSolution data = 1;
+    int64 total = 2;
 }
 
 message GetProblemSolutionRequest {
     int32 id = 1;
+    int32 sid = 2;
 }
 
 message ProblemSolution {
-
+    int32 id = 1;
+    string name = 2;
+    string content = 3;
+    string type = 4;
+    int32 user_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
 }
 
 message CreateProblemSolutionRequest {
     int32 id = 1;
+    string name = 2;
+    string content = 3;
+    string type = 4;
 }
 
 message UpdateProblemSolutionRequest {
     int32 id = 1;
+    int32 sid = 2;
+    string name = 3;
+    string content = 4;
+    string type = 5;
 }
 
 message DeleteProblemSolutionRequest {
     int32 id = 1;
+    int32 sid = 2;
+}
+
+message RunProblemSolutionRequest {
+    int32 sid = 1;
 }

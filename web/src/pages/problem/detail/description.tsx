@@ -12,7 +12,7 @@ const Description = (props) => {
           <Paragraph type='secondary' spacing='close'>
             {t['timeLimit']}：{props.problem.timeLimit / 1000}s
             <Divider type='vertical' />
-            {t['memoryLimit']}：{props.problem.memoryLimit / 1024 / 1024}MB
+            {t['memoryLimit']}：{props.problem.memoryLimit}MB
           </Paragraph>
           <Paragraph>
             {props.problem.statements[props.language].legend}

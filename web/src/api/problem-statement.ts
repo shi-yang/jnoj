@@ -33,6 +33,6 @@ export interface updateProblemStatementRequest {
   notes: string;
 }
 
-export function updateProblemStatement(id: number, data: updateProblemStatementRequest) {
-  return axios.put(`/problems/${id}/statements`, data)
+export function updateProblemStatement(id: number, sid: number, data: updateProblemStatementRequest) {
+  return axios.put(`/problems/${id}/statements/${sid}`, data)
 }

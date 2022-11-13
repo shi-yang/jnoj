@@ -24,9 +24,9 @@ type User struct {
 // UserRepo is a User repo.
 type UserRepo interface {
 	CreateUser(context.Context, *User) (*User, error)
+	GetUser(context.Context, *User) (*User, error)
 	Update(context.Context, *User) (*User, error)
 	FindByID(context.Context, int) (*User, error)
-	FindByUsername(context.Context, string) (*User, error)
 }
 
 // UserUsecase is a User usecase.
@@ -41,20 +41,24 @@ func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
 }
 
 func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string, error) {
-	user, err := uc.repo.FindByUsername(ctx, req.Username)
+	user, err := uc.repo.GetUser(ctx, &User{Username: req.Username})
 	if err != nil {
-		return "", err
+		return "", v1.ErrorUserExist("username not exist.")
 	}
 	if validatePassword(req.Password, user.Password) {
 		return auth.GenerateToken(user.ID)
 	}
-	return "", fmt.Errorf("can not login")
+	return "", fmt.Errorf("login faild")
 }
 
 // Register creates a User, and returns the new User.
-func (uc *UserUsecase) Register(ctx context.Context, g *User) (*User, error) {
-	uc.log.WithContext(ctx).Infof("CreateUser: %v", g.Username)
-	return uc.repo.CreateUser(ctx, g)
+func (uc *UserUsecase) Register(ctx context.Context, u *User) (*User, error) {
+	uc.log.WithContext(ctx).Infof("CreateUser: %v", u.Username)
+	if _, err := uc.repo.GetUser(ctx, &User{Username: u.Username}); err == nil {
+		return nil, fmt.Errorf("username exist.")
+	}
+	u.Password, _ = generatePasswordHash(u.Password)
+	return uc.repo.CreateUser(ctx, u)
 }
 
 func (uc *UserUsecase) GetUser(ctx context.Context, id int) (*User, error) {

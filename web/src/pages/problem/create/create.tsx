@@ -3,6 +3,8 @@ import { Modal, Button, Form, Input, Select, Message, Radio } from '@arco-design
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
+import { createProblem } from '@/api/problem';
+import { useNavigate } from 'react-router-dom';
 const FormItem = Form.Item;
 
 function App() {
@@ -10,15 +12,18 @@ function App() {
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   function onOk() {
-    form.validate().then((res) => {
+    form.validate().then((values) => {
       setConfirmLoading(true);
-      setTimeout(() => {
-        Message.success('Success !');
-        setVisible(false);
-        setConfirmLoading(false);
-      }, 1500);
+      createProblem(values)
+        .then(res => {
+          navigate(`/problem/update/${res.data.id}`)
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        })
     });
   }
 
@@ -54,12 +59,6 @@ function App() {
         >
           <FormItem label='题目名称' required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
-          </FormItem>
-          <FormItem label='题目类型' field='type'>
-            <Radio.Group defaultValue='1'>
-              <Radio value='1'>标准输入输出</Radio>
-              <Radio value='2' disabled>函数题目</Radio>
-            </Radio.Group>
           </FormItem>
         </Form>
       </Modal>

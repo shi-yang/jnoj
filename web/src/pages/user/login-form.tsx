@@ -2,18 +2,19 @@ import {
   Form,
   Input,
   Checkbox,
-  Link,
   Button,
+  Link,
   Space,
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import styles from './style/index.module.less';
+import styles from './style/login.module.less';
+import { Login } from '@/api/user';
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
@@ -23,6 +24,7 @@ export default function LoginForm() {
     useStorage('loginParams');
 
   const t = useLocale(locale);
+  const navigate = useNavigate();
 
   const [rememberPassword, setRememberPassword] = useState(!!loginParams);
 
@@ -42,15 +44,10 @@ export default function LoginForm() {
   function login(params) {
     setErrorMessage('');
     setLoading(true);
-    axios
-      .post('/api/user/login', params)
+    Login(params)
       .then((res) => {
-        const { status, msg } = res.data;
-        if (status === 'ok') {
-          afterLoginSuccess(params);
-        } else {
-          setErrorMessage(msg || t['login.form.login.errMsg']);
-        }
+        localStorage.setItem('token', res.data.token);
+        afterLoginSuccess(params);
       })
       .finally(() => {
         setLoading(false);
@@ -84,7 +81,7 @@ export default function LoginForm() {
         initialValues={{ userName: 'admin', password: 'admin' }}
       >
         <Form.Item
-          field="userName"
+          field="username"
           rules={[{ required: true, message: t['login.form.userName.errMsg'] }]}
         >
           <Input
@@ -117,6 +114,7 @@ export default function LoginForm() {
             type="text"
             long
             className={styles['login-form-register-btn']}
+            onClick={() => navigate('/register') }
           >
             {t['login.form.register']}
           </Button>

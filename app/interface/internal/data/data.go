@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"jnoj/app/interface/internal/conf"
 	"os"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis"
 	"github.com/google/wire"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	logger2 "gorm.io/gorm/logger"
@@ -21,12 +24,14 @@ var ProviderSet = wire.NewSet(
 	NewContestRepo,
 	NewProblemRepo,
 	NewUserRepo,
+	NewSubmissionRepo,
 )
 
 // Data .
 type Data struct {
 	db      *gorm.DB
 	redisdb *redis.Client
+	mongodb *mongo.Database
 }
 
 // NewData .
@@ -49,12 +54,20 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	redisdb := redis.NewClient(&redis.Options{
 		Addr: c.Redis.Addr,
 	})
+
+	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(c.Mongodb.Uri))
+	if err != nil {
+		log.Fatalf("failed opening connection to mongodb: %v", err)
+	}
+
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		redisdb.Close()
+		mongoClient.Disconnect(context.TODO())
 	}
 	return &Data{
 		db:      db,
 		redisdb: redisdb,
+		mongodb: mongoClient.Database(c.Mongodb.Database),
 	}, cleanup, nil
 }

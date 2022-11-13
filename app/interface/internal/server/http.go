@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/gorilla/handlers"
 )
 
 // NewHTTPServer new a HTTP server.
@@ -15,12 +16,18 @@ func NewHTTPServer(c *conf.Server,
 	contest *service.ContestService,
 	user *service.UserService,
 	problem *service.ProblemService,
+	submission *service.SubmissionService,
 	logger log.Logger,
 ) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
 		),
+		http.Filter(handlers.CORS(
+			handlers.AllowedOrigins([]string{"*"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "PATCH"}),
+			handlers.AllowedHeaders([]string{"Origin", "Content-Length", "Content-Type", "Authorization"}),
+		)),
 	}
 	if c.Http.Network != "" {
 		opts = append(opts, http.Network(c.Http.Network))
@@ -32,8 +39,14 @@ func NewHTTPServer(c *conf.Server,
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
+
+	// 处理上传文件
+	route := srv.Route("/")
+	route.POST("/problems/{id}/upload_test", problem.UploadProblemTest)
+
 	v1.RegisterContestServiceHTTPServer(srv, contest)
 	v1.RegisterProblemServiceHTTPServer(srv, problem)
 	v1.RegisterUserServiceHTTPServer(srv, user)
+	v1.RegisterSubmissionServiceHTTPServer(srv, submission)
 	return srv
 }

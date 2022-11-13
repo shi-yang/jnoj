@@ -11,6 +11,9 @@ const i18n = {
     'language': 'Language',
     'action': 'Action',
     'createdAt': 'Created At',
+    'verdict': 'Verdict',
+    'time': 'Time',
+    'memory': 'Memory',
   },
   'zh-CN': {
     'submit': '提交',
@@ -24,6 +27,9 @@ const i18n = {
     'language': '语言',
     'action': '操作',
     'createdAt': '创建时间',
+    'verdict': '测评结果',
+    'time': '时间',
+    'memory': '内存',
   },
 };
 

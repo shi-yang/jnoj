@@ -11,6 +11,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
+import { useParams } from 'react-router-dom';
 const TabPane = Tabs.TabPane;
 
 function BasicProfile() {
@@ -18,13 +19,13 @@ function BasicProfile() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ id: 0, name: '', sampleTests: [] });
   const [activeTab, setActiveTab] = useState('1');
+  const params = useParams();
   function fetchData() {
     setLoading(true);
     axios
-      .get('/problems/123')
+      .get(`/problems/${params}`)
       .then((res) => {
         setData(res.data || {});
-        console.log('123', res)
       })
       .finally(() => {
         setLoading(false);

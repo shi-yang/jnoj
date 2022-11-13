@@ -10,6 +10,7 @@ import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	auth "jnoj/internal/middleware/auth"
 )
 
@@ -39,6 +40,7 @@ const OperationProblemServiceListProblemSolutions = "/jnoj.interface.v1.ProblemS
 const OperationProblemServiceListProblemStatements = "/jnoj.interface.v1.ProblemService/ListProblemStatements"
 const OperationProblemServiceListProblemTests = "/jnoj.interface.v1.ProblemService/ListProblemTests"
 const OperationProblemServiceListProblems = "/jnoj.interface.v1.ProblemService/ListProblems"
+const OperationProblemServiceRunProblemSolution = "/jnoj.interface.v1.ProblemService/RunProblemSolution"
 const OperationProblemServiceUpdateProblem = "/jnoj.interface.v1.ProblemService/UpdateProblem"
 const OperationProblemServiceUpdateProblemChecker = "/jnoj.interface.v1.ProblemService/UpdateProblemChecker"
 const OperationProblemServiceUpdateProblemSolution = "/jnoj.interface.v1.ProblemService/UpdateProblemSolution"
@@ -53,7 +55,7 @@ type ProblemServiceHTTPServer interface {
 	CreateProblemTest(context.Context, *CreateProblemTestRequest) (*ProblemTest, error)
 	DeleteProblemSolution(context.Context, *DeleteProblemSolutionRequest) (*ProblemSolution, error)
 	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*ProblemStatement, error)
-	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*ProblemTest, error)
+	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*emptypb.Empty, error)
 	GetProblem(context.Context, *GetProblemRequest) (*Problem, error)
 	GetProblemChecker(context.Context, *GetProblemCheckerRequest) (*ProblemChecker, error)
 	GetProblemSolution(context.Context, *GetProblemSolutionRequest) (*ProblemSolution, error)
@@ -64,6 +66,7 @@ type ProblemServiceHTTPServer interface {
 	ListProblemStatements(context.Context, *ListProblemStatementsRequest) (*ListProblemStatementsResponse, error)
 	ListProblemTests(context.Context, *ListProblemTestsRequest) (*ListProblemTestsResponse, error)
 	ListProblems(context.Context, *ListProblemsRequest) (*ListProblemsResponse, error)
+	RunProblemSolution(context.Context, *RunProblemSolutionRequest) (*emptypb.Empty, error)
 	UpdateProblem(context.Context, *UpdateProblemRequest) (*Problem, error)
 	UpdateProblemChecker(context.Context, *UpdateProblemCheckerRequest) (*ProblemChecker, error)
 	UpdateProblemSolution(context.Context, *UpdateProblemSolutionRequest) (*ProblemSolution, error)
@@ -79,12 +82,12 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.GET("/problems", _ProblemService_ListProblems0_HTTP_Handler(srv))
 	r.GET("/problems/{id}", _ProblemService_GetProblem0_HTTP_Handler(srv))
 	r.POST("/problems", _ProblemService_CreateProblem0_HTTP_Handler(srv))
-	r.POST("/problems", _ProblemService_UpdateProblem0_HTTP_Handler(srv))
+	r.PUT("/problems/{id}", _ProblemService_UpdateProblem0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/statements", _ProblemService_ListProblemStatements0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/statements", _ProblemService_GetProblemStatement0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/statements", _ProblemService_CreateProblemStatement0_HTTP_Handler(srv))
-	r.PUT("/problems/{id}/statements", _ProblemService_UpdateProblemStatement0_HTTP_Handler(srv))
-	r.DELETE("/problems/{id}/statements", _ProblemService_DeleteProblemStatement0_HTTP_Handler(srv))
+	r.PUT("/problems/{id}/statements/{sid}", _ProblemService_UpdateProblemStatement0_HTTP_Handler(srv))
+	r.DELETE("/problems/{id}/statements/{sid}", _ProblemService_DeleteProblemStatement0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/checkers", _ProblemService_ListProblemCheckers0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/checkers", _ProblemService_GetProblemChecker0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/checkers", _ProblemService_CreateProblemChecker0_HTTP_Handler(srv))
@@ -92,13 +95,14 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.GET("/problems/{id}/tests", _ProblemService_ListProblemTests0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/tests", _ProblemService_GetProblemTest0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/tests", _ProblemService_CreateProblemTest0_HTTP_Handler(srv))
-	r.PUT("/problems/{id}/tests", _ProblemService_UpdateProblemTest0_HTTP_Handler(srv))
-	r.DELETE("/problems/{id}/tests", _ProblemService_DeleteProblemTest0_HTTP_Handler(srv))
-	r.GET("/problems/{id}/solution", _ProblemService_ListProblemSolutions0_HTTP_Handler(srv))
-	r.GET("/problems/{id}/solution", _ProblemService_GetProblemSolution0_HTTP_Handler(srv))
-	r.POST("/problems/{id}/solution", _ProblemService_CreateProblemSolution0_HTTP_Handler(srv))
-	r.PUT("/problems/{id}/solution", _ProblemService_UpdateProblemSolution0_HTTP_Handler(srv))
-	r.DELETE("/problems/{id}/solution", _ProblemService_DeleteProblemSolution0_HTTP_Handler(srv))
+	r.PUT("/problems/{id}/tests/{tid}", _ProblemService_UpdateProblemTest0_HTTP_Handler(srv))
+	r.DELETE("/problems/{id}/tests/{tid}", _ProblemService_DeleteProblemTest0_HTTP_Handler(srv))
+	r.GET("/problems/{id}/solutions", _ProblemService_ListProblemSolutions0_HTTP_Handler(srv))
+	r.GET("/problems/{id}/solutions/{sid}", _ProblemService_GetProblemSolution0_HTTP_Handler(srv))
+	r.POST("/problems/{id}/solutions", _ProblemService_CreateProblemSolution0_HTTP_Handler(srv))
+	r.PUT("/problems/{id}/solutions/{sid}", _ProblemService_UpdateProblemSolution0_HTTP_Handler(srv))
+	r.DELETE("/problems/{id}/solutions/{sid}", _ProblemService_DeleteProblemSolution0_HTTP_Handler(srv))
+	r.POST("/problem_solutions/{sid}/run", _ProblemService_RunProblemSolution0_HTTP_Handler(srv))
 }
 
 func _ProblemService_ListProblems0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
@@ -165,6 +169,9 @@ func _ProblemService_UpdateProblem0_HTTP_Handler(srv ProblemServiceHTTPServer) f
 	return func(ctx http.Context) error {
 		var in UpdateProblemRequest
 		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationProblemServiceUpdateProblem)
@@ -483,7 +490,7 @@ func _ProblemService_DeleteProblemTest0_HTTP_Handler(srv ProblemServiceHTTPServe
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProblemTest)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -598,6 +605,28 @@ func _ProblemService_DeleteProblemSolution0_HTTP_Handler(srv ProblemServiceHTTPS
 	}
 }
 
+func _ProblemService_RunProblemSolution0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RunProblemSolutionRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceRunProblemSolution)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RunProblemSolution(ctx, req.(*RunProblemSolutionRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ProblemServiceHTTPClient interface {
 	CreateProblem(ctx context.Context, req *CreateProblemRequest, opts ...http.CallOption) (rsp *CreateProblemResponse, err error)
 	CreateProblemChecker(ctx context.Context, req *CreateProblemCheckerRequest, opts ...http.CallOption) (rsp *ProblemChecker, err error)
@@ -606,7 +635,7 @@ type ProblemServiceHTTPClient interface {
 	CreateProblemTest(ctx context.Context, req *CreateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	DeleteProblemSolution(ctx context.Context, req *DeleteProblemSolutionRequest, opts ...http.CallOption) (rsp *ProblemSolution, err error)
 	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
-	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
+	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetProblem(ctx context.Context, req *GetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	GetProblemChecker(ctx context.Context, req *GetProblemCheckerRequest, opts ...http.CallOption) (rsp *ProblemChecker, err error)
 	GetProblemSolution(ctx context.Context, req *GetProblemSolutionRequest, opts ...http.CallOption) (rsp *ProblemSolution, err error)
@@ -617,6 +646,7 @@ type ProblemServiceHTTPClient interface {
 	ListProblemStatements(ctx context.Context, req *ListProblemStatementsRequest, opts ...http.CallOption) (rsp *ListProblemStatementsResponse, err error)
 	ListProblemTests(ctx context.Context, req *ListProblemTestsRequest, opts ...http.CallOption) (rsp *ListProblemTestsResponse, err error)
 	ListProblems(ctx context.Context, req *ListProblemsRequest, opts ...http.CallOption) (rsp *ListProblemsResponse, err error)
+	RunProblemSolution(ctx context.Context, req *RunProblemSolutionRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateProblem(ctx context.Context, req *UpdateProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	UpdateProblemChecker(ctx context.Context, req *UpdateProblemCheckerRequest, opts ...http.CallOption) (rsp *ProblemChecker, err error)
 	UpdateProblemSolution(ctx context.Context, req *UpdateProblemSolutionRequest, opts ...http.CallOption) (rsp *ProblemSolution, err error)
@@ -660,7 +690,7 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemChecker(ctx context.Context,
 
 func (c *ProblemServiceHTTPClientImpl) CreateProblemSolution(ctx context.Context, in *CreateProblemSolutionRequest, opts ...http.CallOption) (*ProblemSolution, error) {
 	var out ProblemSolution
-	pattern := "/problems/{id}/solution"
+	pattern := "/problems/{id}/solutions"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceCreateProblemSolution))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -699,7 +729,7 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemTest(ctx context.Context, in
 
 func (c *ProblemServiceHTTPClientImpl) DeleteProblemSolution(ctx context.Context, in *DeleteProblemSolutionRequest, opts ...http.CallOption) (*ProblemSolution, error) {
 	var out ProblemSolution
-	pattern := "/problems/{id}/solution"
+	pattern := "/problems/{id}/solutions/{sid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemSolution))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -712,7 +742,7 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemSolution(ctx context.Context
 
 func (c *ProblemServiceHTTPClientImpl) DeleteProblemStatement(ctx context.Context, in *DeleteProblemStatementRequest, opts ...http.CallOption) (*ProblemStatement, error) {
 	var out ProblemStatement
-	pattern := "/problems/{id}/statements"
+	pattern := "/problems/{id}/statements/{sid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemStatement))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -723,9 +753,9 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemStatement(ctx context.Contex
 	return &out, err
 }
 
-func (c *ProblemServiceHTTPClientImpl) DeleteProblemTest(ctx context.Context, in *DeleteProblemTestRequest, opts ...http.CallOption) (*ProblemTest, error) {
-	var out ProblemTest
-	pattern := "/problems/{id}/tests"
+func (c *ProblemServiceHTTPClientImpl) DeleteProblemTest(ctx context.Context, in *DeleteProblemTestRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problems/{id}/tests/{tid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemTest))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -764,7 +794,7 @@ func (c *ProblemServiceHTTPClientImpl) GetProblemChecker(ctx context.Context, in
 
 func (c *ProblemServiceHTTPClientImpl) GetProblemSolution(ctx context.Context, in *GetProblemSolutionRequest, opts ...http.CallOption) (*ProblemSolution, error) {
 	var out ProblemSolution
-	pattern := "/problems/{id}/solution"
+	pattern := "/problems/{id}/solutions/{sid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceGetProblemSolution))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -816,7 +846,7 @@ func (c *ProblemServiceHTTPClientImpl) ListProblemCheckers(ctx context.Context, 
 
 func (c *ProblemServiceHTTPClientImpl) ListProblemSolutions(ctx context.Context, in *ListProblemSolutionsRequest, opts ...http.CallOption) (*ListProblemSolutionsResponse, error) {
 	var out ListProblemSolutionsResponse
-	pattern := "/problems/{id}/solution"
+	pattern := "/problems/{id}/solutions"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceListProblemSolutions))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -866,13 +896,26 @@ func (c *ProblemServiceHTTPClientImpl) ListProblems(ctx context.Context, in *Lis
 	return &out, err
 }
 
+func (c *ProblemServiceHTTPClientImpl) RunProblemSolution(ctx context.Context, in *RunProblemSolutionRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problem_solutions/{sid}/run"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceRunProblemSolution))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *ProblemServiceHTTPClientImpl) UpdateProblem(ctx context.Context, in *UpdateProblemRequest, opts ...http.CallOption) (*Problem, error) {
 	var out Problem
-	pattern := "/problems"
+	pattern := "/problems/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblem))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -894,7 +937,7 @@ func (c *ProblemServiceHTTPClientImpl) UpdateProblemChecker(ctx context.Context,
 
 func (c *ProblemServiceHTTPClientImpl) UpdateProblemSolution(ctx context.Context, in *UpdateProblemSolutionRequest, opts ...http.CallOption) (*ProblemSolution, error) {
 	var out ProblemSolution
-	pattern := "/problems/{id}/solution"
+	pattern := "/problems/{id}/solutions/{sid}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemSolution))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -907,7 +950,7 @@ func (c *ProblemServiceHTTPClientImpl) UpdateProblemSolution(ctx context.Context
 
 func (c *ProblemServiceHTTPClientImpl) UpdateProblemStatement(ctx context.Context, in *UpdateProblemStatementRequest, opts ...http.CallOption) (*ProblemStatement, error) {
 	var out ProblemStatement
-	pattern := "/problems/{id}/statements"
+	pattern := "/problems/{id}/statements/{sid}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemStatement))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -920,7 +963,7 @@ func (c *ProblemServiceHTTPClientImpl) UpdateProblemStatement(ctx context.Contex
 
 func (c *ProblemServiceHTTPClientImpl) UpdateProblemTest(ctx context.Context, in *UpdateProblemTestRequest, opts ...http.CallOption) (*ProblemTest, error) {
 	var out ProblemTest
-	pattern := "/problems/{id}/tests"
+	pattern := "/problems/{id}/tests/{tid}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemTest))
 	opts = append(opts, http.PathTemplate(pattern))

@@ -3,11 +3,12 @@ import { Modal, Button, Form, Input, Select, Message, Radio } from '@arco-design
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
+import { createProblemStatement } from '@/api/problem-statement';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 const options = ['中文', 'English'];
-function App() {
+function App(props) {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -16,11 +17,14 @@ function App() {
   function onOk() {
     form.validate().then((res) => {
       setConfirmLoading(true);
-      setTimeout(() => {
-        Message.success('Success !');
-        setVisible(false);
-        setConfirmLoading(false);
-      }, 1500);
+      createProblemStatement(props.problem.id, res)
+        .then(res => {
+          Message.success('Success !');
+        })
+        .finally(() => {
+          setVisible(false);
+          setConfirmLoading(false);
+        })
     });
   }
 
@@ -54,7 +58,7 @@ function App() {
             style: { flexBasis: 'calc(100% - 90px)' },
           }}
         >
-          <FormItem label={t['language']}>
+          <FormItem field='language' label={t['language']}>
             <Select
               placeholder='Please select'
               style={{ width: 154 }}

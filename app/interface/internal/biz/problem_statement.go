@@ -3,12 +3,20 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"jnoj/internal/middleware/auth"
 )
 
 // ProblemStatement is a ProblemStatement model.
 type ProblemStatement struct {
-	ID   int
-	Name string
+	ID        int
+	ProblemID int
+	Name      string
+	Input     string
+	Output    string
+	Note      string
+	Legend    string
+	Language  string
+	UserID    int
 }
 
 // ProblemStatementRepo is a ProblemStatement repo.
@@ -31,8 +39,9 @@ func (uc *ProblemUsecase) GetProblemStatement(ctx context.Context, id int) (*Pro
 }
 
 // CreateProblemStatement creates a ProblemStatement, and returns the new ProblemStatement.
-func (uc *ProblemUsecase) CreateProblemStatement(ctx context.Context, g *ProblemStatement) (*ProblemStatement, error) {
-	return uc.repo.CreateProblemStatement(ctx, g)
+func (uc *ProblemUsecase) CreateProblemStatement(ctx context.Context, p *ProblemStatement) (*ProblemStatement, error) {
+	p.UserID, _ = auth.GetUserID(ctx)
+	return uc.repo.CreateProblemStatement(ctx, p)
 }
 
 // UpdateProblemStatement update a ProblemStatement

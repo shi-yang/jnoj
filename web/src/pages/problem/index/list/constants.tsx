@@ -36,11 +36,10 @@ export function getColumns(
       title: t['problem.columns.submitAndPass'],
       dataIndex: 'count',
       align: 'center',
-      sorter: (a, b) => a.count - b.count,
-      render(x) {
+      render(_, record) {
         return (
           <>
-            {Number(x).toLocaleString()} / {Number(x).toLocaleString()}
+            {Number(record.acceptedCount).toLocaleString()} / {Number(record.submitCount).toLocaleString()}
           </>
         );
       },

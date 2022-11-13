@@ -7,4 +7,5 @@ var ProviderSet = wire.NewSet(
 	NewContestService,
 	NewProblemService,
 	NewUserService,
+	NewSubmissionService,
 )

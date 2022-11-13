@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Space, Table, TableColumnProps } from '@arco-design/web-react';
+import { Button, Card, Form, Input, Message, Modal, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
+import { ListProblemSolutions, createProblemSolution, deleteProblemSolution, getProblemSolution, updateProblemSolution, runProblemSolution } from '@/api/problem-solution';
 import locale from './locale';
 import styles from './style/tests.module.less';
-import { ListProblemSolutions } from '@/api/problem-solution';
+const FormItem = Form.Item;
 
 const App = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  function fetchData() {
-    setLoading(true);
-    ListProblemSolutions(props.problem.id)
-      .then((res) => {
-        setData(res.data || []);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
+  const [visible, setVisible] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [form] = Form.useForm();
   const columns: TableColumnProps[] = [
     {
       title: '#',
@@ -30,20 +23,12 @@ const App = (props) => {
       dataIndex: 'name',
     },
     {
-      title: t['language'],
-      dataIndex: 'language',
-    },
-    {
-      title: t['length'],
-      dataIndex: 'length',
-    },
-    {
       title: t['type'],
       dataIndex: 'type',
     },
     {
       title: t['createdAt'],
-      dataIndex: 'created_at',
+      dataIndex: 'createdAt',
     },
     {
       title: t['action'],
@@ -51,14 +36,118 @@ const App = (props) => {
       align: 'center',
       render: (_, record) => (
         <>
-          <Button type="text" size="small">查看</Button>
-          <Button type="text" size="small">编辑</Button>
-          <Button type="text" size="small">删除</Button>
+          <Button type='text' onClick={() => runSolution(record.id)}>运行</Button>
+          <Button type="text" size="small" onClick={() => edit(record)}>编辑</Button>
+          <Modal
+            title='编辑'
+            visible={editVisible}
+            onOk={onEditOk}
+            onCancel={() => setEditVisible(false)}
+            autoFocus={false}
+            focusLock={true}
+          >
+            <Form
+              form={form}
+            >
+              <FormItem field='id' label='ID' hidden>
+                <Input />
+              </FormItem>
+              <FormItem field='name' label='名称' required>
+                <Input />
+              </FormItem>
+              <FormItem field='content' label='源码' required>
+                <Input.TextArea />
+              </FormItem>
+              <FormItem field='type' label='类型' required>
+                <Select defaultValue='model_solution'>
+                  <Select.Option key='main' value='model_solution'>
+                    标准解答
+                  </Select.Option>
+                </Select>
+              </FormItem>
+            </Form>
+          </Modal>
+          <Popover
+            trigger='click'
+            title='你确定要删除吗？'
+            content={
+              <span>
+                <Button type='text' size='small' onClick={(e) => deleteSolution(record.id)}>删除</Button>
+              </span>
+            }
+          >
+            <Button>删除</Button>
+          </Popover>
         </>
       ),
     },
   ];
-
+  function fetchData() {
+    setLoading(true);
+    ListProblemSolutions(props.problem.id)
+      .then((res) => {
+        setData(res.data.data || []);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+  function edit(record) {
+    getProblemSolution(props.problem.id, record.id)
+      .then(res => {
+        const data = res.data;
+        form.setFieldsValue({
+          id: data.id,
+          name: data.name,
+          content: data.content,
+          type: data.type,
+        })
+        setEditVisible(true)
+      })
+  }
+  function deleteSolution(id) {
+    deleteProblemSolution(props.problem.id, id)
+      .then(res => {
+        Message.success('删除成功');
+        fetchData()
+      })
+  }
+  function onOk() {
+    form.validate().then((res) => {
+      const values = {
+        name: res.name,
+        content: res.content,
+        type: res.type,
+      }
+      createProblemSolution(props.problem.id, values)
+        .then(res => {
+          Message.success('已保存')
+          setVisible(false)
+          fetchData()
+        })
+    });
+  }
+  function onEditOk() {
+    form.validate().then((res) => {
+      const values = {
+        name: res.name,
+        content: res.content,
+        type: res.type,
+      }
+      updateProblemSolution(props.problem.id, res.id, values)
+        .then(res => {
+          Message.success('已保存')
+          setEditVisible(false)
+          fetchData()
+        })
+    });
+  }
+  function runSolution(id) {
+    runProblemSolution(id)
+      .then(res => {
+        Message.info('已运行')
+      })
+  }
   useEffect(() => {
     fetchData();
   }, []);
@@ -66,7 +155,33 @@ const App = (props) => {
     <Card>
       <div className={styles['button-group']}>
         <Space>
-          <Button type='primary'>添加</Button>
+          <Button type='primary' onClick={() => {setVisible(true); form.clearFields}}>添加</Button>
+          <Modal
+            title='添加'
+            visible={visible}
+            onOk={onOk}
+            onCancel={() => setVisible(false)}
+            autoFocus={false}
+            focusLock={true}
+          >
+            <Form
+              form={form}
+            >
+              <FormItem field='name' label='名称' required>
+                <Input />
+              </FormItem>
+              <FormItem field='content' label='源码' required>
+                <Input.TextArea />
+              </FormItem>
+              <FormItem field='type' label='类型' required>
+                <Select defaultValue='model_solution'>
+                  <Select.Option key='main' value='model_solution'>
+                    标准解答
+                  </Select.Option>
+                </Select>
+              </FormItem>
+            </Form>
+          </Modal>
         </Space>
       </div>
       <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />

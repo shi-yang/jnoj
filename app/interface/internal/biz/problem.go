@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
 	"time"
 
@@ -11,12 +12,18 @@ import (
 
 // Problem is a Problem model.
 type Problem struct {
-	ID         int
-	Name       string
-	UserID     int
-	Statements []ProblemStatement
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID            int
+	Name          string
+	UserID        int
+	TimeLimit     int64
+	MemoryLimit   int64
+	AcceptedCount int
+	SubmitCount   int
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+
+	Statements  []*ProblemStatement
+	SampleTests []*SampleTest
 }
 
 // ProblemRepo is a Problem repo.
@@ -35,13 +42,14 @@ type ProblemRepo interface {
 
 // ProblemUsecase is a Problem usecase.
 type ProblemUsecase struct {
-	repo ProblemRepo
-	log  *log.Helper
+	repo          ProblemRepo
+	sandboxClient sandboxV1.SandboxServiceClient
+	log           *log.Helper
 }
 
 // NewProblemUsecase new a Problem usecase.
-func NewProblemUsecase(repo ProblemRepo, logger log.Logger) *ProblemUsecase {
-	return &ProblemUsecase{repo: repo, log: log.NewHelper(logger)}
+func NewProblemUsecase(repo ProblemRepo, sandboxClient sandboxV1.SandboxServiceClient, logger log.Logger) *ProblemUsecase {
+	return &ProblemUsecase{repo: repo, sandboxClient: sandboxClient, log: log.NewHelper(logger)}
 }
 
 // ListProblems list Problem
@@ -51,7 +59,31 @@ func (uc *ProblemUsecase) ListProblems(ctx context.Context, req *v1.ListProblems
 
 // GetProblem get a Problem
 func (uc *ProblemUsecase) GetProblem(ctx context.Context, id int) (*Problem, error) {
-	return uc.repo.GetProblem(ctx, id)
+	p, err := uc.repo.GetProblem(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	statements, _ := uc.repo.ListProblemStatements(ctx, &v1.ListProblemStatementsRequest{
+		Id: int32(p.ID),
+	})
+	tests, _ := uc.repo.ListProblemSampleTest(ctx, id)
+	for _, v := range statements {
+		p.Statements = append(p.Statements, &ProblemStatement{
+			ID:       v.ID,
+			Input:    v.Input,
+			Output:   v.Output,
+			Name:     v.Name,
+			Legend:   v.Legend,
+			Language: v.Language,
+		})
+	}
+	for _, v := range tests {
+		p.SampleTests = append(p.SampleTests, &SampleTest{
+			Input:  v.Input,
+			Output: v.Output,
+		})
+	}
+	return p, nil
 }
 
 // CreateProblem creates a Problem, and returns the new Problem.
@@ -82,5 +114,6 @@ func (uc *ProblemUsecase) DeleteProblem(ctx context.Context, id int) error {
 func (uc *ProblemUsecase) hasUpdatePermission(ctx context.Context, id int) bool {
 	p, _ := uc.GetProblem(ctx, id)
 	userID, _ := auth.GetUserID(ctx)
+	uc.log.Info(userID)
 	return p.UserID == userID
 }

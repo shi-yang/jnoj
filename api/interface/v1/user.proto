@@ -48,10 +48,12 @@ message LoginResponse {
 message RegisterRequest {
     // 手机号
     string phone = 1;
+    // 用户名
+    string username = 2;
     // 验证码
-    string captcha = 2;
+    string captcha = 3;
     // 密码
-    string password = 3;
+    string password = 4;
 }
 
 message RegisterResponse {

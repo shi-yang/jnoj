@@ -1,10 +1,10 @@
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, List, Message, Grid, Tabs, Tag, Popconfirm } from '@arco-design/web-react';
+import { Button, Card, Form, Input, List, Message, Grid, Tabs, Tag, Popconfirm, Empty } from '@arco-design/web-react';
 import MarkdownEditor from '@uiw/react-markdown-editor';
 import { useEffect, useRef, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
-import { createProblemStatement, listProblemStatements } from '@/api/problem-statement';
+import { createProblemStatement, listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
 import styles from './style/statement.module.less';
 import { IconDelete, IconEdit } from '@arco-design/web-react/icon';
 const FormItem = Form.Item;
@@ -32,12 +32,13 @@ export default (props) => {
     })
   }
   function onSubmit(values) {
-    createProblemStatement(props.problem.id, values).then(res => {
-      Message.info('已保存')
-    })
+    updateProblemStatement(props.problem.id, statements[current].id, values)
+      .then(res => {
+        Message.info('已保存')
+      })
   }
   function editStatement(index) {
-    setCurrent(0);
+    setCurrent(index);
     form.setFieldsValue({
       name: statements[index].name,
       legend: statements[index].legend,
@@ -59,7 +60,7 @@ export default (props) => {
           <List
             className={styles['list-actions']}
             bordered
-            footer={<CreateStatementModal />}
+            footer={<CreateStatementModal problem={props.problem} />}
           >
             {statements.map((item, index) => (
                 <List.Item key={index} actions={[
@@ -82,6 +83,7 @@ export default (props) => {
           </List>
         </Col>
         <Col span={20}>
+          { statements.length > 0 &&
           <Form form={form} layout='vertical' style={{ width: 600 }} autoComplete='off' onSubmit={onSubmit}>
             <FormItem field='name' label={t['name']}>
               <Input />
@@ -95,13 +97,13 @@ export default (props) => {
             <FormItem field='output' label={t['output']}>
               <MarkdownEditor />
             </FormItem>
-            <FormItem field='notes' label={t['notes']}>
+            <FormItem field='note' label={t['notes']}>
               <MarkdownEditor />
             </FormItem>
             <FormItem>
               <Button type='primary' htmlType='submit'>{t['save']}</Button>
             </FormItem>
-          </Form>
+          </Form>}
         </Col>
       </Row>
     </Card>

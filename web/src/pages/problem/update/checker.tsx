@@ -9,8 +9,8 @@ const App = (props) => {
   function fetchData() {
     listProblemCheckers(props.problem.id)
       .then((res) => {
-        setUserCheckers(res.data.user_checkers);
-        setStdCheckers(res.data.std_checkers);
+        // setUserCheckers(res.data.user_checkers);
+        // setStdCheckers(res.data.std_checkers);
       });
   }
 

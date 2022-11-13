@@ -48,7 +48,12 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 	rv := make([]*biz.Problem, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.Problem{
-			ID: v.ID,
+			ID:            v.ID,
+			Name:          v.Name,
+			SubmitCount:   v.SubmitCount,
+			AcceptedCount: v.AcceptedCount,
+			CreatedAt:     v.CreatedAt,
+			UpdatedAt:     v.UpdatedAt,
 		})
 	}
 	return rv, count
@@ -57,17 +62,26 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 // GetProblem .
 func (r *problemRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, error) {
 	var res Problem
-	err := r.data.db.Model(Problem{}).
-		First(&res, "id = ?", id).Error
+	err := r.data.db.Model(&Problem{}).
+		First(&res, "id = ?", id).
+		Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Problem{}, err
+	return &biz.Problem{
+		ID:            res.ID,
+		Name:          res.Name,
+		TimeLimit:     res.TimeLimit,
+		MemoryLimit:   res.MemoryLimit,
+		AcceptedCount: res.AcceptedCount,
+		SubmitCount:   res.SubmitCount,
+		UserID:        res.UserID,
+	}, err
 }
 
 // CreateProblem .
 func (r *problemRepo) CreateProblem(ctx context.Context, b *biz.Problem) (*biz.Problem, error) {
-	res := Problem{Name: b.Name}
+	res := Problem{Name: b.Name, UserID: b.UserID}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error
@@ -77,13 +91,15 @@ func (r *problemRepo) CreateProblem(ctx context.Context, b *biz.Problem) (*biz.P
 }
 
 // UpdateProblem .
-func (r *problemRepo) UpdateProblem(ctx context.Context, b *biz.Problem) (*biz.Problem, error) {
-	res := Problem{
-		ID: b.ID,
+func (r *problemRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*biz.Problem, error) {
+	update := Problem{
+		ID:          p.ID,
+		TimeLimit:   p.TimeLimit,
+		MemoryLimit: p.MemoryLimit,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Updates(&res).Error
+		Updates(&update).Error
 	return nil, err
 }
 

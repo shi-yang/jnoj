@@ -3,6 +3,7 @@ syntax = "proto3";
 package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -26,18 +27,39 @@ service SubmissionService {
             body: "*"
         };
     };
+    // 提交的运行信息
+    rpc GetSubmissionInfo (GetSubmissionInfoRequest) returns (SubmissionInfo) {
+        option (google.api.http) = {
+            get: "/submissions/{id}/info"
+        };
+    };
 }
 
 // 提交
 message Submission {
+    int64 id = 1;
+    // 题目ID
+    int32 problem_id = 2;
+    // 编程语言
+    int32 language = 3;
+    // 源码
+    string source = 4;
+    int64 memory = 5;
+    int64 time = 6;
+    int32 verdict = 7;
+    int32 score = 8;
+    google.protobuf.Timestamp created_at = 9;
 }
 
 message ListSubmissionsRequest {
-
+    int32 problem_id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
 }
 
 message ListSubmissionsResponse {
-
+    repeated Submission data = 1;
+    int64 total = 2;
 }
 
 message GetSubmissionRequest {
@@ -45,5 +67,32 @@ message GetSubmissionRequest {
 }
 
 message CreateSubmissionRequest {
-    
+    // 题目ID
+    int32 problem_id = 1;
+    // 编程语言
+    int32 language = 2;
+    // 源码
+    string source = 3;
+}
+
+message GetSubmissionInfoRequest {
+    int32 id = 1;
+}
+
+message SubmissionInfo {
+    string compile_msg = 1;
+    int64 memory = 2;
+    int64 time = 3;
+    message SubmissionTest {
+        int32 verdict = 1;
+        string stdin = 2;
+        string stdout = 3;
+        string stderr = 4;
+        string answer = 5;
+        int64 time = 6;
+        int64 memory = 7;
+        int32 exit_code = 8;
+        int32 score = 9;
+    }
+    repeated SubmissionTest tests = 4;
 }

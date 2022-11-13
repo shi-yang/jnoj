@@ -3,28 +3,42 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"jnoj/internal/middleware/auth"
 	"time"
 )
 
 // ProblemTest is a ProblemTest model.
 type ProblemTest struct {
-	ID        int64
-	Content   string
-	Size      int64
-	Remark    string
-	UserID    int32
-	IsExample bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID                string
+	ProblemID         int
+	Content           string // 预览的文件内容
+	IsExample         bool
+	InputSize         int64
+	InputFileContent  []byte
+	OutputSize        int64
+	OutputFileContent []byte
+	Order             int
+	Remark            string
+	UserID            int
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+}
+
+type SampleTest struct {
+	Input  string
+	Output string
 }
 
 // ProblemTestRepo is a ProblemTest repo.
 type ProblemTestRepo interface {
 	ListProblemTests(context.Context, *v1.ListProblemTestsRequest) ([]*ProblemTest, int64)
-	GetProblemTest(context.Context, int) (*ProblemTest, error)
+	GetProblemTest(context.Context, string) (*ProblemTest, error)
 	CreateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
 	UpdateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
-	DeleteProblemTest(context.Context, int) error
+	DeleteProblemTest(context.Context, string) error
+
+	ListProblemSampleTest(context.Context, int) ([]*SampleTest, error)
+	UpdateProblemTestStdOutput(context.Context, string, string) error
 }
 
 // ListProblemTests list ProblemTest
@@ -33,12 +47,20 @@ func (uc *ProblemUsecase) ListProblemTests(ctx context.Context, req *v1.ListProb
 }
 
 // GetProblemTest get a ProblemTest
-func (uc *ProblemUsecase) GetProblemTest(ctx context.Context, id int) (*ProblemTest, error) {
+func (uc *ProblemUsecase) GetProblemTest(ctx context.Context, id string) (*ProblemTest, error) {
 	return uc.repo.GetProblemTest(ctx, id)
 }
 
 // CreateProblemTest creates a ProblemTest, and returns the new ProblemTest.
 func (uc *ProblemUsecase) CreateProblemTest(ctx context.Context, p *ProblemTest) (*ProblemTest, error) {
+	p.UserID, _ = auth.GetUserID(ctx)
+	p.InputSize = int64(len(p.InputFileContent))
+	// 读取 32 个字符作为内容
+	if len(p.InputFileContent) < 32 {
+		p.Content = string(p.InputFileContent)
+	} else {
+		p.Content = string(p.InputFileContent[:32])
+	}
 	return uc.repo.CreateProblemTest(ctx, p)
 }
 
@@ -48,6 +70,6 @@ func (uc *ProblemUsecase) UpdateProblemTest(ctx context.Context, p *ProblemTest)
 }
 
 // DeleteProblemTest delete a ProblemTest
-func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, id int) error {
-	return uc.repo.DeleteProblemTest(ctx, id)
+func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid string) error {
+	return uc.repo.DeleteProblemTest(ctx, tid)
 }

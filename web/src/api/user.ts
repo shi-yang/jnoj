@@ -16,7 +16,7 @@ export function Login(data: LoginRequest) {
 }
 
 export interface RegisterRequest {
-  phone: string;
+  username: string;
   captcha: string;
   password: string;
 }

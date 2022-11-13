@@ -51,7 +51,7 @@ function SearchTable() {
     };
     listProblems(params)
       .then((res) => {
-        setData(res.data.list);
+        setData(res.data.data);
         setPatination({
           ...pagination,
           current,

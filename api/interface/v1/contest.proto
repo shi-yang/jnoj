@@ -3,6 +3,7 @@ syntax = "proto3";
 package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -28,7 +29,7 @@ service ContestService {
     // 获取比赛题目
     rpc GetContestProblem (GetContestProblemRequest) returns (ContestProblem) {
         option (google.api.http) = {
-            get: "/contests/{id}/problems/{key}"
+            get: "/contests/{id}/problems/{number}"
         };
     };
     // 获取比赛用户
@@ -40,10 +41,11 @@ service ContestService {
 }
 
 message ListContestsRequest {
-
+    string name = 1;
 }
 message ListContestsResponse {
-    
+    repeated Contest data = 1;
+    int64 total = 2;
 }
 
 message GetContestRequest {
@@ -51,7 +53,16 @@ message GetContestRequest {
 }
 
 message Contest {
-    
+    int32 id = 1;
+    string name = 2;
+    google.protobuf.Timestamp start_time = 7;
+    google.protobuf.Timestamp end_time = 8;
+    google.protobuf.Timestamp frozen_time = 9;
+    int32 type = 10;
+    string intro = 11;
+    int32 status = 12;
+    int32 participant_count = 13;
+    int32 user_id = 14;
 }
 
 message ListContestProblemsRequest {
@@ -59,22 +70,37 @@ message ListContestProblemsRequest {
 }
 
 message ListContestProblemsResponse {
-
+    repeated Contest data = 1;
+    int64 total = 2;
 }
 
 message GetContestProblemRequest{
     int32 id = 1;
-    string key = 2;
+    int32 number = 2;
 }
 
 message ContestProblem {
+    int32 id = 1;
+    int32 number = 2;
+    int32 contest_id = 3;
+    int32 problem_id = 4;
+    int32 submit_count = 5;
+    int32 accepted_count = 6;
+}
 
+message ContestUser {
+    int32 id = 1;
+    string nickname = 2;
+    int32 user_id = 3;
 }
 
 message ListContestUsersRequest {
     int32 id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
 }
 
 message ListContestUsersResponse {
-    
+    repeated ContestUser data = 1;
+    int64 total = 2;
 }

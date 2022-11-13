@@ -41,7 +41,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.GET("/contests", _ContestService_ListContests0_HTTP_Handler(srv))
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems", _ContestService_ListContestProblems0_HTTP_Handler(srv))
-	r.GET("/contests/{id}/problems/{key}", _ContestService_GetContestProblem0_HTTP_Handler(srv))
+	r.GET("/contests/{id}/problems/{number}", _ContestService_GetContestProblem0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
 }
 
@@ -183,7 +183,7 @@ func (c *ContestServiceHTTPClientImpl) GetContest(ctx context.Context, in *GetCo
 
 func (c *ContestServiceHTTPClientImpl) GetContestProblem(ctx context.Context, in *GetContestProblemRequest, opts ...http.CallOption) (*ContestProblem, error) {
 	var out ContestProblem
-	pattern := "/contests/{id}/problems/{key}"
+	pattern := "/contests/{id}/problems/{number}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceGetContestProblem))
 	opts = append(opts, http.PathTemplate(pattern))
