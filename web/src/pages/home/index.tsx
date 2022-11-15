@@ -47,7 +47,7 @@ export default function Index() {
     one: {
       y: '+=30',
       opacity: 0,
-      type: 'from',
+      type: 'from' as const,
       ease: 'easeOutQuad',
     },
   };

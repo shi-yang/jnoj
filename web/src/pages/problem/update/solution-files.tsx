@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Message, Modal, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import { ListProblemSolutions, createProblemSolution, deleteProblemSolution, getProblemSolution, updateProblemSolution, runProblemSolution } from '@/api/problem-solution';
+import { ListProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile } from '@/api/problem-file';
 import locale from './locale';
 import styles from './style/tests.module.less';
 const FormItem = Form.Item;
@@ -36,7 +36,7 @@ const App = (props) => {
       align: 'center',
       render: (_, record) => (
         <>
-          <Button type='text' onClick={() => runSolution(record.id)}>运行</Button>
+          <Button type='text' onClick={() => runFile(record.id)}>运行</Button>
           <Button type="text" size="small" onClick={() => edit(record)}>编辑</Button>
           <Modal
             title='编辑'
@@ -59,8 +59,8 @@ const App = (props) => {
                 <Input.TextArea />
               </FormItem>
               <FormItem field='type' label='类型' required>
-                <Select defaultValue='model_solution'>
-                  <Select.Option key='main' value='model_solution'>
+                <Select defaultValue='model_file'>
+                  <Select.Option key='main' value='model_file'>
                     标准解答
                   </Select.Option>
                 </Select>
@@ -72,7 +72,7 @@ const App = (props) => {
             title='你确定要删除吗？'
             content={
               <span>
-                <Button type='text' size='small' onClick={(e) => deleteSolution(record.id)}>删除</Button>
+                <Button type='text' size='small' onClick={(e) => deleteFile(record.id)}>删除</Button>
               </span>
             }
           >
@@ -84,7 +84,7 @@ const App = (props) => {
   ];
   function fetchData() {
     setLoading(true);
-    ListProblemSolutions(props.problem.id)
+    ListProblemFiles(props.problem.id, { fileType: 'solution' })
       .then((res) => {
         setData(res.data.data || []);
       })
@@ -93,7 +93,7 @@ const App = (props) => {
       });
   }
   function edit(record) {
-    getProblemSolution(props.problem.id, record.id)
+    getProblemFile(props.problem.id, record.id)
       .then(res => {
         const data = res.data;
         form.setFieldsValue({
@@ -105,12 +105,12 @@ const App = (props) => {
         setEditVisible(true)
       })
   }
-  function deleteSolution(id) {
-    deleteProblemSolution(props.problem.id, id)
+  function deleteFile(id) {
+    deleteProblemFile(props.problem.id, id)
       .then(res => {
         Message.success('删除成功');
         fetchData()
-      })
+      });
   }
   function onOk() {
     form.validate().then((res) => {
@@ -118,13 +118,14 @@ const App = (props) => {
         name: res.name,
         content: res.content,
         type: res.type,
-      }
-      createProblemSolution(props.problem.id, values)
+        fileType: 'solution'
+      };
+      createProblemFile(props.problem.id, values)
         .then(res => {
           Message.success('已保存')
           setVisible(false)
           fetchData()
-        })
+        });
     });
   }
   function onEditOk() {
@@ -133,17 +134,17 @@ const App = (props) => {
         name: res.name,
         content: res.content,
         type: res.type,
-      }
-      updateProblemSolution(props.problem.id, res.id, values)
+      };
+      updateProblemFile(props.problem.id, res.id, values)
         .then(res => {
-          Message.success('已保存')
-          setEditVisible(false)
-          fetchData()
-        })
+          Message.success('已保存');
+          setEditVisible(false);
+          fetchData();
+        });
     });
   }
-  function runSolution(id) {
-    runProblemSolution(id)
+  function runFile(id) {
+    runProblemFile(id)
       .then(res => {
         Message.info('已运行')
       })
@@ -171,7 +172,7 @@ const App = (props) => {
                 <Input />
               </FormItem>
               <FormItem field='content' label='源码' required>
-                <Input.TextArea />
+                <Input.TextArea rows={10} />
               </FormItem>
               <FormItem field='type' label='类型' required>
                 <Select defaultValue='model_solution'>

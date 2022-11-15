@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collapse, Divider } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { getSubmissionInfo, listSubmissions } from '@/api/submission';
+import { getSubmission, getSubmissionInfo, listSubmissions } from '@/api/submission';
+import { VerdictMap } from './constants';
+import styles from './style/description.module.less'
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 const CollapseItem = Collapse.Item;
 const Submission = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [submissionInfo, setSubmissionInfo] = useState({tests: []});
+  const [submissionInfo, setSubmissionInfo] = useState({tests: [], compileMsg: ''});
+  const [submission, setSubmission] = useState({source: ''})
   const [visible, setVisible] = useState(false);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
@@ -21,8 +26,8 @@ const Submission = (props) => {
     const { current, pageSize } = pagination;
     const params = {
       page: current,
-      pageSize,
-      problem_id: props.problem.id
+      perPage: pageSize,
+      problemId: props.problem.id
     };
     setLoading(true);
     listSubmissions(params)
@@ -45,6 +50,10 @@ const Submission = (props) => {
       .then(res => {
         setSubmissionInfo(res.data)
       })
+    getSubmission(id)
+      .then(res => {
+        setSubmission(res.data)
+      })
   }
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -63,29 +72,35 @@ const Submission = (props) => {
     {
       title: '#',
       dataIndex: 'id',
+      align: 'center',
     },
     {
       title: t['language'],
       dataIndex: 'language',
-      render: (col) => {
-        return languageMap[col]
-      }
+      align: 'center',
+      render: (col) => languageMap[col]
     },
     {
       title: t['verdict'],
       dataIndex: 'verdict',
+      align: 'center',
+      render: (col) => VerdictMap[col]
     },
     {
       title: t['time'],
-      dataIndex: 'time'
+      dataIndex: 'time',
+      align: 'center',
+      render: (col) => `${col / 1000} ms`
     },
     {
       title: t['memory'],
-      dataIndex: 'memory'
+      dataIndex: 'memory',
+      align: 'center',
     },
     {
       title: t['createdAt'],
       dataIndex: 'createdAt',
+      align: 'center',
     },
     {
       title: t['action'],
@@ -98,7 +113,9 @@ const Submission = (props) => {
       ),
     },
   ];
-
+  useEffect(() => {
+    hljs.highlightAll();
+  }, [submission]);
   useEffect(() => {
     fetchData();
   }, []);
@@ -106,7 +123,7 @@ const Submission = (props) => {
     <Card>
       <Drawer
         width={900}
-        title={<span>Submission Info</span>}
+        title={<span>{t['submission']}</span>}
         visible={visible}
         onOk={() => {
           setVisible(false);
@@ -115,22 +132,38 @@ const Submission = (props) => {
           setVisible(false);
         }}
       >
+        <pre>
+          <code className='language-cpp'>
+            {submission.source}
+          </code>
+        </pre>
+        {submissionInfo.compileMsg != '' && (
+          <pre>
+            {submissionInfo.compileMsg}
+          </pre>
+        )}
         <Collapse
-          defaultActiveKey={['1', '2']}
           style={{ maxWidth: 1180 }}
         >
           {
             submissionInfo.tests.map((item, index) => (
               <CollapseItem header={
-                <>Test #{index + 1}: {item.verdict}, Time: {item.time}, Memory: {item.memory}</>
-              } name='1' key={index}>
-                {item.stdin}
-                <Divider />
-                {item.stdout}
-                <Divider />
-                {item.stderr}
-                <Divider />
-                {item.answer}
+                (<div>Test #{index + 1}: {VerdictMap[item.verdict]}, Time: {item.time}, Memory: {item.memory}</div>)
+              } name={`${index}`} key={index}>
+                <div className={styles['sample-test']} key={index}>
+                  <div className={styles.input}>
+                    <h4>{t['input']}</h4>
+                    <pre>{item.stdin}</pre>
+                  </div>
+                  <div className={styles.output}>
+                    <h4>{t['output']}</h4>
+                    <pre>{ item.stdout }</pre>
+                  </div>
+                  <div className={styles.output}>
+                    <h4>{t['answer']}</h4>
+                    <pre>{ item.answer }</pre>
+                  </div>
+                </div>
               </CollapseItem>
             ))
           }

@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"time"
 
 	"jnoj/app/interface/internal/conf"
 
@@ -34,6 +35,7 @@ func NewSandboxClient(r registry.Discovery) sandboxV1.SandboxServiceClient {
 		grpc.WithMiddleware(
 			recovery.Recovery(),
 		),
+		grpc.WithTimeout(time.Second*60),
 	)
 	if err != nil {
 		panic(err)

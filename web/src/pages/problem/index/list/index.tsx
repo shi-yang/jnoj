@@ -4,7 +4,6 @@ import {
   Card,
   PaginationProps,
 } from '@arco-design/web-react';
-import axios from 'axios';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
@@ -12,10 +11,6 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import { listProblems } from '@/api/problem';
-
-export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
-export const Status = ['已上线', '未上线'];
 
 function SearchTable() {
   const t = useLocale(locale);
@@ -30,7 +25,7 @@ function SearchTable() {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
-    pageSize: 10,
+    pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
@@ -46,7 +41,7 @@ function SearchTable() {
     setLoading(true);
     const params = {
       page: current,
-      pageSize,
+      perPage: pageSize,
       ...formParams,
     };
     listProblems(params)

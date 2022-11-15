@@ -9,7 +9,6 @@ import {
   Message,
 } from '@arco-design/web-react';
 import { IconDownload } from '@arco-design/web-react/icon';
-import axios from 'axios';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
@@ -37,7 +36,7 @@ function SearchTable() {
   const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
-    pageSize: 10,
+    pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
@@ -53,7 +52,7 @@ function SearchTable() {
     setLoading(true);
     listProblems({
       page: current,
-      pageSize,
+      perPage: pageSize,
       ...formParams,
     })
       .then((res) => {

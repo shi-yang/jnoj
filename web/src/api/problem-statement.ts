@@ -11,14 +11,17 @@ export function createProblemStatement(id: number, data: createProblemStatementR
   return axios.post(`/problems/${id}/statements`, data)
 }
 
+export interface statement {
+  name: string;
+  language: string;
+  input: string;
+  output: string;
+  legend: string;
+  notes: string;
+}
+
 export interface listProblemStatementsResponse {
-  data: Array<{
-    language: string;
-    input: string;
-    output: string;
-    legend: string;
-    notes: string;
-  }>;
+  data: statement[];
   total: number;
 }
 

@@ -4,7 +4,7 @@ server:
     timeout: 1s
   grpc:
     addr: 0.0.0.0:0
-    timeout: 1s
+    timeout: 60s
 data:
   database:
     driver: mysql
@@ -16,3 +16,5 @@ data:
 consul:
   address: consul:8500
   scheme: http
+sandbox:
+  testlib_path: "/go/src/sandbox/third_party/testlib"

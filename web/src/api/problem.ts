@@ -1,7 +1,7 @@
 import axios from '@/utils/request';
 
 export interface Problem {
-  id: string;
+  id: number;
   name: string;
   statements: Array<{
     id: number;
@@ -16,7 +16,7 @@ export interface Problem {
 }
 
 export function listProblems(params) {
-  return axios.get(`/problems`, params)
+  return axios.get(`/problems`, {params})
 }
 
 export function getProblem(id) {
@@ -29,4 +29,8 @@ export function updateProblem(id: number, data) {
 
 export function createProblem(data) {
   return axios.post(`/problems`, data)
+}
+
+export function updateProblemChecker(id, data) {
+  return axios.put(`/problems/${id}/checkers`, data)
 }

@@ -25,6 +25,6 @@ export function Register(data: RegisterRequest) {
   return axios.post('/register', data)
 }
 
-export function GetUserInfo() {
+export function getUserInfo() {
   return axios.get('/user/info')
 }

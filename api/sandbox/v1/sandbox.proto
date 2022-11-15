@@ -14,6 +14,10 @@ message RunRequest {
     int32 language = 3;
     int64 memory_limit = 4;
     int64 time_limit = 5;
+
+    string answer = 6;
+    string checker_source = 7;
+    string checker_language = 8;
 }
 
 message RunResponse {
@@ -24,4 +28,7 @@ message RunResponse {
     int32 exit_code = 5;
     string compile_msg = 6;
     string err_msg = 7;
+
+    string checker_output = 8;
+    int32 checker_exit_code = 9;
 }

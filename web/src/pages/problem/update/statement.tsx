@@ -1,10 +1,10 @@
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, List, Message, Grid, Tabs, Tag, Popconfirm, Empty } from '@arco-design/web-react';
+import { Button, Card, Form, Input, List, Message, Grid, Tabs, Tag, Popconfirm } from '@arco-design/web-react';
 import MarkdownEditor from '@uiw/react-markdown-editor';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
-import { createProblemStatement, listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
+import { listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
 import styles from './style/statement.module.less';
 import { IconDelete, IconEdit } from '@arco-design/web-react/icon';
 const FormItem = Form.Item;
@@ -56,7 +56,7 @@ export default (props) => {
   return (
     <Card>
       <Row gutter={64}>
-        <Col span={4}>
+        <Col xs={24} sm={8} md={6} lg={4}>
           <List
             className={styles['list-actions']}
             bordered
@@ -82,7 +82,7 @@ export default (props) => {
             ))}
           </List>
         </Col>
-        <Col span={20}>
+        <Col xs={24} sm={16} md={18} lg={20}>
           { statements.length > 0 &&
           <Form form={form} layout='vertical' style={{ width: 600 }} autoComplete='off' onSubmit={onSubmit}>
             <FormItem field='name' label={t['name']}>

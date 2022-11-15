@@ -41,7 +41,19 @@ func (s *SubmissionService) ListSubmissions(ctx context.Context, req *v1.ListSub
 
 // GetSubmission .
 func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmissionRequest) (*v1.Submission, error) {
-	return nil, nil
+	res, err := s.uc.GetSubmission(ctx, int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	return &v1.Submission{
+		Id:        int64(res.ID),
+		Source:    res.Source,
+		Memory:    int64(res.Memory),
+		Time:      int64(res.Time),
+		Verdict:   int32(res.Verdict),
+		Language:  int32(res.Language),
+		CreatedAt: timestamppb.New(res.CreatedAt),
+	}, nil
 }
 
 // CreateSubmission .

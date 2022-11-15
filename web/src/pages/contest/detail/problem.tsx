@@ -13,7 +13,12 @@ export default () => {
   const t = useLocale(locale);
   const params = useParams();
   const [loading, setLoading] = useState(true);
-  const [problem, setProblem] = useState({});
+  const [problem, setProblem] = useState({
+    statements: [],
+    timeLimit: 0,
+    memoryLimit: 0,
+    sampleTests: []
+  });
   const [language, setLanguage] = useState(0);
   function fetchData() {
     setLoading(true);

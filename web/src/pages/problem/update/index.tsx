@@ -23,7 +23,7 @@ const TabPane = Tabs.TabPane;
 function Index(props) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Problem>({id:'', statements: [], name: ''});
+  const [data, setData] = useState<Problem>({id: 0, statements: [], name: ''});
   const [language, setLanguage] = useState(0);
   const params = useParams();
   function fetchData() {

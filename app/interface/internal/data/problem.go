@@ -25,6 +25,7 @@ type Problem struct {
 	AcceptedCount int
 	SubmitCount   int
 	UserID        int
+	CheckerID     int
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt
@@ -80,8 +81,13 @@ func (r *problemRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, err
 }
 
 // CreateProblem .
-func (r *problemRepo) CreateProblem(ctx context.Context, b *biz.Problem) (*biz.Problem, error) {
-	res := Problem{Name: b.Name, UserID: b.UserID}
+func (r *problemRepo) CreateProblem(ctx context.Context, p *biz.Problem) (*biz.Problem, error) {
+	res := Problem{
+		Name:        p.Name,
+		UserID:      p.UserID,
+		TimeLimit:   p.TimeLimit,
+		MemoryLimit: p.MemoryLimit,
+	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error
@@ -109,5 +115,16 @@ func (r *problemRepo) DeleteProblem(ctx context.Context, id int) error {
 		Omit(clause.Associations).
 		Delete(Problem{ID: id}).
 		Error
+	return err
+}
+
+func (r *problemRepo) UpdateProblemChecker(ctx context.Context, id int, checkerID int) error {
+	update := Problem{
+		ID:        id,
+		CheckerID: checkerID,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Updates(&update).Error
 	return err
 }

@@ -59,6 +59,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 	for _, v := range data.Statements {
 		resp.Statements = append(resp.Statements, &v1.ProblemStatement{
 			Id:       int32(v.ID),
+			Name:     v.Name,
 			Input:    v.Input,
 			Output:   v.Output,
 			Note:     v.Note,
@@ -155,32 +156,12 @@ func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.Upd
 	}, nil
 }
 
-// 删除题目描述
+// DeleteProblemStatement 删除题目描述
 func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.DeleteProblemStatementRequest) (*v1.ProblemStatement, error) {
 	return nil, nil
 }
 
-// 获取题目裁判程序列表
-func (s *ProblemService) ListProblemCheckers(ctx context.Context, req *v1.ListProblemCheckersRequest) (*v1.ListProblemCheckersResponse, error) {
-	return nil, nil
-}
-
-// 获取题目裁判程序
-func (s *ProblemService) GetProblemChecker(ctx context.Context, req *v1.GetProblemCheckerRequest) (*v1.ProblemChecker, error) {
-	return nil, nil
-}
-
-// 创建题目裁判程序
-func (s *ProblemService) CreateProblemChecker(ctx context.Context, req *v1.CreateProblemCheckerRequest) (*v1.ProblemChecker, error) {
-	return nil, nil
-}
-
-// 更新题目裁判程序
-func (s *ProblemService) UpdateProblemChecker(ctx context.Context, req *v1.UpdateProblemCheckerRequest) (*v1.ProblemChecker, error) {
-	return nil, nil
-}
-
-// 获取题目测试点列表
+// ListProblemTests 获取题目测试点列表
 func (s *ProblemService) ListProblemTests(ctx context.Context, req *v1.ListProblemTestsRequest) (*v1.ListProblemTestsResponse, error) {
 	data, count := s.uc.ListProblemTests(ctx, req)
 	resp := new(v1.ListProblemTestsResponse)
@@ -262,13 +243,13 @@ func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeletePr
 	return &emptypb.Empty{}, err
 }
 
-// 获取题目解答程序列表
-func (s *ProblemService) ListProblemSolutions(ctx context.Context, req *v1.ListProblemSolutionsRequest) (*v1.ListProblemSolutionsResponse, error) {
-	res, count := s.uc.ListProblemSolutions(ctx, req)
-	resp := new(v1.ListProblemSolutionsResponse)
+// 获取题目文件列表
+func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProblemFilesRequest) (*v1.ListProblemFilesResponse, error) {
+	res, count := s.uc.ListProblemFiles(ctx, req)
+	resp := new(v1.ListProblemFilesResponse)
 	resp.Total = count
 	for _, v := range res {
-		resp.Data = append(resp.Data, &v1.ProblemSolution{
+		resp.Data = append(resp.Data, &v1.ProblemFile{
 			Id:        int32(v.ID),
 			Name:      v.Name,
 			Type:      v.Type,
@@ -279,13 +260,13 @@ func (s *ProblemService) ListProblemSolutions(ctx context.Context, req *v1.ListP
 	return resp, nil
 }
 
-// 获取题目解答程序详情
-func (s *ProblemService) GetProblemSolution(ctx context.Context, req *v1.GetProblemSolutionRequest) (*v1.ProblemSolution, error) {
-	res, err := s.uc.GetProblemSolution(ctx, int(req.Sid))
+// 获取题目文件详情
+func (s *ProblemService) GetProblemFile(ctx context.Context, req *v1.GetProblemFileRequest) (*v1.ProblemFile, error) {
+	res, err := s.uc.GetProblemFile(ctx, int(req.Sid))
 	if err != nil {
 		return nil, err
 	}
-	return &v1.ProblemSolution{
+	return &v1.ProblemFile{
 		Id:        int32(res.ID),
 		Name:      res.Name,
 		Content:   res.Content,
@@ -296,20 +277,26 @@ func (s *ProblemService) GetProblemSolution(ctx context.Context, req *v1.GetProb
 	}, nil
 }
 
-// 创建题目解答程序
-func (s *ProblemService) CreateProblemSolution(ctx context.Context, req *v1.CreateProblemSolutionRequest) (*v1.ProblemSolution, error) {
-	s.uc.CreateProblemSolution(ctx, &biz.ProblemSolution{
+// 创建题目文件
+func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreateProblemFileRequest) (*v1.ProblemFile, error) {
+	res, err := s.uc.CreateProblemFile(ctx, &biz.ProblemFile{
 		ProblemID: int(req.Id),
 		Content:   req.Content,
 		Name:      req.Name,
 		Type:      req.Type,
+		FileType:  req.FileType,
 	})
-	return nil, nil
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ProblemFile{
+		Id: int32(res.ID),
+	}, nil
 }
 
-// 更新题目解答程序
-func (s *ProblemService) UpdateProblemSolution(ctx context.Context, req *v1.UpdateProblemSolutionRequest) (*v1.ProblemSolution, error) {
-	s.uc.UpdateProblemSolution(ctx, &biz.ProblemSolution{
+// 更新题目文件
+func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdateProblemFileRequest) (*v1.ProblemFile, error) {
+	s.uc.UpdateProblemFile(ctx, &biz.ProblemFile{
 		ID:      int(req.Sid),
 		Name:    req.Name,
 		Content: req.Content,
@@ -318,13 +305,41 @@ func (s *ProblemService) UpdateProblemSolution(ctx context.Context, req *v1.Upda
 	return nil, nil
 }
 
-// 删除题目解答程序
-func (s *ProblemService) DeleteProblemSolution(ctx context.Context, req *v1.DeleteProblemSolutionRequest) (*v1.ProblemSolution, error) {
-	s.uc.DeleteProblemSolution(ctx, int(req.Sid))
+// 删除题目文件
+func (s *ProblemService) DeleteProblemFile(ctx context.Context, req *v1.DeleteProblemFileRequest) (*v1.ProblemFile, error) {
+	s.uc.DeleteProblemFile(ctx, int(req.Sid))
 	return nil, nil
 }
 
-func (s *ProblemService) RunProblemSolution(ctx context.Context, req *v1.RunProblemSolutionRequest) (*emptypb.Empty, error) {
-	err := s.uc.RunProblemSolution(ctx, int(req.Sid))
+func (s *ProblemService) RunProblemFile(ctx context.Context, req *v1.RunProblemFileRequest) (*emptypb.Empty, error) {
+	err := s.uc.RunProblemFile(ctx, int(req.Sid))
+	return &emptypb.Empty{}, err
+}
+
+// 获取题目文件列表
+func (s *ProblemService) ListProblemStdCheckers(ctx context.Context, req *v1.ListProblemStdCheckersRequest) (*v1.ListProblemStdCheckersResponse, error) {
+	res, _ := s.uc.ListProblemFiles(ctx, &v1.ListProblemFilesRequest{
+		FileType: "checker",
+	})
+	resp := new(v1.ListProblemStdCheckersResponse)
+	for _, v := range res {
+		resp.Data = append(resp.Data, &v1.ProblemFile{
+			Id:        int32(v.ID),
+			Name:      v.Name,
+			Type:      v.Type,
+			CreatedAt: timestamppb.New(v.CreatedAt),
+			UpdatedAt: timestamppb.New(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (s *ProblemService) VerifyProblem(ctx context.Context, req *v1.VerifyProblemRequest) (*emptypb.Empty, error) {
+	err := s.uc.VerifyProblem(ctx, int(req.Id))
+	return &emptypb.Empty{}, err
+}
+
+func (s *ProblemService) UpdateProblemChecker(ctx context.Context, req *v1.UpdateProblemCheckerRequest) (*emptypb.Empty, error) {
+	err := s.uc.UpdateProblemChecker(ctx, int(req.Id), int(req.CheckerId))
 	return &emptypb.Empty{}, err
 }

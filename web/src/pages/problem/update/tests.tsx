@@ -166,7 +166,6 @@ const App = (props) => {
           style={{width: '100%'}}
           drag
           multiple
-          accept='text/*'
           showUploadList={false}
           customRequest={customRequest}
         >

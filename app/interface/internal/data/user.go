@@ -74,6 +74,17 @@ func (r *userRepo) Update(ctx context.Context, g *biz.User) (*biz.User, error) {
 	return g, nil
 }
 
-func (r *userRepo) FindByID(context.Context, int) (*biz.User, error) {
-	return nil, nil
+func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
+	var o User
+	err := r.data.db.WithContext(ctx).
+		First(&o, "id = ?", id).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &biz.User{
+		ID:       o.ID,
+		Username: o.Username,
+		Nickname: o.Nickname,
+	}, nil
 }

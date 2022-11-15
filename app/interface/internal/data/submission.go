@@ -7,6 +7,7 @@ import (
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm/clause"
@@ -48,9 +49,16 @@ func NewSubmissionRepo(data *Data, logger log.Logger) biz.SubmissionRepo {
 func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmissionsRequest) ([]*biz.Submission, int64) {
 	res := []Submission{}
 	count := int64(0)
-	r.data.db.WithContext(ctx).
-		Find(&res).
-		Count(&count)
+	db := r.data.db.WithContext(ctx).
+		Model(&Submission{})
+	db.Where("problem_id = ?", req.ProblemId)
+	db.Count(&count)
+	page := pagination.NewPagination(req.Page, req.PerPage)
+	db.
+		Limit(page.GetPageSize()).
+		Offset(page.GetOffset()).
+		Order("id desc")
+	db.Find(&res)
 	rv := make([]*biz.Submission, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.Submission{
@@ -74,7 +82,15 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Submission{}, err
+	return &biz.Submission{
+		ID:        res.ID,
+		Source:    res.Source,
+		Memory:    res.Memory,
+		Time:      res.Time,
+		Verdict:   res.Verdict,
+		Language:  res.Language,
+		CreatedAt: res.CreatedAt,
+	}, err
 }
 
 // CreateSubmission .

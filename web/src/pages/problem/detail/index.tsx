@@ -4,7 +4,6 @@ import {
   Typography,
   Grid,
   ResizeBox,
-  Select,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -20,7 +19,11 @@ const TabPane = Tabs.TabPane;
 function Index() {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({});
+  const [data, setData] = useState({
+    id: 0,
+    name: '',
+    statements: []
+  });
   const [language, setLanguage] = useState(0);
   const params = useParams();
   function fetchData() {
@@ -33,15 +36,10 @@ function Index() {
         setLoading(false);
       });
   }
-  function onChangeLanguage(e) {
-    console.log(e)
-  }
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  const languageOptions = ['C', 'C++', 'Java', 'Python']
 
   return (
     <>
@@ -71,17 +69,6 @@ function Index() {
                   </Tabs>
                 </div>,
                 <div key='second' className={styles.right}>
-                  <div className={styles['code-header']}>
-                    <Select defaultValue={1} placeholder='请选择语言' style={{ width: 154 }} className={styles['aaa']} onChange={(e) => onChangeLanguage(e)}>
-                      {languageOptions.map((item, index) => {
-                        return (
-                          <Select.Option key={item} value={index}>
-                            {item}
-                          </Select.Option>
-                        )
-                      })}
-                    </Select>
-                  </div>
                   <Editor problem={data} language={language} />
                 </div>,
               ]}

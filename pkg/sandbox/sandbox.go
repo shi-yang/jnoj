@@ -105,11 +105,11 @@ func sandboxInit() {
 // Run 运行用户提交的程序
 func Run(basedir string, lang *Language, input []byte, memoryLimit int64, timeLimit int64) *Result {
 	var result Result
+	result.ExitCode = -1
 	var stdout, stderr bytes.Buffer
 	u, _ := uuid.NewRandom()
 	containerID := u.String()
 	defer container.CleanCGroup(containerID)
-	defer os.RemoveAll(basedir)
 	cmd := reexec.Command("sandboxInit",
 		basedir,
 		containerID,

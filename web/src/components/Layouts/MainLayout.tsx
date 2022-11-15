@@ -17,7 +17,7 @@ const App = () => {
       </Content>
       <Footer className={styles.footer}>
         <div className='container'>
-          ©2022 JNOJ
+          <div style={{padding: '15px 0'}}>©2022 JNOJ</div>
         </div>
       </Footer>
     </Layout>

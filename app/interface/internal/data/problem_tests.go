@@ -50,13 +50,16 @@ func (r *problemRepo) ListProblemTests(ctx context.Context, req *v1.ListProblemT
 			r.log.Error("cursor.Next() error:", err)
 		}
 		res = append(res, &biz.ProblemTest{
-			ID:        result.ID.Hex(),
-			Content:   result.Content,
-			CreatedAt: result.CreatedAt,
-			Remark:    result.Remark,
-			IsExample: result.IsExample,
-			InputSize: result.InputSize,
-			Order:     result.Order,
+			ID:                result.ID.Hex(),
+			Content:           result.Content,
+			CreatedAt:         result.CreatedAt,
+			Remark:            result.Remark,
+			IsExample:         result.IsExample,
+			InputSize:         result.InputSize,
+			InputFileContent:  result.InputFileContent,
+			OutputSize:        result.OutputSize,
+			OutputFileContent: result.OutputFileContent,
+			Order:             result.Order,
 		})
 	}
 	return res, count

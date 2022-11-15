@@ -4,19 +4,20 @@ import styles from './style/layout-header.module.less';
 import useLocale from '@/utils/useLocale';
 import { GlobalContext } from '@/context';
 import IconButton from './IconButton';
-import { IconDashboard, IconExperiment, IconLanguage, IconMoonFill, IconPoweroff, IconSettings, IconSunFill, IconUser } from '@arco-design/web-react/icon';
+import { IconLanguage, IconMoonFill, IconPoweroff, IconSettings, IconSunFill, IconUser } from '@arco-design/web-react/icon';
 import defaultLocale from '@/locale';
-import { GlobalState } from '@/reducers';
-import { useSelector, useDispatch } from 'react-redux';
 import useStorage from '@/utils/useStorage';
 import { Link, useNavigate } from 'react-router-dom';
+import { getUserInfo, userInfo } from '@/store/reducers/user';
+import { useAppDispatch, useAppSelector } from '@/hooks';
+import { isLogged } from '@/utils/auth';
 
 const MenuItem = Menu.Item;
 
 const LayoutHeader = () => {
   const t = useLocale();
-  const userInfo = useSelector((state: GlobalState) => state.userInfo);
-  const dispatch = useDispatch();
+  const user = useAppSelector(userInfo);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   
   const [_, setUserStatus] = useStorage('userStatus');
@@ -25,6 +26,7 @@ const LayoutHeader = () => {
 
   function logout() {
     setUserStatus('logout');
+    localStorage.removeItem('token');
     window.location.href = '/login';
   }
 
@@ -35,16 +37,8 @@ const LayoutHeader = () => {
       navigate(`/user/${key}`);
     }
   }
-
   useEffect(() => {
-    dispatch({
-      type: 'update-userInfo',
-      payload: {
-        userInfo: {
-          ...userInfo,
-        },
-      },
-    });
+    dispatch(getUserInfo());
   }, []);
 
   const droplist = (
@@ -129,16 +123,19 @@ const LayoutHeader = () => {
             />
           </Tooltip>
         </li>
-        { userInfo
+        { isLogged()
             ? <li>
               <Dropdown droplist={droplist} position="br">
-                <Avatar size={32} style={{ cursor: 'pointer' }}>
-                  <img alt="avatar" src={userInfo.avatar} />
-                </Avatar>
+                <div style={{width: '100px'}}>
+                  <Avatar size={32} style={{ cursor: 'pointer' }}>
+                    <IconUser />
+                  </Avatar>
+                  <span>{ user.nickname }</span>
+                </div>
               </Dropdown>
             </li>
             : <li>
-              登录
+              <Link to='/login'>{ t['navbar.login'] }</Link>
             </li>
         }
       </ul>

@@ -15,6 +15,7 @@ import (
 type User struct {
 	ID        int
 	Username  string
+	Nickname  string
 	Email     string
 	Phone     string
 	Password  string

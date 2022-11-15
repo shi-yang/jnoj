@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/grpc"
 )
 
 // Submission is a Submission model.
@@ -52,10 +53,20 @@ const (
 	SubmissionVerdictCompileError
 	SubmissionVerdictWrongAnswer
 	SubmissionVerdictAccepted
+	SubmissionVerdictPresentationError
 	SubmissionVerdictTimeLimit
 	SubmissionVerdictMemoryLimit
 	SubmissionVerdictRuntimeError
 	SubmissionVerdictSysemError
+)
+
+const (
+	CheckerVerdictOK                = 0
+	CheckerVerdictWrongAnswer       = 1
+	CheckerVerdictPresentationError = 2
+	CheckerVerdictFail              = 3
+	CheckerVerdictPartiallyCorrect  = 16
+	CheckerVerdictSystemError
 )
 
 // SubmissionRepo is a Submission repo.
@@ -123,15 +134,18 @@ func (uc *SubmissionUsecase) runTest(ctx context.Context, s *Submission) *Submis
 	result.Tests = make([]*SubmissionTest, 0)
 	tests, _ := uc.problemRepo.ListProblemTests(context.TODO(), &v1.ListProblemTestsRequest{Id: int32(s.ProblemID)})
 	problem, _ := uc.problemRepo.GetProblem(ctx, s.ProblemID)
+	checker, _ := uc.problemRepo.GetProblemChecker(ctx, s.ProblemID)
 	for _, test := range tests {
 		uc.log.Info("runing test start...")
 		resp, err := uc.sandboxClient.Run(ctx, &sandboxV1.RunRequest{
-			Stdin:       string(test.InputFileContent),
-			Source:      s.Source,
-			Language:    int32(s.Language),
-			MemoryLimit: problem.MemoryLimit,
-			TimeLimit:   problem.TimeLimit,
-		})
+			Stdin:         string(test.InputFileContent),
+			Answer:        string(test.OutputFileContent),
+			Source:        s.Source,
+			Language:      int32(s.Language),
+			MemoryLimit:   problem.MemoryLimit,
+			TimeLimit:     problem.TimeLimit,
+			CheckerSource: checker.Content,
+		}, grpc.MaxCallSendMsgSize(500*1024*1024))
 		uc.log.Info("runing test done...")
 		if err != nil {
 			uc.log.Info("runing test err:", err)
@@ -165,6 +179,17 @@ func (uc *SubmissionUsecase) runTest(ctx context.Context, s *Submission) *Submis
 			t.Verdict = SubmissionVerdictMemoryLimit
 		} else if strings.TrimSpace(resp.Stdout) != strings.TrimSpace(string(test.OutputFileContent)) {
 			t.Verdict = SubmissionVerdictWrongAnswer
+		}
+		if t.Verdict == SubmissionVerdictAccepted {
+			if resp.CheckerExitCode == CheckerVerdictOK {
+				t.Verdict = SubmissionVerdictAccepted
+			} else if resp.CheckerExitCode == CheckerVerdictPresentationError {
+				t.Verdict = SubmissionVerdictPresentationError
+			} else if resp.CheckerExitCode == CheckerVerdictFail {
+				t.Verdict = SubmissionVerdictSysemError
+			} else {
+				t.Verdict = SubmissionVerdictWrongAnswer
+			}
 		}
 		if t.Verdict != SubmissionVerdictAccepted {
 			result.Verdict = t.Verdict

@@ -8,6 +8,7 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Data data = 2;
+  Sandbox sandbox = 3;
 }
 
 message Server {
@@ -46,4 +47,8 @@ message Registry {
       string scheme = 2;
   }
   Consul consul = 1;
+}
+
+message Sandbox {
+  string testlib_path = 1;
 }

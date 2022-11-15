@@ -14,6 +14,8 @@ const i18n = {
     'verdict': 'Verdict',
     'time': 'Time',
     'memory': 'Memory',
+    'answer': 'Answer',
+    'submission': 'Submission',
   },
   'zh-CN': {
     'submit': '提交',
@@ -30,6 +32,8 @@ const i18n = {
     'verdict': '测评结果',
     'time': '时间',
     'memory': '内存',
+    'answer': '答案',
+    'submission': '提交',
   },
 };
 

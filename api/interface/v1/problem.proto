@@ -67,32 +67,6 @@ service ProblemService {
             delete: "/problems/{id}/statements/{sid}"
         };
     }
-    // 获取题目裁判程序列表
-    rpc ListProblemCheckers (ListProblemCheckersRequest) returns (ListProblemCheckersResponse) {
-        option (google.api.http) = {
-            get: "/problems/{id}/checkers"
-        };
-    };
-    // 获取题目裁判程序
-    rpc GetProblemChecker (GetProblemCheckerRequest) returns (ProblemChecker) {
-        option (google.api.http) = {
-            get: "/problems/{id}/checkers"
-        };
-    };
-    // 创建题目裁判程序
-    rpc CreateProblemChecker (CreateProblemCheckerRequest) returns (ProblemChecker) {
-        option (google.api.http) = {
-            post: "/problems/{id}/checkers"
-            body: "*"
-        };
-    };
-    // 更新题目裁判程序
-    rpc UpdateProblemChecker (UpdateProblemCheckerRequest) returns (ProblemChecker) {
-        option (google.api.http) = {
-            put: "/problems/{id}/checkers"
-            body: "*"
-        };
-    }
     // 获取题目测试点列表
     rpc ListProblemTests (ListProblemTestsRequest) returns (ListProblemTestsResponse) {
         option (google.api.http) = {
@@ -125,43 +99,62 @@ service ProblemService {
             delete: "/problems/{id}/tests/{tid}"
         };
     }
-
-    // 获取题目解答程序列表
-    rpc ListProblemSolutions (ListProblemSolutionsRequest) returns (ListProblemSolutionsResponse) {
+    // 获取题目文件列表
+    rpc ListProblemFiles (ListProblemFilesRequest) returns (ListProblemFilesResponse) {
         option (google.api.http) = {
-            get: "/problems/{id}/solutions"
+            get: "/problems/{id}/files"
         };
     };
-    // 获取题目解答程序详情
-    rpc GetProblemSolution (GetProblemSolutionRequest) returns (ProblemSolution) {
+    // 获取题目文件详情
+    rpc GetProblemFile (GetProblemFileRequest) returns (ProblemFile) {
         option (google.api.http) = {
-            get: "/problems/{id}/solutions/{sid}"
+            get: "/problems/{id}/files/{sid}"
         };
     };
-    // 创建题目解答程序
-    rpc CreateProblemSolution (CreateProblemSolutionRequest) returns (ProblemSolution) {
+    // 创建题目文件
+    rpc CreateProblemFile (CreateProblemFileRequest) returns (ProblemFile) {
         option (google.api.http) = {
-            post: "/problems/{id}/solutions"
+            post: "/problems/{id}/files"
             body: "*"
         };
     };
-    // 更新题目解答程序
-    rpc UpdateProblemSolution (UpdateProblemSolutionRequest) returns (ProblemSolution) {
+    // 更新题目文件
+    rpc UpdateProblemFile (UpdateProblemFileRequest) returns (ProblemFile) {
         option (google.api.http) = {
-            put: "/problems/{id}/solutions/{sid}"
+            put: "/problems/{id}/files/{sid}"
             body: "*"
         };
     }
-    // 删除题目解答程序
-    rpc DeleteProblemSolution (DeleteProblemSolutionRequest) returns (ProblemSolution) {
+    // 删除题目文件
+    rpc DeleteProblemFile (DeleteProblemFileRequest) returns (ProblemFile) {
         option (google.api.http) = {
-            delete: "/problems/{id}/solutions/{sid}"
+            delete: "/problems/{id}/files/{sid}"
         };
     }
-    // 运行题目解答程序
-    rpc RunProblemSolution (RunProblemSolutionRequest) returns (google.protobuf.Empty) {
+    // 运行题目文件
+    rpc RunProblemFile (RunProblemFileRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/problem_solutions/{sid}/run"
+            post: "/problem_files/{sid}/run"
+            body: "*"
+        };
+    }
+    // 获取std裁判程序
+    rpc ListProblemStdCheckers (ListProblemStdCheckersRequest) returns (ListProblemStdCheckersResponse) {
+        option (google.api.http) = {
+            get: "/problems/{id}/std_checkers"
+        };
+    }
+    // 设置裁判程序
+    rpc UpdateProblemChecker (UpdateProblemCheckerRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/problems/{id}/checkers"
+            body: "*"
+        };
+    }
+    // 验证题目完整性
+    rpc VerifyProblem (VerifyProblemRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problems/{id}/verify"
             body: "*"
         };
     }
@@ -273,31 +266,6 @@ message DeleteProblemStatementRequest {
     int32 sid = 2;
 }
 
-message ListProblemCheckersRequest {
-    int32 id = 1;
-}
-
-message ListProblemCheckersResponse {
-    repeated ProblemChecker data = 1;
-    int64 total = 2;
-}
-
-message GetProblemCheckerRequest {
-    int32 id = 1;
-}
-
-message ProblemChecker {
-
-}
-
-message CreateProblemCheckerRequest {
-    int32 id = 1;
-}
-
-message UpdateProblemCheckerRequest {
-    int32 id = 1;
-}
-
 message ListProblemTestsRequest {
     int32 id = 1;
     int32 page = 2;
@@ -342,23 +310,24 @@ message DeleteProblemTestRequest {
     string tid = 2;
 }
 
-message ListProblemSolutionsRequest {
+message ListProblemFilesRequest {
     int32 id = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    string file_type = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }
 
-message ListProblemSolutionsResponse {
-    repeated ProblemSolution data = 1;
+message ListProblemFilesResponse {
+    repeated ProblemFile data = 1;
     int64 total = 2;
 }
 
-message GetProblemSolutionRequest {
+message GetProblemFileRequest {
     int32 id = 1;
     int32 sid = 2;
 }
 
-message ProblemSolution {
+message ProblemFile {
     int32 id = 1;
     string name = 2;
     string content = 3;
@@ -368,14 +337,15 @@ message ProblemSolution {
     google.protobuf.Timestamp updated_at = 7;
 }
 
-message CreateProblemSolutionRequest {
+message CreateProblemFileRequest {
     int32 id = 1;
     string name = 2;
     string content = 3;
     string type = 4;
+    string file_type = 5;
 }
 
-message UpdateProblemSolutionRequest {
+message UpdateProblemFileRequest {
     int32 id = 1;
     int32 sid = 2;
     string name = 3;
@@ -383,11 +353,27 @@ message UpdateProblemSolutionRequest {
     string type = 5;
 }
 
-message DeleteProblemSolutionRequest {
+message DeleteProblemFileRequest {
     int32 id = 1;
     int32 sid = 2;
 }
 
-message RunProblemSolutionRequest {
+message RunProblemFileRequest {
     int32 sid = 1;
+}
+
+message ListProblemStdCheckersRequest {
+    int32 id = 1;
+}
+message ListProblemStdCheckersResponse {
+    repeated ProblemFile data = 1;
+}
+
+message UpdateProblemCheckerRequest {
+    int32 id = 1;
+    int32 checker_id = 2;
+}
+
+message VerifyProblemRequest {
+    int32 id = 1;
 }
