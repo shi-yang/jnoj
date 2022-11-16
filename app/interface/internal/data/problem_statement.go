@@ -97,7 +97,7 @@ func (r *problemRepo) UpdateProblemStatement(ctx context.Context, b *biz.Problem
 func (r *problemRepo) DeleteProblemStatement(ctx context.Context, id int) error {
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Delete(ProblemStatement{ID: id}).
+		Delete(&ProblemStatement{ID: id}).
 		Error
 	return err
 }

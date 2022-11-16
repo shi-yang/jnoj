@@ -23,6 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SandboxServiceClient interface {
 	Run(ctx context.Context, in *RunRequest, opts ...grpc.CallOption) (*RunResponse, error)
+	RunSubmission(ctx context.Context, in *RunSubmissionRequest, opts ...grpc.CallOption) (*RunSubmissionResponse, error)
+	RunProblemFile(ctx context.Context, in *RunProblemFileRequest, opts ...grpc.CallOption) (*RunProblemFileResponse, error)
 }
 
 type sandboxServiceClient struct {
@@ -42,11 +44,31 @@ func (c *sandboxServiceClient) Run(ctx context.Context, in *RunRequest, opts ...
 	return out, nil
 }
 
+func (c *sandboxServiceClient) RunSubmission(ctx context.Context, in *RunSubmissionRequest, opts ...grpc.CallOption) (*RunSubmissionResponse, error) {
+	out := new(RunSubmissionResponse)
+	err := c.cc.Invoke(ctx, "/jnoj.sandbox.v1.SandboxService/RunSubmission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sandboxServiceClient) RunProblemFile(ctx context.Context, in *RunProblemFileRequest, opts ...grpc.CallOption) (*RunProblemFileResponse, error) {
+	out := new(RunProblemFileResponse)
+	err := c.cc.Invoke(ctx, "/jnoj.sandbox.v1.SandboxService/RunProblemFile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SandboxServiceServer is the server API for SandboxService service.
 // All implementations must embed UnimplementedSandboxServiceServer
 // for forward compatibility
 type SandboxServiceServer interface {
 	Run(context.Context, *RunRequest) (*RunResponse, error)
+	RunSubmission(context.Context, *RunSubmissionRequest) (*RunSubmissionResponse, error)
+	RunProblemFile(context.Context, *RunProblemFileRequest) (*RunProblemFileResponse, error)
 	mustEmbedUnimplementedSandboxServiceServer()
 }
 
@@ -56,6 +78,12 @@ type UnimplementedSandboxServiceServer struct {
 
 func (UnimplementedSandboxServiceServer) Run(context.Context, *RunRequest) (*RunResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Run not implemented")
+}
+func (UnimplementedSandboxServiceServer) RunSubmission(context.Context, *RunSubmissionRequest) (*RunSubmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunSubmission not implemented")
+}
+func (UnimplementedSandboxServiceServer) RunProblemFile(context.Context, *RunProblemFileRequest) (*RunProblemFileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunProblemFile not implemented")
 }
 func (UnimplementedSandboxServiceServer) mustEmbedUnimplementedSandboxServiceServer() {}
 
@@ -88,6 +116,42 @@ func _SandboxService_Run_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SandboxService_RunSubmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunSubmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SandboxServiceServer).RunSubmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/jnoj.sandbox.v1.SandboxService/RunSubmission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SandboxServiceServer).RunSubmission(ctx, req.(*RunSubmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SandboxService_RunProblemFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunProblemFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SandboxServiceServer).RunProblemFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/jnoj.sandbox.v1.SandboxService/RunProblemFile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SandboxServiceServer).RunProblemFile(ctx, req.(*RunProblemFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SandboxService_ServiceDesc is the grpc.ServiceDesc for SandboxService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +162,14 @@ var SandboxService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Run",
 			Handler:    _SandboxService_Run_Handler,
+		},
+		{
+			MethodName: "RunSubmission",
+			Handler:    _SandboxService_RunSubmission_Handler,
+		},
+		{
+			MethodName: "RunProblemFile",
+			Handler:    _SandboxService_RunProblemFile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

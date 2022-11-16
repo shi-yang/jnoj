@@ -158,6 +158,12 @@ service ProblemService {
             body: "*"
         };
     }
+    // 获取题目验证状态
+    rpc GetProblemVerification (GetProblemVerificationRequest) returns (ProblemVerification) {
+        option (google.api.http) = {
+            get: "/problems/{id}/verification"
+        };
+    }
 }
 
 // 题目
@@ -376,4 +382,19 @@ message UpdateProblemCheckerRequest {
 
 message VerifyProblemRequest {
     int32 id = 1;
+}
+
+message GetProblemVerificationRequest {
+    int32 id = 1;
+}
+
+message ProblemVerification {
+    int32 id = 1;
+    int32 problem_id = 2;
+    int32 verification_status = 3;
+    message VerificaitionInfo {
+        string action = 1;
+        string error_message = 2;
+    }
+    repeated VerificaitionInfo verificaiton_info = 4;
 }

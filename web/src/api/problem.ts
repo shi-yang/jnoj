@@ -34,3 +34,11 @@ export function createProblem(data) {
 export function updateProblemChecker(id, data) {
   return axios.put(`/problems/${id}/checkers`, data)
 }
+
+export function verifyProblem(id) {
+  return axios.post(`/problems/${id}/verify`, {})
+}
+
+export function getProblemVerification(id) {
+  return axios.get(`/problems/${id}/verification`)
+}

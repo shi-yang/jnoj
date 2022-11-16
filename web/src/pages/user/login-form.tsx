@@ -8,7 +8,7 @@ import {
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
@@ -20,14 +20,13 @@ export default function LoginForm() {
   const formRef = useRef<FormInstance>();
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loginParams, setLoginParams, removeLoginParams] =
-    useStorage('loginParams');
+  const [loginParams, setLoginParams, removeLoginParams] = useStorage('loginParams');
 
   const t = useLocale(locale);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [rememberPassword, setRememberPassword] = useState(!!loginParams);
-
   function afterLoginSuccess(params) {
     // 记住密码
     if (rememberPassword) {
@@ -37,8 +36,9 @@ export default function LoginForm() {
     }
     // 记录登录状态
     localStorage.setItem('userStatus', 'login');
-    // 跳转首页
-    navigate('/');
+    // 跳转
+    const from = location.state?.from?.pathname || '/';
+    navigate(from);
   }
 
   function login(params) {

@@ -39,3 +39,7 @@ export interface updateProblemStatementRequest {
 export function updateProblemStatement(id: number, sid: number, data: updateProblemStatementRequest) {
   return axios.put(`/problems/${id}/statements/${sid}`, data)
 }
+
+export function deleteProblemStatement(id: number, sid: number) {
+  return axios.delete(`/problems/${id}/statements/${sid}`)
+}

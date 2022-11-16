@@ -10,7 +10,6 @@ import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/login.module.less';
@@ -20,17 +19,13 @@ export default function RegisterForm() {
   const formRef = useRef<FormInstance>();
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [agreement, setAgreement] = useState(true);
 
   const t = useLocale(locale);
   const navigate = useNavigate();
 
-
   function afterRegisterSuccess(params) {
-    // 记录登录状态
-    localStorage.setItem('userStatus', 'login');
     // 跳转首页
-    window.location.href = '/';
+    navigate('/')
   }
 
   function register(params) {
@@ -64,10 +59,9 @@ export default function RegisterForm() {
       <div className={styles['login-form-title']}>{t['register.form.title']}</div>
       <div className={styles['login-form-error-msg']}>{errorMessage}</div>
       <Form
-        className={styles['login-form']}
+        className={styles['register-form']}
         layout="vertical"
         ref={formRef}
-        initialValues={{ userName: 'admin', password: 'admin' }}
       >
         <Form.Item
           field="username"
@@ -90,9 +84,6 @@ export default function RegisterForm() {
           />
         </Form.Item>
         <Space size={16} direction="vertical">
-          {/* <div className={styles['login-form-password-actions']}>
-            注册即代表同意协议
-          </div> */}
           <Button type="primary" long onClick={onSubmitClick} loading={loading}>
             {t['login.form.register']}
           </Button>

@@ -158,7 +158,11 @@ func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.Upd
 
 // DeleteProblemStatement 删除题目描述
 func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.DeleteProblemStatementRequest) (*v1.ProblemStatement, error) {
-	return nil, nil
+	err := s.uc.DeleteProblemStatement(ctx, int(req.Sid))
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ProblemStatement{}, nil
 }
 
 // ListProblemTests 获取题目测试点列表
@@ -342,4 +346,22 @@ func (s *ProblemService) VerifyProblem(ctx context.Context, req *v1.VerifyProble
 func (s *ProblemService) UpdateProblemChecker(ctx context.Context, req *v1.UpdateProblemCheckerRequest) (*emptypb.Empty, error) {
 	err := s.uc.UpdateProblemChecker(ctx, int(req.Id), int(req.CheckerId))
 	return &emptypb.Empty{}, err
+}
+
+func (s *ProblemService) GetProblemVerification(ctx context.Context, req *v1.GetProblemVerificationRequest) (*v1.ProblemVerification, error) {
+	resp := new(v1.ProblemVerification)
+	res, err := s.uc.GetProblemVerification(ctx, int(req.Id))
+	if err == nil {
+		resp.Id = int32(res.ID)
+		resp.VerificationStatus = int32(res.VerificationStatus)
+		resp.ProblemId = int32(res.ProblemID)
+		resp.VerificaitonInfo = make([]*v1.ProblemVerification_VerificaitionInfo, 0)
+		for _, v := range res.VerificationInfo {
+			resp.VerificaitonInfo = append(resp.VerificaitonInfo, &v1.ProblemVerification_VerificaitionInfo{
+				Action:       v.Action,
+				ErrorMessage: v.ErrorMessage,
+			})
+		}
+	}
+	return resp, nil
 }

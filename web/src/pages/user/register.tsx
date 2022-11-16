@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import Logo from '@/assets/logo.svg';
 import RegisterForm from './register-form';
 import LoginBanner from './login-banner';
 import styles from './style/login.module.less';

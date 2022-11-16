@@ -26,11 +26,13 @@ type ProblemFile struct {
 
 // ListProblemFiles .
 func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemFilesRequest) ([]*biz.ProblemFile, int64) {
-	res := []ProblemFile{}
+	res := make([]ProblemFile, 0)
 	count := int64(0)
 	db := r.data.db.WithContext(ctx).
-		Where("problem_id = ?", req.Id).
-		Where("file_type = ?", req.FileType)
+		Where("problem_id = ?", req.Id)
+	if req.FileType != "" {
+		db.Where("file_type = ?", req.FileType)
+	}
 	db.Find(&res).
 		Count(&count)
 	rv := make([]*biz.ProblemFile, 0)

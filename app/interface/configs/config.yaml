@@ -14,7 +14,7 @@ data:
     read_timeout: 0.2s
     write_timeout: 0.2s
   mongodb:
-    uri: "mongodb://root:123456@mongo:27017/"
+    uri: "${MONGODB_URI}"
     database: "jnoj"
 
 consul:

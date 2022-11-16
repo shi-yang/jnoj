@@ -33,6 +33,7 @@ const OperationProblemServiceGetProblem = "/jnoj.interface.v1.ProblemService/Get
 const OperationProblemServiceGetProblemFile = "/jnoj.interface.v1.ProblemService/GetProblemFile"
 const OperationProblemServiceGetProblemStatement = "/jnoj.interface.v1.ProblemService/GetProblemStatement"
 const OperationProblemServiceGetProblemTest = "/jnoj.interface.v1.ProblemService/GetProblemTest"
+const OperationProblemServiceGetProblemVerification = "/jnoj.interface.v1.ProblemService/GetProblemVerification"
 const OperationProblemServiceListProblemFiles = "/jnoj.interface.v1.ProblemService/ListProblemFiles"
 const OperationProblemServiceListProblemStatements = "/jnoj.interface.v1.ProblemService/ListProblemStatements"
 const OperationProblemServiceListProblemStdCheckers = "/jnoj.interface.v1.ProblemService/ListProblemStdCheckers"
@@ -58,6 +59,7 @@ type ProblemServiceHTTPServer interface {
 	GetProblemFile(context.Context, *GetProblemFileRequest) (*ProblemFile, error)
 	GetProblemStatement(context.Context, *GetProblemStatementRequest) (*ProblemStatement, error)
 	GetProblemTest(context.Context, *GetProblemTestRequest) (*ProblemTest, error)
+	GetProblemVerification(context.Context, *GetProblemVerificationRequest) (*ProblemVerification, error)
 	ListProblemFiles(context.Context, *ListProblemFilesRequest) (*ListProblemFilesResponse, error)
 	ListProblemStatements(context.Context, *ListProblemStatementsRequest) (*ListProblemStatementsResponse, error)
 	ListProblemStdCheckers(context.Context, *ListProblemStdCheckersRequest) (*ListProblemStdCheckersResponse, error)
@@ -103,6 +105,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.GET("/problems/{id}/std_checkers", _ProblemService_ListProblemStdCheckers0_HTTP_Handler(srv))
 	r.PUT("/problems/{id}/checkers", _ProblemService_UpdateProblemChecker0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/verify", _ProblemService_VerifyProblem0_HTTP_Handler(srv))
+	r.GET("/problems/{id}/verification", _ProblemService_GetProblemVerification0_HTTP_Handler(srv))
 }
 
 func _ProblemService_ListProblems0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
@@ -605,6 +608,28 @@ func _ProblemService_VerifyProblem0_HTTP_Handler(srv ProblemServiceHTTPServer) f
 	}
 }
 
+func _ProblemService_GetProblemVerification0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetProblemVerificationRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceGetProblemVerification)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetProblemVerification(ctx, req.(*GetProblemVerificationRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ProblemVerification)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ProblemServiceHTTPClient interface {
 	CreateProblem(ctx context.Context, req *CreateProblemRequest, opts ...http.CallOption) (rsp *CreateProblemResponse, err error)
 	CreateProblemFile(ctx context.Context, req *CreateProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
@@ -617,6 +642,7 @@ type ProblemServiceHTTPClient interface {
 	GetProblemFile(ctx context.Context, req *GetProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
 	GetProblemStatement(ctx context.Context, req *GetProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
 	GetProblemTest(ctx context.Context, req *GetProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
+	GetProblemVerification(ctx context.Context, req *GetProblemVerificationRequest, opts ...http.CallOption) (rsp *ProblemVerification, err error)
 	ListProblemFiles(ctx context.Context, req *ListProblemFilesRequest, opts ...http.CallOption) (rsp *ListProblemFilesResponse, err error)
 	ListProblemStatements(ctx context.Context, req *ListProblemStatementsRequest, opts ...http.CallOption) (rsp *ListProblemStatementsResponse, err error)
 	ListProblemStdCheckers(ctx context.Context, req *ListProblemStdCheckersRequest, opts ...http.CallOption) (rsp *ListProblemStdCheckersResponse, err error)
@@ -774,6 +800,19 @@ func (c *ProblemServiceHTTPClientImpl) GetProblemTest(ctx context.Context, in *G
 	pattern := "/problems/{id}/tests"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceGetProblemTest))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) GetProblemVerification(ctx context.Context, in *GetProblemVerificationRequest, opts ...http.CallOption) (*ProblemVerification, error) {
+	var out ProblemVerification
+	pattern := "/problems/{id}/verification"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceGetProblemVerification))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

@@ -6,6 +6,9 @@ option go_package = "api/sandbox/v1;v1";
 
 service SandboxService {
     rpc Run (RunRequest) returns (RunResponse) {};
+
+    rpc RunSubmission (RunSubmissionRequest) returns (RunSubmissionResponse) {};
+    rpc RunProblemFile (RunProblemFileRequest) returns (RunProblemFileResponse) {}; 
 }
 
 message RunRequest {
@@ -15,9 +18,9 @@ message RunRequest {
     int64 memory_limit = 4;
     int64 time_limit = 5;
 
-    string answer = 6;
-    string checker_source = 7;
-    string checker_language = 8;
+    optional string answer = 6;
+    optional string checker_source = 7;
+    optional string checker_language = 8;
 }
 
 message RunResponse {
@@ -29,6 +32,21 @@ message RunResponse {
     string compile_msg = 6;
     string err_msg = 7;
 
-    string checker_output = 8;
+    string checker_stdout = 8;
     int32 checker_exit_code = 9;
+}
+
+message RunSubmissionRequest {
+    int64 submission_id = 1;
+}
+
+message RunSubmissionResponse {
+}
+
+message RunProblemFileRequest {
+    int32 problem_id = 1;
+    int32 problem_file_id = 2;
+}
+
+message RunProblemFileResponse {
 }

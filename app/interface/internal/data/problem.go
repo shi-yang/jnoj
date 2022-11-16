@@ -18,17 +18,18 @@ type problemRepo struct {
 }
 
 type Problem struct {
-	ID            int
-	Name          string
-	TimeLimit     int64
-	MemoryLimit   int64
-	AcceptedCount int
-	SubmitCount   int
-	UserID        int
-	CheckerID     int
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     gorm.DeletedAt
+	ID                 int
+	Name               string
+	TimeLimit          int64
+	MemoryLimit        int64
+	AcceptedCount      int
+	SubmitCount        int
+	UserID             int
+	CheckerID          int
+	VerificationStatus int
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	DeletedAt          gorm.DeletedAt
 }
 
 // NewProblemRepo .
@@ -77,6 +78,7 @@ func (r *problemRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, err
 		AcceptedCount: res.AcceptedCount,
 		SubmitCount:   res.SubmitCount,
 		UserID:        res.UserID,
+		CheckerID:     res.CheckerID,
 	}, err
 }
 

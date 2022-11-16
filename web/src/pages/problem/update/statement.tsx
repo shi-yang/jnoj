@@ -1,14 +1,13 @@
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, List, Message, Grid, Tabs, Tag, Popconfirm } from '@arco-design/web-react';
+import { Button, Card, Form, Input, List, Message, Grid, Tag, Popconfirm } from '@arco-design/web-react';
 import MarkdownEditor from '@uiw/react-markdown-editor';
 import { useEffect, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
-import { listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
+import { deleteProblemStatement, listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
 import styles from './style/statement.module.less';
 import { IconDelete, IconEdit } from '@arco-design/web-react/icon';
 const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
 const Row = Grid.Row;
 const Col = Grid.Col;
 export default (props) => {
@@ -32,6 +31,7 @@ export default (props) => {
     })
   }
   function onSubmit(values) {
+    console.log('s', statements, current)
     updateProblemStatement(props.problem.id, statements[current].id, values)
       .then(res => {
         Message.info('已保存')
@@ -48,7 +48,11 @@ export default (props) => {
     })
   }
   function deleteStatement(index) {
-    Message.info('尚未上线，敬请期待')
+    deleteProblemStatement(props.problem.id, statements[index].id)
+      .then(res => {
+        fetchData();
+        Message.success('已删除');
+      })
   }
   useEffect(() => {
     fetchData();
@@ -60,7 +64,7 @@ export default (props) => {
           <List
             className={styles['list-actions']}
             bordered
-            footer={<CreateStatementModal problem={props.problem} />}
+            footer={<CreateStatementModal problem={props.problem} callback={fetchData} />}
           >
             {statements.map((item, index) => (
                 <List.Item key={index} actions={[

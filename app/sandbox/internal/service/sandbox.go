@@ -10,12 +10,13 @@ import (
 type SandboxService struct {
 	v1.UnimplementedSandboxServiceServer
 
-	uc *biz.SandboxUsecase
+	uc  *biz.SandboxUsecase
+	suc *biz.SubmissionUsecase
 }
 
 // NewSandboxService new a sandbox service.
-func NewSandboxService(uc *biz.SandboxUsecase) *SandboxService {
-	return &SandboxService{uc: uc}
+func NewSandboxService(uc *biz.SandboxUsecase, suc *biz.SubmissionUsecase) *SandboxService {
+	return &SandboxService{uc: uc, suc: suc}
 }
 
 func (s *SandboxService) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunResponse, error) {

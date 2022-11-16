@@ -163,6 +163,10 @@ const Submission = (props) => {
                     <h4>{t['answer']}</h4>
                     <pre>{ item.answer }</pre>
                   </div>
+                  <div className={styles.output}>
+                    <h4>{t['answer']}</h4>
+                    <pre>{ item.checkerStdout }</pre>
+                  </div>
                 </div>
               </CollapseItem>
             ))

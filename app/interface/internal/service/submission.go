@@ -80,15 +80,17 @@ func (s *SubmissionService) GetSubmissionInfo(ctx context.Context, req *v1.GetSu
 	resp.Tests = make([]*v1.SubmissionInfo_SubmissionTest, 0)
 	for _, v := range res.Tests {
 		resp.Tests = append(resp.Tests, &v1.SubmissionInfo_SubmissionTest{
-			Memory:   v.Memory,
-			Time:     v.Time,
-			Stdin:    v.Stdin,
-			Stdout:   v.Stdout,
-			Answer:   v.Answer,
-			Stderr:   v.Stderr,
-			Verdict:  int32(v.Verdict),
-			ExitCode: int32(v.ExitCode),
-			Score:    int32(v.Score),
+			Memory:          v.Memory,
+			Time:            v.Time,
+			Stdin:           v.Stdin,
+			Stdout:          v.Stdout,
+			Answer:          v.Answer,
+			Stderr:          v.Stderr,
+			Verdict:         int32(v.Verdict),
+			ExitCode:        int32(v.ExitCode),
+			Score:           int32(v.Score),
+			CheckerExitCode: int32(v.CheckerExitCode),
+			CheckerStdout:   v.CheckerStdout,
 		})
 	}
 	return resp, nil

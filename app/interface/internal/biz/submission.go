@@ -37,15 +37,17 @@ type SubmissionResult struct {
 }
 
 type SubmissionTest struct {
-	Verdict  int
-	Stdin    string
-	Stdout   string
-	Stderr   string
-	Answer   string
-	Time     int64
-	Memory   int64
-	ExitCode int
-	Score    int
+	Verdict         int
+	Stdin           string
+	Stdout          string
+	Stderr          string
+	Answer          string
+	Time            int64
+	Memory          int64
+	ExitCode        int
+	Score           int
+	CheckerStdout   string
+	CheckerExitCode int
 }
 
 const (
@@ -137,14 +139,15 @@ func (uc *SubmissionUsecase) runTest(ctx context.Context, s *Submission) *Submis
 	checker, _ := uc.problemRepo.GetProblemChecker(ctx, s.ProblemID)
 	for _, test := range tests {
 		uc.log.Info("runing test start...")
+		answer := string(test.OutputFileContent)
 		resp, err := uc.sandboxClient.Run(ctx, &sandboxV1.RunRequest{
 			Stdin:         string(test.InputFileContent),
-			Answer:        string(test.OutputFileContent),
 			Source:        s.Source,
 			Language:      int32(s.Language),
 			MemoryLimit:   problem.MemoryLimit,
 			TimeLimit:     problem.TimeLimit,
-			CheckerSource: checker.Content,
+			CheckerSource: &checker.Content,
+			Answer:        &answer,
 		}, grpc.MaxCallSendMsgSize(500*1024*1024))
 		uc.log.Info("runing test done...")
 		if err != nil {
@@ -163,14 +166,16 @@ func (uc *SubmissionUsecase) runTest(ctx context.Context, s *Submission) *Submis
 			result.Time = resp.Time
 		}
 		t := SubmissionTest{
-			Stdin:    substrLength(test.InputFileContent, 99),
-			Stdout:   substrLength([]byte(resp.Stdout), 99),
-			Stderr:   substrLength([]byte(resp.Stderr), 99),
-			Answer:   substrLength(test.OutputFileContent, 99),
-			Memory:   resp.Memory,
-			Time:     resp.Time,
-			ExitCode: int(resp.ExitCode),
-			Verdict:  SubmissionVerdictAccepted,
+			Stdin:           substrLength(test.InputFileContent, 99),
+			Stdout:          substrLength([]byte(resp.Stdout), 99),
+			Stderr:          substrLength([]byte(resp.Stderr), 99),
+			Answer:          substrLength(test.OutputFileContent, 99),
+			Memory:          resp.Memory,
+			Time:            resp.Time,
+			ExitCode:        int(resp.ExitCode),
+			Verdict:         SubmissionVerdictAccepted,
+			CheckerStdout:   substrLength([]byte(resp.CheckerStdout), 99),
+			CheckerExitCode: int(resp.CheckerExitCode),
 		}
 		// 判断结果
 		if resp.Time/1e3 > problem.TimeLimit {

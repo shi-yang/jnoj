@@ -6,11 +6,10 @@ import { GlobalContext } from '@/context';
 import IconButton from './IconButton';
 import { IconLanguage, IconMoonFill, IconPoweroff, IconSettings, IconSunFill, IconUser } from '@arco-design/web-react/icon';
 import defaultLocale from '@/locale';
-import useStorage from '@/utils/useStorage';
 import { Link, useNavigate } from 'react-router-dom';
 import { getUserInfo, userInfo } from '@/store/reducers/user';
 import { useAppDispatch, useAppSelector } from '@/hooks';
-import { isLogged } from '@/utils/auth';
+import { isLogged, removeAccessToken } from '@/utils/auth';
 
 const MenuItem = Menu.Item;
 
@@ -20,13 +19,10 @@ const LayoutHeader = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   
-  const [_, setUserStatus] = useStorage('userStatus');
-
-  const { setLang, lang, theme, setTheme } = useContext(GlobalContext);
+  const { lang, setLang, theme, setTheme } = useContext(GlobalContext);
 
   function logout() {
-    setUserStatus('logout');
-    localStorage.removeItem('token');
+    removeAccessToken();
     window.location.href = '/login';
   }
 

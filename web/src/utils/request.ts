@@ -1,5 +1,6 @@
 import { Notification } from '@arco-design/web-react';
 import axios from 'axios';
+import { getAccessToken } from './auth';
 
 const http = axios.create({
   baseURL: 'http://127.0.0.1:8092'
@@ -19,7 +20,7 @@ const err = (error) => {
 }
 
 http.interceptors.request.use(config => {
-  const token = localStorage.getItem('token')
+  const token = getAccessToken()
   if (token) {
     config.headers['Authorization'] = 'Bearer ' + token
   }

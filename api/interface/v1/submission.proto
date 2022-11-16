@@ -93,6 +93,8 @@ message SubmissionInfo {
         int64 memory = 7;
         int32 exit_code = 8;
         int32 score = 9;
+        string checker_stdout = 10;
+        int32 checker_exit_code = 11;
     }
     repeated SubmissionTest tests = 4;
 }

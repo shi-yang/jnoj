@@ -1,4 +1,5 @@
 import { getUserInfo as getInfo } from "@/api/user";
+import { removeAccessToken } from "@/utils/auth";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export interface UserInfoState {
@@ -35,6 +36,8 @@ const userSlice = createSlice({
         state.isLogged = true
       })
       .addCase(getUserInfo.rejected, (state, action) => {
+        state.isLogged = false
+        removeAccessToken()
       })
   }
 })

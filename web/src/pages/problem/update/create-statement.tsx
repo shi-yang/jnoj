@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Button, Form, Input, Select, Message, Radio } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { createProblemStatement } from '@/api/problem-statement';
+import { createProblemStatement, listProblemStatements } from '@/api/problem-statement';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -13,6 +13,7 @@ function App(props) {
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
+  const [disabledLanguages, setDisabledLanguages] = useState({});
 
   function onOk() {
     form.validate().then((res) => {
@@ -20,6 +21,7 @@ function App(props) {
       createProblemStatement(props.problem.id, res)
         .then(res => {
           Message.success('Success !');
+          props.callback()
         })
         .finally(() => {
           setVisible(false);
@@ -28,14 +30,22 @@ function App(props) {
     });
   }
 
-  const formItemLayout = {
-    labelCol: {
-      span: 4,
-    },
-    wrapperCol: {
-      span: 20,
-    },
-  };
+  function fetchData() {
+    listProblemStatements(props.problem.id)
+      .then(res => {
+        const { data } = res.data
+        data.forEach(item => {
+          setDisabledLanguages((pre) => ({...pre, [item.language]: true}))
+        })
+      })
+  }
+  useEffect(() => {
+    fetchData();
+    return () => {
+      form.clearFields();
+      setDisabledLanguages({});
+    }
+  }, [visible])
   return (
     <div>
       <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
@@ -48,26 +58,21 @@ function App(props) {
         confirmLoading={confirmLoading}
         onCancel={() => setVisible(false)}
       >
-        <Form
-          {...formItemLayout}
-          form={form}
-          labelCol={{
-            style: { flexBasis: 90 },
-          }}
-          wrapperCol={{
-            style: { flexBasis: 'calc(100% - 90px)' },
-          }}
-        >
-          <FormItem field='language' label={t['language']}>
+        <Form form={form}>
+          <FormItem field='language' label={t['language']} required
+            rules={[
+              {
+                required: true,
+                type: 'string',
+              },
+            ]}
+          >
             <Select
               placeholder='Please select'
               style={{ width: 154 }}
-              onChange={(value) =>
-                console.log(value)
-              }
             >
               {options.map((option, index) => (
-                <Option key={option} value={option}>
+                <Option key={option} value={option} disabled={disabledLanguages[option]}>
                   {option}
                 </Option>
               ))}
