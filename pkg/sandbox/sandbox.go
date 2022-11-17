@@ -26,17 +26,18 @@ func init() {
 
 type Result struct {
 	// Runtime 运行时间
-	Time int64 `json:"time"`
+	Time int64
 	// Memory 消耗内存
-	Memory int64 `json:"memory"`
+	Memory int64
 	// Stdin 程序输入
-	Stdin string `json:"stdin"`
+	Stdin string
 	// Stdout 程序输出
-	Stdout string `json:"Stdout"`
+	Stdout string
 	// Stderr 程序错误输出
-	Stderr   string `json:"stderr"`
-	Err      string `json:"err"`
-	ExitCode int    `json:"exitCode"`
+	Stderr     string
+	RuntimeErr string // 运行出错
+	Err        string
+	ExitCode   int
 }
 
 func sandboxInit() {
@@ -86,7 +87,7 @@ func sandboxInit() {
 	// 异常结束
 	if err != nil {
 		os.Stderr.WriteString(err.Error())
-		r.Err = err.Error()
+		r.RuntimeErr = err.Error()
 	}
 
 	sTime := cmd.ProcessState.SystemTime().Microseconds()

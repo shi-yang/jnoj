@@ -2,10 +2,10 @@ import { getContestProblem } from "@/api/contest";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import styles from './style/problem.module.less';
-import CodeMirror from '@uiw/react-codemirror';
 import { Button, Divider, Grid, Typography } from "@arco-design/web-react";
 import useLocale from "@/utils/useLocale";
 import locale from "./locale";
+import Editor from './editor';
 
 const { Title, Paragraph } = Typography;
 
@@ -22,9 +22,8 @@ export default () => {
   const [language, setLanguage] = useState(0);
   function fetchData() {
     setLoading(true);
-    getContestProblem(params.id, params.key)
+    getContestProblem(params.id, params.key.charCodeAt(0) - 65)
       .then((res) => {
-        console.log('aa', res.data)
         setProblem(res.data);
       })
       .catch(err => {
@@ -58,7 +57,7 @@ export default () => {
                     <Paragraph type='secondary' spacing='close'>
                       {t['timeLimit']}：{problem.timeLimit / 1000}s
                       <Divider type='vertical' />
-                      {t['memoryLimit']}：{problem.memoryLimit / 1024 / 1024}MB
+                      {t['memoryLimit']}：{problem.memoryLimit}MB
                     </Paragraph>
                     <Paragraph>
                       {problem.statements[language].legend}
@@ -95,9 +94,9 @@ export default () => {
                   </Typography>
                 </div>
               )}
-              <CodeMirror
-                height="200px"
-              />
+              <div>
+              <Editor problem={problem} language={language} />
+              </div>
               <Button>提交</Button>
             </div>
           </div>

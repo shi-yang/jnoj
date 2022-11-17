@@ -68,7 +68,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Submission"
+              "$ref": "#/definitions/interfacev1Submission"
             }
           },
           "default": {
@@ -101,7 +101,39 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Submission"
+              "$ref": "#/definitions/interfacev1Submission"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "SubmissionService"
+        ]
+      }
+    },
+    "/submissions/{id}/info": {
+      "get": {
+        "summary": "提交的运行信息",
+        "operationId": "SubmissionService_GetSubmissionInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SubmissionInfo"
             }
           },
           "default": {
@@ -127,6 +159,94 @@
     }
   },
   "definitions": {
+    "SubmissionInfoSubmissionTest": {
+      "type": "object",
+      "properties": {
+        "verdict": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "stdin": {
+          "type": "string"
+        },
+        "stdout": {
+          "type": "string"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memory": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exitCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "checkerStdout": {
+          "type": "string"
+        },
+        "checkerExitCode": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "interfacev1Submission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "problemId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "题目ID"
+        },
+        "language": {
+          "type": "integer",
+          "format": "int32",
+          "title": "编程语言"
+        },
+        "source": {
+          "type": "string",
+          "title": "源码"
+        },
+        "memory": {
+          "type": "string",
+          "format": "int64"
+        },
+        "time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "verdict": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "提交"
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -179,7 +299,7 @@
         "data": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v1Submission"
+            "$ref": "#/definitions/interfacev1Submission"
           }
         },
         "total": {
@@ -188,33 +308,27 @@
         }
       }
     },
-    "v1Submission": {
+    "v1SubmissionInfo": {
       "type": "object",
       "properties": {
-        "id": {
+        "compileMsg": {
+          "type": "string"
+        },
+        "memory": {
           "type": "string",
           "format": "int64"
         },
-        "problemId": {
-          "type": "integer",
-          "format": "int32",
-          "title": "题目ID"
-        },
-        "language": {
-          "type": "integer",
-          "format": "int32",
-          "title": "编程语言"
-        },
-        "source": {
+        "time": {
           "type": "string",
-          "title": "源码"
+          "format": "int64"
         },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
+        "tests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SubmissionInfoSubmissionTest"
+          }
         }
-      },
-      "title": "提交"
+      }
     }
   }
 }

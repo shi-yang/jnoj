@@ -4,12 +4,28 @@ export function getContest(id) {
   return axios.get(`/contests/${id}`)
 }
 
+export function listContests(params) {
+  return axios.get(`/contests`, { params })
+}
+
+export function createContest(data) {
+  return axios.post(`/contests`, data)
+}
+
+export function updateContest(id, data) {
+  return axios.put(`/contests/${id}`, data)
+}
+
 export function listContestStandings(id) {
   return axios.get(`/contests/${id}/standings`)
 }
 
 export function listContestProblems(id) {
   return axios.get(`/contests/${id}/problems`)
+}
+
+export function createContestProblem(id, data) {
+  return axios.post(`/contests/${id}/problems`, data)
 }
 
 export function listContestStatuses(id) {

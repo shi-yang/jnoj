@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.code-header {
+  height: 40px;
+  padding: 2px;
+  display: flex;
+  justify-content: space-between;
+  ::before {
+    content: '';
+    clear: both;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--color-neutral-3);
+    display: block;
+  }
+}

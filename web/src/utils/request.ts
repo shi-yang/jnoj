@@ -3,9 +3,8 @@ import axios from 'axios';
 import { getAccessToken } from './auth';
 
 const http = axios.create({
-  baseURL: 'http://127.0.0.1:8092'
+  baseURL: import.meta.env.VITE_API_BASE_URL
 })
-
 const err = (error) => {
   if (error.response) {
     const data = error.response.data

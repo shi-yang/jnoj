@@ -8,6 +8,7 @@ import (
 	"jnoj/app/interface/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -17,10 +18,19 @@ type contestRepo struct {
 }
 
 type Contest struct {
-	ID        int
-	Name      string
-	UserID    int
-	CreatedAt time.Time
+	ID          int
+	Name        string
+	StartTime   time.Time
+	EndTime     time.Time
+	FrozenTime  *time.Time
+	Type        int
+	Status      int
+	Description string
+	GroupID     int
+	UserID      int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
 }
 
 // NewContestRepo .
@@ -41,7 +51,10 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	rv := make([]*biz.Contest, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.Contest{
-			ID: v.ID,
+			ID:        v.ID,
+			Name:      v.Name,
+			StartTime: v.StartTime,
+			EndTime:   v.EndTime,
 		})
 	}
 	return rv, count
@@ -55,12 +68,26 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Contest{}, err
+	return &biz.Contest{
+		ID:          res.ID,
+		Name:        res.Name,
+		StartTime:   res.StartTime,
+		EndTime:     res.EndTime,
+		FrozenTime:  res.FrozenTime,
+		Type:        res.Type,
+		Description: res.Description,
+		CreatedAt:   res.CreatedAt,
+	}, err
 }
 
 // CreateContest .
 func (r *contestRepo) CreateContest(ctx context.Context, b *biz.Contest) (*biz.Contest, error) {
-	res := Contest{Name: b.Name}
+	res := Contest{
+		Name:      b.Name,
+		StartTime: b.StartTime,
+		EndTime:   b.EndTime,
+		UserID:    b.UserID,
+	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error

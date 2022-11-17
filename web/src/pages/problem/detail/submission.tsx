@@ -7,6 +7,7 @@ import { VerdictMap } from './constants';
 import styles from './style/description.module.less'
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
+import { FormatTime } from '@/utils/formatTime';
 const CollapseItem = Collapse.Item;
 const Submission = (props) => {
   const t = useLocale(locale);
@@ -100,7 +101,7 @@ const Submission = (props) => {
     {
       title: t['createdAt'],
       dataIndex: 'createdAt',
-      align: 'center',
+      render: (col) => FormatTime(col)
     },
     {
       title: t['action'],

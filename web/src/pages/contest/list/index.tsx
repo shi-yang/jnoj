@@ -3,15 +3,16 @@ import {
   Table,
   Card,
   PaginationProps,
+  Space,
 } from '@arco-design/web-react';
-import axios from 'axios';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
-import { listProblems } from '@/api/problem';
+import CreateModal from './create';
+import { listContests } from '@/api/contest';
 
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
 export const FilterType = ['规则筛选', '人工'];
@@ -49,9 +50,9 @@ function SearchTable() {
       pageSize,
       ...formParams,
     };
-    listProblems(params)
+    listContests(params)
       .then((res) => {
-        setData(res.data.list);
+        setData(res.data.data);
         setPatination({
           ...pagination,
           current,
@@ -79,6 +80,11 @@ function SearchTable() {
     <div className='container'>
       <Card>
         <SearchForm onSearch={handleSearch} />
+        <div className={styles['button-group']}>
+        <Space>
+          <CreateModal />
+        </Space>
+      </div>
         <Table
           rowKey="id"
           loading={loading}

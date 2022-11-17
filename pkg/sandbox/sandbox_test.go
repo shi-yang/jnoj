@@ -36,3 +36,20 @@ func TestRunPython(t *testing.T) {
 	res := Run(workDir, &Languages[LANG_PYTHON3], []byte(""), 256, 1000)
 	log.Printf("%+v\n", res)
 }
+
+func TestLangC(t *testing.T) {
+	sourceFiles, _ := os.ReadDir("./test/c")
+	for _, f := range sourceFiles {
+		source := readSourceFile("./test/c/" + f.Name())
+		log.Printf("filename start:[%s]\n", f.Name())
+		if err := Compile(workDir, source, &Languages[LANG_C]); err != nil {
+			t.Error("Compiled Error:", err)
+		} else {
+			input, _ := os.ReadFile("./test/data/1.in")
+			res := Run(workDir, &Languages[LANG_C], input, 256, 1000)
+			log.Printf("filename result:[%s] result=[%+v]\n", f.Name(), res)
+		}
+		log.Printf("filename done:[%s]\n", f.Name())
+		log.Println("==============================")
+	}
+}

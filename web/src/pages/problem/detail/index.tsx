@@ -4,6 +4,8 @@ import {
   Typography,
   Grid,
   ResizeBox,
+  Select,
+  Divider,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -14,6 +16,7 @@ import Description from './description';
 import Submission from './submission';
 import { getProblem } from '@/api/problem';
 import { useParams } from 'react-router-dom';
+import { IconLanguage } from '@arco-design/web-react/icon';
 const TabPane = Tabs.TabPane;
 
 function Index() {
@@ -25,12 +28,19 @@ function Index() {
     statements: []
   });
   const [language, setLanguage] = useState(0);
+  const [languageOptions, setLanguageOptions] = useState([]);
   const params = useParams();
   function fetchData() {
     setLoading(true);
     getProblem(params.id)
       .then((res) => {
         setData(res.data);
+        res.data.statements.forEach((item, index) => {
+          setLanguageOptions((prev) => [...prev, {
+            label: item.language,
+            value: index,
+          }])
+        })
       })
       .finally(() => {
         setLoading(false);
@@ -49,7 +59,37 @@ function Index() {
             <Grid.Row className={styles.header} justify="space-between" align="center">
               <Grid.Col span={24}>
                 <Typography.Title className={styles.title} heading={5}>
-                { data.id } - { data.statements[language].name }
+                  { data.id } - { data.statements[language].name }
+                  { languageOptions.length > 1 &&
+                    <>
+                      <Divider type='vertical' />
+                      <Select
+                        bordered={false}
+                        size='small'
+                        style={{width: '100px'}}
+                        defaultValue={language}
+                        onChange={(value) =>
+                          setLanguage(value)
+                        }
+                        triggerProps={{
+                          autoAlignPopupWidth: false,
+                          autoAlignPopupMinWidth: true,
+                          position: 'bl',
+                        }}
+                        triggerElement={
+                          <span className={styles['header-language']}>
+                            <IconLanguage /> {languageOptions[language].label}
+                          </span>
+                        }
+                      >
+                        {languageOptions.map((option, index) => (
+                          <Select.Option key={index} value={option.value}>
+                            {option.label}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </>
+                  }
                 </Typography.Title>
               </Grid.Col>
             </Grid.Row>

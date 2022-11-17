@@ -21,28 +21,37 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+const OperationContestServiceCreateContest = "/jnoj.interface.v1.ContestService/CreateContest"
+const OperationContestServiceCreateContestProblem = "/jnoj.interface.v1.ContestService/CreateContestProblem"
 const OperationContestServiceGetContest = "/jnoj.interface.v1.ContestService/GetContest"
 const OperationContestServiceGetContestProblem = "/jnoj.interface.v1.ContestService/GetContestProblem"
 const OperationContestServiceListContestProblems = "/jnoj.interface.v1.ContestService/ListContestProblems"
+const OperationContestServiceListContestStandings = "/jnoj.interface.v1.ContestService/ListContestStandings"
 const OperationContestServiceListContestUsers = "/jnoj.interface.v1.ContestService/ListContestUsers"
 const OperationContestServiceListContests = "/jnoj.interface.v1.ContestService/ListContests"
 
 type ContestServiceHTTPServer interface {
+	CreateContest(context.Context, *CreateContestRequest) (*Contest, error)
+	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*ContestProblem, error)
 	GetContest(context.Context, *GetContestRequest) (*Contest, error)
 	GetContestProblem(context.Context, *GetContestProblemRequest) (*ContestProblem, error)
 	ListContestProblems(context.Context, *ListContestProblemsRequest) (*ListContestProblemsResponse, error)
+	ListContestStandings(context.Context, *ListContestStandingsRequest) (*ListContestStandingsResponse, error)
 	ListContestUsers(context.Context, *ListContestUsersRequest) (*ListContestUsersResponse, error)
 	ListContests(context.Context, *ListContestsRequest) (*ListContestsResponse, error)
 }
 
 func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServer) {
-	s.Use("/contests/*", auth.Server())
+	s.Use("/jnoj.interface.v1.ContestService/CreateContest", auth.Server())
 	r := s.Route("/")
 	r.GET("/contests", _ContestService_ListContests0_HTTP_Handler(srv))
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))
+	r.POST("/contests", _ContestService_CreateContest0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems", _ContestService_ListContestProblems0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems/{number}", _ContestService_GetContestProblem0_HTTP_Handler(srv))
+	r.POST("/contests/{id}/problems", _ContestService_CreateContestProblem0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
+	r.GET("/contests/{id}/standings", _ContestService_ListContestStandings0_HTTP_Handler(srv))
 }
 
 func _ContestService_ListContests0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
@@ -76,6 +85,25 @@ func _ContestService_GetContest0_HTTP_Handler(srv ContestServiceHTTPServer) func
 		http.SetOperation(ctx, OperationContestServiceGetContest)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.GetContest(ctx, req.(*GetContestRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Contest)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ContestService_CreateContest0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateContestRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceCreateContest)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateContest(ctx, req.(*CreateContestRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -130,6 +158,28 @@ func _ContestService_GetContestProblem0_HTTP_Handler(srv ContestServiceHTTPServe
 	}
 }
 
+func _ContestService_CreateContestProblem0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateContestProblemRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceCreateContestProblem)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateContestProblem(ctx, req.(*CreateContestProblemRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ContestProblem)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ContestService_ListContestUsers0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListContestUsersRequest
@@ -152,10 +202,35 @@ func _ContestService_ListContestUsers0_HTTP_Handler(srv ContestServiceHTTPServer
 	}
 }
 
+func _ContestService_ListContestStandings0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListContestStandingsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceListContestStandings)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListContestStandings(ctx, req.(*ListContestStandingsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListContestStandingsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ContestServiceHTTPClient interface {
+	CreateContest(ctx context.Context, req *CreateContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
+	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	GetContest(ctx context.Context, req *GetContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	GetContestProblem(ctx context.Context, req *GetContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	ListContestProblems(ctx context.Context, req *ListContestProblemsRequest, opts ...http.CallOption) (rsp *ListContestProblemsResponse, err error)
+	ListContestStandings(ctx context.Context, req *ListContestStandingsRequest, opts ...http.CallOption) (rsp *ListContestStandingsResponse, err error)
 	ListContestUsers(ctx context.Context, req *ListContestUsersRequest, opts ...http.CallOption) (rsp *ListContestUsersResponse, err error)
 	ListContests(ctx context.Context, req *ListContestsRequest, opts ...http.CallOption) (rsp *ListContestsResponse, err error)
 }
@@ -166,6 +241,32 @@ type ContestServiceHTTPClientImpl struct {
 
 func NewContestServiceHTTPClient(client *http.Client) ContestServiceHTTPClient {
 	return &ContestServiceHTTPClientImpl{client}
+}
+
+func (c *ContestServiceHTTPClientImpl) CreateContest(ctx context.Context, in *CreateContestRequest, opts ...http.CallOption) (*Contest, error) {
+	var out Contest
+	pattern := "/contests"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContestServiceCreateContest))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) CreateContestProblem(ctx context.Context, in *CreateContestProblemRequest, opts ...http.CallOption) (*ContestProblem, error) {
+	var out ContestProblem
+	pattern := "/contests/{id}/problems"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContestServiceCreateContestProblem))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *ContestServiceHTTPClientImpl) GetContest(ctx context.Context, in *GetContestRequest, opts ...http.CallOption) (*Contest, error) {
@@ -199,6 +300,19 @@ func (c *ContestServiceHTTPClientImpl) ListContestProblems(ctx context.Context, 
 	pattern := "/contests/{id}/problems"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceListContestProblems))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) ListContestStandings(ctx context.Context, in *ListContestStandingsRequest, opts ...http.CallOption) (*ListContestStandingsResponse, error) {
+	var out ListContestStandingsResponse
+	pattern := "/contests/{id}/standings"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationContestServiceListContestStandings))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

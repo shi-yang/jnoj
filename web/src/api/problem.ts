@@ -9,6 +9,7 @@ export interface Problem {
     legend: string;
     input: string;
     output: string;
+    language: string;
     timeLimit: number;
     memoryLimit: number;
     notes: string;

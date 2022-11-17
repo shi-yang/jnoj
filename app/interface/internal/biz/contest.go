@@ -3,14 +3,23 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 // Contest is a Contest model.
 type Contest struct {
-	ID   int
-	Name string
+	ID          int
+	Name        string
+	StartTime   time.Time
+	EndTime     time.Time
+	FrozenTime  *time.Time
+	Type        int
+	Description string
+	UserID      int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 // ContestRepo is a Contest repo.
@@ -46,13 +55,13 @@ func (uc *ContestUsecase) GetContest(ctx context.Context, id int) (*Contest, err
 }
 
 // CreateContest creates a Contest, and returns the new Contest.
-func (uc *ContestUsecase) CreateContest(ctx context.Context, g *Contest) (*Contest, error) {
-	return uc.repo.CreateContest(ctx, g)
+func (uc *ContestUsecase) CreateContest(ctx context.Context, c *Contest) (*Contest, error) {
+	return uc.repo.CreateContest(ctx, c)
 }
 
 // UpdateContest update a Contest
-func (uc *ContestUsecase) UpdateContest(ctx context.Context, p *Contest) (*Contest, error) {
-	return uc.repo.UpdateContest(ctx, p)
+func (uc *ContestUsecase) UpdateContest(ctx context.Context, c *Contest) (*Contest, error) {
+	return uc.repo.UpdateContest(ctx, c)
 }
 
 // DeleteContest delete a Contest

@@ -45,6 +45,37 @@
         "tags": [
           "ContestService"
         ]
+      },
+      "post": {
+        "summary": "创建比赛",
+        "operationId": "ContestService_CreateContest",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Contest"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateContestRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContestService"
+        ]
       }
     },
     "/contests/{id}": {
@@ -109,6 +140,50 @@
         "tags": [
           "ContestService"
         ]
+      },
+      "post": {
+        "summary": "创建比赛题目",
+        "operationId": "ContestService_CreateContestProblem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ContestProblem"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "problemId": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ContestService"
+        ]
       }
     },
     "/contests/{id}/problems/{number}": {
@@ -139,6 +214,38 @@
           },
           {
             "name": "number",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ContestService"
+        ]
+      }
+    },
+    "/contests/{id}/standings": {
+      "get": {
+        "summary": "获取比赛榜单",
+        "operationId": "ContestService_ListContestStandings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListContestStandingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "integer",
@@ -198,6 +305,37 @@
     }
   },
   "definitions": {
+    "ContestProblemStatement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "problemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "language": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "legend": {
+          "type": "string"
+        },
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -233,6 +371,9 @@
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        },
+        "description": {
           "type": "string"
         },
         "startTime": {
@@ -275,6 +416,9 @@
           "type": "integer",
           "format": "int32"
         },
+        "name": {
+          "type": "string"
+        },
         "number": {
           "type": "integer",
           "format": "int32"
@@ -294,8 +438,40 @@
         "acceptedCount": {
           "type": "integer",
           "format": "int32"
+        },
+        "timeLimit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memoryLimit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContestProblemStatement"
+          }
+        },
+        "sampleTests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ContestProblemSampleTest"
+          }
         }
       }
+    },
+    "v1ContestProblemSampleTest": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        }
+      },
+      "title": "样例"
     },
     "v1ContestUser": {
       "type": "object",
@@ -313,18 +489,70 @@
         }
       }
     },
+    "v1CreateContestRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1ListContestProblemsResponse": {
       "type": "object",
       "properties": {
         "data": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v1Contest"
+            "$ref": "#/definitions/v1ContestProblem"
           }
         },
         "total": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "v1ListContestStandingsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ListContestStandingsResponseSubmission"
+          }
+        }
+      }
+    },
+    "v1ListContestStandingsResponseSubmission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "problemNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

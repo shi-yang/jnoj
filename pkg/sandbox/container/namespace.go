@@ -35,6 +35,7 @@ func initFileSystem(workDir string) error {
 	// 旧文件名
 	files, _ := os.ReadDir(workDir)
 	containerDir := filepath.Join(workDir, "container")
+	_ = os.RemoveAll(containerDir)
 	if err := os.Mkdir(containerDir, os.ModePerm); err != nil {
 		return fmt.Errorf("os.Mkdir(%v): %v", containerDir, err)
 	}

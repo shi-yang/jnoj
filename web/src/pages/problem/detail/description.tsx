@@ -3,31 +3,31 @@ const { Title, Paragraph } = Typography;
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/description.module.less'
-const Description = (props) => {
+const Description = ({ problem, language }) => {
   const t = useLocale(locale);
   return (
     <div className={styles.descriptionContent}>
       <div className={styles.description}>
         <Typography className={styles.content}>
           <Paragraph type='secondary' spacing='close'>
-            {t['timeLimit']}：{props.problem.timeLimit / 1000}s
+            {t['timeLimit']}：{problem.timeLimit / 1000}s
             <Divider type='vertical' />
-            {t['memoryLimit']}：{props.problem.memoryLimit}MB
+            {t['memoryLimit']}：{problem.memoryLimit}MB
           </Paragraph>
           <Paragraph>
-            {props.problem.statements[props.language].legend}
+            {problem.statements[language].legend}
           </Paragraph>
           <Title heading={5}>{t['input']}</Title>
           <Paragraph>
-            {props.problem.statements[props.language].input}
+            {problem.statements[language].input}
           </Paragraph>
           <Title heading={5}>{t['output']}</Title>
           <Paragraph>
-            {props.problem.statements[props.language].output}
+            {problem.statements[language].output}
           </Paragraph>
           <Title heading={5}>{t['sample']}</Title>
           {
-            props.problem.sampleTests.map((item, index) => {
+            problem.sampleTests.map((item, index) => {
               return (
                 <div className={styles['sample-test']} key={index}>
                   <div className={styles.input}>
@@ -44,7 +44,7 @@ const Description = (props) => {
           }
           <Title heading={5}>{t['notes']}</Title>
           <Paragraph>
-            {props.problem.statements[props.language].notes}
+            {problem.statements[language].notes}
           </Paragraph>
         </Typography>
       </div>

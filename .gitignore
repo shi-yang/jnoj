@@ -137,3 +137,5 @@ fabric.properties
 .idea/*
 
 /data
+
+server

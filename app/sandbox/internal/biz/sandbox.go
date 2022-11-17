@@ -45,7 +45,7 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (r
 	res = new(sandboxV1.RunResponse)
 	u, _ := uuid.NewUUID()
 	workDir := filepath.Join("/tmp/sandbox", u.String())
-	defer os.RemoveAll(workDir)
+	// defer os.RemoveAll(workDir)
 	uc.log.Info("Compile start...", workDir)
 	err := sandbox.Compile(workDir, req.Source, &sandbox.Languages[req.Language])
 	uc.log.Info("Compile done...", workDir)
@@ -63,9 +63,6 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (r
 	res.Stderr = runRes.Stderr
 	res.ErrMsg = runRes.Err
 	if req.CheckerSource != nil {
-		u, _ := uuid.NewUUID()
-		workDir := filepath.Join("/tmp/sandbox", u.String())
-		defer os.RemoveAll(workDir)
 		var checker = sandbox.Language{
 			Name: "checker",
 			CompileCommand: []string{"g++", "checker.cpp", "-o", "checker.exe", "-I" + uc.conf.TestlibPath, "-Wall",

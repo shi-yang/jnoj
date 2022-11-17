@@ -4,6 +4,7 @@ import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
 import IconVerticalVideo from './icons/vertical.svg';
 import { Link } from 'react-router-dom';
+import { FormatTime } from '@/utils/formatTime';
 
 const { Text } = Typography;
 
@@ -26,6 +27,7 @@ export function getColumns(
       title: t['contest.columns.id'],
       dataIndex: 'id',
       width: 200,
+      align: 'center',
     },
     {
       title: t['contest.columns.name'],
@@ -40,16 +42,21 @@ export function getColumns(
       title: t['contest.columns.status'],
       dataIndex: 'status',
       width: 200,
+      align: 'center',
     },
     {
       title: t['contest.columns.startedAt'],
-      dataIndex: 'startedAt',
+      dataIndex: 'startTime',
       width: 200,
+      align: 'center',
+      render: col => FormatTime(col)
     },
     {
       title: t['contest.columns.endedAt'],
-      dataIndex: 'endedAt',
+      dataIndex: 'endTime',
       width: 200,
+      align: 'center',
+      render: col => FormatTime(col)
     },
   ];
 }

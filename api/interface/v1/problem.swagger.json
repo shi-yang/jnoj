@@ -16,6 +16,46 @@
     "application/json"
   ],
   "paths": {
+    "/problem_files/{sid}/run": {
+      "post": {
+        "summary": "运行题目文件",
+        "operationId": "ProblemService_RunProblemFile",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
     "/problems": {
       "get": {
         "summary": "题目列表",
@@ -92,38 +132,6 @@
             "schema": {
               "$ref": "#/definitions/v1CreateProblemRequest"
             }
-          }
-        ],
-        "tags": [
-          "ProblemService"
-        ]
-      }
-    },
-    "/problems/{id_1}/checkers": {
-      "get": {
-        "summary": "获取题目裁判程序",
-        "operationId": "ProblemService_GetProblemChecker",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ProblemChecker"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id_1",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
           }
         ],
         "tags": [
@@ -276,82 +284,14 @@
       }
     },
     "/problems/{id}/checkers": {
-      "get": {
-        "summary": "获取题目裁判程序列表",
-        "operationId": "ProblemService_ListProblemCheckers",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListProblemCheckersResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "ProblemService"
-        ]
-      },
-      "post": {
-        "summary": "创建题目裁判程序",
-        "operationId": "ProblemService_CreateProblemChecker",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ProblemChecker"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object"
-            }
-          }
-        ],
-        "tags": [
-          "ProblemService"
-        ]
-      },
       "put": {
-        "summary": "更新题目裁判程序",
+        "summary": "设置裁判程序",
         "operationId": "ProblemService_UpdateProblemChecker",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemChecker"
+              "properties": {}
             }
           },
           "default": {
@@ -374,7 +314,13 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "checkerId": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
             }
           }
         ],
@@ -383,15 +329,15 @@
         ]
       }
     },
-    "/problems/{id}/solutions": {
+    "/problems/{id}/files": {
       "get": {
-        "summary": "获取题目解答程序列表",
-        "operationId": "ProblemService_ListProblemSolutions",
+        "summary": "获取题目文件列表",
+        "operationId": "ProblemService_ListProblemFiles",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListProblemSolutionsResponse"
+              "$ref": "#/definitions/v1ListProblemFilesResponse"
             }
           },
           "default": {
@@ -408,6 +354,12 @@
             "required": true,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "fileType",
+            "in": "query",
+            "required": false,
+            "type": "string"
           },
           {
             "name": "page",
@@ -429,13 +381,13 @@
         ]
       },
       "post": {
-        "summary": "创建题目解答程序",
-        "operationId": "ProblemService_CreateProblemSolution",
+        "summary": "创建题目文件",
+        "operationId": "ProblemService_CreateProblemFile",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemSolution"
+              "$ref": "#/definitions/v1ProblemFile"
             }
           },
           "default": {
@@ -468,6 +420,9 @@
                 },
                 "type": {
                   "type": "string"
+                },
+                "fileType": {
+                  "type": "string"
                 }
               }
             }
@@ -478,15 +433,15 @@
         ]
       }
     },
-    "/problems/{id}/solutions/{sid}": {
+    "/problems/{id}/files/{sid}": {
       "get": {
-        "summary": "获取题目解答程序详情",
-        "operationId": "ProblemService_GetProblemSolution",
+        "summary": "获取题目文件详情",
+        "operationId": "ProblemService_GetProblemFile",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemSolution"
+              "$ref": "#/definitions/v1ProblemFile"
             }
           },
           "default": {
@@ -517,13 +472,13 @@
         ]
       },
       "delete": {
-        "summary": "删除题目解答程序",
-        "operationId": "ProblemService_DeleteProblemSolution",
+        "summary": "删除题目文件",
+        "operationId": "ProblemService_DeleteProblemFile",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemSolution"
+              "$ref": "#/definitions/v1ProblemFile"
             }
           },
           "default": {
@@ -554,13 +509,13 @@
         ]
       },
       "put": {
-        "summary": "更新题目解答程序",
-        "operationId": "ProblemService_UpdateProblemSolution",
+        "summary": "更新题目文件",
+        "operationId": "ProblemService_UpdateProblemFile",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemSolution"
+              "$ref": "#/definitions/v1ProblemFile"
             }
           },
           "default": {
@@ -803,6 +758,38 @@
         ]
       }
     },
+    "/problems/{id}/std_checkers": {
+      "get": {
+        "summary": "获取std裁判程序",
+        "operationId": "ProblemService_ListProblemStdCheckers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProblemStdCheckersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
     "/problems/{id}/tests": {
       "get": {
         "summary": "获取题目测试点列表",
@@ -985,20 +972,91 @@
           "ProblemService"
         ]
       }
+    },
+    "/problems/{id}/verification": {
+      "get": {
+        "summary": "获取题目验证状态",
+        "operationId": "ProblemService_GetProblemVerification",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProblemVerification"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problems/{id}/verify": {
+      "post": {
+        "summary": "验证题目完整性",
+        "operationId": "ProblemService_VerifyProblem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
     }
   },
   "definitions": {
-    "ProblemSampleTest": {
+    "ProblemVerificationVerificaitionInfo": {
       "type": "object",
       "properties": {
-        "input": {
+        "action": {
           "type": "string"
         },
-        "output": {
+        "errorMessage": {
           "type": "string"
         }
-      },
-      "title": "样例"
+      }
     },
     "protobufAny": {
       "type": "object",
@@ -1051,28 +1109,13 @@
         }
       }
     },
-    "v1ListProblemCheckersResponse": {
+    "v1ListProblemFilesResponse": {
       "type": "object",
       "properties": {
         "data": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v1ProblemChecker"
-          }
-        },
-        "total": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1ListProblemSolutionsResponse": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ProblemSolution"
+            "$ref": "#/definitions/v1ProblemFile"
           }
         },
         "total": {
@@ -1093,6 +1136,17 @@
         "total": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "v1ListProblemStdCheckersResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ProblemFile"
+          }
         }
       }
     },
@@ -1166,7 +1220,7 @@
         "sampleTests": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ProblemSampleTest"
+            "$ref": "#/definitions/v1ProblemSampleTest"
           }
         },
         "createdAt": {
@@ -1180,10 +1234,7 @@
       },
       "title": "题目"
     },
-    "v1ProblemChecker": {
-      "type": "object"
-    },
-    "v1ProblemSolution": {
+    "v1ProblemFile": {
       "type": "object",
       "properties": {
         "id": {
@@ -1212,6 +1263,18 @@
           "format": "date-time"
         }
       }
+    },
+    "v1ProblemSampleTest": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        }
+      },
+      "title": "样例"
     },
     "v1ProblemStatement": {
       "type": "object",
@@ -1275,6 +1338,29 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1ProblemVerification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "problemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "verificationStatus": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "verificaitonInfo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProblemVerificationVerificaitionInfo"
+          }
         }
       }
     }

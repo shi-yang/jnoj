@@ -7,7 +7,7 @@ import {
   Table,
   TableColumnProps,
 } from '@arco-design/web-react';
-import { IconCalendar, IconCheckCircle, IconMinusCircle } from '@arco-design/web-react/icon';
+import { IconCalendar, IconCheckCircle } from '@arco-design/web-react/icon';
 import { ReactNode, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import locale from './locale';
@@ -46,7 +46,7 @@ const columns: TableColumnProps[] = [
     dataIndex: 'name',
     render: (col, record, index) => (
       <>
-        {String.fromCharCode(65 + record.key)}. {record.name}
+        {String.fromCharCode(65 + record.number)}. {record.name}
       </>
     ),
   },
@@ -130,7 +130,7 @@ export default () => {
       </Row>
       <Divider />
       <div style={{ maxWidth: '1200px', margin: '0 auto'}}>
-        <Table columns={columns} data={problems} pagination={false} />
+        <Table rowKey={r => r.number} columns={columns} data={problems} pagination={false} />
       </div>
     </div>
   )
