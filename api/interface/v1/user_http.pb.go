@@ -35,7 +35,7 @@ type UserServiceHTTPServer interface {
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
-	s.Use("/jnoj.interface.v1.UserService/GetUserInfo", auth.Server())
+	s.Use("/jnoj.interface.v1.UserService/GetUserInfo", auth.User())
 	r := s.Route("/")
 	r.POST("/login", _UserService_Login0_HTTP_Handler(srv))
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))

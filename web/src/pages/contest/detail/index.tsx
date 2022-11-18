@@ -26,19 +26,25 @@ const normalWidth = 220;
 
 function App() {
   const t = useLocale(locale);
-  const [data, setData] = useState({name: '', startTime: '', endTime: ''});
+  const [data, setData] = useState({name: '', startTime: new Date(), endTime: new Date()});
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [siderWidth, setSiderWidth] = useState(normalWidth);
   const [problems, setProblems] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [sliderValue, setSliderValue] = useState(0);
   const params = useParams();
   const navigate = useNavigate();
 
+  let timer = null;
+  let contestDuration = 0;
   function fetchData() {
     setLoading(true);
     getContest(params.id)
       .then((res) => {
-        setData(res.data);
+        const { data } = res;
+        setData(data);
+        updateTime(data.startTime, data.endTime)
       })
       .finally(() => {
         setLoading(false);
@@ -48,8 +54,21 @@ function App() {
     })
   }
 
+  function updateTime(startTime, endTime) {
+    contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime()
+    timer = setInterval(() => {
+      const t = new Date();
+      const diff = t.getTime() - new Date(startTime).getTime()
+      setSliderValue(diff / contestDuration * 100)
+      setCurrentTime(new Date())
+    }, 1000)
+  }
+
   useEffect(() => {
     fetchData();
+    return () => {
+      clearInterval(timer)
+    }
   }, []);
 
   const onCollapse = (collapsed) => {
@@ -80,19 +99,19 @@ function App() {
             <Row style={{padding: '20px 20px 0 20px'}}>
               <Col md={8}>
                 <div>
-                  <strong>开始</strong> {FormatTime(data.startTime)}
+                  <strong>{t['header.start']}</strong> {FormatTime(data.startTime)}
                 </div>
               </Col>
               <Col md={8}>
-                <div style={{textAlign: 'center'}}><strong>当前</strong> </div>
+                <div style={{textAlign: 'center'}}><strong>{t['header.now']}</strong>{FormatTime(currentTime)}</div>
               </Col>
               <Col md={8} style={{textAlign: 'right'}}>
                 <div>
-                  <strong>结束</strong> {FormatTime(data.endTime)}
+                  <strong>{t['header.end']}</strong> {FormatTime(data.endTime)}
                 </div>
               </Col>
             </Row>
-            <Slider defaultValue={20} />
+            <Slider defaultValue={sliderValue} />
           </Header>
           <Layout style={{height: '100%'}}>
             <Sider
@@ -109,13 +128,13 @@ function App() {
             >
               <div className='logo' />
               <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
-                <MenuItem key='info'><IconHome /> 信息</MenuItem>
-                <MenuItem key='standings'><IconOrderedList /> 榜单</MenuItem>
-                <MenuItem key='submission'><IconFile /> 提交</MenuItem>
-                <MenuItem key='setting'><IconSettings /> 设置</MenuItem>
+                <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
+                <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
+                <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
+                <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>
                 <SubMenu
                   key='layout'
-                  title={<span><IconSelectAll /> 题目</span>}
+                  title={<span><IconSelectAll /> {t['menu.problem']}</span>}
                 >
                   {problems.map(value => {
                     return <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>{String.fromCharCode(65 + value.number)}. {value.name}</MenuItem>
@@ -125,10 +144,10 @@ function App() {
             </Sider>
             <Content style={{ padding: '30px' }}>
               <Routes>
-                <Route index element={ <Info /> }></Route>
+                <Route index element={ <Info contest={data} /> }></Route>
                 <Route path='setting' element={ <Setting contest={data} /> }></Route>
-                <Route path='info' element={ <Info /> }></Route>
-                <Route path='problem/:key' element={ <Problem /> }></Route>
+                <Route path='info' element={ <Info contest={data} /> }></Route>
+                <Route path='problem/:key' element={ <Problem contest={data} /> }></Route>
                 <Route path='standings' element={ <Standings /> }></Route>
                 <Route path='submission' element={ <Submission /> }></Route>
               </Routes>

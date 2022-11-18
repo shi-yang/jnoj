@@ -6,6 +6,7 @@ import (
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
@@ -18,19 +19,20 @@ type contestRepo struct {
 }
 
 type Contest struct {
-	ID          int
-	Name        string
-	StartTime   time.Time
-	EndTime     time.Time
-	FrozenTime  *time.Time
-	Type        int
-	Status      int
-	Description string
-	GroupID     int
-	UserID      int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt
+	ID               int
+	Name             string
+	StartTime        time.Time
+	EndTime          time.Time
+	FrozenTime       *time.Time
+	Type             int
+	Status           int
+	Description      string
+	GroupID          int
+	UserID           int
+	ParticipantCount int
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        gorm.DeletedAt
 }
 
 // NewContestRepo .
@@ -45,16 +47,22 @@ func NewContestRepo(data *Data, logger log.Logger) biz.ContestRepo {
 func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequest) ([]*biz.Contest, int64) {
 	res := []Contest{}
 	count := int64(0)
-	r.data.db.WithContext(ctx).
-		Find(&res).
+	pager := pagination.NewPagination(req.Page, req.PerPage)
+	db := r.data.db.WithContext(ctx).
+		Model(&Contest{}).
 		Count(&count)
+	db.Offset(pager.GetOffset()).
+		Limit(pager.GetPageSize()).
+		Find(&res)
 	rv := make([]*biz.Contest, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.Contest{
-			ID:        v.ID,
-			Name:      v.Name,
-			StartTime: v.StartTime,
-			EndTime:   v.EndTime,
+			ID:               v.ID,
+			Name:             v.Name,
+			StartTime:        v.StartTime,
+			EndTime:          v.EndTime,
+			ParticipantCount: v.ParticipantCount,
+			Type:             v.Type,
 		})
 	}
 	return rv, count
@@ -69,14 +77,15 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		return nil, err
 	}
 	return &biz.Contest{
-		ID:          res.ID,
-		Name:        res.Name,
-		StartTime:   res.StartTime,
-		EndTime:     res.EndTime,
-		FrozenTime:  res.FrozenTime,
-		Type:        res.Type,
-		Description: res.Description,
-		CreatedAt:   res.CreatedAt,
+		ID:               res.ID,
+		Name:             res.Name,
+		StartTime:        res.StartTime,
+		EndTime:          res.EndTime,
+		FrozenTime:       res.FrozenTime,
+		Type:             res.Type,
+		Description:      res.Description,
+		ParticipantCount: res.ParticipantCount,
+		CreatedAt:        res.CreatedAt,
 	}, err
 }
 
@@ -97,14 +106,22 @@ func (r *contestRepo) CreateContest(ctx context.Context, b *biz.Contest) (*biz.C
 }
 
 // UpdateContest .
-func (r *contestRepo) UpdateContest(ctx context.Context, b *biz.Contest) (*biz.Contest, error) {
+func (r *contestRepo) UpdateContest(ctx context.Context, c *biz.Contest) (*biz.Contest, error) {
 	res := Contest{
-		ID: b.ID,
+		ID:          c.ID,
+		Name:        c.Name,
+		StartTime:   c.StartTime,
+		EndTime:     c.EndTime,
+		FrozenTime:  c.FrozenTime,
+		Type:        c.Type,
+		Description: c.Description,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Updates(&res).Error
-	return nil, err
+	return &biz.Contest{
+		ID: res.ID,
+	}, err
 }
 
 // DeleteContest .
@@ -114,4 +131,39 @@ func (r *contestRepo) DeleteContest(ctx context.Context, id int) error {
 		Delete(Contest{ID: id}).
 		Error
 	return err
+}
+
+func (r *contestRepo) ListContestSubmissions(ctx context.Context, id int) (res []*biz.ContestSubmission) {
+	var submissions []Submission
+	r.data.db.WithContext(ctx).
+		Select("id, problem_id, user_id, verdict, score").
+		Where("contest_id = ?", id).
+		Find(&submissions)
+	var problems []ContestProblem
+	r.data.db.WithContext(ctx).
+		Select("problem_id, number").
+		Where("contest_id = ?", id).
+		Find(&problems)
+	var problemMap = make(map[int]int)
+	for _, v := range problems {
+		problemMap[v.ProblemID] = v.Number
+	}
+	for _, v := range submissions {
+		res = append(res, &biz.ContestSubmission{
+			ID:            v.ID,
+			ProblemNumber: problemMap[v.ProblemID],
+			Status:        v.Verdict,
+			UserID:        v.UserID,
+			Score:         v.Score,
+		})
+	}
+	return
+}
+
+func (r *contestRepo) AddContestParticipantCount(ctx context.Context, id int, count int) error {
+	return r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Model(&Contest{ID: id}).
+		UpdateColumn("participant_count", gorm.Expr("participant_count + ?", count)).
+		Error
 }

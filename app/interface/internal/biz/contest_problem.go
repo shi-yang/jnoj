@@ -30,7 +30,7 @@ type ContestProblemRepo interface {
 	GetContestProblemByNumber(context.Context, int, int) (*ContestProblem, error)
 	CreateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)
 	UpdateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)
-	DeleteContestProblem(context.Context, int) error
+	DeleteContestProblem(context.Context, int, int) error
 	CountContestProblem(context.Context, int) int
 }
 
@@ -66,6 +66,6 @@ func (uc *ContestUsecase) UpdateContestProblem(ctx context.Context, p *ContestPr
 }
 
 // DeleteContestProblem delete a ContestProblem
-func (uc *ContestUsecase) DeleteContestProblem(ctx context.Context, id int) error {
-	return uc.repo.DeleteContestProblem(ctx, id)
+func (uc *ContestUsecase) DeleteContestProblem(ctx context.Context, cid int, problemNumber int) error {
+	return uc.repo.DeleteContestProblem(ctx, cid, problemNumber)
 }

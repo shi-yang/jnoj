@@ -13,7 +13,17 @@ import (
 // TODO Key最好需要放到配置文件中去，写到代码中极不安全
 const Key = "xTtbTjnc5KmBfRYf3b1pMjf1KxFjaQE1"
 
-func Server() middleware.Middleware {
+// User 必须要携带 jwt token 才能访问接口
+func User() middleware.Middleware {
+	return jwt.Server(func(token *jwt2.Token) (interface{}, error) {
+		return []byte(Key), nil
+	}, jwt.WithSigningMethod(jwt2.SigningMethodHS256), jwt.WithClaims(func() jwt2.Claims {
+		return &jwt2.MapClaims{}
+	}))
+}
+
+// Guest 可携带可不携带。用于某些接口根据用户的登录情况不同返回对应的数据
+func Guest() middleware.Middleware {
 	return jwt.Server(func(token *jwt2.Token) (interface{}, error) {
 		return []byte(Key), nil
 	}, jwt.WithSigningMethod(jwt2.SigningMethodHS256), jwt.WithClaims(func() jwt2.Claims {

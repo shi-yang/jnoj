@@ -59,9 +59,11 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 // CreateSubmission .
 func (s *SubmissionService) CreateSubmission(ctx context.Context, req *v1.CreateSubmissionRequest) (*v1.Submission, error) {
 	s.uc.CreateSubmission(ctx, &biz.Submission{
-		ProblemID: int(req.ProblemId),
-		Source:    req.Source,
-		Language:  int(req.Language),
+		ProblemID:     int(req.ProblemId),
+		Source:        req.Source,
+		Language:      int(req.Language),
+		ContestID:     int(req.ContestId),
+		ProblemNumber: int(req.ProblemNumber),
 	})
 	return nil, nil
 }

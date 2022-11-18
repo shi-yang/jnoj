@@ -100,6 +100,7 @@ func (r *submissionRepo) CreateSubmission(ctx context.Context, s *biz.Submission
 		UserID:    s.UserID,
 		Language:  s.Language,
 		ProblemID: s.ProblemID,
+		ContestID: s.ContestID,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

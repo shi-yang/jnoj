@@ -140,16 +140,15 @@ const App = (props) => {
     setLoading(true);
     const p1 = listContestStandings(params.id)
     const p2 = listContestProblems(params.id)
-    const p3 = listContestStatuses(params.id)
-    const p4 = listContestUsers(params.id)
-    Promise.all([p1, p2, p3, p4])
+    const p3 = listContestUsers(params.id)
+    Promise.all([p1, p2, p3])
       .then((values) => {
         const problems = values[1].data.data;
         const t:TableColumnProps[] = [...basicColumn];
         problems.forEach(v => {
           t.push({
-            title: String(v.key),
-            dataIndex: `problem_${v.key}`,
+            title: String.fromCharCode(65 + v.number),
+            dataIndex: `problem_${String.fromCharCode(65 + v.number)}`,
             align: 'center',
             bodyCellStyle: {
               padding: '3px',
@@ -180,9 +179,9 @@ const App = (props) => {
           });
         })
         setColumns(t)
-        const users = values[3].data.data;
-        const status = values[2].data.data;
-        processTeamData(users, problems, status);
+        const users = values[2].data.data;
+        const submissions = values[0].data.data;
+        processTeamData(users, problems, submissions);
       })
       .finally(() => {
         setLoading(false);

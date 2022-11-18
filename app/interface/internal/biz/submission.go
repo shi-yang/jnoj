@@ -12,16 +12,18 @@ import (
 
 // Submission is a Submission model.
 type Submission struct {
-	ID        int
-	ProblemID int
-	Time      int
-	Memory    int
-	Verdict   int
-	Language  int
-	Score     int
-	UserID    int
-	Source    string
-	CreatedAt time.Time
+	ID            int
+	ProblemID     int
+	Time          int
+	Memory        int
+	Verdict       int
+	Language      int
+	Score         int
+	UserID        int
+	Source        string
+	ContestID     int
+	ProblemNumber int
+	CreatedAt     time.Time
 }
 
 type SubmissionResult struct {

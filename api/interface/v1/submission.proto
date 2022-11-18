@@ -73,6 +73,9 @@ message CreateSubmissionRequest {
     int32 language = 2;
     // 源码
     string source = 3;
+    // 比赛相关
+    int32 contest_id = 4;
+    int32 problem_number = 5;
 }
 
 message GetSubmissionInfoRequest {

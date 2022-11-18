@@ -1,10 +1,17 @@
+.container {
+  height: 100%;
+}
 .problem-layout {
   height: 100%;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 
-.content {
-  padding-bottom: 20px;
+.description-content {
+  flex: 1 1 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .sample-test {
@@ -27,4 +34,17 @@
     background-color: #efefef;
     border: none;
   }
+}
+.left {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }

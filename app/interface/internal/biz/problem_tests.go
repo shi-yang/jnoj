@@ -29,6 +29,16 @@ type SampleTest struct {
 	Output string
 }
 
+// TestScore OI 测试点分数
+type TestScore struct {
+	ProblemID int
+}
+
+type TestGroup struct {
+	TestID []int
+	Score  int
+}
+
 // ProblemTestRepo is a ProblemTest repo.
 type ProblemTestRepo interface {
 	ListProblemTests(context.Context, *v1.ListProblemTestsRequest) ([]*ProblemTest, int64)

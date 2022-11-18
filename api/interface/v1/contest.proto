@@ -4,6 +4,7 @@ package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -27,6 +28,13 @@ service ContestService {
             body: "*"
         };
     };
+    // 编辑比赛信息
+    rpc UpdateContest (UpdateContestRequest) returns (Contest) {
+        option (google.api.http) = {
+            put: "/contests/{id}"
+            body: "*"
+        };
+    };
     // 获取比赛题目列表
     rpc ListContestProblems (ListContestProblemsRequest) returns (ListContestProblemsResponse) {
         option (google.api.http) = {
@@ -46,10 +54,23 @@ service ContestService {
             body: "*"
         };
     };
+    // 删除比赛题目
+    rpc DeleteContestProblem (DeleteContestProblemRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/contests/{id}/problems/{number}"
+        };
+    }
     // 获取比赛用户
     rpc ListContestUsers (ListContestUsersRequest) returns (ListContestUsersResponse) {
         option (google.api.http) = {
             get: "/contests/{id}/users"
+        };
+    }
+    // 注册比赛
+    rpc CreateContestUser (CreateContestUserRequest) returns (ContestUser) {
+        option (google.api.http) = {
+            post: "/contests/{id}/users"
+            body: "*"
         };
     }
     // 获取比赛榜单
@@ -58,10 +79,18 @@ service ContestService {
             get: "/contests/{id}/standings"
         };
     }
+    // 获取提交列表
+    rpc ListContestSubmissions (ListContestSubmissionsRequest) returns (ListContestSubmissionsResponse) {
+        option (google.api.http) = {
+            get: "/contests/{id}/submissions"
+        };
+    }
 }
 
 message ListContestsRequest {
     string name = 1;
+    int32 page = 2;
+    int32 per_page = 3;
 }
 message ListContestsResponse {
     repeated Contest data = 1;
@@ -72,18 +101,29 @@ message GetContestRequest {
     int32 id = 1;
 }
 
+message UpdateContestRequest {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp end_time = 5;
+    google.protobuf.Timestamp frozen_time = 6;
+    int32 type = 7;
+    int32 status = 8;
+    int32 participant_count = 9;
+}
+
 message Contest {
     int32 id = 1;
     string name = 2;
     string description = 3;
-    google.protobuf.Timestamp start_time = 7;
-    google.protobuf.Timestamp end_time = 8;
-    google.protobuf.Timestamp frozen_time = 9;
-    int32 type = 10;
-    string intro = 11;
-    int32 status = 12;
-    int32 participant_count = 13;
-    int32 user_id = 14;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp end_time = 5;
+    google.protobuf.Timestamp frozen_time = 6;
+    int32 type = 7;
+    int32 status = 8;
+    int32 participant_count = 9;
+    int32 user_id = 10;
 }
 
 message ListContestProblemsRequest {
@@ -140,6 +180,11 @@ message CreateContestProblemRequest {
     int32 problem_id = 2;
 }
 
+message DeleteContestProblemRequest {
+    int32 id = 1;
+    int32 number = 2;
+}
+
 message ContestUser {
     int32 id = 1;
     string nickname = 2;
@@ -157,6 +202,10 @@ message ListContestUsersResponse {
     int64 total = 2;
 }
 
+message CreateContestUserRequest {
+    int32 id = 1;
+}
+
 message ListContestStandingsRequest {
     int32 id = 1;
 }
@@ -170,4 +219,20 @@ message ListContestStandingsResponse {
         int32 score = 5;
     }
     repeated Submission data = 1;
+}
+
+message ListContestSubmissionsRequest {
+    int32 id = 1;
+}
+
+message ListContestSubmissionsResponse {
+    message Submission {
+        int32 id = 1;
+        int32 problem_number = 2;
+        int32 status = 3;
+        int32 user_id = 4;
+        int32 score = 5;
+    }
+    repeated Submission data = 1;
+    int64 total = 2;
 }

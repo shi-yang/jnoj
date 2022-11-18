@@ -177,10 +177,25 @@ func (r *contestRepo) UpdateContestProblem(ctx context.Context, b *biz.ContestPr
 }
 
 // DeleteContestProblem .
-func (r *contestRepo) DeleteContestProblem(ctx context.Context, id int) error {
+func (r *contestRepo) DeleteContestProblem(ctx context.Context, cid int, problemNumber int) error {
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Delete(ContestProblem{ID: id}).
+		Delete(ContestProblem{}, "contest_id = ? and number = ?", cid, problemNumber).
 		Error
-	return err
+	if err != nil {
+		return err
+	}
+	// 删除后，对题号重新排列
+	var problems []ContestProblem
+	r.data.db.WithContext(ctx).
+		Select("id, number").
+		Where("contest_id = ?", cid).
+		Find(&problems)
+	for index, item := range problems {
+		r.data.db.WithContext(ctx).
+			Model(ContestProblem{}).
+			Where("id = ?", item.ID).
+			UpdateColumn("number", index)
+	}
+	return nil
 }

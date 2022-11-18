@@ -60,36 +60,6 @@ function Index() {
               <Grid.Col span={24}>
                 <Typography.Title className={styles.title} heading={5}>
                   { data.id } - { data.statements[language].name }
-                  { languageOptions.length > 1 &&
-                    <>
-                      <Divider type='vertical' />
-                      <Select
-                        bordered={false}
-                        size='small'
-                        style={{width: '100px'}}
-                        defaultValue={language}
-                        onChange={(value) =>
-                          setLanguage(value)
-                        }
-                        triggerProps={{
-                          autoAlignPopupWidth: false,
-                          autoAlignPopupMinWidth: true,
-                          position: 'bl',
-                        }}
-                        triggerElement={
-                          <span className={styles['header-language']}>
-                            <IconLanguage /> {languageOptions[language].label}
-                          </span>
-                        }
-                      >
-                        {languageOptions.map((option, index) => (
-                          <Select.Option key={index} value={option.value}>
-                            {option.label}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </>
-                  }
                 </Typography.Title>
               </Grid.Col>
             </Grid.Row>
@@ -99,7 +69,38 @@ function Index() {
               style={{ height: '100%' }}
               panes={[
                 <div key='first' className={styles.left}>
-                  <Tabs className={styles['tabs-container']} style={{ height: '100%' }}>
+                  <Tabs
+                    className={styles['tabs-container']}
+                    extra={
+                      languageOptions.length > 1 &&
+                      <>
+                        <Select
+                          bordered={false}
+                          size='small'
+                          defaultValue={language}
+                          onChange={(value) =>
+                            setLanguage(value)
+                          }
+                          triggerProps={{
+                            autoAlignPopupWidth: false,
+                            autoAlignPopupMinWidth: true,
+                            position: 'bl',
+                          }}
+                          triggerElement={
+                            <span className={styles['header-language']}>
+                              <IconLanguage /> {languageOptions[language].label}
+                            </span>
+                          }
+                        >
+                          {languageOptions.map((option, index) => (
+                            <Select.Option key={index} value={option.value}>
+                              {option.label}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </>
+                    }
+                  >
                     <TabPane key='problem' className={styles['tabs-pane']} style={{ height: '100%' }} title='题目描述'>
                       <Description problem={data} language={language} />
                     </TabPane>

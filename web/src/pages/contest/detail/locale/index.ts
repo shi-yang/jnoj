@@ -1,5 +1,13 @@
 const i18n = {
   'en-US': {
+    'header.start': 'Start',
+    'header.end': 'End',
+    'header.now': 'Now',
+    'menu.info': 'Info',
+    'menu.standings': 'Standings',
+    'menu.setting': 'Setting',
+    'menu.submission': 'Submission',
+    'menu.problem': 'Problem',
     'problemCount': 'Problem Count',
     'language': 'Language',
     'createdAt': 'Created At',
@@ -17,6 +25,14 @@ const i18n = {
     'run': 'Run',
   },
   'zh-CN': {
+    'header.start': '开始',
+    'header.end': '结束',
+    'header.now': '当前',
+    'menu.info': '信息',
+    'menu.standings': '榜单',
+    'menu.setting': '设置',
+    'menu.submission': '提交',
+    'menu.problem': '题目',
     'problemCount': '题目数量',
     'language': '语言',
     'createdAt': '创建时间',

@@ -1,16 +1,13 @@
 import React from 'react';
-import { Button, Typography, Badge } from '@arco-design/web-react';
 import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
 import IconVerticalVideo from './icons/vertical.svg';
 import { Link } from 'react-router-dom';
 import { FormatTime } from '@/utils/formatTime';
+import { IconUser } from '@arco-design/web-react/icon';
 
-const { Text } = Typography;
-
-export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
-export const Status = ['未上线', '已上线'];
+export const ContestStatus = ['', 'ICPC', 'IOI', 'OI'];
+export const ContestType = ['', 'ICPC', 'IOI', 'OI'];
 
 const ContentIcon = [
   <IconText key={0} />,
@@ -26,8 +23,8 @@ export function getColumns(
     {
       title: t['contest.columns.id'],
       dataIndex: 'id',
-      width: 200,
       align: 'center',
+      width: 200,
     },
     {
       title: t['contest.columns.name'],
@@ -41,21 +38,33 @@ export function getColumns(
     {
       title: t['contest.columns.status'],
       dataIndex: 'status',
-      width: 200,
       align: 'center',
+      width: 180,
+      render: (col, record) => (
+        <>
+          尚未开始 <IconUser /> x {record.participantCount}
+        </>
+      )
+    },
+    {
+      title: t['contest.columns.type'],
+      dataIndex: 'type',
+      align: 'center',
+      width: 100,
+      render: (col) => ContestType[col]
     },
     {
       title: t['contest.columns.startedAt'],
       dataIndex: 'startTime',
-      width: 200,
       align: 'center',
+      width: 180,
       render: col => FormatTime(col)
     },
     {
       title: t['contest.columns.endedAt'],
       dataIndex: 'endTime',
-      width: 200,
       align: 'center',
+      width: 180,
       render: col => FormatTime(col)
     },
   ];

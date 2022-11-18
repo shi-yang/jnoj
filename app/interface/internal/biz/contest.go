@@ -10,17 +10,33 @@ import (
 
 // Contest is a Contest model.
 type Contest struct {
-	ID          int
-	Name        string
-	StartTime   time.Time
-	EndTime     time.Time
-	FrozenTime  *time.Time
-	Type        int
-	Description string
-	UserID      int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID               int
+	Name             string
+	StartTime        time.Time
+	EndTime          time.Time
+	FrozenTime       *time.Time
+	Type             int
+	Description      string
+	Status           int
+	UserID           int
+	ParticipantCount int
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
+
+type ContestSubmission struct {
+	ID            int
+	ProblemNumber int
+	Status        int
+	UserID        int
+	Score         int
+}
+
+const (
+	ContestTypeICPC = iota + 1 // ICPC 赛制 International Collegiate Programming Contest
+	ContestTypeIOI             // IOI 赛制 International Olympiad in Informatics
+	ContestTypeOI              // OI 赛制 Olympiad in Informatics
+)
 
 // ContestRepo is a Contest repo.
 type ContestRepo interface {
@@ -29,6 +45,8 @@ type ContestRepo interface {
 	CreateContest(context.Context, *Contest) (*Contest, error)
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
+	AddContestParticipantCount(context.Context, int, int) error
+	ListContestSubmissions(context.Context, int) []*ContestSubmission
 	ContestProblemRepo
 	ContestUserRepo
 }
@@ -56,6 +74,7 @@ func (uc *ContestUsecase) GetContest(ctx context.Context, id int) (*Contest, err
 
 // CreateContest creates a Contest, and returns the new Contest.
 func (uc *ContestUsecase) CreateContest(ctx context.Context, c *Contest) (*Contest, error) {
+	c.Type = ContestTypeICPC
 	return uc.repo.CreateContest(ctx, c)
 }
 
@@ -67,4 +86,9 @@ func (uc *ContestUsecase) UpdateContest(ctx context.Context, c *Contest) (*Conte
 // DeleteContest delete a Contest
 func (uc *ContestUsecase) DeleteContest(ctx context.Context, id int) error {
 	return uc.repo.DeleteContest(ctx, id)
+}
+
+// ListContestSubmissions .
+func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, id int) []*ContestSubmission {
+	return uc.repo.ListContestSubmissions(ctx, id)
 }

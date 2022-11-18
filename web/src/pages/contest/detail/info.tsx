@@ -7,7 +7,7 @@ import {
   Table,
   TableColumnProps,
 } from '@arco-design/web-react';
-import { IconCalendar, IconCheckCircle } from '@arco-design/web-react/icon';
+import { IconCalendar, IconCheckCircle, IconUser } from '@arco-design/web-react/icon';
 import { ReactNode, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import locale from './locale';
@@ -56,7 +56,7 @@ const columns: TableColumnProps[] = [
     align: 'center',
     render: (col, record, index) => (
       <>
-        {record.accepted} / {record.attempted}
+        {record.acceptedCount} / {record.submitCount}
       </>
     ),
   },
@@ -71,7 +71,7 @@ const columns: TableColumnProps[] = [
     ),
   },
 ];
-export default () => {
+export default ({contest}) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [problems, setProblems] = useState([])
@@ -96,7 +96,16 @@ export default () => {
           <StatisticItem
             icon={<IconCalendar />}
             title='题目数量'
-            count={123}
+            count={problems.length}
+            loading={loading}
+          />
+        </Col>
+        <Divider type="vertical" className={styles.divider} />
+        <Col flex={1}>
+          <StatisticItem
+            icon={<IconUser />}
+            title='参赛用户'
+            count={contest.participantCount}
             loading={loading}
           />
         </Col>
@@ -104,16 +113,7 @@ export default () => {
         <Col flex={1}>
           <StatisticItem
             icon={<IconCalendar />}
-            title='题目数量'
-            count={456}
-            loading={loading}
-          />
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title='题目数量'
+            title='提交数量'
             count={123}
             loading={loading}
           />

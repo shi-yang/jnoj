@@ -7,6 +7,7 @@ import (
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -27,10 +28,12 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 	resp.Total = count
 	for _, v := range res {
 		resp.Data = append(resp.Data, &v1.Contest{
-			Id:        int32(v.ID),
-			Name:      v.Name,
-			StartTime: timestamppb.New(v.StartTime),
-			EndTime:   timestamppb.New(v.EndTime),
+			Id:               int32(v.ID),
+			Name:             v.Name,
+			ParticipantCount: int32(v.ParticipantCount),
+			StartTime:        timestamppb.New(v.StartTime),
+			EndTime:          timestamppb.New(v.EndTime),
+			Type:             int32(v.Type),
 		})
 	}
 	return resp, nil
@@ -43,10 +46,33 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		return nil, err
 	}
 	resp := &v1.Contest{
-		Id:        int32(res.ID),
-		Name:      res.Name,
-		StartTime: timestamppb.New(res.StartTime),
-		EndTime:   timestamppb.New(res.EndTime),
+		Id:               int32(res.ID),
+		Name:             res.Name,
+		Type:             int32(res.Type),
+		Description:      res.Description,
+		ParticipantCount: int32(res.ParticipantCount),
+		StartTime:        timestamppb.New(res.StartTime),
+		EndTime:          timestamppb.New(res.EndTime),
+	}
+	return resp, nil
+}
+
+// UpdateContest 编辑比赛
+func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContestRequest) (*v1.Contest, error) {
+	res, err := s.uc.UpdateContest(ctx, &biz.Contest{
+		ID:          int(req.Id),
+		Name:        req.Name,
+		Description: req.Description,
+		StartTime:   req.StartTime.AsTime(),
+		EndTime:     req.EndTime.AsTime(),
+		Type:        int(req.Type),
+		Status:      int(req.Status),
+	})
+	if err != nil {
+		return nil, err
+	}
+	resp := &v1.Contest{
+		Id: int32(res.ID),
 	}
 	return resp, nil
 }
@@ -131,11 +157,70 @@ func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.Creat
 	}, nil
 }
 
-// ListContestUsers 获取比赛用户
-func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) (*v1.ListContestUsersResponse, error) {
-	return nil, nil
+// DeleteContestProblem 删除比赛题目
+func (s *ContestService) DeleteContestProblem(ctx context.Context, req *v1.DeleteContestProblemRequest) (*emptypb.Empty, error) {
+	err := s.uc.DeleteContestProblem(ctx, int(req.Id), int(req.Number))
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 
+// ListContestUsers 获取比赛用户
+func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) (*v1.ListContestUsersResponse, error) {
+	users, count := s.uc.ListContestUsers(ctx, req)
+	resp := new(v1.ListContestUsersResponse)
+	for _, v := range users {
+		resp.Data = append(resp.Data, &v1.ContestUser{
+			Id:       int32(v.ID),
+			UserId:   int32(v.UserID),
+			Nickname: v.Nickname,
+		})
+	}
+	resp.Total = count
+	return resp, nil
+}
+
+// CreateContestUsers 新增比赛用户
+func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateContestUserRequest) (*v1.ContestUser, error) {
+	u := &biz.ContestUser{
+		ContestID: int(req.Id),
+	}
+	u.UserID, _ = auth.GetUserID(ctx)
+	res, _ := s.uc.CreateContestUser(ctx, u)
+	return &v1.ContestUser{
+		Id: int32(res.ID),
+	}, nil
+}
+
+// ListContestStandings 用户比赛提交榜单
 func (s *ContestService) ListContestStandings(ctx context.Context, req *v1.ListContestStandingsRequest) (*v1.ListContestStandingsResponse, error) {
-	return nil, nil
+	submissions := s.uc.ListContestSubmissions(ctx, int(req.Id))
+	resp := new(v1.ListContestStandingsResponse)
+	for _, v := range submissions {
+		resp.Data = append(resp.Data, &v1.ListContestStandingsResponse_Submission{
+			Id:            int32(v.ID),
+			Status:        int32(v.Status),
+			Score:         int32(v.Score),
+			UserId:        int32(v.UserID),
+			ProblemNumber: int32(v.ProblemNumber),
+		})
+	}
+	return resp, nil
+}
+
+// ListContestStandings 用户比赛提交列表
+func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) (*v1.ListContestSubmissionsResponse, error) {
+	submissions := s.uc.ListContestSubmissions(ctx, int(req.Id))
+	resp := new(v1.ListContestSubmissionsResponse)
+	for _, v := range submissions {
+		resp.Data = append(resp.Data, &v1.ListContestSubmissionsResponse_Submission{
+			Id:            int32(v.ID),
+			Status:        int32(v.Status),
+			Score:         int32(v.Score),
+			UserId:        int32(v.UserID),
+			ProblemNumber: int32(v.ProblemNumber),
+		})
+	}
+	return resp, nil
 }

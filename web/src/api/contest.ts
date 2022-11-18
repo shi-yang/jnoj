@@ -28,6 +28,10 @@ export function createContestProblem(id, data) {
   return axios.post(`/contests/${id}/problems`, data)
 }
 
+export function deleteContestProblem(id, problemNumber) {
+  return axios.delete(`/contests/${id}/problems/${problemNumber}`)
+}
+
 export function listContestStatuses(id) {
   return axios.get(`/contests/${id}/statuses`)
 }
