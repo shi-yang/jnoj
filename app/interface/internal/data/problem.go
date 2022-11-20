@@ -18,18 +18,18 @@ type problemRepo struct {
 }
 
 type Problem struct {
-	ID                 int
-	Name               string
-	TimeLimit          int64
-	MemoryLimit        int64
-	AcceptedCount      int
-	SubmitCount        int
-	UserID             int
-	CheckerID          int
-	VerificationStatus int
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	DeletedAt          gorm.DeletedAt
+	ID            int
+	Name          string
+	TimeLimit     int64
+	MemoryLimit   int64
+	AcceptedCount int
+	SubmitCount   int
+	UserID        int
+	CheckerID     int
+	Status        int
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt
 }
 
 // NewProblemRepo .
@@ -56,6 +56,7 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			AcceptedCount: v.AcceptedCount,
 			CreatedAt:     v.CreatedAt,
 			UpdatedAt:     v.UpdatedAt,
+			Status:        v.Status,
 		})
 	}
 	return rv, count
@@ -78,6 +79,7 @@ func (r *problemRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, err
 		AcceptedCount: res.AcceptedCount,
 		SubmitCount:   res.SubmitCount,
 		UserID:        res.UserID,
+		Status:        res.Status,
 		CheckerID:     res.CheckerID,
 	}, err
 }
@@ -89,6 +91,7 @@ func (r *problemRepo) CreateProblem(ctx context.Context, p *biz.Problem) (*biz.P
 		UserID:      p.UserID,
 		TimeLimit:   p.TimeLimit,
 		MemoryLimit: p.MemoryLimit,
+		Status:      p.Status,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
@@ -104,6 +107,7 @@ func (r *problemRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*biz.P
 		ID:          p.ID,
 		TimeLimit:   p.TimeLimit,
 		MemoryLimit: p.MemoryLimit,
+		Status:      p.Status,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

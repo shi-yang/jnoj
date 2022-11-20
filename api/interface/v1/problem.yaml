@@ -11,3 +11,7 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemTests"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/ListProblemStatements"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/GetProblemVerification"
+  middleware: "jnoj/internal/middleware/auth.User()"

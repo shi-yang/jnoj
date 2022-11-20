@@ -24,7 +24,6 @@ function Index(props) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Problem>({id: 0, statements: [], name: ''});
-  const [language, setLanguage] = useState(0);
   const params = useParams();
   function fetchData() {
     setLoading(true);
@@ -52,8 +51,8 @@ function Index(props) {
               </Typography.Title>
             </Grid.Col>
           </Grid.Row>
-          <Tabs defaultActiveTab='preview'>
-            <TabPane key='preview' title={t['tab.baseInfo']}>
+          <Tabs defaultActiveTab='info'>
+            <TabPane key='info' title={t['tab.baseInfo']}>
               <Info problem={data} />
             </TabPane>
             <TabPane key='statement' title={t['tab.statement']}>

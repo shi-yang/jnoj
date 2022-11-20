@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Button, Form, Input, DatePicker } from '@arco-design/web-react';
+import { Modal, Button, Form, Input, DatePicker, Message } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -24,7 +24,8 @@ function App() {
       };
       setConfirmLoading(true);
       createContest(data).then(res => {
-        console.log(res)
+        Message.success('创建成功')
+        navigate(`/contests/${res.data.id}/setting`)
       }).finally(() => {
         setConfirmLoading(false);
       })

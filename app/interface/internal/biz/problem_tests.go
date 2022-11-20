@@ -53,9 +53,6 @@ type ProblemTestRepo interface {
 
 // ListProblemTests list ProblemTest
 func (uc *ProblemUsecase) ListProblemTests(ctx context.Context, req *v1.ListProblemTestsRequest) ([]*ProblemTest, int64) {
-	if !uc.hasUpdatePermission(ctx, int(req.Id)) {
-		return nil, 0
-	}
 	return uc.repo.ListProblemTests(ctx, req)
 }
 
@@ -66,10 +63,6 @@ func (uc *ProblemUsecase) GetProblemTest(ctx context.Context, id string) (*Probl
 
 // CreateProblemTest creates a ProblemTest, and returns the new ProblemTest.
 func (uc *ProblemUsecase) CreateProblemTest(ctx context.Context, p *ProblemTest) (*ProblemTest, error) {
-	if !uc.hasUpdatePermission(ctx, int(p.ProblemID)) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
-	}
-
 	p.UserID, _ = auth.GetUserID(ctx)
 	p.InputSize = int64(len(p.InputFileContent))
 	// 读取 32 个字符作为内容
@@ -83,16 +76,10 @@ func (uc *ProblemUsecase) CreateProblemTest(ctx context.Context, p *ProblemTest)
 
 // UpdateProblemTest update a ProblemTest
 func (uc *ProblemUsecase) UpdateProblemTest(ctx context.Context, p *ProblemTest) (*ProblemTest, error) {
-	if !uc.hasUpdatePermission(ctx, int(p.ProblemID)) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
-	}
 	return uc.repo.UpdateProblemTest(ctx, p)
 }
 
 // DeleteProblemTest delete a ProblemTest
 func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid string) error {
-	if !uc.hasUpdatePermission(ctx, int(pid)) {
-		return v1.ErrorPermissionDenied("permission denied")
-	}
 	return uc.repo.DeleteProblemTest(ctx, tid)
 }

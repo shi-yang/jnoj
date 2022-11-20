@@ -9,9 +9,7 @@ import { Link } from 'react-router-dom';
 
 const { Text } = Typography;
 
-export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
-export const Status = ['未上线', '已上线'];
+export const Status = ['', '私有', '公开'];
 
 const ContentIcon = [
   <IconText key={0} />,
@@ -41,12 +39,7 @@ export function getColumns(
     {
       title: t['searchTable.columns.status'],
       dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      render: (x) => Status[x],
     },
     {
       title: t['searchTable.columns.operations'],

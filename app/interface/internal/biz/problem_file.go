@@ -44,10 +44,6 @@ type ProblemFileRepo interface {
 
 // ListProblemFiles list ProblemFile
 func (uc *ProblemUsecase) ListProblemFiles(ctx context.Context, req *v1.ListProblemFilesRequest) ([]*ProblemFile, int64) {
-	uc.log.Info("ListProblemFiles")
-	if req.Id != 0 && !uc.hasUpdatePermission(ctx, int(req.Id)) {
-		return nil, 0
-	}
 	return uc.repo.ListProblemFiles(ctx, req)
 }
 
@@ -58,9 +54,6 @@ func (uc *ProblemUsecase) GetProblemFile(ctx context.Context, id int) (*ProblemF
 
 // CreateProblemFile creates a ProblemFile, and returns the new ProblemFile.
 func (uc *ProblemUsecase) CreateProblemFile(ctx context.Context, p *ProblemFile) (*ProblemFile, error) {
-	if !uc.hasUpdatePermission(ctx, int(p.ProblemID)) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
-	}
 	p.UserID, _ = auth.GetUserID(ctx)
 	return uc.repo.CreateProblemFile(ctx, p)
 }

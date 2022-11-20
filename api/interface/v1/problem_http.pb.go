@@ -81,6 +81,8 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemFiles", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemStdCheckers", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemTests", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/ListProblemStatements", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/GetProblemVerification", auth.User())
 	r := s.Route("/")
 	r.GET("/problems", _ProblemService_ListProblems0_HTTP_Handler(srv))
 	r.GET("/problems/{id}", _ProblemService_GetProblem0_HTTP_Handler(srv))

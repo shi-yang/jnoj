@@ -180,14 +180,15 @@ message Problem {
     repeated ProblemStatement statements = 5;
     int32 accepted_count = 6;
     int32 submit_count = 7;
+    int32 status = 8;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 8;
-    google.protobuf.Timestamp created_at = 9;
-    google.protobuf.Timestamp updated_at = 10;
+    repeated SampleTest sample_tests = 9;
+    google.protobuf.Timestamp created_at = 10;
+    google.protobuf.Timestamp updated_at = 11;
 }
 
 // 题目描述
@@ -234,6 +235,7 @@ message UpdateProblemRequest {
     int32 id = 1;
     int64 time_limit = 2;
     int64 memory_limit = 3;
+    int32 status = 4;
 }
 
 message ListProblemStatementsRequest {

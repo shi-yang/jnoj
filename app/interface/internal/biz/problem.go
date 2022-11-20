@@ -20,12 +20,18 @@ type Problem struct {
 	AcceptedCount int
 	SubmitCount   int
 	CheckerID     int
+	Status        int
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 
 	Statements  []*ProblemStatement
 	SampleTests []*SampleTest
 }
+
+const (
+	ProblemStatusPrivate = iota + 1 // 私有
+	ProblemStatusPublic             // 公开
+)
 
 // ProblemRepo is a Problem repo.
 type ProblemRepo interface {
@@ -94,31 +100,33 @@ func (uc *ProblemUsecase) CreateProblem(ctx context.Context, p *Problem) (*Probl
 	p.UserID = userID
 	p.MemoryLimit = 256
 	p.TimeLimit = 1000
+	p.Status = ProblemStatusPrivate
 	return uc.repo.CreateProblem(ctx, p)
 }
 
 // UpdateProblem update a Problem
 func (uc *ProblemUsecase) UpdateProblem(ctx context.Context, p *Problem) (*Problem, error) {
-	if !uc.hasUpdatePermission(ctx, p.ID) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
-	}
 	return uc.repo.UpdateProblem(ctx, p)
 }
 
 // DeleteProblem delete a Problem
 func (uc *ProblemUsecase) DeleteProblem(ctx context.Context, id int) error {
-	if !uc.hasUpdatePermission(ctx, id) {
-		return v1.ErrorPermissionDenied("permission denied")
-	}
 	return uc.repo.DeleteProblem(ctx, id)
 }
 
-// hasUpdatePermission 是否有更新的权限
-// 当前仅创建者才能更新
-func (uc *ProblemUsecase) hasUpdatePermission(ctx context.Context, id int) bool {
-	p, _ := uc.GetProblem(ctx, id)
+// HasPermission 是否有权限
+// t = view 查看权限，需要题目出于公开或者是创建人才能查看
+// t = update 修改权限，近题目创建人可以看
+func (uc *ProblemUsecase) HasPermission(ctx context.Context, id int, t string) bool {
+	p, err := uc.GetProblem(ctx, id)
+	if err != nil {
+		return false
+	}
 	userID, _ := auth.GetUserID(ctx)
-	uc.log.Info(userID)
+	if t == "view" {
+		return p.UserID == userID || p.Status == ProblemStatusPublic
+	}
+	uc.log.Info("hasPermission:", p.UserID, userID)
 	return p.UserID == userID
 }
 

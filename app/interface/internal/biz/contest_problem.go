@@ -46,13 +46,19 @@ func (uc *ContestUsecase) GetContestProblem(ctx context.Context, cid int, number
 
 // CreateContestProblem creates a ContestProblem, and returns the new ContestProblem.
 func (uc *ContestUsecase) CreateContestProblem(ctx context.Context, c *ContestProblem) (*ContestProblem, error) {
+	// 检查题目是否存在
+	_, err := uc.problemRepo.GetProblem(ctx, c.ProblemID)
+	if err != nil {
+		return nil, errors.New("题目不存在")
+	}
 	// 检查题目是否已经在比赛里
-	_, err := uc.repo.GetContestProblemByProblemID(ctx, c.ContestID, c.ProblemID)
+	_, err = uc.repo.GetContestProblemByProblemID(ctx, c.ContestID, c.ProblemID)
 	if err == nil {
 		return nil, errors.New("题目已经存在")
 	}
 	// 统计现有题目数量，以增加题目序号
 	count := uc.repo.CountContestProblem(ctx, c.ContestID)
+	uc.log.Info(count)
 	if count > 25 {
 		return nil, errors.New("已达单场比赛最大题目数量")
 	}

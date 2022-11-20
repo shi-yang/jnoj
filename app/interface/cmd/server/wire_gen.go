@@ -29,12 +29,12 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 		return nil, nil, err
 	}
 	contestRepo := data.NewContestRepo(dataData, logger)
-	contestUsecase := biz.NewContestUsecase(contestRepo, logger)
+	problemRepo := data.NewProblemRepo(dataData, logger)
+	contestUsecase := biz.NewContestUsecase(contestRepo, problemRepo, logger)
 	contestService := service.NewContestService(contestUsecase)
 	userRepo := data.NewUserRepo(dataData, logger)
 	userUsecase := biz.NewUserUsecase(userRepo, logger)
 	userService := service.NewUserService(userUsecase)
-	problemRepo := data.NewProblemRepo(dataData, logger)
 	discovery := biz.NewDiscovery(registry)
 	sandboxServiceClient := biz.NewSandboxClient(discovery)
 	problemUsecase := biz.NewProblemUsecase(problemRepo, sandboxServiceClient, logger)

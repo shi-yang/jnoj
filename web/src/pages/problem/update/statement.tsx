@@ -1,6 +1,10 @@
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, List, Message, Grid, Tag, Popconfirm } from '@arco-design/web-react';
 import MarkdownEditor from '@uiw/react-markdown-editor';
+import { EditorView } from '@codemirror/view';
+import katex from 'katex';
+import { getCodeString } from 'rehype-rewrite';
+import 'katex/dist/katex.css';
 import { useEffect, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
@@ -93,16 +97,46 @@ export default (props) => {
               <Input />
             </FormItem>
             <FormItem field='legend' label={t['legend']}>
-              <MarkdownEditor />
+              <MarkdownEditor
+                extensions={[EditorView.lineWrapping]}
+                previewProps={{
+                  components: {
+                    code: ({ inline, children = [], className, ...props }) => {
+                      const txt = children[0] || '';
+                      if (inline) {
+                        if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+                          const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                            throwOnError: false,
+                          });
+                          return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                        }
+                        return <code>{txt}</code>;
+                      }
+                      const code = props.node && props.node.children ? getCodeString(props.node.children) : txt;
+                      if (
+                        typeof code === 'string' &&
+                        typeof className === 'string' &&
+                        /^language-katex/.test(className.toLocaleLowerCase())
+                      ) {
+                        const html = katex.renderToString(code, {
+                          throwOnError: false,
+                        });
+                        return <code style={{ fontSize: '150%' }} dangerouslySetInnerHTML={{ __html: html }} />;
+                      }
+                      return <code className={String(className)}>{txt}</code>;
+                    },
+                  },
+                }}
+              />
             </FormItem>
             <FormItem field='input' label={t['input']}>
-              <MarkdownEditor />
+              <MarkdownEditor extensions={[EditorView.lineWrapping]} />
             </FormItem>
             <FormItem field='output' label={t['output']}>
-              <MarkdownEditor />
+              <MarkdownEditor extensions={[EditorView.lineWrapping]} />
             </FormItem>
             <FormItem field='note' label={t['notes']}>
-              <MarkdownEditor />
+              <MarkdownEditor extensions={[EditorView.lineWrapping]} />
             </FormItem>
             <FormItem>
               <Button type='primary' htmlType='submit'>{t['save']}</Button>

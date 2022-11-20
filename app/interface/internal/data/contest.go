@@ -51,6 +51,7 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	db := r.data.db.WithContext(ctx).
 		Model(&Contest{}).
 		Count(&count)
+	db.Order("id desc")
 	db.Offset(pager.GetOffset()).
 		Limit(pager.GetPageSize()).
 		Find(&res)
@@ -90,12 +91,13 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 }
 
 // CreateContest .
-func (r *contestRepo) CreateContest(ctx context.Context, b *biz.Contest) (*biz.Contest, error) {
+func (r *contestRepo) CreateContest(ctx context.Context, c *biz.Contest) (*biz.Contest, error) {
 	res := Contest{
-		Name:      b.Name,
-		StartTime: b.StartTime,
-		EndTime:   b.EndTime,
-		UserID:    b.UserID,
+		Name:      c.Name,
+		StartTime: c.StartTime,
+		EndTime:   c.EndTime,
+		UserID:    c.UserID,
+		Type:      c.Type,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

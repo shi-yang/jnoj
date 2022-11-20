@@ -1,8 +1,8 @@
 import { getProblemVerification, updateProblem, verifyProblem } from '@/api/problem';
-import { Form, Input, Button, Card, Message, List } from '@arco-design/web-react';
+import { Form, Input, Button, Card, Message, List, Radio } from '@arco-design/web-react';
 import { useEffect, useState } from 'react';
 const FormItem = Form.Item;
-
+const VerificationStatus = ['', '待验证', '验证失败', '验证成功'];
 const App = (props) => {
   const [form] = Form.useForm();
   const [verification, setVerification] = useState({verificationStatus: 0, verificaitonInfo: []});
@@ -23,11 +23,12 @@ const App = (props) => {
     })
   }
   useEffect(() => {
+    fetchData()
     form.setFieldsValue({
+      status: props.problem.status,
       timeLimit: props.problem.timeLimit,
       memoryLimit: props.problem.memoryLimit,
     })
-    fetchData()
   }, [])
   return (
     <>
@@ -38,6 +39,12 @@ const App = (props) => {
           </FormItem>
           <FormItem field='memoryLimit' label='内存限制' help="限制范围：4MB ~ 1024MB">
             <Input addAfter='MB' />
+          </FormItem>
+          <FormItem field='status' label='可见状态'>
+            <Radio.Group>
+              <Radio value={1}>私有</Radio>
+              <Radio value={2}>公开</Radio>
+            </Radio.Group>
           </FormItem>
           <FormItem wrapperCol={{ offset: 5 }}>
             <Button type='primary' htmlType='submit'>保存</Button>
@@ -53,7 +60,7 @@ const App = (props) => {
             size='small'
             header={
               <div>
-                校验状态: {verification.verificationStatus}
+                校验状态: {VerificationStatus[verification.verificationStatus]}
               </div>
             }
             dataSource={verification.verificaitonInfo.map(item => {

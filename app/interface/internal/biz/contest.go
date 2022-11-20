@@ -53,13 +53,18 @@ type ContestRepo interface {
 
 // ContestUsecase is a Contest usecase.
 type ContestUsecase struct {
-	repo ContestRepo
-	log  *log.Helper
+	repo        ContestRepo
+	problemRepo ProblemRepo
+	log         *log.Helper
 }
 
 // NewContestUsecase new a Contest usecase.
-func NewContestUsecase(repo ContestRepo, logger log.Logger) *ContestUsecase {
-	return &ContestUsecase{repo: repo, log: log.NewHelper(logger)}
+func NewContestUsecase(repo ContestRepo, problemRepo ProblemRepo, logger log.Logger) *ContestUsecase {
+	return &ContestUsecase{
+		repo:        repo,
+		problemRepo: problemRepo,
+		log:         log.NewHelper(logger),
+	}
 }
 
 // ListContests list Contest

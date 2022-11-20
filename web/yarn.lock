@@ -528,7 +528,7 @@
     "@codemirror/view" "^6.0.0"
     "@lezer/highlight" "^1.0.0"
 
-"@codemirror/view@^6.0.0", "@codemirror/view@^6.2.2", "@codemirror/view@^6.5.0":
+"@codemirror/view@^6.0.0", "@codemirror/view@^6.2.2", "@codemirror/view@^6.5.0", "@codemirror/view@^6.5.1":
   version "6.5.1"
   resolved "https://registry.npmmirror.com/@codemirror/view/-/view-6.5.1.tgz#f4533cd796f0569508822d0012bee9a15dc4b3f9"
   integrity sha512-xBKP8N3AXOs06VcKvIuvIQoUlGs7Hb78ftJWahLaRX909jKPMgGxR5XjvrawzTTZMSTU3DzdjDNPwG6fPM/ypQ==
@@ -1270,6 +1270,11 @@ commander@2:
   resolved "https://registry.npmmirror.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
+commander@^8.0.0:
+  version "8.3.0"
+  resolved "https://registry.npmmirror.com/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
+  integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
+
 compute-scroll-into-view@1.0.11:
   version "1.0.11"
   resolved "https://registry.npmmirror.com/compute-scroll-into-view/-/compute-scroll-into-view-1.0.11.tgz#7ff0a57f9aeda6314132d8994cce7aeca794fecf"
@@ -1903,6 +1908,13 @@ json5@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmmirror.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
+
+katex@^0.16.3:
+  version "0.16.3"
+  resolved "https://registry.npmmirror.com/katex/-/katex-0.16.3.tgz#29640560b8fa0403e45f3aa20da5fdbb6d2b83a8"
+  integrity sha512-3EykQddareoRmbtNiNEDgl3IGjryyrp2eg/25fHDEnlHymIDi33bptkMv6K4EOC2LZCybLW/ZkEo6Le+EM9pmA==
+  dependencies:
+    commander "^8.0.0"
 
 kleur@^4.0.3:
   version "4.1.5"

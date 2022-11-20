@@ -143,9 +143,8 @@ func (r *contestRepo) GetContestProblemByProblemID(ctx context.Context, cid int,
 func (r *contestRepo) CountContestProblem(ctx context.Context, id int) int {
 	var count int64
 	r.data.db.WithContext(ctx).
-		Model(&ContestProblem{
-			ContestID: id,
-		}).
+		Model(&ContestProblem{}).
+		Where("contest_id = ?", id).
 		Count(&count)
 	return int(count)
 }

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"strconv"
 	"time"
 
@@ -47,12 +48,15 @@ func GenerateToken(userID int) (string, error) {
 func GetUserID(ctx context.Context) (int, bool) {
 	token, ok := jwt.FromContext(ctx)
 	if !ok {
+		log.Println("token, ok := jwt.FromContext(ctx)")
 		return 0, false
 	}
 	if err := token.Valid(); err != nil {
+		log.Println("err := token.Valid();")
 		return 0, false
 	}
 	m := *(token.(*jwt2.MapClaims))
+	log.Printf("%+v\n", m)
 	uid, _ := strconv.Atoi(m["sub"].(string))
 	return uid, true
 }
