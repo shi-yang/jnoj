@@ -12,7 +12,6 @@ import { GlobalContext } from '@/context';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import { IconRefresh, IconSearch } from '@arco-design/web-react/icon';
-import { ContentType, FilterType, Status } from './constants';
 import styles from './style/index.module.less';
 
 const { Row, Col } = Grid;
