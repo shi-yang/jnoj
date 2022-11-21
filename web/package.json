@@ -32,7 +32,9 @@
     "react-markdown": "^8.0.3",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.3",
-    "remark-gfm": "^3.0.1"
+    "rehype-katex": "^6.0.2",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1"
   },
   "devDependencies": {
     "@arco-plugins/vite-plugin-svgr": "^0.7.2",

@@ -53,13 +53,18 @@ func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string,
 }
 
 // Register creates a User, and returns the new User.
-func (uc *UserUsecase) Register(ctx context.Context, u *User) (*User, error) {
+func (uc *UserUsecase) Register(ctx context.Context, u *User) (int, string, error) {
 	uc.log.WithContext(ctx).Infof("CreateUser: %v", u.Username)
 	if _, err := uc.repo.GetUser(ctx, &User{Username: u.Username}); err == nil {
-		return nil, fmt.Errorf("username exist.")
+		return 0, "", fmt.Errorf("username exist.")
 	}
 	u.Password, _ = generatePasswordHash(u.Password)
-	return uc.repo.CreateUser(ctx, u)
+	user, err := uc.repo.CreateUser(ctx, u)
+	if err != nil {
+		return 0, "", fmt.Errorf(err.Error())
+	}
+	token, err := auth.GenerateToken(user.ID)
+	return user.ID, token, err
 }
 
 func (uc *UserUsecase) GetUser(ctx context.Context, id int) (*User, error) {

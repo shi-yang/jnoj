@@ -15,6 +15,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/login.module.less';
 import { Login } from '@/api/user';
+import { setAccessToken } from '@/utils/auth';
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
@@ -34,11 +35,8 @@ export default function LoginForm() {
     } else {
       removeLoginParams();
     }
-    // 记录登录状态
-    localStorage.setItem('userStatus', 'login');
-    // 跳转
     const from = location.state?.from?.pathname || '/';
-    navigate(from);
+    window.location.href = from;
   }
 
   function login(params) {
@@ -46,7 +44,7 @@ export default function LoginForm() {
     setLoading(true);
     Login(params)
       .then((res) => {
-        localStorage.setItem('token', res.data.token);
+        setAccessToken(res.data.token)
         afterLoginSuccess(params);
       })
       .finally(() => {

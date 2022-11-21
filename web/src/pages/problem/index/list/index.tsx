@@ -42,6 +42,7 @@ function SearchTable() {
     const params = {
       page: current,
       perPage: pageSize,
+      status: 2,
       ...formParams,
     };
     listProblems(params)

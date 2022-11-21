@@ -2,10 +2,11 @@ import { getContestProblem } from "@/api/contest";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import styles from './style/problem.module.less';
-import { Button, Card, Divider, Grid, ResizeBox, Typography } from "@arco-design/web-react";
+import { Grid, ResizeBox, Typography } from "@arco-design/web-react";
 import useLocale from "@/utils/useLocale";
 import locale from "./locale";
 import Editor from './editor';
+import ProblemContent from "@/components/Problem/ProblemContent";
 
 const { Title, Paragraph } = Typography;
 
@@ -55,45 +56,7 @@ export default ({contest}) => {
               <div key='first' className={styles.left}>
                 {!loading && (
                   <div className={styles['description-content']}>
-                    <Typography>
-                      <Paragraph type='secondary' spacing='close'>
-                        {t['timeLimit']}：{problem.timeLimit / 1000}s
-                        <Divider type='vertical' />
-                        {t['memoryLimit']}：{problem.memoryLimit}MB
-                      </Paragraph>
-                      <Paragraph>
-                        {problem.statements[language].legend}
-                      </Paragraph>
-                      <Title heading={5}>{t['input']}</Title>
-                      <Paragraph>
-                        {problem.statements[language].input}
-                      </Paragraph>
-                      <Title heading={5}>{t['output']}</Title>
-                      <Paragraph>
-                        {problem.statements[language].output}
-                      </Paragraph>
-                      <Title heading={5}>{t['sample']}</Title>
-                      {
-                        problem.sampleTests.map((item, index) => {
-                          return (
-                            <div className={styles['sample-test']} key={index}>
-                              <div className={styles.input}>
-                                <h4>{t['input']}</h4>
-                                <pre>{item.input}</pre>
-                              </div>
-                              <div className={styles.output}>
-                                <h4>{t['output']}</h4>
-                                <pre>{ item.output }</pre>
-                              </div>
-                            </div>
-                          )
-                        })
-                      }
-                      <Title heading={5}>{t['notes']}</Title>
-                      <Paragraph>
-                        {problem.statements[language].notes}
-                      </Paragraph>
-                    </Typography>
+                    <ProblemContent problem={problem} language={language}></ProblemContent>
                   </div>
                 )}
               </div>,

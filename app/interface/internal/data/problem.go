@@ -6,6 +6,7 @@ import (
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
@@ -44,9 +45,20 @@ func NewProblemRepo(data *Data, logger log.Logger) biz.ProblemRepo {
 func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequest) ([]*biz.Problem, int64) {
 	res := []Problem{}
 	count := int64(0)
-	r.data.db.WithContext(ctx).
-		Find(&res).
-		Count(&count)
+	pager := pagination.NewPagination(req.Page, req.PerPage)
+
+	db := r.data.db.WithContext(ctx).
+		Model(&Problem{})
+	if req.Name != nil {
+		db.Where("name = ?", req.Name)
+	}
+	if req.Status != nil {
+		db.Where("status = ?", req.Status)
+	}
+	db.Count(&count)
+	db.Offset(pager.GetOffset()).
+		Limit(pager.GetPageSize()).
+		Find(&res)
 	rv := make([]*biz.Problem, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.Problem{

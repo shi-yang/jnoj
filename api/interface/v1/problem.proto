@@ -204,10 +204,11 @@ message ProblemStatement {
 }
 
 message ListProblemsRequest {
-    string name = 1;
-    int32 user_id = 2;
-    int32 page = 3;
-    int32 per_page = 4;
+    optional string name = 1;
+    optional int32 user_id = 2;
+    optional int32 status = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListProblemsResponse {

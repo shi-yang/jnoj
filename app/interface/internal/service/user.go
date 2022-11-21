@@ -33,11 +33,14 @@ func (s *UserService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Logi
 
 // Register 注册
 func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterResponse, error) {
-	_, err := s.uc.Register(ctx, &biz.User{
+	id, token, err := s.uc.Register(ctx, &biz.User{
 		Username: req.Username,
 		Password: req.Password,
 	})
-	return nil, err
+	return &v1.RegisterResponse{
+		Id:    int32(id),
+		Token: token,
+	}, err
 }
 
 // GetUserInfo 获取登录用户信息

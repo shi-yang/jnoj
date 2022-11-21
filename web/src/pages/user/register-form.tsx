@@ -14,6 +14,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/login.module.less';
 import { Register } from '@/api/user';
+import { setAccessToken } from '@/utils/auth';
 
 export default function RegisterForm() {
   const formRef = useRef<FormInstance>();
@@ -23,21 +24,17 @@ export default function RegisterForm() {
   const t = useLocale(locale);
   const navigate = useNavigate();
 
-  function afterRegisterSuccess(params) {
-    // 跳转首页
-    navigate('/')
-  }
-
   function register(params) {
     setErrorMessage('');
     setLoading(true);
     Register(params)
       .then((res) => {
-        const { status, msg } = res.data;
-        if (status === 'ok') {
-          afterRegisterSuccess(params);
+        const { token } = res.data;
+        if (token) {
+          setAccessToken(token);
+          window.location.href = '/';
         } else {
-          setErrorMessage(msg || t['login.form.login.errMsg']);
+          setErrorMessage(t['login.form.login.errMsg']);
         }
       })
       .catch(err => {

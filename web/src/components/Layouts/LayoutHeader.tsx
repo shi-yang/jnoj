@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { Avatar, Divider, Dropdown, Menu, Message, Select, Tooltip } from '@arco-design/web-react';
+import { Avatar, Button, Divider, Dropdown, Menu, Message, Select, Tooltip } from '@arco-design/web-react';
 import styles from './style/layout-header.module.less';
 import useLocale from '@/utils/useLocale';
 import { GlobalContext } from '@/context';
@@ -122,12 +122,12 @@ const LayoutHeader = () => {
         { isLogged()
             ? <li>
               <Dropdown droplist={droplist} position="br">
-                <div style={{width: '100px'}}>
+                <Button type='text' style={{width: '100px'}}>
                   <Avatar size={32} style={{ cursor: 'pointer' }}>
                     <IconUser />
                   </Avatar>
                   <span>{ user.nickname }</span>
-                </div>
+                </Button>
               </Dropdown>
             </li>
             : <li>
