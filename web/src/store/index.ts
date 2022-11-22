@@ -1,14 +1,24 @@
 
-import { configureStore } from '@reduxjs/toolkit'
-import userReducer from './reducers/user'
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { createWrapper } from 'next-redux-wrapper';
+import userReducer from './reducers/user';
+import settingReducer from './reducers/setting';
 
-const store = configureStore({
+const makeStore = () => configureStore({
   reducer: {
-    user: userReducer
+    user: userReducer,
+    setting: settingReducer,
   },
 });
 
-export default store;
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore['dispatch'];
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  AppState,
+  unknown,
+  Action
+>;
+
+export const wrapper = createWrapper<AppStore>(makeStore);

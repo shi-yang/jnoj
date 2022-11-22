@@ -8,13 +8,13 @@ import {
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/login.module.less';
 import { Register } from '@/api/user';
 import { setAccessToken } from '@/utils/auth';
+import { useRouter } from 'next/router';
 
 export default function RegisterForm() {
   const formRef = useRef<FormInstance>();
@@ -22,7 +22,7 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
 
   const t = useLocale(locale);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function register(params) {
     setErrorMessage('');
@@ -88,7 +88,7 @@ export default function RegisterForm() {
             type="text"
             long
             className={styles['login-form-register-btn']}
-            onClick={() => navigate('/login') }
+            onClick={() => router.push('/login') }
           >
             {t['login.form.login']}
           </Button>

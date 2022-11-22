@@ -8,7 +8,6 @@ import {
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
-import { useNavigate, useLocation } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
@@ -24,8 +23,6 @@ export default function LoginForm() {
   const [loginParams, setLoginParams, removeLoginParams] = useStorage('loginParams');
 
   const t = useLocale(locale);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [rememberPassword, setRememberPassword] = useState(!!loginParams);
   function afterLoginSuccess(params) {
@@ -35,8 +32,7 @@ export default function LoginForm() {
     } else {
       removeLoginParams();
     }
-    const from = location.state?.from?.pathname || '/';
-    window.location.href = from;
+    window.location.href = '/';
   }
 
   function login(params) {
@@ -112,7 +108,7 @@ export default function LoginForm() {
             type="text"
             long
             className={styles['login-form-register-btn']}
-            onClick={() => navigate('/register') }
+            onClick={() => router.push('/user/register') }
           >
             {t['login.form.register']}
           </Button>

@@ -1,0 +1,75 @@
+import React, { lazy, useEffect, useState } from 'react';
+import {
+  Tabs,
+  Typography,
+  Grid,
+} from '@arco-design/web-react';
+import useLocale from '@/utils/useLocale';
+import locale from './locale';
+import styles from './style/index.module.less';
+import './mock';
+const Info = lazy(() => import('./info'));
+const Statement = lazy(() => import('./statement'));
+const Tests = lazy(() => import('./tests'));
+const Checker = lazy(() => import('./checker'));
+const SolutionFiles = lazy(() => import('./solution-files'));
+import { getProblem, Problem } from '@/api/problem';
+import { useRouter } from 'next/router';
+
+const TabPane = Tabs.TabPane;
+
+function Index(props) {
+  const t = useLocale(locale);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Problem>({id: 0, statements: [], name: ''});
+  const router = useRouter();
+  function fetchData() {
+    setLoading(true);
+    getProblem(router.query.id)
+      .then((res) => {
+        setData(res.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <>
+      { !loading && (
+        <div className={styles.container}>
+          <Grid.Row className={styles.header} justify="space-between" align="center">
+            <Grid.Col span={24}>
+              <Typography.Title className={styles.title} heading={5}>
+              { data.id } - { data.name }
+              </Typography.Title>
+            </Grid.Col>
+          </Grid.Row>
+          <Tabs defaultActiveTab='info'>
+            <TabPane key='info' title={t['tab.baseInfo']}>
+              <Info problem={data} />
+            </TabPane>
+            <TabPane key='statement' title={t['tab.statement']}>
+              <Statement problem={data} />
+            </TabPane>
+            <TabPane key='checker' title={t['tab.checker']}>
+              <Checker problem={data} />
+            </TabPane>
+            <TabPane key='tests' title={t['tab.tests']}>
+              <Tests problem={data} />
+            </TabPane>
+            <TabPane key='solutionFiles' title={t['tab.solutionFiles']}>
+              <SolutionFiles problem={data} />
+            </TabPane>
+          </Tabs>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default Index;

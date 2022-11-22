@@ -1,5 +1,6 @@
 const i18n = {
   'en-US': {
+    'login': 'Login',
     'login.form.title': 'Login',
     'login.form.userName.errMsg': 'Username cannot be empty',
     'login.form.password.errMsg': 'Password cannot be empty',
@@ -23,6 +24,7 @@ const i18n = {
     'register.form.register': 'Register',
   },
   'zh-CN': {
+    'login': '登录',
     'login.form.title': '登录',
     'login.form.userName.errMsg': '用户名不能为空',
     'login.form.password.errMsg': '密码不能为空',

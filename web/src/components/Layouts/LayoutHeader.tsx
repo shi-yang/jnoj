@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Avatar, Button, Divider, Dropdown, Menu, Message, Select, Tooltip } from '@arco-design/web-react';
 import styles from './style/layout-header.module.less';
 import useLocale from '@/utils/useLocale';
@@ -6,7 +6,8 @@ import { GlobalContext } from '@/context';
 import IconButton from './IconButton';
 import { IconLanguage, IconMoonFill, IconPoweroff, IconSettings, IconSunFill, IconUser } from '@arco-design/web-react/icon';
 import defaultLocale from '@/locale';
-import { Link, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { getUserInfo, userInfo } from '@/store/reducers/user';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { isLogged, removeAccessToken } from '@/utils/auth';
@@ -17,23 +18,24 @@ const LayoutHeader = () => {
   const t = useLocale();
   const user = useAppSelector(userInfo);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  
+  const router = useRouter()
+  const [isMounted, setIsMounted] = useState(false)
   const { lang, setLang, theme, setTheme } = useContext(GlobalContext);
 
   function logout() {
     removeAccessToken();
-    window.location.href = '/login';
+    window.location.href = '/user/login';
   }
 
   function onMenuItemClick(key) {
     if (key === 'logout') {
       logout();
     } else {
-      navigate(`/user/${key}`);
+      router.push(`/user/${key}`);
     }
   }
   useEffect(() => {
+    setIsMounted(true);
     dispatch(getUserInfo());
   }, []);
 
@@ -70,13 +72,13 @@ const LayoutHeader = () => {
             />
           </MenuItem>
           <MenuItem key='1'>
-            <Link to='/'>{ t['menu.home'] }</Link>
+            <Link href='/'>{ t['menu.home'] }</Link>
           </MenuItem>
           <MenuItem key='2'>
-            <Link to='/problems'>{ t['menu.problem'] }</Link>
+            <Link href='/problems'>{ t['menu.problem'] }</Link>
           </MenuItem>
           <MenuItem key='3'>
-            <Link to='/contests'>{ t['menu.contest'] }</Link>
+            <Link href='/contests'>{ t['menu.contest'] }</Link>
           </MenuItem>
           {/* <MenuItem key='4'>
             <Link to='/about'>{ t['menu.about'] }</Link>
@@ -119,7 +121,7 @@ const LayoutHeader = () => {
             />
           </Tooltip>
         </li>
-        { isLogged()
+        { isMounted && (isLogged()
             ? <li>
               <Dropdown droplist={droplist} position="br">
                 <Button type='text' style={{width: '100px'}}>
@@ -131,8 +133,8 @@ const LayoutHeader = () => {
               </Dropdown>
             </li>
             : <li>
-              <Link to='/login'>{ t['navbar.login'] }</Link>
-            </li>
+              <Link href='/user/login'>{ t['navbar.login'] }</Link>
+            </li>)
         }
       </ul>
     </div>

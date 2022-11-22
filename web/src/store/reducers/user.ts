@@ -1,6 +1,7 @@
 import { getUserInfo as getInfo } from "@/api/user";
 import { removeAccessToken } from "@/utils/auth";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
 
 export interface UserInfoState {
   userInfo?: {

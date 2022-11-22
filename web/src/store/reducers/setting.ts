@@ -1,22 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
+import defaultSetting from '@/setting.json';
 
-export interface SettingState {
-  webSite: string
-}
+export type SettingState = typeof defaultSetting;
 
-const initialState: SettingState = {
-  webSite: 'aa'
-};
+const initialState:SettingState = defaultSetting;
 
 const settingSlice = createSlice({
   name: 'setting',
   initialState,
   reducers: {
-    setWebSite(state, action) {
+    setSetting(state, action) {
     }
   },
 })
 
-export const { setWebSite } = settingSlice.actions
+export const { setSetting } = settingSlice.actions
 export default settingSlice.reducer
-export const webSite = (state) => state.webSite
+export const setting = (state) => state.setting

@@ -1,19 +1,18 @@
 import React from 'react';
 import { Layout } from '@arco-design/web-react';
-import { Outlet } from 'react-router-dom';
 import LayoutHeader from './LayoutHeader';
 import styles from './style/main-layouts.module.less'
 
 const { Header, Footer, Content } = Layout;
 
-const App = () => {
+const App = ({ children }) => {
   return (
     <Layout className={styles.layout}>
       <Header>
         <LayoutHeader />
       </Header>
       <Content>
-        <Outlet />
+        {children}
       </Content>
       <Footer className={styles.footer}>
         <div className='container'>

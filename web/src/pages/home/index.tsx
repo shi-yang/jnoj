@@ -1,4 +1,7 @@
+import { useAppSelector } from '@/hooks';
+import { SettingState, setting } from '@/store/reducers/setting';
 import { Button } from '@arco-design/web-react';
+import Head from 'next/head';
 import QueueAnim from 'rc-queue-anim';
 import TweenOne from 'rc-tween-one';
 import React from 'react';
@@ -19,29 +22,8 @@ export const getChildrenToRender = (item, i) => {
   return React.createElement(tag, { key: i.toString(), ...item }, children);
 };
 
-
-const bannerWrapper = [
-  {
-    name: 'title',
-    children: (
-      <span>
-        <p>JNOJ</p>
-      </span>
-    ),
-    className: styles['banner-title'],
-  },
-  {
-    name: 'explain',
-    className: styles['banner-explain'],
-    children: '在线测评系统',
-  },
-  {
-    name: 'content',
-    className: styles['banner-content'],
-    children: '支持OI、ICPC模式，基于React、Golang，开源，好用的测评系统',
-  },
-];
 export default function Index() {
+  const settings = useAppSelector<SettingState>(setting)
   const animType = {
     queue: 'bottom',
     one: {
@@ -51,8 +33,32 @@ export default function Index() {
       ease: 'easeOutQuad',
     },
   };
+  const bannerWrapper = [
+    {
+      name: 'title',
+      children: (
+        <span>
+          <p>{settings.name}</p>
+        </span>
+      ),
+      className: styles['banner-title'],
+    },
+    {
+      name: 'explain',
+      className: styles['banner-explain'],
+      children: settings.briefDescription,
+    },
+    {
+      name: 'content',
+      className: styles['banner-content'],
+      children: settings.description,
+    },
+  ];
   return (
     <>
+      <Head>
+        <title>{settings.name + ' - ' + settings.briefDescription}</title>
+      </Head>
       <div className={styles['banner']}>
         <div className={styles['banner-page']}>
           <QueueAnim
