@@ -15,12 +15,14 @@ import locale from './locale';
 import styles from './style/login.module.less';
 import { Login } from '@/api/user';
 import { setAccessToken } from '@/utils/auth';
+import { useRouter } from 'next/router';
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [loginParams, setLoginParams, removeLoginParams] = useStorage('loginParams');
+  const router = useRouter();
 
   const t = useLocale(locale);
 

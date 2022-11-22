@@ -2,8 +2,8 @@ import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
 import { Button } from '@arco-design/web-react';
 import Head from 'next/head';
-import QueueAnim from 'rc-queue-anim';
-import TweenOne from 'rc-tween-one';
+import QueueAnim from 'rc-queue-anim/lib/QueueAnim';
+import TweenOne from "rc-tween-one/lib/TweenOne";
 import React from 'react';
 import styles from './style/index.module.less';
 

@@ -3,12 +3,24 @@ import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collaps
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { getSubmission, getSubmissionInfo, listSubmissions } from '@/api/submission';
-import { VerdictMap } from './constants';
 import styles from './style/description.module.less'
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
 import { FormatTime } from '@/utils/formatTime';
 const CollapseItem = Collapse.Item;
+export const VerdictMap = [
+  '',
+  '等待测评',
+  '编译错误',
+  '回答错误',
+  '回答正确',
+  '输出格式错误',
+  '时间超限',
+  '内存超限',
+  '运行出错',
+  '系统错误'
+];
+
 const Submission = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
