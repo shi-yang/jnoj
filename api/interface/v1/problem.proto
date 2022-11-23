@@ -62,7 +62,7 @@ service ProblemService {
         };
     }
     // 删除题目描述
-    rpc DeleteProblemStatement (DeleteProblemStatementRequest) returns (ProblemStatement) {
+    rpc DeleteProblemStatement (DeleteProblemStatementRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/problems/{id}/statements/{sid}"
         };
@@ -126,7 +126,7 @@ service ProblemService {
         };
     }
     // 删除题目文件
-    rpc DeleteProblemFile (DeleteProblemFileRequest) returns (ProblemFile) {
+    rpc DeleteProblemFile (DeleteProblemFileRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/problems/{id}/files/{sid}"
         };
@@ -181,14 +181,15 @@ message Problem {
     int32 accepted_count = 6;
     int32 submit_count = 7;
     int32 status = 8;
+    int32 checker_id = 9;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 9;
-    google.protobuf.Timestamp created_at = 10;
-    google.protobuf.Timestamp updated_at = 11;
+    repeated SampleTest sample_tests = 10;
+    google.protobuf.Timestamp created_at = 11;
+    google.protobuf.Timestamp updated_at = 12;
 }
 
 // 题目描述
@@ -204,16 +205,18 @@ message ProblemStatement {
 }
 
 message ListProblemsRequest {
-    optional string name = 1;
-    optional int32 user_id = 2;
-    optional int32 status = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    string name = 1;
+    int32 user_id = 2;
+    int32 status = 3;
+    string filter = 4;
+    string order_by = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 
 message ListProblemsResponse {
     repeated Problem data = 1; // 题目列表
-    int64 count = 2; // 总数
+    int64 total = 2; // 总数
 }
 
 message GetProblemRequest {

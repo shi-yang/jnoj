@@ -5,8 +5,8 @@ const withLess = require('next-with-less');
 const withTM = require('next-transpile-modules')([
   '@arco-design/web-react',
 ]);
-
-module.exports = withLess(
+const removeImports = require('next-remove-imports')();
+module.exports = removeImports(withLess(
   withTM({
     lessLoaderOptions: {
       lessOptions: {
@@ -37,4 +37,4 @@ module.exports = withLess(
     // },
     pageExtensions: ['tsx'],
   })
-);
+));

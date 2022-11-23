@@ -6,7 +6,7 @@ import { getSubmission, getSubmissionInfo, listSubmissions } from '@/api/submiss
 import styles from './style/description.module.less'
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
-import { FormatTime } from '@/utils/formatTime';
+import { FormatTime } from '@/utils/format';
 const CollapseItem = Collapse.Item;
 export const VerdictMap = [
   '',
@@ -109,6 +109,12 @@ const Submission = (props) => {
       title: t['memory'],
       dataIndex: 'memory',
       align: 'center',
+      render: (col) => {
+        if (col < 1024 * 1024) {
+          return (col / 1024).toFixed(2) + 'MB';
+        }
+        return (col / 1024 / 1024).toFixed(2) + 'KB';
+      }
     },
     {
       title: t['createdAt'],

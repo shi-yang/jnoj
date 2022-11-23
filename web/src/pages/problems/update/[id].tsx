@@ -8,11 +8,11 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
-const Info = lazy(() => import('./info'));
-const Statement = lazy(() => import('./statement'));
-const Tests = lazy(() => import('./tests'));
-const Checker = lazy(() => import('./checker'));
-const SolutionFiles = lazy(() => import('./solution-files'));
+import Info from './info';
+import Statement from './statement';
+import Tests from './tests';
+import Checker from './checker';
+import SolutionFiles from './solution-files';
 import { getProblem, Problem } from '@/api/problem';
 import { useRouter } from 'next/router';
 
@@ -20,7 +20,7 @@ const TabPane = Tabs.TabPane;
 
 function Index(props) {
   const t = useLocale(locale);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Problem>({id: 0, statements: [], name: ''});
   const router = useRouter();
   function fetchData() {

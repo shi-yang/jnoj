@@ -5,6 +5,7 @@ import (
 	"io"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/internal/middleware/auth"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -23,10 +24,14 @@ func NewProblemService(uc *biz.ProblemUsecase) *ProblemService {
 
 // 题目列表
 func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsRequest) (*v1.ListProblemsResponse, error) {
+	if req.UserId != 0 {
+		u, _ := auth.GetUserID(ctx)
+		req.UserId = int32(u)
+	}
 	data, count := s.uc.ListProblems(ctx, req)
 	resp := new(v1.ListProblemsResponse)
 	resp.Data = make([]*v1.Problem, 0)
-	resp.Count = count
+	resp.Total = count
 	for _, v := range data {
 		resp.Data = append(resp.Data, &v1.Problem{
 			Id:            int32(v.ID),
@@ -58,6 +63,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 		TimeLimit:     int32(data.TimeLimit),
 		SubmitCount:   int32(data.SubmitCount),
 		AcceptedCount: int32(data.AcceptedCount),
+		CheckerId:     int32(data.CheckerID),
 	}
 	resp.Statements = make([]*v1.ProblemStatement, 0)
 	resp.SampleTests = make([]*v1.Problem_SampleTest, 0)
@@ -175,7 +181,7 @@ func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.Upd
 }
 
 // DeleteProblemStatement 删除题目描述
-func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.DeleteProblemStatementRequest) (*v1.ProblemStatement, error) {
+func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.DeleteProblemStatementRequest) (*emptypb.Empty, error) {
 	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
@@ -183,7 +189,7 @@ func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.Del
 	if err != nil {
 		return nil, err
 	}
-	return &v1.ProblemStatement{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // ListProblemTests 获取题目测试点列表
@@ -355,12 +361,12 @@ func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdatePr
 }
 
 // 删除题目文件
-func (s *ProblemService) DeleteProblemFile(ctx context.Context, req *v1.DeleteProblemFileRequest) (*v1.ProblemFile, error) {
+func (s *ProblemService) DeleteProblemFile(ctx context.Context, req *v1.DeleteProblemFileRequest) (*emptypb.Empty, error) {
 	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	s.uc.DeleteProblemFile(ctx, int(req.Sid))
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *ProblemService) RunProblemFile(ctx context.Context, req *v1.RunProblemFileRequest) (*emptypb.Empty, error) {

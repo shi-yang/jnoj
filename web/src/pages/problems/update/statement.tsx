@@ -1,16 +1,13 @@
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, List, Message, Grid, Tag, Popconfirm } from '@arco-design/web-react';
-// import MarkdownEditor from '@uiw/react-markdown-editor';
-import { EditorView } from '@codemirror/view';
-import katex from 'katex';
-import { getCodeString } from 'rehype-rewrite';
-import 'katex/dist/katex.css';
 import { useEffect, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
 import { deleteProblemStatement, listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
 import styles from './style/statement.module.less';
 import { IconDelete, IconEdit } from '@arco-design/web-react/icon';
+import Editor from '@/components/MarkdownEditor';
+
 const FormItem = Form.Item;
 const Row = Grid.Row;
 const Col = Grid.Col;
@@ -35,7 +32,6 @@ export default (props) => {
     })
   }
   function onSubmit(values) {
-    console.log('s', statements, current)
     updateProblemStatement(props.problem.id, statements[current].id, values)
       .then(res => {
         Message.info('已保存')
@@ -61,6 +57,20 @@ export default (props) => {
   useEffect(() => {
     fetchData();
   }, []);
+  const mdKaTeX = `This is to display the 
+  \`$c = \\pm\\sqrt{a^2 + b^2}$\`
+   in one line
+  
+  \`\`\`KaTeX
+  c = \\pm\\sqrt{a^2 + b^2}
+  \`\`\`
+  
+  \`\`\`KaTeX
+  \\f\\relax{x} = \\int_{-\\infty}^\\infty
+      \\f\\hat\\xi\\,e^{2 \\pi i \\xi x}
+      \\,d\\xi
+  \`\`\`
+  `;
   return (
     <Card>
       <Row gutter={64}>
@@ -96,48 +106,18 @@ export default (props) => {
             <FormItem field='name' label={t['name']}>
               <Input />
             </FormItem>
-            {/* <FormItem field='legend' label={t['legend']}>
-              <MarkdownEditor
-                extensions={[EditorView.lineWrapping]}
-                previewProps={{
-                  components: {
-                    code: ({ inline, children = [], className, ...props }) => {
-                      const txt = children[0] || '';
-                      if (inline) {
-                        if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
-                          const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
-                            throwOnError: false,
-                          });
-                          return <code dangerouslySetInnerHTML={{ __html: html }} />;
-                        }
-                        return <code>{txt}</code>;
-                      }
-                      const code = props.node && props.node.children ? getCodeString(props.node.children) : txt;
-                      if (
-                        typeof code === 'string' &&
-                        typeof className === 'string' &&
-                        /^language-katex/.test(className.toLocaleLowerCase())
-                      ) {
-                        const html = katex.renderToString(code, {
-                          throwOnError: false,
-                        });
-                        return <code style={{ fontSize: '150%' }} dangerouslySetInnerHTML={{ __html: html }} />;
-                      }
-                      return <code className={String(className)}>{txt}</code>;
-                    },
-                  },
-                }}
-              />
+            <FormItem field='legend' label={t['legend']}>
+              <Editor />
             </FormItem>
             <FormItem field='input' label={t['input']}>
-              <MarkdownEditor extensions={[EditorView.lineWrapping]} />
+              <Editor />
             </FormItem>
             <FormItem field='output' label={t['output']}>
-              <MarkdownEditor extensions={[EditorView.lineWrapping]} />
+              <Editor />
             </FormItem>
             <FormItem field='note' label={t['notes']}>
-              <MarkdownEditor extensions={[EditorView.lineWrapping]} />
-            </FormItem> */}
+              <Editor />
+            </FormItem>
             <FormItem>
               <Button type='primary' htmlType='submit'>{t['save']}</Button>
             </FormItem>

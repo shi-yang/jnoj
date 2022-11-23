@@ -23,7 +23,8 @@ export function getColumns(
     {
       title: t['problem.columns.id'],
       dataIndex: 'id',
-      width: 200,
+      align: 'center' as 'center',
+      width: 150,
     },
     {
       title: t['problem.columns.name'],
@@ -32,6 +33,7 @@ export function getColumns(
     {
       title: t['problem.columns.submitAndPass'],
       dataIndex: 'count',
+      align: 'center' as 'center',
       render(_, record) {
         return (
           <>
@@ -44,6 +46,7 @@ export function getColumns(
     {
       title: t['problem.columns.operations'],
       dataIndex: 'operations',
+      align: 'center' as 'center',
       headerCellStyle: { paddingLeft: '15px' },
       render: (_, record) => (
         <Button

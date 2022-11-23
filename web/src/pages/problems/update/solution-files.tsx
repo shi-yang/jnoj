@@ -4,6 +4,7 @@ import useLocale from '@/utils/useLocale';
 import { ListProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile } from '@/api/problem-file';
 import locale from './locale';
 import styles from './style/tests.module.less';
+import { FormatTime } from '@/utils/format';
 const FormItem = Form.Item;
 
 const App = (props) => {
@@ -17,18 +18,23 @@ const App = (props) => {
     {
       title: '#',
       dataIndex: 'id',
+      align: 'center',
     },
     {
       title: t['name'],
       dataIndex: 'name',
+      align: 'center',
     },
     {
       title: t['type'],
       dataIndex: 'type',
+      align: 'center',
     },
     {
       title: t['createdAt'],
       dataIndex: 'createdAt',
+      align: 'center',
+      render: col => FormatTime(col)
     },
     {
       title: t['action'],

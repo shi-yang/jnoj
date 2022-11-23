@@ -1,11 +1,14 @@
 import { updateProblemChecker } from '@/api/problem';
 import { createProblemFile, ListProblemFiles, listProblemStdCheckers } from '@/api/problem-file';
+import useLocale from '@/utils/useLocale';
+import locale from './locale';
 import { Form, Input, Button, Select, Card, Divider, Modal, Message } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import { useEffect, useState } from 'react';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const App = (props) => {
+  const t = useLocale(locale);
   const [userCheckers, setUserCheckers] = useState([]);
   const [stdCheckers, setStdCheckers] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -118,7 +121,7 @@ const App = (props) => {
           </Select>
         </FormItem>
         <FormItem wrapperCol={{ offset: 5 }}>
-          <Button type='primary' onClick={onSave}>Save</Button>
+          <Button type='primary' onClick={onSave}>{t['save']}</Button>
         </FormItem>
       </Form>
     </Card>

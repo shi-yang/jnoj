@@ -4,6 +4,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { deleteProblemTests, listProblemTests, updateProblemTest, uploadProblemTest } from '@/api/problem-test';
+import { FormatStorageSize, FormatTime } from '@/utils/format';
 const FormItem = Form.Item;
 
 const App = (props) => {
@@ -79,6 +80,7 @@ const App = (props) => {
     {
       title: '#',
       dataIndex: 'id',
+      align: 'center',
       render: (col, record, index) => {
         return index + 1
       }
@@ -86,9 +88,8 @@ const App = (props) => {
     {
       title: t['isExample'],
       dataIndex: 'isExample',
-      render: (col, record) => (
-        <>{col && '是'}</>
-      )
+      align: 'center',
+      render: (col, record) => col && '是'
     },
     {
       title: t['content'],
@@ -97,14 +98,19 @@ const App = (props) => {
     {
       title: t['size'],
       dataIndex: 'inputSize',
+      align: 'center',
+      render: (col) => FormatStorageSize(col)
     },
     {
       title: t['remark'],
       dataIndex: 'remark',
+      align: 'center',
     },
     {
       title: t['createdAt'],
       dataIndex: 'createdAt',
+      align: 'center',
+      render: (col) => FormatTime(col)
     },
     {
       title: t['action'],

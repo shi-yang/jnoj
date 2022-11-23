@@ -3,7 +3,7 @@ import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
 import IconVerticalVideo from './icons/vertical.svg';
 import Link from 'next/link';
-import { FormatTime } from '@/utils/formatTime';
+import { FormatTime } from '@/utils/format';
 import { IconUser } from '@arco-design/web-react/icon';
 
 export const ContestStatus = ['', 'ICPC', 'IOI', 'OI'];

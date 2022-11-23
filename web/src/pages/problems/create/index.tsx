@@ -34,7 +34,6 @@ function SearchTable() {
 
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
-    sizeCanChange: true,
     showTotal: true,
     pageSize: 25,
     current: 1,

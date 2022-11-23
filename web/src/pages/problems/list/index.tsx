@@ -11,15 +11,17 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import { listProblems } from '@/api/problem';
+import Head from 'next/head';
+import { useAppSelector } from '@/hooks';
+import { setting, SettingState } from '@/store/reducers/setting';
 
 function SearchTable() {
   const t = useLocale(locale);
-
   const tableCallback = async (record, type) => {
     console.log(record, type);
   };
-
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
+  const settings = useAppSelector<SettingState>(setting)
 
   const [data, setData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -69,10 +71,14 @@ function SearchTable() {
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
+    fetchData();
   }
 
   return (
     <Card>
+      <Head>
+        <title>{t['page.title']} - {settings.name}</title>
+      </Head>
       <SearchForm onSearch={handleSearch} />
       <Table
         rowKey="id"

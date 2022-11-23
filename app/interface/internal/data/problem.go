@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -49,10 +50,10 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 
 	db := r.data.db.WithContext(ctx).
 		Model(&Problem{})
-	if req.Name != nil {
-		db.Where("name = ?", req.Name)
+	if req.Name != "" {
+		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
-	if req.Status != nil {
+	if req.Status != 0 {
 		db.Where("status = ?", req.Status)
 	}
 	db.Count(&count)

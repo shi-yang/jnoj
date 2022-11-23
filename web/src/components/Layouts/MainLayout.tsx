@@ -2,10 +2,13 @@ import React from 'react';
 import { Layout } from '@arco-design/web-react';
 import LayoutHeader from './LayoutHeader';
 import styles from './style/main-layouts.module.less'
+import { useAppSelector } from '@/hooks';
+import { setting, SettingState } from '@/store/reducers/setting';
 
 const { Header, Footer, Content } = Layout;
 
 const App = ({ children }) => {
+  const settings = useAppSelector<SettingState>(setting)
   return (
     <Layout className={styles.layout}>
       <Header>
@@ -16,7 +19,14 @@ const App = ({ children }) => {
       </Content>
       <Footer className={styles.footer}>
         <div className='container'>
-          <div style={{padding: '15px 0'}}>©2022 JNOJ</div>
+          <div style={{padding: '15px 0'}}>
+            &copy; 2022 {settings.name} 
+            {settings.beian && (
+              <a href="https://beian.miit.gov.cn" target="_blank">
+                {settings.beian}
+              </a>
+            )}
+          </div>
         </div>
       </Footer>
     </Layout>

@@ -5,6 +5,7 @@ import IconHorizontalVideo from './icons/horizontal.svg';
 import IconVerticalVideo from './icons/vertical.svg';
 import styles from './style/index.module.less';
 import Link from 'next/link';
+import { FormatTime } from '@/utils/format';
 
 const { Text } = Typography;
 
@@ -24,6 +25,7 @@ export function getColumns(
     {
       title: t['searchTable.columns.id'],
       dataIndex: 'id',
+      align: 'center' as 'center',
       render: (value) => <Text copyable>{value}</Text>,
     },
     {
@@ -32,17 +34,21 @@ export function getColumns(
     },
     {
       title: t['searchTable.columns.createdTime'],
+      align: 'center' as 'center',
       dataIndex: 'createdAt',
       sorter: (a, b) => b.createdAt - a.createdAt,
+      render: (x) => FormatTime(x)
     },
     {
       title: t['searchTable.columns.status'],
       dataIndex: 'status',
+      align: 'center' as 'center',
       render: (x) => Status[x],
     },
     {
       title: t['searchTable.columns.operations'],
       dataIndex: 'operations',
+      align: 'center' as 'center',
       headerCellStyle: { paddingLeft: '15px' },
       render: (_, record) => (
         <Button

@@ -52,8 +52,8 @@ type ProblemServiceHTTPServer interface {
 	CreateProblemFile(context.Context, *CreateProblemFileRequest) (*ProblemFile, error)
 	CreateProblemStatement(context.Context, *CreateProblemStatementRequest) (*ProblemStatement, error)
 	CreateProblemTest(context.Context, *CreateProblemTestRequest) (*ProblemTest, error)
-	DeleteProblemFile(context.Context, *DeleteProblemFileRequest) (*ProblemFile, error)
-	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*ProblemStatement, error)
+	DeleteProblemFile(context.Context, *DeleteProblemFileRequest) (*emptypb.Empty, error)
+	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*emptypb.Empty, error)
 	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*emptypb.Empty, error)
 	GetProblem(context.Context, *GetProblemRequest) (*Problem, error)
 	GetProblemFile(context.Context, *GetProblemFileRequest) (*ProblemFile, error)
@@ -297,7 +297,7 @@ func _ProblemService_DeleteProblemStatement0_HTTP_Handler(srv ProblemServiceHTTP
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProblemStatement)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -517,7 +517,7 @@ func _ProblemService_DeleteProblemFile0_HTTP_Handler(srv ProblemServiceHTTPServe
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProblemFile)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -637,8 +637,8 @@ type ProblemServiceHTTPClient interface {
 	CreateProblemFile(ctx context.Context, req *CreateProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
 	CreateProblemStatement(ctx context.Context, req *CreateProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
 	CreateProblemTest(ctx context.Context, req *CreateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
-	DeleteProblemFile(ctx context.Context, req *DeleteProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
-	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
+	DeleteProblemFile(ctx context.Context, req *DeleteProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetProblem(ctx context.Context, req *GetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	GetProblemFile(ctx context.Context, req *GetProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
@@ -719,8 +719,8 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemTest(ctx context.Context, in
 	return &out, err
 }
 
-func (c *ProblemServiceHTTPClientImpl) DeleteProblemFile(ctx context.Context, in *DeleteProblemFileRequest, opts ...http.CallOption) (*ProblemFile, error) {
-	var out ProblemFile
+func (c *ProblemServiceHTTPClientImpl) DeleteProblemFile(ctx context.Context, in *DeleteProblemFileRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/problems/{id}/files/{sid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemFile))
@@ -732,8 +732,8 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemFile(ctx context.Context, in
 	return &out, err
 }
 
-func (c *ProblemServiceHTTPClientImpl) DeleteProblemStatement(ctx context.Context, in *DeleteProblemStatementRequest, opts ...http.CallOption) (*ProblemStatement, error) {
-	var out ProblemStatement
+func (c *ProblemServiceHTTPClientImpl) DeleteProblemStatement(ctx context.Context, in *DeleteProblemStatementRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/problems/{id}/statements/{sid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemStatement))

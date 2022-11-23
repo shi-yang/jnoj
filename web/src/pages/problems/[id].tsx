@@ -16,10 +16,14 @@ import Submission from './components/detail/submission';
 import { getProblem } from '@/api/problem';
 import { IconLanguage } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
+import { useAppSelector } from '@/hooks';
+import { setting, SettingState } from '@/store/reducers/setting';
 const TabPane = Tabs.TabPane;
 
 function Index() {
   const t = useLocale(locale);
+  const settings = useAppSelector<SettingState>(setting)
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     id: 0,
@@ -55,6 +59,9 @@ function Index() {
     <>
       { !loading && (
         <>
+          <Head>
+            <title>{ data.id }.{ data.statements[language].name } - {settings.name}</title>
+          </Head>
           <div className={styles.container}>
             <Grid.Row className={styles.header} justify="space-between" align="center">
               <Grid.Col span={24}>

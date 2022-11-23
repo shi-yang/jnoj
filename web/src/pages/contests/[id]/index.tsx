@@ -6,7 +6,7 @@ import { getContest, listContestProblems } from '@/api/contest';
 import './mock';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { FormatTime } from '@/utils/formatTime';
+import { FormatTime } from '@/utils/format';
 import { useRouter } from 'next/router';
 
 const Info = lazy(() => import('./info'));
