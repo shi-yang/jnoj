@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
 int main() {
-    system("rm /etc/hosts");
+    system("rm /etc/hostname");
     return 0;
 }

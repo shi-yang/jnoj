@@ -93,10 +93,6 @@ func initFileSystem(workDir string) error {
 	if err := os.Chdir("work"); err != nil {
 		return fmt.Errorf("os.Chdir(\"work\") %v", err)
 	}
-	files, _ = os.ReadDir(".")
-	for _, f := range files {
-		_, _ = os.Stderr.WriteString(fmt.Sprintf("file name = %v\n", f.Name()))
-	}
 	return nil
 }
 

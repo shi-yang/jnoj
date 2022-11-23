@@ -79,25 +79,32 @@ func sandboxInit() {
 		Setpgid: true,
 	}
 	cmd.Env = []string{"PS1=[sandbox] # "}
-
+	isTimeout := false
 	time.AfterFunc(time.Duration(timeLimit)*time.Millisecond, func() {
+		os.Stderr.WriteString("time limit: timeout")
+		isTimeout = true
 		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
 	})
 	err := cmd.Run()
 	// 异常结束
 	if err != nil {
 		os.Stderr.WriteString(err.Error())
+		os.Stderr.WriteString("runtime out")
 		r.RuntimeErr = err.Error()
 	}
 
-	sTime := cmd.ProcessState.SystemTime().Microseconds()
-	uTime := cmd.ProcessState.UserTime().Microseconds()
+	if isTimeout {
+		r.Time = int64(time.Duration(time.Duration(timeLimit) * time.Millisecond).Microseconds())
+	} else {
+		sTime := cmd.ProcessState.SystemTime().Microseconds()
+		uTime := cmd.ProcessState.UserTime().Microseconds()
+		r.Time = sTime + uTime // 返回微秒 μs
+	}
 
 	r.ExitCode = cmd.ProcessState.ExitCode()
 	r.Stdin = string(input)
 	r.Stdout = stdout.String()
 	r.Stderr = stderr.String()
-	r.Time = sTime + uTime // 返回微秒 μs
 	r.Memory = cmd.ProcessState.SysUsage().(*syscall.Rusage).Maxrss
 	result, _ := json.Marshal(r)
 	_, _ = os.Stdout.Write(result)
