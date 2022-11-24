@@ -53,14 +53,14 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 		Model(&Problem{})
 	if req.UserId != 0 {
 		db.Where("user_id = ?", req.UserId)
+		if req.Status != 0 {
+			db.Where("status = ?", req.Status)
+		}
+	} else {
+		db.Where("status = ?", biz.ProblemStatusPublic)
 	}
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
-	}
-	if req.Status != 0 {
-		db.Where("status = ?", req.Status)
-	} else {
-		db.Where("status = ?", biz.ProblemStatusPublic)
 	}
 	db.Count(&count)
 	db.Offset(pager.GetOffset()).
