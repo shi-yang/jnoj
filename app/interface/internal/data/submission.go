@@ -10,6 +10,7 @@ import (
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -30,6 +31,8 @@ type Submission struct {
 	UserID    int
 	Source    string
 	CreatedAt time.Time
+	User      *User    `json:"user" gorm:"foreignKey:UserID"`
+	Problem   *Problem `json:"problem" gorm:"foreignKey:ProblemID"`
 }
 
 type SubmissionInfo struct {
@@ -49,11 +52,22 @@ func NewSubmissionRepo(data *Data, logger log.Logger) biz.SubmissionRepo {
 func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmissionsRequest) ([]*biz.Submission, int64) {
 	res := []Submission{}
 	count := int64(0)
-	db := r.data.db.WithContext(ctx).
-		Model(&Submission{})
-	db.Where("problem_id = ?", req.ProblemId)
-	db.Count(&count)
 	page := pagination.NewPagination(req.Page, req.PerPage)
+	db := r.data.db.WithContext(ctx).
+		Model(&Submission{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		}).
+		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
+			return db.Select("problem_id, name")
+		})
+	if req.ProblemId != 0 {
+		db.Where("problem_id = ?", req.ProblemId)
+	}
+	if req.ContestId != 0 {
+		db.Where("contest_id = ?", req.ContestId)
+	}
+	db.Count(&count)
 	db.
 		Limit(page.GetPageSize()).
 		Offset(page.GetOffset()).
@@ -61,7 +75,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	db.Find(&res)
 	rv := make([]*biz.Submission, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.Submission{
+		s := &biz.Submission{
 			ID:        v.ID,
 			Verdict:   v.Verdict,
 			Memory:    v.Memory,
@@ -69,7 +83,15 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 			Language:  v.Language,
 			Score:     v.Score,
 			CreatedAt: v.CreatedAt,
-		})
+			User: biz.User{
+				ID:       v.User.ID,
+				Nickname: v.User.Nickname,
+			},
+		}
+		if len(v.Problem.ProblemStatements) > 0 {
+			s.ProblemName = v.Problem.ProblemStatements[0].Name
+		}
+		rv = append(rv, s)
 	}
 	return rv, count
 }

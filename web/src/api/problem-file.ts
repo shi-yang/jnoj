@@ -1,6 +1,6 @@
 import axios from '@/utils/request';
 
-export function ListProblemFiles(id: number, params) {
+export function listProblemFiles(id: number, params) {
   return axios.get(`/problems/${id}/files`, {
     params
   })

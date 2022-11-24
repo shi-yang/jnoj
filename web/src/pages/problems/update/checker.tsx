@@ -1,30 +1,50 @@
 import { updateProblemChecker } from '@/api/problem';
-import { createProblemFile, ListProblemFiles, listProblemStdCheckers } from '@/api/problem-file';
+import { createProblemFile, getProblemFile, listProblemFiles, listProblemStdCheckers } from '@/api/problem-file';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { Form, Input, Button, Select, Card, Divider, Modal, Message } from '@arco-design/web-react';
+import { Form, Input, Button, Select, Card, Divider, Modal, Message, Alert } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import { useEffect, useState } from 'react';
+import Highlight from '@/components/Highlight';
+import styles from './style/checker.module.less';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const App = (props) => {
   const t = useLocale(locale);
   const [userCheckers, setUserCheckers] = useState([]);
   const [stdCheckers, setStdCheckers] = useState([]);
+  const [checker, setChecker] = useState({name: '', content: ''});
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const [checkerId, setCheckerId] = useState(0);
+  const [note, setNote] = useState(''); 
   function fetchData() {
-    ListProblemFiles(props.problem.id, {fileType: 'checker'})
+    listProblemFiles(props.problem.id, {fileType: 'checker'})
       .then((res) => {
         setUserCheckers(res.data.data);
       });
     listProblemStdCheckers(props.problem.id)
       .then((res) => {
         setStdCheckers(res.data.data);
+        setNotes(res.data.data, props.problem.checkerId)
       });
+    if (props.problem.checkerId !== 0) {
+      getProblemFile(props.problem.id, props.problem.checkerId)
+        .then(res => {
+          setChecker(res.data)
+        })
+    }
   }
-
+  function setNotes(stdCheckers, checkerId) {
+    const std = stdCheckers.find(value => {
+      return value.id === checkerId
+    })
+    if (std) {
+      setNote(t[`checker.std.${std.name}.intro`])
+    } else {
+      setNote('')
+    }
+  }
   function onOk() {
     form.validate().then((res) => {
       const values = {
@@ -47,6 +67,14 @@ const App = (props) => {
         Message.info('已保存')
       })
   }
+  function onSelectedChange(e) {
+    setNotes(stdCheckers, e)
+    setCheckerId(e)
+    getProblemFile(props.problem.id, e)
+      .then(res => {
+        setChecker(res.data)
+      })
+  }
   useEffect(() => {
     fetchData();
   }, []);
@@ -54,9 +82,9 @@ const App = (props) => {
   return (
     <Card>
       <Form style={{ width: 600 }} autoComplete='off'>
-        <FormItem label='选择'>
+        <FormItem label='选择' help={note}>
           <Select
-            style={{ width: 240 }}
+            style={{ width: 500 }}
             placeholder='Select checker'
             defaultValue={props.problem.checkerId}
             dropdownRender={(menu) => (
@@ -102,12 +130,12 @@ const App = (props) => {
               </div>
             )}
             dropdownMenuStyle={{ maxHeight: 200 }}
-            onChange={(e) => setCheckerId(e)}
+            onChange={onSelectedChange}
           >
             <Select.OptGroup label='std'>
               {stdCheckers.map((option, index) => (
                 <Option key={option.id} value={option.id}>
-                  {option.name}
+                  {option.name} - {t[`checker.std.${option.name}.title`]}
                 </Option>
               ))}
             </Select.OptGroup>
@@ -122,6 +150,19 @@ const App = (props) => {
         </FormItem>
         <FormItem wrapperCol={{ offset: 5 }}>
           <Button type='primary' onClick={onSave}>{t['save']}</Button>
+        </FormItem>
+      </Form>
+      <Divider />
+      <Form style={{ width: 600 }} disabled>
+        <FormItem label='名称'>
+          <Input value={checker.name} />
+        </FormItem>
+        <FormItem label='源码'>
+          <Alert
+            showIcon={false}
+            className={styles['checker-content']}
+            content={<Highlight content={checker.content} />}
+          />
         </FormItem>
       </Form>
     </Card>

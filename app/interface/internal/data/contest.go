@@ -135,10 +135,10 @@ func (r *contestRepo) DeleteContest(ctx context.Context, id int) error {
 	return err
 }
 
-func (r *contestRepo) ListContestSubmissions(ctx context.Context, id int) (res []*biz.ContestSubmission) {
+func (r *contestRepo) ListContestStandings(ctx context.Context, id int) (res []*biz.ContestSubmission) {
 	var submissions []Submission
 	r.data.db.WithContext(ctx).
-		Select("id, problem_id, user_id, verdict, score").
+		Select("id, problem_id, user_id, verdict, score, created_at").
 		Where("contest_id = ?", id).
 		Find(&submissions)
 	var problems []ContestProblem
@@ -154,9 +154,10 @@ func (r *contestRepo) ListContestSubmissions(ctx context.Context, id int) (res [
 		res = append(res, &biz.ContestSubmission{
 			ID:            v.ID,
 			ProblemNumber: problemMap[v.ProblemID],
-			Status:        v.Verdict,
+			Verdict:       v.Verdict,
 			UserID:        v.UserID,
 			Score:         v.Score,
+			CreatedAt:     v.CreatedAt,
 		})
 	}
 	return

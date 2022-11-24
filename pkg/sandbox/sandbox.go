@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -152,5 +153,6 @@ func Run(basedir string, lang *Language, input []byte, memoryLimit int64, timeLi
 	}
 	_ = cmd.Run()
 	_ = json.Unmarshal(stdout.Bytes(), &result)
+	log.Println("stderr", stderr.String())
 	return &result
 }

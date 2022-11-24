@@ -34,3 +34,15 @@ func IsPermissionDenied(err error) bool {
 func ErrorPermissionDenied(format string, args ...interface{}) *errors.Error {
 	return errors.New(403, ProblemErrorReason_PERMISSION_DENIED.String(), fmt.Sprintf(format, args...))
 }
+
+func IsProblemNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ProblemErrorReason_PROBLEM_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorProblemNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ProblemErrorReason_PROBLEM_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}

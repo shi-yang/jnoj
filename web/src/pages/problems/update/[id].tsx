@@ -15,6 +15,9 @@ import Checker from './checker';
 import SolutionFiles from './solution-files';
 import { getProblem, Problem } from '@/api/problem';
 import { useRouter } from 'next/router';
+import { useAppSelector } from '@/hooks';
+import { setting, SettingState } from '@/store/reducers/setting';
+import Head from 'next/head';
 
 const TabPane = Tabs.TabPane;
 
@@ -23,6 +26,7 @@ function Index(props) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Problem>({id: 0, statements: [], name: ''});
   const router = useRouter();
+  const settings = useAppSelector<SettingState>(setting);
   function fetchData() {
     setLoading(true);
     getProblem(router.query.id)
@@ -40,6 +44,9 @@ function Index(props) {
 
   return (
     <>
+      <Head>
+        <title>{`${t['page.title']} - ${data.name} - ${setting.name}`}</title>
+      </Head>
       { !loading && (
         <div className={styles.container}>
           <Grid.Row className={styles.header} justify="space-between" align="center">

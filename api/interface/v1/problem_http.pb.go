@@ -22,6 +22,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+// auth.
 const OperationProblemServiceCreateProblem = "/jnoj.interface.v1.ProblemService/CreateProblem"
 const OperationProblemServiceCreateProblemFile = "/jnoj.interface.v1.ProblemService/CreateProblemFile"
 const OperationProblemServiceCreateProblemStatement = "/jnoj.interface.v1.ProblemService/CreateProblemStatement"
@@ -40,6 +41,7 @@ const OperationProblemServiceListProblemStdCheckers = "/jnoj.interface.v1.Proble
 const OperationProblemServiceListProblemTests = "/jnoj.interface.v1.ProblemService/ListProblemTests"
 const OperationProblemServiceListProblems = "/jnoj.interface.v1.ProblemService/ListProblems"
 const OperationProblemServiceRunProblemFile = "/jnoj.interface.v1.ProblemService/RunProblemFile"
+const OperationProblemServiceSortProblemTests = "/jnoj.interface.v1.ProblemService/SortProblemTests"
 const OperationProblemServiceUpdateProblem = "/jnoj.interface.v1.ProblemService/UpdateProblem"
 const OperationProblemServiceUpdateProblemChecker = "/jnoj.interface.v1.ProblemService/UpdateProblemChecker"
 const OperationProblemServiceUpdateProblemFile = "/jnoj.interface.v1.ProblemService/UpdateProblemFile"
@@ -66,6 +68,7 @@ type ProblemServiceHTTPServer interface {
 	ListProblemTests(context.Context, *ListProblemTestsRequest) (*ListProblemTestsResponse, error)
 	ListProblems(context.Context, *ListProblemsRequest) (*ListProblemsResponse, error)
 	RunProblemFile(context.Context, *RunProblemFileRequest) (*emptypb.Empty, error)
+	SortProblemTests(context.Context, *SortProblemTestsRequest) (*emptypb.Empty, error)
 	UpdateProblem(context.Context, *UpdateProblemRequest) (*Problem, error)
 	UpdateProblemChecker(context.Context, *UpdateProblemCheckerRequest) (*emptypb.Empty, error)
 	UpdateProblemFile(context.Context, *UpdateProblemFileRequest) (*ProblemFile, error)
@@ -83,6 +86,9 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemTests", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemStatements", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/GetProblemVerification", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/GetProblemFile", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/SortProblemTests", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/ListProblems", auth.Guest())
 	r := s.Route("/")
 	r.GET("/problems", _ProblemService_ListProblems0_HTTP_Handler(srv))
 	r.GET("/problems/{id}", _ProblemService_GetProblem0_HTTP_Handler(srv))
@@ -98,6 +104,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.POST("/problems/{id}/tests", _ProblemService_CreateProblemTest0_HTTP_Handler(srv))
 	r.PUT("/problems/{id}/tests/{tid}", _ProblemService_UpdateProblemTest0_HTTP_Handler(srv))
 	r.DELETE("/problems/{id}/tests/{tid}", _ProblemService_DeleteProblemTest0_HTTP_Handler(srv))
+	r.POST("/problems/{id}/test/sort", _ProblemService_SortProblemTests0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/files", _ProblemService_ListProblemFiles0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/files/{sid}", _ProblemService_GetProblemFile0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/files", _ProblemService_CreateProblemFile0_HTTP_Handler(srv))
@@ -412,6 +419,28 @@ func _ProblemService_DeleteProblemTest0_HTTP_Handler(srv ProblemServiceHTTPServe
 	}
 }
 
+func _ProblemService_SortProblemTests0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SortProblemTestsRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceSortProblemTests)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SortProblemTests(ctx, req.(*SortProblemTestsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_ListProblemFiles0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListProblemFilesRequest
@@ -651,6 +680,7 @@ type ProblemServiceHTTPClient interface {
 	ListProblemTests(ctx context.Context, req *ListProblemTestsRequest, opts ...http.CallOption) (rsp *ListProblemTestsResponse, err error)
 	ListProblems(ctx context.Context, req *ListProblemsRequest, opts ...http.CallOption) (rsp *ListProblemsResponse, err error)
 	RunProblemFile(ctx context.Context, req *RunProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	SortProblemTests(ctx context.Context, req *SortProblemTestsRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateProblem(ctx context.Context, req *UpdateProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	UpdateProblemChecker(ctx context.Context, req *UpdateProblemCheckerRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateProblemFile(ctx context.Context, req *UpdateProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
@@ -893,6 +923,19 @@ func (c *ProblemServiceHTTPClientImpl) RunProblemFile(ctx context.Context, in *R
 	pattern := "/problem_files/{sid}/run"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceRunProblemFile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) SortProblemTests(ctx context.Context, in *SortProblemTestsRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problems/{id}/test/sort"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceSortProblemTests))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

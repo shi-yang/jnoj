@@ -1,7 +1,6 @@
 import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
 import { Button } from '@arco-design/web-react';
-import Head from 'next/head';
 import QueueAnim from 'rc-queue-anim/lib/QueueAnim';
 import TweenOne from "rc-tween-one/lib/TweenOne";
 import React from 'react';
@@ -56,9 +55,6 @@ export default function Index() {
   ];
   return (
     <>
-      <Head>
-        <title>{settings.name + ' - ' + settings.briefDescription}</title>
-      </Head>
       <div className={styles['banner']}>
         <div className={styles['banner-page']}>
           <QueueAnim

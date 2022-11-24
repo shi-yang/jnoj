@@ -99,6 +99,13 @@ service ProblemService {
             delete: "/problems/{id}/tests/{tid}"
         };
     }
+    // 对题目测试点进行排序
+    rpc SortProblemTests (SortProblemTestsRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problems/{id}/test/sort"
+            body: "*"
+        };
+    };
     // 获取题目文件列表
     rpc ListProblemFiles (ListProblemFilesRequest) returns (ListProblemFilesResponse) {
         option (google.api.http) = {
@@ -320,6 +327,11 @@ message UpdateProblemTestRequest {
 message DeleteProblemTestRequest {
     int32 id = 1;
     string tid = 2;
+}
+
+message SortProblemTestsRequest {
+    int32 id = 1;
+    repeated string ids = 2;
 }
 
 message ListProblemFilesRequest {

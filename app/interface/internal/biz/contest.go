@@ -27,9 +27,13 @@ type Contest struct {
 type ContestSubmission struct {
 	ID            int
 	ProblemNumber int
-	Status        int
+	ProblemName   string
+	Verdict       int
 	UserID        int
 	Score         int
+	Language      int
+	User          ContestUser
+	CreatedAt     time.Time
 }
 
 const (
@@ -46,24 +50,26 @@ type ContestRepo interface {
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
 	AddContestParticipantCount(context.Context, int, int) error
-	ListContestSubmissions(context.Context, int) []*ContestSubmission
+	ListContestStandings(context.Context, int) []*ContestSubmission
 	ContestProblemRepo
 	ContestUserRepo
 }
 
 // ContestUsecase is a Contest usecase.
 type ContestUsecase struct {
-	repo        ContestRepo
-	problemRepo ProblemRepo
-	log         *log.Helper
+	repo           ContestRepo
+	problemRepo    ProblemRepo
+	submissionRepo SubmissionRepo
+	log            *log.Helper
 }
 
 // NewContestUsecase new a Contest usecase.
-func NewContestUsecase(repo ContestRepo, problemRepo ProblemRepo, logger log.Logger) *ContestUsecase {
+func NewContestUsecase(repo ContestRepo, problemRepo ProblemRepo, submissionRepo SubmissionRepo, logger log.Logger) *ContestUsecase {
 	return &ContestUsecase{
-		repo:        repo,
-		problemRepo: problemRepo,
-		log:         log.NewHelper(logger),
+		repo:           repo,
+		problemRepo:    problemRepo,
+		submissionRepo: submissionRepo,
+		log:            log.NewHelper(logger),
 	}
 }
 
@@ -94,6 +100,32 @@ func (uc *ContestUsecase) DeleteContest(ctx context.Context, id int) error {
 }
 
 // ListContestSubmissions .
-func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, id int) []*ContestSubmission {
-	return uc.repo.ListContestSubmissions(ctx, id)
+func (uc *ContestUsecase) ListContestStandings(ctx context.Context, id int) []*ContestSubmission {
+	return uc.repo.ListContestStandings(ctx, id)
+}
+
+// ListContestSubmissions .
+func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) ([]*ContestSubmission, int64) {
+	res := make([]*ContestSubmission, 0)
+	submissions, count := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
+		ContestId: req.Id,
+		Page:      req.Page,
+		PerPage:   req.PerPage,
+	})
+	for _, v := range submissions {
+		res = append(res, &ContestSubmission{
+			ID:            v.ID,
+			Verdict:       v.Verdict,
+			ProblemNumber: v.ProblemNumber,
+			ProblemName:   v.ProblemName,
+			CreatedAt:     v.CreatedAt,
+			Language:      v.Language,
+			Score:         v.Score,
+			User: ContestUser{
+				ID:       v.User.ID,
+				Nickname: v.User.Nickname,
+			},
+		})
+	}
+	return res, count
 }

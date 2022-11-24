@@ -49,6 +49,7 @@ type ProblemTestRepo interface {
 
 	ListProblemSampleTest(context.Context, int) ([]*SampleTest, error)
 	UpdateProblemTestStdOutput(context.Context, string, string) error
+	SortProblemTests(context.Context, []string) error
 }
 
 // ListProblemTests list ProblemTest
@@ -82,4 +83,9 @@ func (uc *ProblemUsecase) UpdateProblemTest(ctx context.Context, p *ProblemTest)
 // DeleteProblemTest delete a ProblemTest
 func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid string) error {
 	return uc.repo.DeleteProblemTest(ctx, tid)
+}
+
+// SortProblemTests .
+func (uc *ProblemUsecase) SortProblemTests(ctx context.Context, ids []string) error {
+	return uc.repo.SortProblemTests(ctx, ids)
 }

@@ -89,6 +89,16 @@ type ProblemTest struct {
 	UpdatedAt         time.Time          `bson:"updated_at"`
 }
 
+type ContestProblem struct {
+	ID            int
+	Number        int
+	ContestID     int
+	ProblemID     int
+	AcceptedCount int
+	SubmitCount   int
+	CreatedAt     time.Time
+}
+
 const ProblemTestCollection = "problem_test"
 
 // ListSubmissions .
@@ -101,22 +111,67 @@ func (r *submissionRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, 
 		return nil, err
 	}
 	res := &biz.Problem{
-		ID:          p.ID,
-		TimeLimit:   p.TimeLimit,
-		MemoryLimit: p.MemoryLimit,
+		ID:            p.ID,
+		TimeLimit:     p.TimeLimit,
+		MemoryLimit:   p.MemoryLimit,
+		AcceptedCount: p.AcceptedCount,
 	}
 	res.Checker, err = r.getProblemChecker(ctx, id)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
 	res.Tests = r.listProblemTests(ctx, id)
 	return res, nil
 }
 
+func (r *submissionRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*biz.Problem, error) {
+	update := Problem{
+		ID:            p.ID,
+		AcceptedCount: p.AcceptedCount,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Updates(&update).Error
+	return nil, err
+}
+
+// GetContestProblemByProblemID .
+func (r *submissionRepo) GetContestProblemByProblemID(ctx context.Context, cid int, problemID int) (*biz.ContestProblem, error) {
+	var res ContestProblem
+	err := r.data.db.WithContext(ctx).Model(ContestProblem{}).
+		First(&res, "contest_id = ? and problem_id = ?", cid, problemID).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &biz.ContestProblem{
+		ID:            res.ID,
+		ContestID:     res.ContestID,
+		ProblemID:     res.ProblemID,
+		Number:        res.Number,
+		AcceptedCount: res.AcceptedCount,
+	}, nil
+}
+
+// UpdateContestProblem .
+func (r *submissionRepo) UpdateContestProblem(ctx context.Context, c *biz.ContestProblem) (*biz.ContestProblem, error) {
+	res := ContestProblem{
+		ID:            c.ID,
+		AcceptedCount: c.AcceptedCount,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Updates(&res).Error
+	return &biz.ContestProblem{
+		ID:            res.ID,
+		AcceptedCount: res.AcceptedCount,
+	}, err
+}
+
 func (r *submissionRepo) getProblemChecker(ctx context.Context, id int) (string, error) {
 	var f ProblemFile
 	err := r.data.db.WithContext(ctx).
-		Where("id = (?)", r.data.db.Select("checker_id").Model(&Problem{}).Where("id = ?", id)).
+		Where("id = ?", r.data.db.Select("checker_id").Model(&Problem{}).Where("id = ?", id)).
 		First(&f).Error
 	if err != nil {
 		return "", err
@@ -158,6 +213,7 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 	return &biz.Submission{
 		ID:        res.ID,
 		ProblemID: res.ProblemID,
+		ContestID: res.ContestID,
 		Source:    res.Source,
 		Memory:    res.Memory,
 		Time:      res.Time,

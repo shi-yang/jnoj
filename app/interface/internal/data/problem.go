@@ -20,18 +20,19 @@ type problemRepo struct {
 }
 
 type Problem struct {
-	ID            int
-	Name          string
-	TimeLimit     int64
-	MemoryLimit   int64
-	AcceptedCount int
-	SubmitCount   int
-	UserID        int
-	CheckerID     int
-	Status        int
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     gorm.DeletedAt
+	ID                int
+	Name              string
+	TimeLimit         int64
+	MemoryLimit       int64
+	AcceptedCount     int
+	SubmitCount       int
+	UserID            int
+	CheckerID         int
+	Status            int
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	DeletedAt         gorm.DeletedAt
+	ProblemStatements []*ProblemStatement `gorm:"foreignKey:ProblemID"`
 }
 
 // NewProblemRepo .
@@ -50,11 +51,16 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 
 	db := r.data.db.WithContext(ctx).
 		Model(&Problem{})
+	if req.UserId != 0 {
+		db.Where("user_id = ?", req.UserId)
+	}
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
 	if req.Status != 0 {
 		db.Where("status = ?", req.Status)
+	} else {
+		db.Where("status = ?", biz.ProblemStatusPublic)
 	}
 	db.Count(&count)
 	db.Offset(pager.GetOffset()).
@@ -117,10 +123,12 @@ func (r *problemRepo) CreateProblem(ctx context.Context, p *biz.Problem) (*biz.P
 // UpdateProblem .
 func (r *problemRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*biz.Problem, error) {
 	update := Problem{
-		ID:          p.ID,
-		TimeLimit:   p.TimeLimit,
-		MemoryLimit: p.MemoryLimit,
-		Status:      p.Status,
+		ID:            p.ID,
+		TimeLimit:     p.TimeLimit,
+		MemoryLimit:   p.MemoryLimit,
+		Status:        p.Status,
+		SubmitCount:   p.SubmitCount,
+		AcceptedCount: p.AcceptedCount,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

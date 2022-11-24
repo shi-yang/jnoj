@@ -1,3 +1,3 @@
 rules:
-- selector: "/submissions/*"
+- selector: "/jnoj.interface.v1.SubmissionService/CreateSubmission"
   middleware: "jnoj/internal/middleware/auth.User()"

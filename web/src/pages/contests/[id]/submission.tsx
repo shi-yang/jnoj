@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { listSubmissions } from '@/api/submission';
+import { LanguageMap, VerdictMap } from '@/api/submission';
 import { listContestSubmissions } from '@/api/contest';
-import { stringify } from 'query-string';
+import { FormatTime } from '@/utils/format';
 
 const Submission = ({contest}) => {
   const t = useLocale(locale);
@@ -52,31 +52,36 @@ const Submission = ({contest}) => {
     {
       title: '#',
       dataIndex: 'id',
+      align: 'center',
     },
     {
       title: t['user'],
       dataIndex: 'user',
-      render: (col, record) => (
-        <span>
-          {col.nickname}
-        </span>
-      )
+      align: 'center',
+      render: (col) => col.nickname
     },
     {
       title: t['problem'],
-      dataIndex: 'problem',
+      dataIndex: 'problemName',
+      align: 'center',
     },
     {
       title: t['verdict'],
       dataIndex: 'verdict',
+      align: 'center',
+      render: (col) => VerdictMap[col]
     },
     {
       title: t['language'],
       dataIndex: 'language',
+      align: 'center',
+      render: col => LanguageMap[col]
     },
     {
       title: t['createdAt'],
-      dataIndex: 'created_at',
+      dataIndex: 'createdAt',
+      align: 'center',
+      render: col => FormatTime(col)
     },
     {
       title: t['action'],

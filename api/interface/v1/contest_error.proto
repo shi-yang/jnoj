@@ -5,10 +5,9 @@ import "errors/errors.proto";
 
 option go_package = "api/interface/v1;v1";
 
-enum ProblemErrorReason {
+enum ContestErrorReason {
     option (errors.default_code) = 500;
 
-    UNKNOWN_ERROR = 0;
-    PERMISSION_DENIED = 1 [(errors.code) = 403];
-    PROBLEM_NOT_FOUND = 2 [(errors.code) = 404];
+    CONTEST_NOT_FOUND = 0 [(errors.code) = 404];
+    CONTEST_PROBLEM_NOT_FOUND = 1 [(errors.code) = 404];
 }

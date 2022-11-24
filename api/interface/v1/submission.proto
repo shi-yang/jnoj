@@ -53,8 +53,9 @@ message Submission {
 
 message ListSubmissionsRequest {
     int32 problem_id = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    int32 contest_id = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }
 
 message ListSubmissionsResponse {

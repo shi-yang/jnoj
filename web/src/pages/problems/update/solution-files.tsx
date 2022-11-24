@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Message, Modal, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import { ListProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile } from '@/api/problem-file';
+import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile } from '@/api/problem-file';
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { FormatTime } from '@/utils/format';
@@ -90,7 +90,7 @@ const App = (props) => {
   ];
   function fetchData() {
     setLoading(true);
-    ListProblemFiles(props.problem.id, { fileType: 'solution' })
+    listProblemFiles(props.problem.id, { fileType: 'solution' })
       .then((res) => {
         setData(res.data.data || []);
       })

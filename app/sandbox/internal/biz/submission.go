@@ -17,6 +17,7 @@ import (
 type Submission struct {
 	ID        int
 	ProblemID int
+	ContestID int
 	Time      int
 	Memory    int
 	Verdict   int
@@ -52,11 +53,12 @@ type SubmissionTest struct {
 }
 
 type Problem struct {
-	ID          int
-	TimeLimit   int64
-	MemoryLimit int64
-	Checker     string
-	Tests       []*Test
+	ID            int
+	TimeLimit     int64
+	MemoryLimit   int64
+	Checker       string
+	AcceptedCount int
+	Tests         []*Test
 }
 
 type Test struct {
@@ -88,10 +90,15 @@ const (
 // SubmissionRepo is a Submission repo.
 type SubmissionRepo interface {
 	GetSubmission(context.Context, int) (*Submission, error)
-	GetProblem(context.Context, int) (*Problem, error)
 	CreateSubmission(context.Context, *Submission) (*Submission, error)
 	UpdateSubmission(context.Context, *Submission) (*Submission, error)
 	CreateSubmissionInfo(context.Context, int, string) error
+
+	GetProblem(context.Context, int) (*Problem, error)
+	UpdateProblem(context.Context, *Problem) (*Problem, error)
+
+	GetContestProblemByProblemID(context.Context, int, int) (*ContestProblem, error)
+	UpdateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)
 }
 
 // SubmissionUsecase is a Submission usecase.
@@ -125,9 +132,10 @@ func NewSubmissionUsecase(c *conf.Sandbox, repo SubmissionRepo, sandboxRepo Sand
 // RunSubmission run a Submission
 func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submission, error) {
 	s, _ := uc.repo.GetSubmission(ctx, id)
-	uc.log.Infof("submission = [%+v]\n", s)
+	problem, _ := uc.repo.GetProblem(ctx, s.ProblemID)
+	uc.log.Infof("RunSubmission = [%+v]\n", s.ID)
 	go func(s *Submission) {
-		res := uc.runTests(context.TODO(), s)
+		res := uc.runTests(context.TODO(), s, problem)
 		r, _ := json.Marshal(*res)
 		err := uc.repo.CreateSubmissionInfo(context.TODO(), s.ID, string(r))
 		if err != nil {
@@ -137,20 +145,34 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 		s.Memory = int(res.Memory)
 		s.Time = int(res.Time)
 		uc.repo.UpdateSubmission(context.TODO(), s)
+
+		// 通过时计数
+		if s.Verdict == SubmissionVerdictAccepted {
+			problem.AcceptedCount += 1
+			uc.repo.UpdateProblem(ctx, problem)
+			// 针对比赛题目的计数
+			if s.ContestID != 0 {
+				contestProblem, err := uc.repo.GetContestProblemByProblemID(ctx, s.ContestID, s.ProblemID)
+				if err != nil {
+					return
+				}
+				contestProblem.AcceptedCount += 1
+				uc.repo.UpdateContestProblem(ctx, contestProblem)
+			}
+		}
 	}(s)
 	return nil, nil
 }
 
-func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission) *SubmissionResult {
+func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, problem *Problem) *SubmissionResult {
 	result := new(SubmissionResult)
 	result.Verdict = SubmissionVerdictAccepted
 	result.Tests = make([]*SubmissionTest, 0)
-	problem, _ := uc.repo.GetProblem(ctx, s.ProblemID)
 
 	// 编译源码
 	u, _ := uuid.NewUUID()
 	workDir := filepath.Join("/tmp/sandbox", u.String())
-	defer os.RemoveAll(workDir)
+	// defer os.RemoveAll(workDir)
 	uc.log.Infof("Submission[%d] Compile start:%s", s.ID, workDir)
 	err := sandbox.Compile(workDir, s.Source, &sandbox.Languages[s.Language])
 	uc.log.Infof("Submission[%d] Compile done:%s", s.ID, workDir)
@@ -170,6 +192,7 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission) *Submi
 	for index, test := range problem.Tests {
 		uc.log.Infof("Submission[%d] runing test [%d/%d] start...", s.ID, index+1, len(problem.Tests))
 		runRes := sandbox.Run(workDir, &sandbox.Languages[s.Language], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
+		uc.log.Infof("user.stdout = [%s]", substrLength([]byte(runRes.Stdout), 99))
 		var checkerRes *sandbox.Result
 		if runRes.RuntimeErr == "" {
 			// 准备运行 checker 所需文件
@@ -177,6 +200,7 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission) *Submi
 			_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(test.Input), 0444)
 			_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(test.Output), 0444)
 			// 执行 checker
+			uc.log.Info("Run checker:", workDir)
 			checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 10000)
 		}
 		uc.log.Infof("Submission[%d] runing test [%d/%d] done...", s.ID, index+1, len(problem.Tests))

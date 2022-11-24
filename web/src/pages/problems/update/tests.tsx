@@ -3,9 +3,41 @@ import { Button, Card, Form, Input, Message, Modal, PaginationProps, Popover, Ra
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
-import { deleteProblemTests, listProblemTests, updateProblemTest, uploadProblemTest } from '@/api/problem-test';
+import { deleteProblemTests, listProblemTests, sortProblemTests, updateProblemTest, uploadProblemTest } from '@/api/problem-test';
 import { FormatStorageSize, FormatTime } from '@/utils/format';
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import { IconDragDotVertical } from '@arco-design/web-react/icon';
 const FormItem = Form.Item;
+
+const arrayMoveMutate = (array, from, to) => {
+  const startIndex = to < 0 ? array.length + to : to;
+
+  if (startIndex >= 0 && startIndex < array.length) {
+    const item = array.splice(from, 1)[0];
+    array.splice(startIndex, 0, item);
+  }
+};
+
+const arrayMove = (array, from, to) => {
+  array = [...array];
+  arrayMoveMutate(array, from, to);
+  return array;
+};
+
+const DragHandle = SortableHandle(() => (
+  <IconDragDotVertical
+    style={{
+      cursor: 'move',
+      color: '#555',
+    }}
+  />
+));
+const SortableWrapper = SortableContainer((props) => {
+  return <tbody {...props} />;
+});
+const SortableItem = SortableElement((props) => {
+  return <tr {...props} />;
+});
 
 const App = (props) => {
   const t = useLocale(locale);
@@ -53,7 +85,6 @@ const App = (props) => {
       })
   }
   function edit(record) {
-    console.log(record);
     form.setFieldsValue({
       id: record.id,
       isExample: record.isExample,
@@ -75,7 +106,84 @@ const App = (props) => {
         })
     });
   }
+  function onSortEnd({ oldIndex, newIndex }) {
+    if (oldIndex !== newIndex) {
+      const newData = arrayMove([].concat(data), oldIndex, newIndex).filter((el) => !!el);
+      const ids = newData.map(item => {
+        return item.id
+      })
+      sortProblemTests(props.problem.id, {ids})
+        .then(res => {
+          Message.success('已保存')
+        })
+        .catch((err) => {
+          Message.error('保存失败')
+        })
+      setData(newData);
+    }
+  }
 
+  const DraggableContainer = (props) => (
+    <SortableWrapper
+      useDragHandle
+      onSortEnd={onSortEnd}
+      helperContainer={() => document.querySelector('.drag-table-container table tbody')}
+      updateBeforeSortStart={({ node }) => {
+        const tds = node.querySelectorAll('td');
+        tds.forEach((td) => {
+          td.style.width = td.clientWidth + 'px';
+        });
+      }}
+      {...props}
+    />
+  );
+
+  const DraggableRow = (props) => {
+    const { record, index, ...rest } = props;
+    return <SortableItem index={index} {...rest} />;
+  };
+  const components = {
+    header: {
+      operations: ({ selectionNode, expandNode }) => [
+        {
+          node: <th />,
+          width: 40,
+        },
+        {
+          name: 'expandNode',
+          node: expandNode,
+        },
+        {
+          name: 'selectionNode',
+          node: selectionNode,
+        },
+      ],
+    },
+    body: {
+      operations: ({ selectionNode, expandNode }) => [
+        {
+          node: (
+            <td>
+              <div className='arco-table-cell'>
+                <DragHandle />
+              </div>
+            </td>
+          ),
+          width: 40,
+        },
+        {
+          name: 'expandNode',
+          node: expandNode,
+        },
+        {
+          name: 'selectionNode',
+          node: selectionNode,
+        },
+      ],
+      tbody: DraggableContainer,
+      row: DraggableRow,
+    },
+  };
   const columns: TableColumnProps[] = [
     {
       title: '#',
@@ -177,7 +285,17 @@ const App = (props) => {
         >
         </Upload>
       </div>
-      <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
+      <Table
+        className='drag-table-container'
+        rowKey={r => r.id}
+        components={components}
+        loading={loading}
+        columns={columns}
+        data={data}
+        rowSelection={{
+          type: 'checkbox',
+        }}
+      />
     </Card>
   );
 };

@@ -12,11 +12,13 @@ import (
 )
 
 type ContestProblem struct {
-	ID        int
-	Number    int
-	ContestID int
-	ProblemID int
-	CreatedAt time.Time
+	ID            int
+	Number        int
+	ContestID     int
+	ProblemID     int
+	AcceptedCount int
+	SubmitCount   int
+	CreatedAt     time.Time
 }
 
 // ListContestProblems .
@@ -83,6 +85,7 @@ func (r *contestRepo) GetContestProblemByNumber(ctx context.Context, cid int, nu
 		ID:        o.ID,
 		Number:    o.Number,
 		ContestID: o.ContestID,
+		ProblemID: o.ProblemID,
 		TimeLimit: problem.TimeLimit,
 		Memory:    problem.MemoryLimit,
 	}
@@ -165,9 +168,11 @@ func (r *contestRepo) CreateContestProblem(ctx context.Context, b *biz.ContestPr
 }
 
 // UpdateContestProblem .
-func (r *contestRepo) UpdateContestProblem(ctx context.Context, b *biz.ContestProblem) (*biz.ContestProblem, error) {
+func (r *contestRepo) UpdateContestProblem(ctx context.Context, c *biz.ContestProblem) (*biz.ContestProblem, error) {
 	res := ContestProblem{
-		ID: b.ID,
+		ID:            c.ID,
+		AcceptedCount: c.AcceptedCount,
+		SubmitCount:   c.SubmitCount,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

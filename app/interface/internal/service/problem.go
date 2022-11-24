@@ -227,6 +227,7 @@ func (s *ProblemService) CreateProblemTest(ctx context.Context, req *v1.CreatePr
 	res, err := s.uc.CreateProblemTest(ctx, &biz.ProblemTest{
 		ProblemID:        int(req.Id),
 		InputFileContent: req.InputFileContent,
+		Remark:           req.Filename,
 	})
 	if err != nil {
 		return nil, err
@@ -283,6 +284,15 @@ func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeletePr
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err := s.uc.DeleteProblemTest(ctx, int64(req.Id), req.Tid)
+	return &emptypb.Empty{}, err
+}
+
+// 对题目测试点进行排序
+func (s *ProblemService) SortProblemTests(ctx context.Context, req *v1.SortProblemTestsRequest) (*emptypb.Empty, error) {
+	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err := s.uc.SortProblemTests(ctx, req.Ids)
 	return &emptypb.Empty{}, err
 }
 

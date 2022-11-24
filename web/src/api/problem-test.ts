@@ -33,3 +33,7 @@ export function uploadProblemTest(id, data) {
 export function updateProblemTest(pid, testId, data) {
   return axios.put(`/problems/${pid}/tests/${testId}`, data)
 }
+
+export function sortProblemTests(pid, data) {
+  return axios.post(`/problems/${pid}/test/sort`, data)
+}

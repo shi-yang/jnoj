@@ -2,24 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collapse, Divider } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { getSubmission, getSubmissionInfo, listSubmissions } from '@/api/submission';
+import { getSubmission, getSubmissionInfo, LanguageMap, listSubmissions, VerdictMap } from '@/api/submission';
 import styles from './style/description.module.less'
-import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
 import { FormatTime } from '@/utils/format';
+import Highlight from '@/components/Highlight';
 const CollapseItem = Collapse.Item;
-export const VerdictMap = [
-  '',
-  '等待测评',
-  '编译错误',
-  '回答错误',
-  '回答正确',
-  '输出格式错误',
-  '时间超限',
-  '内存超限',
-  '运行出错',
-  '系统错误'
-];
 
 const Submission = (props) => {
   const t = useLocale(locale);
@@ -75,12 +62,6 @@ const Submission = (props) => {
       pageSize,
     });
   }
-  const languageMap = {
-    0: 'C',
-    1: 'C++',
-    2: 'Java',
-    3: 'Python3'
-  }
   const columns: TableColumnProps[] = [
     {
       title: '#',
@@ -91,7 +72,7 @@ const Submission = (props) => {
       title: t['language'],
       dataIndex: 'language',
       align: 'center',
-      render: (col) => languageMap[col]
+      render: (col) => LanguageMap[col]
     },
     {
       title: t['verdict'],
@@ -133,9 +114,6 @@ const Submission = (props) => {
     },
   ];
   useEffect(() => {
-    hljs.highlightAll();
-  }, [submission]);
-  useEffect(() => {
     fetchData();
   }, []);
   return (
@@ -151,11 +129,8 @@ const Submission = (props) => {
           setVisible(false);
         }}
       >
-        <pre>
-          <code className='language-cpp'>
-            {submission.source}
-          </code>
-        </pre>
+        <Highlight content={submission.source} />
+        <Divider />
         {submissionInfo.compileMsg != '' && (
           <pre>
             {submissionInfo.compileMsg}
@@ -183,7 +158,7 @@ const Submission = (props) => {
                     <pre>{ item.answer }</pre>
                   </div>
                   <div className={styles.output}>
-                    <h4>{t['answer']}</h4>
+                    <h4>Checker out</h4>
                     <pre>{ item.checkerStdout }</pre>
                   </div>
                 </div>

@@ -23,6 +23,8 @@ type Submission struct {
 	Source        string
 	ContestID     int
 	ProblemNumber int
+	ProblemName   string
+	User          User
 	CreatedAt     time.Time
 }
 
@@ -85,15 +87,23 @@ type SubmissionRepo interface {
 type SubmissionUsecase struct {
 	repo          SubmissionRepo
 	problemRepo   ProblemRepo
+	contestRepo   ContestRepo
 	sandboxClient sandboxV1.SandboxServiceClient
 	log           *log.Helper
 }
 
 // NewSubmissionUsecase new a Submission usecase.
-func NewSubmissionUsecase(repo SubmissionRepo, problemRepo ProblemRepo, sandboxClient sandboxV1.SandboxServiceClient, logger log.Logger) *SubmissionUsecase {
+func NewSubmissionUsecase(
+	repo SubmissionRepo,
+	problemRepo ProblemRepo,
+	contestRepo ContestRepo,
+	sandboxClient sandboxV1.SandboxServiceClient,
+	logger log.Logger,
+) *SubmissionUsecase {
 	return &SubmissionUsecase{
 		repo:          repo,
 		problemRepo:   problemRepo,
+		contestRepo:   contestRepo,
 		sandboxClient: sandboxClient,
 		log:           log.NewHelper(logger),
 	}
@@ -112,7 +122,34 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 // CreateSubmission creates a Submission, and returns the new Submission.
 func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission) (*Submission, error) {
 	s.UserID, _ = auth.GetUserID(ctx)
-	res, _ := uc.repo.CreateSubmission(ctx, s)
+	s.Verdict = SubmissionVerdictPending
+	// 处理比赛的提交
+	if s.ContestID != 0 {
+		_, err := uc.contestRepo.GetContest(ctx, s.ContestID)
+		if err != nil {
+			return nil, v1.ErrorContestNotFound(err.Error())
+		}
+		contestProblem, err := uc.contestRepo.GetContestProblemByNumber(ctx, s.ContestID, s.ProblemNumber)
+		if err != nil {
+			return nil, v1.ErrorContestProblemNotFound(err.Error())
+		}
+		contestProblem.SubmitCount += 1
+		uc.contestRepo.UpdateContestProblem(ctx, contestProblem)
+		s.ProblemID = contestProblem.ProblemID
+	}
+	// 处理直接提交至题目
+	if s.ProblemID != 0 {
+		problem, err := uc.problemRepo.GetProblem(ctx, s.ProblemID)
+		if err != nil {
+			return nil, v1.ErrorProblemNotFound(err.Error())
+		}
+		problem.SubmitCount += 1
+		uc.problemRepo.UpdateProblem(ctx, problem)
+	}
+	res, err := uc.repo.CreateSubmission(ctx, s)
+	if err != nil {
+		return nil, err
+	}
 	uc.sandboxClient.RunSubmission(ctx, &sandboxV1.RunSubmissionRequest{
 		SubmissionId: int64(res.ID),
 	})

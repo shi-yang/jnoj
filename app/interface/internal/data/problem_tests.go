@@ -9,6 +9,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ProblemTest struct {
@@ -38,7 +39,8 @@ func (r *problemRepo) ListProblemTests(ctx context.Context, req *v1.ListProblemT
 	if err != nil {
 		return nil, count
 	}
-	cursor, err := db.Find(ctx, filter)
+	opts := options.Find().SetSort(bson.D{{"order", 1}})
+	cursor, err := db.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, count
 	}
@@ -69,7 +71,8 @@ func (r *problemRepo) ListProblemSampleTest(ctx context.Context, id int) ([]*biz
 	var filter = bson.D{{"problem_id", id}, {"is_example", true}}
 	var res []*biz.SampleTest
 	db := r.data.mongodb.Collection(ProblemTestCollection)
-	cursor, err := db.Find(ctx, filter)
+	opts := options.Find().SetSort(bson.D{{"order", 1}})
+	cursor, err := db.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -109,11 +112,17 @@ func (r *problemRepo) GetProblemTest(ctx context.Context, id string) (*biz.Probl
 
 // CreateProblemTest .
 func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest) (*biz.ProblemTest, error) {
+	var filter = bson.D{{"problem_id", b.ProblemID}}
+	var o ProblemTest
+	db := r.data.mongodb.Collection(ProblemTestCollection)
+	opts := options.FindOne().SetSort(bson.D{{"order", -1}})
+	db.FindOne(ctx, filter, opts).Decode(&o)
+
 	_, err := r.data.mongodb.Collection(ProblemTestCollection).InsertOne(ctx, ProblemTest{
 		ID:               primitive.NewObjectID(),
 		ProblemID:        b.ProblemID,
 		InputFileContent: b.InputFileContent,
-		Order:            b.Order,
+		Order:            o.Order + 1,
 		Content:          b.Content,
 		UserID:           b.UserID,
 		IsExample:        b.IsExample,
@@ -165,4 +174,17 @@ func (r *problemRepo) UpdateProblemTestStdOutput(ctx context.Context, id string,
 	_, err := r.data.mongodb.Collection(ProblemTestCollection).
 		UpdateOne(ctx, filter, update)
 	return err
+}
+
+func (r *problemRepo) SortProblemTests(ctx context.Context, ids []string) error {
+	for index, id := range ids {
+		oid, _ := primitive.ObjectIDFromHex(id)
+		r.data.mongodb.Collection(ProblemTestCollection).
+			UpdateOne(ctx, bson.D{{"_id", oid}}, bson.D{
+				{"$set", bson.D{
+					{"order", index},
+				}},
+			})
+	}
+	return nil
 }

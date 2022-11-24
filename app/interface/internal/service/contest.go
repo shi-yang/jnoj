@@ -195,12 +195,12 @@ func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateCo
 
 // ListContestStandings 用户比赛提交榜单
 func (s *ContestService) ListContestStandings(ctx context.Context, req *v1.ListContestStandingsRequest) (*v1.ListContestStandingsResponse, error) {
-	submissions := s.uc.ListContestSubmissions(ctx, int(req.Id))
+	submissions := s.uc.ListContestStandings(ctx, int(req.Id))
 	resp := new(v1.ListContestStandingsResponse)
 	for _, v := range submissions {
 		resp.Data = append(resp.Data, &v1.ListContestStandingsResponse_Submission{
 			Id:            int32(v.ID),
-			Status:        int32(v.Status),
+			Status:        int32(v.Verdict),
 			Score:         int32(v.Score),
 			UserId:        int32(v.UserID),
 			ProblemNumber: int32(v.ProblemNumber),
@@ -211,15 +211,23 @@ func (s *ContestService) ListContestStandings(ctx context.Context, req *v1.ListC
 
 // ListContestStandings 用户比赛提交列表
 func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) (*v1.ListContestSubmissionsResponse, error) {
-	submissions := s.uc.ListContestSubmissions(ctx, int(req.Id))
+	submissions, count := s.uc.ListContestSubmissions(ctx, req)
 	resp := new(v1.ListContestSubmissionsResponse)
+	resp.Total = count
 	for _, v := range submissions {
 		resp.Data = append(resp.Data, &v1.ListContestSubmissionsResponse_Submission{
 			Id:            int32(v.ID),
-			Status:        int32(v.Status),
+			Verdict:       int32(v.Verdict),
 			Score:         int32(v.Score),
 			UserId:        int32(v.UserID),
 			ProblemNumber: int32(v.ProblemNumber),
+			ProblemName:   v.ProblemName,
+			CreatedAt:     timestamppb.New(v.CreatedAt),
+			Language:      int32(v.Language),
+			User: &v1.ListContestSubmissionsResponse_User{
+				Id:       int32(v.User.ID),
+				Nickname: v.User.Nickname,
+			},
 		})
 	}
 	return resp, nil

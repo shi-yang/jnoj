@@ -1,6 +1,5 @@
 const i18n = {
   'en-US': {
-    'page.title': 'Problem List',
     'menu.list': 'List',
     'menu.list.searchTable': 'Search Table',
     'searchTable.form.search': 'Search',
@@ -18,7 +17,6 @@ const i18n = {
     'searchForm.all.placeholder': 'all',
   },
   'zh-CN': {
-    'page.title': '题目列表',
     'menu.list': '列表页',
     'menu.list.searchTable': '查询表格',
     'searchTable.form.search': '查询',
