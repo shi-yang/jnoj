@@ -65,12 +65,17 @@ class UserController extends Controller
         }
 
         if (Yii::$app->request->get('action') && Yii::$app->request->isPost) {
-            $keys = Yii::$app->request->post('keylist');
-            $action = Yii::$app->request->get('action');
-            foreach ($keys as $key) {
+            $ids = Yii::$app->request->post('ids');
+            $action = Yii::$app->request->post('action');
+            $value = Yii::$app->request->post('value');
+            if ($action === 'setRole') {
                 Yii::$app->db->createCommand()->update('{{%user}}', [
-                    'role' => $action
-                ], ['id' => $key])->execute();
+                    'role' => $value
+                ], ['id' => $ids])->execute();
+            } else if ($action === 'setStatus') {
+                Yii::$app->db->createCommand()->update('{{%user}}', [
+                    'status' => $value
+                ], ['id' => $ids])->execute();
             }
             return $this->refresh();
         }

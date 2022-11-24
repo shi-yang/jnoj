@@ -10,6 +10,47 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel app\models\UserSearch */
 
 $this->title = Yii::t('app', 'Users');
+
+$url = \yii\helpers\Url::to(['/admin/user/index', 'action' => \app\models\User::ROLE_USER]);
+$roleUser = \app\models\User::ROLE_USER;
+$roleVIP = \app\models\User::ROLE_VIP;
+$statusDisable = \app\models\User::STATUS_DISABLE;
+$statusActive = \app\models\User::STATUS_ACTIVE;
+$js = <<<EOF
+$("#general-user").on("click", function () {
+    const keys = $("#grid").yiiGridView("getSelectedRows");
+    $.post({
+        url: "$url", 
+        dataType: "json",
+        data: {ids: keys, action: "setRole", value:"${roleUser}"}
+    });
+});
+$("#vip-user").on("click", function () {
+    const keys = $("#grid").yiiGridView("getSelectedRows");
+    $.post({
+        url: "$url", 
+        dataType: "json",
+        data: {ids: keys, action: "setRole", value:"${roleVIP}"}
+    });
+});
+$("#disable-user").on("click", function () {
+    const keys = $("#grid").yiiGridView("getSelectedRows");
+    $.post({
+        url: "$url", 
+        dataType: "json",
+        data: {ids: keys, action: "setStatus", value:"${statusDisable}"}
+    });
+});
+$("#enable-info").on("click", function () {
+    const keys = $("#grid").yiiGridView("getSelectedRows");
+    $.post({
+        url: "$url", 
+        dataType: "json",
+        data: {ids: keys, action: "setStatus", value:"${statusActive}"}
+    });
+});
+EOF;
+$this->registerJs($js);
 ?>
 <div class="user-index">
 
@@ -39,11 +80,17 @@ $this->title = Yii::t('app', 'Users');
         <?php Modal::end(); ?>
 
         选中项：
-        <a id="general-user" class="btn btn-success" href="javascript:void(0);">
+        <a id="general-user" class="btn btn-default" href="javascript:void(0);">
             设为普通用户
         </a>
         <a id="vip-user" class="btn btn-success" href="javascript:void(0);">
             设为VIP用户
+        </a>
+        <a id="disable-user" class="btn btn-warning" href="javascript:void(0);">
+            禁用账号
+        </a>
+        <a id="enable-info" class="btn btn-success" href="javascript:void(0);">
+            启用账号
         </a>
     </p>
     <?= GridView::widget([
@@ -58,6 +105,13 @@ $this->title = Yii::t('app', 'Users');
             'username',
             'nickname',
             'email:email',
+            [
+                'attribute' => 'status',
+                'value' => function ($model, $key, $index, $column) {
+                    return $model->getStatusLabel();
+                },
+                'format' => 'raw'
+            ],
             [
                 'attribute' => 'role',
                 'value' => function ($model, $key, $index, $column) {
@@ -80,23 +134,5 @@ $this->title = Yii::t('app', 'Users');
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]);
-    $this->registerJs('
-    $("#general-user").on("click", function () {
-        var keys = $("#grid").yiiGridView("getSelectedRows");
-        $.post({
-           url: "'.\yii\helpers\Url::to(['/admin/user/index', 'action' => \app\models\User::ROLE_USER]).'", 
-           dataType: \'json\',
-           data: {keylist: keys}
-        });
-    });
-    $("#vip-user").on("click", function () {
-        var keys = $("#grid").yiiGridView("getSelectedRows");
-        $.post({
-           url: "'.\yii\helpers\Url::to(['/admin/user/index', 'action' => \app\models\User::ROLE_VIP]).'", 
-           dataType: \'json\',
-           data: {keylist: keys}
-        });
-    });
-    ');
     ?>
 </div>

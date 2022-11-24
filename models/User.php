@@ -34,6 +34,12 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DISABLE = 8;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+    const STATUS_MAP = [
+        self::STATUS_DELETED => '已删除',
+        self::STATUS_DISABLE => '已禁用',
+        self::STATUS_INACTIVE => '未激活',
+        self::STATUS_ACTIVE => '可用',
+    ];
 
     /**
      * 比赛账户，该账户用于参加比赛，跟普通用户的区别在于禁止私自修改个人信息，用户名、昵称、密码
@@ -90,7 +96,7 @@ class User extends ActiveRecord implements IdentityInterface
                 return $model->role != User::ROLE_PLAYER;
             }],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED, self::STATUS_INACTIVE]],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED, self::STATUS_INACTIVE, self::STATUS_DISABLE]],
             ['role', 'in', 'range' => [self::ROLE_PLAYER, self::ROLE_USER, self::ROLE_VIP, self::ROLE_ADMIN]],
 
             // oldPassword is validated by validateOldPassword()
@@ -497,5 +503,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function isVerifyEmail()
     {
         return $this->is_verify_email == self::VERIFY_EMAIL_YES;
+    }
+
+    /**
+     * 获取状态标签
+     */
+    public function getStatusLabel()
+    {
+        return self::STATUS_MAP[$this->status];
     }
 }
