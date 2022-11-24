@@ -491,12 +491,15 @@ class ProblemController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        try {
-            $this->makeDirEmpty(Yii::$app->params['judgeProblemDataPath'] . $model->id);
-            rmdir(Yii::$app->params['judgeProblemDataPath'] . $model->id);
-        } catch (\ErrorException $e) {
-            Yii::$app->session->setFlash('error', '删除失败:' . $e->getMessage());
-            return $this->redirect(['index']);
+        $problemTestDataPath = Yii::$app->params['judgeProblemDataPath'] . $model->id;
+        if(file_exists($problemTestDataPath)){
+            try {
+                $this->makeDirEmpty($problemTestDataPath);
+                rmdir($problemTestDataPath);
+            } catch (\ErrorException $e) {
+                Yii::$app->session->setFlash('error', '删除失败:' . $e->getMessage());
+                return $this->redirect(['index']);
+            }
         }
         $model->delete();
         Yii::$app->session->setFlash('success', Yii::t('app', '删除成功'));
