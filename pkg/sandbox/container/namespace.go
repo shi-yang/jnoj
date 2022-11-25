@@ -35,7 +35,9 @@ func initFileSystem(workDir string) error {
 	// 旧文件名
 	files, _ := os.ReadDir(workDir)
 	containerDir := filepath.Join(workDir, "container")
-	_ = os.RemoveAll(containerDir)
+	if err := os.RemoveAll(containerDir); err != nil {
+		_, _ = os.Stderr.WriteString(fmt.Sprintf("os.RemoveAll(%v):  %v\n", containerDir, err))
+	}
 	if err := os.Mkdir(containerDir, os.ModePerm); err != nil {
 		return fmt.Errorf("os.Mkdir(%v): %v", containerDir, err)
 	}
@@ -58,8 +60,8 @@ func initFileSystem(workDir string) error {
 		WithBind("/dev/null", filepath.Join(containerDir, "dev/null"), false).
 		WithBind("/var/lib/ghc", filepath.Join(containerDir, "var/lib/ghc"), true).
 		WithBind("/work", filepath.Join(containerDir, "work"), true).
-		WithTmpfs(filepath.Join(containerDir, "work"), "size=8m,nr_inodes=4k").
-		WithTmpfs(filepath.Join(containerDir, "tmp"), "size=8m,nr_inodes=4k")
+		WithTmpfs(filepath.Join(containerDir, "work"), "size=32m,nr_inodes=4k").
+		WithTmpfs(filepath.Join(containerDir, "tmp"), "size=32m,nr_inodes=4k")
 	_, err := mb.FilterNotExist().Build()
 	if err != nil {
 		return err
@@ -70,6 +72,9 @@ func initFileSystem(workDir string) error {
 		}
 	}
 	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
 		err := copy(filepath.Join(workDir, f.Name()), filepath.Join(workDir, "container", "work", f.Name()))
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("copy(filepath.Join(workDir, f.Name()), %+v\n", err))

@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 
 int main(int argc, char *argv[]) {
-    char *hostname = "www.amazon.com";
+    char *hostname = "www.baidu.com";
     char ip[100];
     struct hostent *he;
     struct in_addr **addr_list;

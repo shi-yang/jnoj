@@ -3,8 +3,8 @@ package sandbox
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -153,6 +153,6 @@ func Run(basedir string, lang *Language, input []byte, memoryLimit int64, timeLi
 	}
 	_ = cmd.Run()
 	_ = json.Unmarshal(stdout.Bytes(), &result)
-	log.Println("stderr", stderr.String())
+	fmt.Println(stderr.String())
 	return &result
 }

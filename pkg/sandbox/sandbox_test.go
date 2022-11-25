@@ -40,21 +40,95 @@ func TestRunHelloWorld(t *testing.T) {
 	os.RemoveAll(workDir)
 }
 
+// TestCAccepted
 func TestCAccepted(t *testing.T) {
-	source := readSourceFile("./testdata/c/ac.c")
-	if err := Compile(workDir, source, &Languages[LANG_C]); err != nil {
+	u, _ := uuid.NewUUID()
+	workPath := filepath.Join(workDir, u.String())
+	source := readSourceFile("./testdata/accepted/main.c")
+	if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
 		t.Error("Compiled Error\n", err)
 	}
-	input, _ := os.ReadFile("./testdata/data/1.in")
-	excepted, _ := os.ReadFile("./testdata/data/1.out")
-	res := Run(workDir, &Languages[LANG_C], input, 256, 1000)
-	if res.Stdout != string(excepted) {
-		t.Error("Wrong Answer")
+	tests := []struct {
+		input    []byte
+		expected []byte
+	}{
+		{
+			input:    []byte("1 2"),
+			expected: []byte("3"),
+		},
+		{
+			input:    []byte("2 3"),
+			expected: []byte("5"),
+		},
+		{
+			input:    []byte("0 3"),
+			expected: []byte("3"),
+		},
+	}
+	for _, test := range tests {
+		res := Run(workPath, &Languages[LANG_C], test.input, 256, 1000)
+		if res.Stdout != string(test.expected) {
+			t.Error("Wrong Answer")
+		}
 	}
 }
 
+func TestChecker(t *testing.T) {
+	u, _ := uuid.NewUUID()
+	workPath := filepath.Join(workDir, u.String())
+	source := readSourceFile("./testdata/accepted/main.c")
+	if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+		t.Error("Compiled Error\n", err)
+	}
+	tests := []struct {
+		input    []byte
+		expected []byte
+	}{
+		{
+			input:    []byte("1 2"),
+			expected: []byte("3"),
+		},
+		{
+			input:    []byte("2 3"),
+			expected: []byte("5"),
+		},
+		{
+			input:    []byte("0 3"),
+			expected: []byte("3"),
+		},
+	}
+	checkerSource := readSourceFile("./testdata/checker/checker.cpp")
+	testlib, _ := os.ReadFile("./testdata/checker/testlib.h")
+	os.WriteFile(filepath.Join(workPath, "testlib.h"), testlib, os.ModePerm)
+	checkerLanguage := &Language{
+		Name: "checker",
+		CompileCommand: []string{"g++", "checker.cpp", "-o", "checker.exe", "-I./", "-Wall",
+			"-fno-asm", "-O2", "-lm", "--static", "-std=c++11", "-DONLINE_JUDGE", "-save-temps", "-fmax-errors=10"},
+		RunCommand:   []string{"./checker.exe", "data.in", "user.stdout", "data.out"},
+		CodeFileName: "checker.cpp",
+		IsVMRun:      false,
+	}
+	if err := Compile(workPath, checkerSource, checkerLanguage); err != nil {
+		t.Error("Compiled Error\n", err)
+	}
+	for _, test := range tests {
+		runRes := Run(workPath, &Languages[LANG_C], test.input, 256, 1000)
+		t.Logf("Program output:[%+v]\n", runRes)
+		if runRes.RuntimeErr == "" {
+			// 准备运行 checker 所需文件
+			_ = os.WriteFile(filepath.Join(workPath, "user.stdout"), []byte(runRes.Stdout), 0444)
+			_ = os.WriteFile(filepath.Join(workPath, "data.in"), test.input, 0444)
+			_ = os.WriteFile(filepath.Join(workPath, "data.out"), test.expected, 0444)
+			// 执行 checker
+			t.Log("Run checker:", workPath)
+			checkerRes := Run(workPath, checkerLanguage, []byte(""), 256, 10000)
+			t.Logf("Checker output:[%+v]\n", checkerRes)
+		}
+	}
+}
+
+// TODO 本测试样例待完善
 func TestLangC(t *testing.T) {
-	// TODO 本测试样例待完善
 	files := []struct {
 		name     string
 		expected func(res *Result) (string, bool)
@@ -70,15 +144,15 @@ func TestLangC(t *testing.T) {
 		{
 			"core_dump_1.c",
 			func(res *Result) (string, bool) {
-				expected := "Floating point exception"
-				return fmt.Sprintf("expected runtimeErr=[%s], got=[%+v]\n", expected, res), strings.Contains(res.RuntimeErr, expected)
+				expected := "illegal instruction"
+				return fmt.Sprintf("expected runtimeErr=[%s], got=[%+v]\n", expected, res.RuntimeErr), strings.Contains(res.RuntimeErr, expected)
 			},
 		},
 		{
 			"core_dump_2.c",
 			func(res *Result) (string, bool) {
-				expected := "*** stack smashing detected ***: terminated"
-				return fmt.Sprintf("expected runtimeErr=[%s], got=[%+v]\n", expected, res), strings.Contains(res.RuntimeErr, expected)
+				expected := "aborted"
+				return fmt.Sprintf("expected runtimeErr=[%s], got=[%+v]\n", expected, res.RuntimeErr), strings.Contains(res.RuntimeErr, expected)
 			},
 		},
 		{
@@ -96,7 +170,7 @@ func TestLangC(t *testing.T) {
 		{
 			"get_host_by_name.c",
 			func(res *Result) (string, bool) {
-				return fmt.Sprintf("%+v\n", res), res.ExitCode == 1
+				return fmt.Sprintf("expected runtimeErr not empty, got=[%+v]\n", res.RuntimeErr), res.RuntimeErr != ""
 			},
 		},
 		{
@@ -108,13 +182,13 @@ func TestLangC(t *testing.T) {
 		{
 			"memory_allocation.c",
 			func(res *Result) (string, bool) {
-				return fmt.Sprintf("expected memory out, got=[%+v]\n", res.Memory), res.Memory > 256*1024
+				return fmt.Sprintf("expected memory limit [%d], got=[%+v]\n", 256*1024, res.Memory), res.Memory > 256*1024
 			},
 		},
 		{
 			"run_command_line_0.c",
 			func(res *Result) (string, bool) {
-				return fmt.Sprintf("expected [cannot remove], got=[%+v]\n", res.Stderr), strings.Contains(res.Stderr, "cannot remove")
+				return fmt.Sprintf("expected [cannot remove], got=[%+v]\n", res), strings.Contains(res.Stderr, "cannot remove")
 			},
 		},
 		{
@@ -126,7 +200,7 @@ func TestLangC(t *testing.T) {
 		{
 			"syscall_0.c",
 			func(res *Result) (string, bool) {
-				// TODO 偶尔会异常
+				// TODO 有问题
 				return fmt.Sprintf("%+v\n", res), false
 			},
 		},
@@ -156,4 +230,62 @@ func TestLangC(t *testing.T) {
 		})
 	}
 	os.RemoveAll(workDir)
+}
+
+func TestLangJava(t *testing.T) {
+	files := []struct {
+		name     string
+		expected func(res *Result) (string, bool)
+	}{}
+	for _, test := range files {
+		t.Run(test.name, func(t *testing.T) {
+			t.Logf("Compile file:%s\n", test.name)
+			source := readSourceFile(filepath.Join("./testdata/java", test.name))
+			u, _ := uuid.NewUUID()
+			workPath := filepath.Join(workDir, u.String())
+			if err := Compile(workPath, source, &Languages[LANG_JAVA]); err != nil {
+				t.Errorf("compile error. err = [%s]", err.Error())
+			}
+			res := Run(workPath, &Languages[LANG_JAVA], []byte(""), 256, 1000)
+			msg, ok := test.expected(res)
+			if ok {
+				t.Log("ok", msg)
+			} else {
+				t.Error("fail", msg)
+			}
+		})
+	}
+	os.RemoveAll(workDir)
+}
+
+func BenchmarkCompile(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		u, _ := uuid.NewUUID()
+		workPath := filepath.Join(workDir, u.String())
+		source := readSourceFile("./testdata/accepted/main.c")
+		if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+			b.Error("Compiled Error\n", err)
+		}
+		os.RemoveAll(workPath)
+	}
+}
+
+func BenchmarkRun(b *testing.B) {
+	u, _ := uuid.NewUUID()
+	workPath := filepath.Join(workDir, u.String())
+	source := readSourceFile("./testdata/accepted/main.c")
+	if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+		b.Error("Compiled Error\n", err)
+	}
+	input := "1 2"
+	excepted := "3"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		res := Run(workPath, &Languages[LANG_C], []byte(input), 256, 1000)
+		if res.Stdout != excepted {
+			b.Errorf("excepted %s, got %s", input, excepted)
+		}
+	}
+	os.RemoveAll(workPath)
 }
