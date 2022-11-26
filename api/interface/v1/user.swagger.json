@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1User"
+              "$ref": "#/definitions/interfacev1User"
             }
           },
           "default": {
@@ -139,6 +139,9 @@
     }
   },
   "definitions": {
+    "interfacev1User": {
+      "type": "object"
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -231,9 +234,6 @@
           "title": "登录 token"
         }
       }
-    },
-    "v1User": {
-      "type": "object"
     }
   }
 }

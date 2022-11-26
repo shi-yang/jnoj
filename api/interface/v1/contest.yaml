@@ -1,7 +1,11 @@
 rules:
-- selector: "/jnoj.interface.v1.ContestService/*Create*"
+- selector: "/jnoj.interface.v1.ContestService/CreateContest"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ContestService/*Update*"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ContestService/*Delete*"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector : "/jnoj.interface.v1.ContestService/ListContests"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector : "/jnoj.interface.v1.ContestService/GetContest"
+  middleware: "jnoj/internal/middleware/auth.Guest()"

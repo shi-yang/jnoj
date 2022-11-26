@@ -29,12 +29,14 @@ type Submission struct {
 }
 
 type SubmissionResult struct {
-	Score      int
-	Verdict    int
-	CompileMsg string
-	Memory     int64
-	Time       int64
-	Tests      []*SubmissionTest
+	Score             int
+	Verdict           int
+	CompileMsg        string
+	Memory            int64
+	Time              int64
+	TotalTestCount    int
+	AcceptedTestCount int
+	Tests             []*SubmissionTest
 }
 
 type SubmissionTest struct {
@@ -145,11 +147,10 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 		s.Memory = int(res.Memory)
 		s.Time = int(res.Time)
 		uc.repo.UpdateSubmission(context.TODO(), s)
-
 		// 通过时计数
 		if s.Verdict == SubmissionVerdictAccepted {
 			problem.AcceptedCount += 1
-			uc.repo.UpdateProblem(ctx, problem)
+			uc.repo.UpdateProblem(context.TODO(), problem)
 			// 针对比赛题目的计数
 			if s.ContestID != 0 {
 				contestProblem, err := uc.repo.GetContestProblemByProblemID(ctx, s.ContestID, s.ProblemID)
@@ -189,6 +190,7 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 		uc.log.Info("sandbox.Compile err:", err)
 		return result
 	}
+	result.TotalTestCount = len(problem.Tests)
 	for index, test := range problem.Tests {
 		uc.log.Infof("Submission[%d] runing test [%d/%d] start...", s.ID, index+1, len(problem.Tests))
 		runRes := sandbox.Run(workDir, &sandbox.Languages[s.Language], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
@@ -201,7 +203,7 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 			_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(test.Output), 0444)
 			// 执行 checker
 			uc.log.Info("Run checker:", workDir)
-			checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 10000)
+			checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 3000)
 		}
 		uc.log.Infof("Submission[%d] runing test [%d/%d] done...", s.ID, index+1, len(problem.Tests))
 		// 记录 Memory 最大值
@@ -229,12 +231,12 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 			t.CheckerExitCode = int(checkerRes.ExitCode)
 		}
 		// 判断结果
-		if runRes.RuntimeErr != "" {
-			t.Verdict = SubmissionVerdictRuntimeError
-		} else if runRes.Time/1e3 > problem.TimeLimit {
+		if runRes.Time/1e3 > problem.TimeLimit {
 			t.Verdict = SubmissionVerdictTimeLimit
 		} else if runRes.Memory >= problem.MemoryLimit*1024 {
 			t.Verdict = SubmissionVerdictMemoryLimit
+		} else if runRes.RuntimeErr != "" {
+			t.Verdict = SubmissionVerdictRuntimeError
 		}
 		if t.Verdict == SubmissionVerdictAccepted {
 			// 根据 checker 运行结果来判断
@@ -252,6 +254,8 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 		if t.Verdict != SubmissionVerdictAccepted {
 			result.Verdict = t.Verdict
 			break
+		} else {
+			result.AcceptedTestCount++
 		}
 	}
 	return result

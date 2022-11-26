@@ -124,6 +124,15 @@ message Contest {
     int32 status = 8;
     int32 participant_count = 9;
     int32 user_id = 10;
+    // 当前登录用户是否参赛
+    bool is_registered = 11;
+    // 登录用户的角色
+    enum Role {
+        GUEST = 0;
+        PLAYER = 1;
+        ADMIN = 2;
+    };
+    Role role = 12;
 }
 
 message ListContestProblemsRequest {
@@ -214,7 +223,12 @@ message ListContestStandingsResponse {
     message Submission {
         int32 id = 1;
         int32 problem_number = 2;
-        int32 status = 3;
+        enum Status {
+            PENDING = 0;
+            INCORRECT = 1;
+            CORRECT = 2;
+        };
+        Status status = 3;
         int32 user_id = 4;
         int32 score = 5;
     }

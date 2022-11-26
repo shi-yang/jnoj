@@ -75,9 +75,11 @@ func (s *SubmissionService) GetSubmissionInfo(ctx context.Context, req *v1.GetSu
 		return nil, err
 	}
 	resp := &v1.SubmissionInfo{
-		CompileMsg: res.CompileMsg,
-		Memory:     res.Memory,
-		Time:       res.Time,
+		CompileMsg:        res.CompileMsg,
+		Memory:            res.Memory,
+		Time:              res.Time,
+		TotalTestCount:    int32(res.TotalTestCount),
+		AcceptedTestCount: int32(res.AcceptedTestCount),
 	}
 	resp.Tests = make([]*v1.SubmissionInfo_SubmissionTest, 0)
 	for _, v := range res.Tests {

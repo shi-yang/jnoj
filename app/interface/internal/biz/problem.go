@@ -33,6 +33,25 @@ const (
 	ProblemStatusPublic             // 公开
 )
 
+// 题目权限
+type ProblemPermissionType int32
+
+const (
+	ProblemPermissionView   ProblemPermissionType = 0 // 查看权限
+	ProblemPermissionUpdate ProblemPermissionType = 1 // 修改权限
+)
+
+// HasPermission 是否有权限
+// 查看权限，需要题目出于公开或者是创建人才能查看
+// 修改权限，仅题目创建人可以看
+func (p *Problem) HasPermission(ctx context.Context, t ProblemPermissionType) bool {
+	userID, _ := auth.GetUserID(ctx)
+	if t == ProblemPermissionView {
+		return p.UserID == userID || p.Status == ProblemStatusPublic
+	}
+	return p.UserID == userID
+}
+
 // ProblemRepo is a Problem repo.
 type ProblemRepo interface {
 	ListProblems(context.Context, *v1.ListProblemsRequest) ([]*Problem, int64)
@@ -112,22 +131,6 @@ func (uc *ProblemUsecase) UpdateProblem(ctx context.Context, p *Problem) (*Probl
 // DeleteProblem delete a Problem
 func (uc *ProblemUsecase) DeleteProblem(ctx context.Context, id int) error {
 	return uc.repo.DeleteProblem(ctx, id)
-}
-
-// HasPermission 是否有权限
-// t = view 查看权限，需要题目出于公开或者是创建人才能查看
-// t = update 修改权限，近题目创建人可以看
-func (uc *ProblemUsecase) HasPermission(ctx context.Context, id int, t string) bool {
-	p, err := uc.GetProblem(ctx, id)
-	if err != nil {
-		return false
-	}
-	userID, _ := auth.GetUserID(ctx)
-	if t == "view" {
-		return p.UserID == userID || p.Status == ProblemStatusPublic
-	}
-	uc.log.Info("hasPermission:", p.UserID, userID)
-	return p.UserID == userID
 }
 
 func (uc *ProblemUsecase) UpdateProblemChecker(ctx context.Context, id int, checkerID int) error {

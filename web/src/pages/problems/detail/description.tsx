@@ -3,7 +3,6 @@ const { Title, Paragraph } = Typography;
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/description.module.less'
-import ReactMarkdown from 'react-markdown';
 import ProblemContent from '@/components/Problem/ProblemContent';
 const Description = ({ problem, language }) => {
   const t = useLocale(locale);

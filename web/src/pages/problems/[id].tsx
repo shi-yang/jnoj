@@ -7,12 +7,12 @@ import {
   Select,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import locale from './components/detail/locale';
-import styles from './components/detail/style/index.module.less';
-import './components/detail/mock';
-import Editor from './components/detail/editor';
-import Description from './components/detail/description';
-import Submission from './components/detail/submission';
+import locale from './detail/locale';
+import styles from './detail/style/index.module.less';
+import './detail/mock';
+import Editor from './detail/editor';
+import Description from './detail/description';
+import Submission from './detail/submission';
 import { getProblem } from '@/api/problem';
 import { IconLanguage } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
@@ -73,7 +73,7 @@ function Index() {
             <ResizeBox.Split
               max={0.8}
               min={0.2}
-              style={{ height: '100%' }}
+              style={{ height: 'calc(100% - 69px)' }}
               panes={[
                 <div key='first' className={styles.left}>
                   <Tabs

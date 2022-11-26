@@ -42,6 +42,18 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 	return rv, count
 }
 
+// ExistContestUser .
+func (r *contestRepo) ExistContestUser(ctx context.Context, cid int, uid int) bool {
+	var res int
+	r.data.db.WithContext(ctx).
+		Model(&ContestUser{}).
+		Select("1").
+		Where("contest_id = ? and user_id = ?", cid, uid).
+		Limit(1).
+		Scan(&res)
+	return res > 0
+}
+
 // CreateContestUser .
 func (r *contestRepo) CreateContestUser(ctx context.Context, b *biz.ContestUser) (*biz.ContestUser, error) {
 	res := ContestUser{UserID: b.UserID, ContestID: b.ContestID}

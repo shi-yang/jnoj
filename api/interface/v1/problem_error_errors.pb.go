@@ -46,3 +46,15 @@ func IsProblemNotFound(err error) bool {
 func ErrorProblemNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ProblemErrorReason_PROBLEM_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsProblemNotVerification(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ProblemErrorReason_PROBLEM_NOT_VERIFICATION.String() && e.Code == 400
+}
+
+func ErrorProblemNotVerification(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ProblemErrorReason_PROBLEM_NOT_VERIFICATION.String(), fmt.Sprintf(format, args...))
+}

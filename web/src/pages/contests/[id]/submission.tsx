@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
+import { Button, Card, Table, TableColumnProps, PaginationProps, Typography } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { LanguageMap, VerdictMap } from '@/api/submission';
+import { LanguageMap, VerdictColorMap, VerdictMap } from '@/api/submission';
 import { listContestSubmissions } from '@/api/contest';
 import { FormatTime } from '@/utils/format';
 
@@ -69,7 +69,7 @@ const Submission = ({contest}) => {
       title: t['verdict'],
       dataIndex: 'verdict',
       align: 'center',
-      render: (col) => VerdictMap[col]
+      render: (col) => <Typography.Text bold type={VerdictColorMap[col]}>{VerdictMap[col]}</Typography.Text>
     },
     {
       title: t['language'],

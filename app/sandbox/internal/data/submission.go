@@ -132,6 +132,7 @@ func (r *submissionRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*bi
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Updates(&update).Error
+	r.log.Debug("(r *submissionRepo) UpdateProblem:", err)
 	return nil, err
 }
 
@@ -171,7 +172,7 @@ func (r *submissionRepo) UpdateContestProblem(ctx context.Context, c *biz.Contes
 func (r *submissionRepo) getProblemChecker(ctx context.Context, id int) (string, error) {
 	var f ProblemFile
 	err := r.data.db.WithContext(ctx).
-		Where("id = ?", r.data.db.Select("checker_id").Model(&Problem{}).Where("id = ?", id)).
+		Where("id = (?)", r.data.db.Select("checker_id").Model(&Problem{}).Where("id = ?", id)).
 		First(&f).Error
 	if err != nil {
 		return "", err

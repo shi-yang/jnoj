@@ -53,12 +53,27 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		ParticipantCount: int32(res.ParticipantCount),
 		StartTime:        timestamppb.New(res.StartTime),
 		EndTime:          timestamppb.New(res.EndTime),
+		IsRegistered:     res.IsRegistered,
+	}
+	if res.Role == biz.ContestRoleAdmin {
+		resp.Role = v1.Contest_ADMIN
+	} else if res.Role == biz.ContestRolePlayer {
+		resp.Role = v1.Contest_PLAYER
+	} else {
+		resp.Role = v1.Contest_GUEST
 	}
 	return resp, nil
 }
 
 // UpdateContest 编辑比赛
 func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContestRequest) (*v1.Contest, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	res, err := s.uc.UpdateContest(ctx, &biz.Contest{
 		ID:          int(req.Id),
 		Name:        req.Name,
@@ -96,6 +111,13 @@ func (s *ContestService) CreateContest(ctx context.Context, req *v1.CreateContes
 
 // ListContestProblems 获取比赛题目列表
 func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListContestProblemsRequest) (*v1.ListContestProblemsResponse, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	res, count := s.uc.ListContestProblems(ctx, req)
 	resp := new(v1.ListContestProblemsResponse)
 	resp.Total = count
@@ -111,6 +133,13 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 
 // GetContestProblem 获取比赛题目
 func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetContestProblemRequest) (*v1.ContestProblem, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	res, err := s.uc.GetContestProblem(ctx, int(req.Id), int(req.Number))
 	if err != nil {
 		return nil, err
@@ -145,6 +174,13 @@ func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetConte
 
 // CreateContestProblem 创建比赛题目
 func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.CreateContestProblemRequest) (*v1.ContestProblem, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	problem, err := s.uc.CreateContestProblem(ctx, &biz.ContestProblem{
 		ProblemID: int(req.ProblemId),
 		ContestID: int(req.Id),
@@ -159,7 +195,14 @@ func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.Creat
 
 // DeleteContestProblem 删除比赛题目
 func (s *ContestService) DeleteContestProblem(ctx context.Context, req *v1.DeleteContestProblemRequest) (*emptypb.Empty, error) {
-	err := s.uc.DeleteContestProblem(ctx, int(req.Id), int(req.Number))
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.uc.DeleteContestProblem(ctx, int(req.Id), int(req.Number))
 	if err != nil {
 		return nil, err
 	}
@@ -198,19 +241,34 @@ func (s *ContestService) ListContestStandings(ctx context.Context, req *v1.ListC
 	submissions := s.uc.ListContestStandings(ctx, int(req.Id))
 	resp := new(v1.ListContestStandingsResponse)
 	for _, v := range submissions {
-		resp.Data = append(resp.Data, &v1.ListContestStandingsResponse_Submission{
+		s := &v1.ListContestStandingsResponse_Submission{
 			Id:            int32(v.ID),
-			Status:        int32(v.Verdict),
 			Score:         int32(v.Score),
 			UserId:        int32(v.UserID),
 			ProblemNumber: int32(v.ProblemNumber),
-		})
+		}
+		switch v.Verdict {
+		case biz.SubmissionVerdictPending:
+			s.Status = v1.ListContestStandingsResponse_Submission_PENDING
+		case biz.SubmissionVerdictAccepted:
+			s.Status = v1.ListContestStandingsResponse_Submission_CORRECT
+		default:
+			s.Status = v1.ListContestStandingsResponse_Submission_INCORRECT
+		}
+		resp.Data = append(resp.Data, s)
 	}
 	return resp, nil
 }
 
 // ListContestStandings 用户比赛提交列表
 func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) (*v1.ListContestSubmissionsResponse, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	submissions, count := s.uc.ListContestSubmissions(ctx, req)
 	resp := new(v1.ListContestSubmissionsResponse)
 	resp.Total = count

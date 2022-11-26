@@ -34,3 +34,15 @@ func IsContestProblemNotFound(err error) bool {
 func ErrorContestProblemNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ContestErrorReason_CONTEST_PROBLEM_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsContestAlreadyRegistered(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ContestErrorReason_CONTEST_ALREADY_REGISTERED.String() && e.Code == 400
+}
+
+func ErrorContestAlreadyRegistered(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ContestErrorReason_CONTEST_ALREADY_REGISTERED.String(), fmt.Sprintf(format, args...))
+}

@@ -37,10 +37,6 @@ const basicColumn:TableColumnProps[] = [
 
 const App = ({contest}) => {
   const [loading, setLoading] = useState(true);
-  const [standings, setStandings] = useState([]);
-  const [problems, setProblems] = useState([]);
-  const [statuses, setStatuses] = useState([]);
-  const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({
     sizeCanChange: true,
     showTotal: true,
@@ -50,55 +46,61 @@ const App = ({contest}) => {
     pageSizeChangeResetCurrent: true,
   });
   const [columns, setColumns] = useState<TableColumnProps[]>([]);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
-  const processTeamData = (users, problems, statuses) => {
+  const processTeamData = (users, problems, submissions) => {
     // let res:StandingsRow[] = []
-    let res = {}
-    let first_blood = {}
-    users.forEach(value => {
-      res[value.id] = {}
-      res[value.id].user_id = value.id
-      res[value.id].who = value.nickname
-      res[value.id].solved = 0
-      res[value.id].problem = {}
+    // 初始化用户排名数据
+    let res = {};
+    users.forEach(user => {
+      res[user.id] = {};
+      res[user.id].userId = user.id;
+      res[user.id].who = user.nickname;
+      res[user.id].solved = 0;
+      res[user.id].problem = {};
       problems.forEach(p => {
-        res[value.id].problem[p.key] = {
+        res[user.id].problem[p.number] = {
           attempted: 0,
-          is_first_blood: false,
-          status: 'unsubmit',
+          isFirstBlood: false,
+          status: 'UNSUBMIT',
           score: 0
         }
       })
     })
-    statuses.sort((a, b) => {
-      return a.interval - b.interval
-    })
-    statuses.forEach(value => {
-      if (res[value.user_id].problem[value.problem_id].status === 'correct') {
-        return
+    // submissions.sort((a, b) => {
+    //   return a.sinceStarted - b.sinceStarted
+    // })
+    let firstBlood = {}
+    submissions.forEach(submission => {
+      // 已经通过，则直接跳过
+      const problemNumber = submission.problemNumber;
+      const uid = submission.userId;
+      if (res[uid].problem[problemNumber].status === 'CORRECT') {
+        return;
       }
-      if (value.status === 'correct') {
-        if (!first_blood[value.problem_id]) {
-          first_blood[value.problem_id] = value.user_id
-          res[value.user_id].problem[value.problem_id].is_first_blood = true
+      if (submission.status === 'CORRECT') {
+        // 记录一血
+        if (!firstBlood[problemNumber]) {
+          firstBlood[problemNumber] = uid;
+          res[uid].problem[problemNumber].isFirstBlood = true;
         }
-        res[value.user_id].solved++
+        res[uid].solved++
       }
-      res[value.user_id].problem[value.problem_id].score =
-        Math.max(res[value.user_id].problem[value.problem_id].score, value.score)
-      res[value.user_id].problem[value.problem_id].attempted++
-      res[value.user_id].problem[value.problem_id].status = value.status
+      res[uid].problem[problemNumber].score =
+        Math.max(res[uid].problem[problemNumber].score, submission.score)
+      res[uid].problem[problemNumber].attempted++
+      res[uid].problem[problemNumber].status = submission.status
     })
     const arr = []
     Object.keys(res).forEach(key => {
       const item = {
-        user_id: res[key].user_id,
+        userId: res[key].userId,
         who: res[key].who,
         solved: res[key].solved,
-        score: 0
+        score: 0,
       };
       const problems = res[key].problem
+      // 计算所得总分
       let score = 0
       Object.keys(problems).forEach(k => {
         item[`problem_${k}`] = problems[k]
@@ -117,21 +119,59 @@ const App = ({contest}) => {
       arr[i].rank = i + 1      
     }
     setPagination({ ...pagination, total: arr.length });
-    setData(arr)
+    setData(arr);
   }
 
   const getCellColorClassName = (col) => {
-    if (col.status === 'correct') {
-      if (col.is_first_blood) {
+    if (col.status === 'CORRECT') {
+      if (col.isFirstBlood) {
         return styles['solved-first']
       }
       return styles['solved']
-    } else if (col.status === 'pending') {
+    } else if (col.status === 'PENDING') {
       return styles['pending']
-    } else if (col.status === 'incorrect') {
+    } else if (col.status === 'INCORRECT') {
       return styles['attempted']
     }
     return ''
+  }
+
+  const generateTableHeader = (problems) => {
+    const t = [...basicColumn];
+    problems.forEach(problem => {
+      t.push({
+        title: String.fromCharCode(65 + problem.number),
+        dataIndex: `problem_${problem.number}`,
+        align: 'center',
+        bodyCellStyle: {
+          padding: '3px',
+          margin: '0',
+        },
+        render: (col, record) => (
+          <>
+            {col.status !== 'UNSUBMIT' && (
+              <div className={styles['table-cell'] + ' ' + getCellColorClassName(col)}>
+                {col.status === 'CORRECT' && (
+                  <IconCheckCircle className={styles['table-cell-icon']} />
+                )}
+                {col.status === 'PENDING' && (
+                  <IconQuestionCircle className={styles['table-cell-icon']} />
+                )}
+                {col.status === 'INCORRECT' && (
+                  <IconCloseCircle className={styles['table-cell-icon']} />
+                )}
+                <span className={styles['table-cell-text']}>
+                  <strong>{col.attempted}</strong>
+                  <br />
+                  <small>{col.score}</small>
+                </span>
+              </div>
+            )}
+          </>
+        ),
+      });
+    })
+    setColumns(t)
   }
 
   function fetchData() {
@@ -142,43 +182,9 @@ const App = ({contest}) => {
     Promise.all([p1, p2, p3])
       .then((values) => {
         const problems = values[1].data.data;
-        const t:TableColumnProps[] = [...basicColumn];
-        problems.forEach(v => {
-          t.push({
-            title: String.fromCharCode(65 + v.number),
-            dataIndex: `problem_${String.fromCharCode(65 + v.number)}`,
-            align: 'center',
-            bodyCellStyle: {
-              padding: '3px',
-              margin: '0',
-            },
-            render: (col, record, index) => (
-              <>
-                {col.status !== 'unsubmit' && (
-                  <div className={styles['table-cell'] + ' ' + getCellColorClassName(col)}>
-                    {col.status === 'correct' && (
-                      <IconCheckCircle className={styles['table-cell-icon']} />
-                    )}
-                    {col.status === 'pending' && (
-                      <IconQuestionCircle className={styles['table-cell-icon']} />
-                    )}
-                    {col.status === 'incorrect' && (
-                      <IconCloseCircle className={styles['table-cell-icon']} />
-                    )}
-                    <span className={styles['table-cell-text']}>
-                      <strong>{col.attempted}</strong>
-                      <br />
-                      <small>{col.score}</small>
-                    </span>
-                  </div>
-                )}
-              </>
-            ),
-          });
-        })
-        setColumns(t)
         const users = values[2].data.data;
         const submissions = values[0].data.data;
+        generateTableHeader(problems);
         processTeamData(users, problems, submissions);
       })
       .finally(() => {
@@ -222,6 +228,7 @@ const App = ({contest}) => {
         columns={columns}
         data={data}
         border={false}
+        loading={loading}
         pagination={pagination}
         onChange={onChangeTable}
       />

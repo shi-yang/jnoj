@@ -25,7 +25,7 @@ function App() {
       setConfirmLoading(true);
       createContest(data).then(res => {
         Message.success('创建成功')
-        router.push(`/contests/${res.data.id}/setting`)
+        router.push(`/contests/${res.data.id}`)
       }).finally(() => {
         setConfirmLoading(false);
       })

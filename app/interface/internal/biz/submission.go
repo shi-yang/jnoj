@@ -29,12 +29,14 @@ type Submission struct {
 }
 
 type SubmissionResult struct {
-	Score      int
-	Verdict    int
-	CompileMsg string
-	Memory     int64
-	Time       int64
-	Tests      []*SubmissionTest
+	Score             int
+	Verdict           int
+	CompileMsg        string
+	Memory            int64
+	Time              int64
+	TotalTestCount    int
+	AcceptedTestCount int
+	Tests             []*SubmissionTest
 }
 
 type SubmissionTest struct {
@@ -125,9 +127,13 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 	s.Verdict = SubmissionVerdictPending
 	// 处理比赛的提交
 	if s.ContestID != 0 {
+		// TODO 判断提交权限
 		_, err := uc.contestRepo.GetContest(ctx, s.ContestID)
 		if err != nil {
 			return nil, v1.ErrorContestNotFound(err.Error())
+		}
+		if !uc.contestRepo.ExistContestUser(ctx, s.ContestID, s.UserID) {
+			uc.contestRepo.CreateContestUser(ctx, &ContestUser{ContestID: s.ContestID, UserID: s.UserID})
 		}
 		contestProblem, err := uc.contestRepo.GetContestProblemByNumber(ctx, s.ContestID, s.ProblemNumber)
 		if err != nil {

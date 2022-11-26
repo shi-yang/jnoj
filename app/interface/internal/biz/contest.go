@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"jnoj/internal/middleware/auth"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -14,15 +15,23 @@ type Contest struct {
 	Name             string
 	StartTime        time.Time
 	EndTime          time.Time
-	FrozenTime       *time.Time
-	Type             int
+	FrozenTime       *time.Time // 封榜时间
+	Type             int        // 比赛类型
 	Description      string
-	Status           int
+	Status           int // 隐藏，公开，私有
 	UserID           int
-	ParticipantCount int
+	ParticipantCount int    // 参与人数
+	IsRegistered     bool   // 是否参赛
+	Role             string // 当前登录用户的角色
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
+
+const (
+	ContestRoleGuest  = "guest"
+	ContestRolePlayer = "player"
+	ContestRoleAdmin  = "admin"
+)
 
 type ContestSubmission struct {
 	ID            int
@@ -41,6 +50,81 @@ const (
 	ContestTypeIOI             // IOI 赛制 International Olympiad in Informatics
 	ContestTypeOI              // OI 赛制 Olympiad in Informatics
 )
+
+const (
+	ContestStatusHidden  = iota + 1 // 隐藏
+	ContestStatusPublic             // 公开
+	ContestStatusPrivate            // 私有
+)
+
+const (
+	ContestRunningStatusNotStarted      = iota + 1 // 尚未开始
+	ContestRunningStatusInProgress                 // 进行中
+	ContestRunningStatusFrozenStandings            // 封榜
+	ContestRunningStatusFinished                   // 已结束
+)
+
+// GetRunningStatus 获取比赛的状态，是否开始、进行中、封榜、已结束
+func (c *Contest) GetRunningStatus() int {
+	now := time.Now()
+	if now.Before(c.StartTime) {
+		return ContestRunningStatusNotStarted
+	} else if c.FrozenTime != nil && now.Before(*c.FrozenTime) {
+		return ContestRunningStatusFrozenStandings
+	} else if now.Before(c.EndTime) {
+		return ContestRunningStatusInProgress
+	}
+	return ContestRunningStatusFinished
+}
+
+// 比赛权限
+type ContestPermissionType int32
+
+const (
+	ContestPermissionView   ContestPermissionType = 0 // 查看权限
+	ContestPermissionUpdate ContestPermissionType = 1 // 修改权限
+)
+
+// HasPermission 是否有权限
+// 修改权限，仅比赛创建人可以看
+// 查看权限，规则要求：
+// 1、公开情况下，比赛结束
+// 2、管理员
+// 3、比赛不是不可见状态
+// 4、参赛用户
+func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bool {
+	userID, _ := auth.GetUserID(ctx)
+	if t == ContestPermissionUpdate {
+		return c.UserID == userID
+	}
+	if c.UserID == userID {
+		return true
+	}
+	if c.Status == ContestStatusHidden {
+		return false
+	}
+	runningStatus := c.GetRunningStatus()
+	if c.Status == ContestStatusPublic && runningStatus == ContestRunningStatusFinished {
+		return true
+	}
+	// 调用该函数前确保设置了 Role
+	if c.Role == ContestRolePlayer {
+		return true
+	}
+	return false
+}
+
+func (c *Contest) setRole(loginId int, isRegistered bool) {
+	c.IsRegistered = isRegistered
+	// 判断登录用户角色
+	if c.UserID == loginId {
+		c.Role = ContestRoleAdmin
+	} else if c.IsRegistered {
+		c.Role = ContestRolePlayer
+	} else {
+		c.Role = ContestRoleGuest
+	}
+}
 
 // ContestRepo is a Contest repo.
 type ContestRepo interface {
@@ -80,7 +164,16 @@ func (uc *ContestUsecase) ListContests(ctx context.Context, req *v1.ListContests
 
 // GetContest get a Contest
 func (uc *ContestUsecase) GetContest(ctx context.Context, id int) (*Contest, error) {
-	return uc.repo.GetContest(ctx, id)
+	contest, err := uc.repo.GetContest(ctx, id)
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	uid, isLogin := auth.GetUserID(ctx)
+	if isLogin {
+		isRegistered := uc.repo.ExistContestUser(ctx, contest.ID, uid)
+		contest.setRole(uid, isRegistered)
+	}
+	return contest, nil
 }
 
 // CreateContest creates a Contest, and returns the new Contest.

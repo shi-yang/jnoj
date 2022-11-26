@@ -48,12 +48,12 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 
 // 题目详情
 func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemRequest) (*v1.Problem, error) {
-	// if ok := s.uc.HasPermission(ctx, int(req.Id), "view"); !ok {
-	// 	return nil, v1.ErrorPermissionDenied("permission denied")
-	// }
 	data, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
-		return nil, err
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if !data.HasPermission(ctx, biz.ProblemPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	resp := &v1.Problem{
 		Id:            int32(data.ID),
@@ -102,10 +102,14 @@ func (s *ProblemService) CreateProblem(ctx context.Context, req *v1.CreateProble
 
 // 创建题目
 func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProblemRequest) (*v1.Problem, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	_, err := s.uc.UpdateProblem(ctx, &biz.Problem{
+	_, err = s.uc.UpdateProblem(ctx, &biz.Problem{
 		ID:          int(req.Id),
 		TimeLimit:   req.TimeLimit,
 		MemoryLimit: req.MemoryLimit,
@@ -116,7 +120,11 @@ func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProble
 
 // 获取题目描述列表
 func (s *ProblemService) ListProblemStatements(ctx context.Context, req *v1.ListProblemStatementsRequest) (*v1.ListProblemStatementsResponse, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, count := s.uc.ListProblemStatements(ctx, req)
@@ -143,7 +151,11 @@ func (s *ProblemService) GetProblemStatement(ctx context.Context, req *v1.GetPro
 
 // 创建题目描述
 func (s *ProblemService) CreateProblemStatement(ctx context.Context, req *v1.CreateProblemStatementRequest) (*v1.ProblemStatement, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.CreateProblemStatement(ctx, &biz.ProblemStatement{
@@ -160,7 +172,11 @@ func (s *ProblemService) CreateProblemStatement(ctx context.Context, req *v1.Cre
 
 // 更新题目描述
 func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.UpdateProblemStatementRequest) (*v1.ProblemStatement, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.UpdateProblemStatement(ctx, &biz.ProblemStatement{
@@ -182,10 +198,14 @@ func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.Upd
 
 // DeleteProblemStatement 删除题目描述
 func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.DeleteProblemStatementRequest) (*emptypb.Empty, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err := s.uc.DeleteProblemStatement(ctx, int(req.Sid))
+	err = s.uc.DeleteProblemStatement(ctx, int(req.Sid))
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +214,11 @@ func (s *ProblemService) DeleteProblemStatement(ctx context.Context, req *v1.Del
 
 // ListProblemTests 获取题目测试点列表
 func (s *ProblemService) ListProblemTests(ctx context.Context, req *v1.ListProblemTestsRequest) (*v1.ListProblemTestsResponse, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	data, count := s.uc.ListProblemTests(ctx, req)
@@ -221,7 +245,11 @@ func (s *ProblemService) GetProblemTest(ctx context.Context, req *v1.GetProblemT
 
 // 创建题目测试点
 func (s *ProblemService) CreateProblemTest(ctx context.Context, req *v1.CreateProblemTestRequest) (*v1.ProblemTest, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.CreateProblemTest(ctx, &biz.ProblemTest{
@@ -266,7 +294,11 @@ func (s *ProblemService) UploadProblemTest(ctx http.Context) error {
 
 // 更新题目测试点
 func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdateProblemTestRequest) (*v1.ProblemTest, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	s.uc.UpdateProblemTest(ctx, &biz.ProblemTest{
@@ -280,25 +312,37 @@ func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdatePr
 
 // 删除题目测试点
 func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeleteProblemTestRequest) (*emptypb.Empty, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err := s.uc.DeleteProblemTest(ctx, int64(req.Id), req.Tid)
+	err = s.uc.DeleteProblemTest(ctx, int64(req.Id), req.Tid)
 	return &emptypb.Empty{}, err
 }
 
 // 对题目测试点进行排序
 func (s *ProblemService) SortProblemTests(ctx context.Context, req *v1.SortProblemTestsRequest) (*emptypb.Empty, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err := s.uc.SortProblemTests(ctx, req.Ids)
+	err = s.uc.SortProblemTests(ctx, req.Ids)
 	return &emptypb.Empty{}, err
 }
 
 // 获取题目文件列表
 func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProblemFilesRequest) (*v1.ListProblemFilesResponse, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, count := s.uc.ListProblemFiles(ctx, req)
@@ -318,7 +362,11 @@ func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProbl
 
 // 获取题目文件详情
 func (s *ProblemService) GetProblemFile(ctx context.Context, req *v1.GetProblemFileRequest) (*v1.ProblemFile, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.GetProblemFile(ctx, int(req.Sid))
@@ -338,7 +386,11 @@ func (s *ProblemService) GetProblemFile(ctx context.Context, req *v1.GetProblemF
 
 // 创建题目文件
 func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreateProblemFileRequest) (*v1.ProblemFile, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.CreateProblemFile(ctx, &biz.ProblemFile{
@@ -358,7 +410,11 @@ func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreatePr
 
 // 更新题目文件
 func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdateProblemFileRequest) (*v1.ProblemFile, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	s.uc.UpdateProblemFile(ctx, &biz.ProblemFile{
@@ -372,7 +428,11 @@ func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdatePr
 
 // 删除题目文件
 func (s *ProblemService) DeleteProblemFile(ctx context.Context, req *v1.DeleteProblemFileRequest) (*emptypb.Empty, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	s.uc.DeleteProblemFile(ctx, int(req.Sid))
@@ -386,7 +446,11 @@ func (s *ProblemService) RunProblemFile(ctx context.Context, req *v1.RunProblemF
 
 // 获取题目文件列表
 func (s *ProblemService) ListProblemStdCheckers(ctx context.Context, req *v1.ListProblemStdCheckersRequest) (*v1.ListProblemStdCheckersResponse, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, _ := s.uc.ListProblemFiles(ctx, &v1.ListProblemFilesRequest{
@@ -406,23 +470,35 @@ func (s *ProblemService) ListProblemStdCheckers(ctx context.Context, req *v1.Lis
 }
 
 func (s *ProblemService) VerifyProblem(ctx context.Context, req *v1.VerifyProblemRequest) (*emptypb.Empty, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err := s.uc.VerifyProblem(ctx, int(req.Id))
+	err = s.uc.VerifyProblem(ctx, int(req.Id))
 	return &emptypb.Empty{}, err
 }
 
 func (s *ProblemService) UpdateProblemChecker(ctx context.Context, req *v1.UpdateProblemCheckerRequest) (*emptypb.Empty, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err := s.uc.UpdateProblemChecker(ctx, int(req.Id), int(req.CheckerId))
+	err = s.uc.UpdateProblemChecker(ctx, int(req.Id), int(req.CheckerId))
 	return &emptypb.Empty{}, err
 }
 
 func (s *ProblemService) GetProblemVerification(ctx context.Context, req *v1.GetProblemVerificationRequest) (*v1.ProblemVerification, error) {
-	if ok := s.uc.HasPermission(ctx, int(req.Id), "update"); !ok {
+	p, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	resp := new(v1.ProblemVerification)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout } from '@arco-design/web-react';
+import { Divider, Layout } from '@arco-design/web-react';
 import LayoutHeader from './LayoutHeader';
 import styles from './style/main-layouts.module.less'
 import { useAppSelector } from '@/hooks';
@@ -22,9 +22,12 @@ const App = ({ children }) => {
           <div style={{padding: '15px 0'}}>
             &copy; 2022 {settings.name} 
             {settings.beian && (
-              <a href="https://beian.miit.gov.cn" target="_blank">
-                {settings.beian}
-              </a>
+              <>
+                <Divider type='vertical' />
+                <a href="https://beian.miit.gov.cn" target="_blank">
+                  {settings.beian}
+                </a>
+              </>
             )}
           </div>
         </div>

@@ -43,6 +43,13 @@
             "format": "int32"
           },
           {
+            "name": "contestId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -290,6 +297,15 @@
         "source": {
           "type": "string",
           "title": "源码"
+        },
+        "contestId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "比赛相关"
+        },
+        "problemNumber": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

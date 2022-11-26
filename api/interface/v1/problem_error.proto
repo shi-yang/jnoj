@@ -11,4 +11,5 @@ enum ProblemErrorReason {
     UNKNOWN_ERROR = 0;
     PERMISSION_DENIED = 1 [(errors.code) = 403];
     PROBLEM_NOT_FOUND = 2 [(errors.code) = 404];
+    PROBLEM_NOT_VERIFICATION = 3[(errors.code) = 400];
 }

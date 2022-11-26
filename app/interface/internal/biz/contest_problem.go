@@ -47,9 +47,16 @@ func (uc *ContestUsecase) GetContestProblem(ctx context.Context, cid int, number
 // CreateContestProblem creates a ContestProblem, and returns the new ContestProblem.
 func (uc *ContestUsecase) CreateContestProblem(ctx context.Context, c *ContestProblem) (*ContestProblem, error) {
 	// 检查题目是否存在
-	_, err := uc.problemRepo.GetProblem(ctx, c.ProblemID)
+	problem, err := uc.problemRepo.GetProblem(ctx, c.ProblemID)
 	if err != nil {
 		return nil, errors.New("题目不存在")
+	}
+	if !problem.HasPermission(ctx, ProblemPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	verification, err := uc.problemRepo.GetProblemVerification(ctx, c.ProblemID)
+	if err != nil || verification.VerificationStatus != VerificationStatusSuccess {
+		return nil, v1.ErrorProblemNotVerification("problem not verification")
 	}
 	// 检查题目是否已经在比赛里
 	_, err = uc.repo.GetContestProblemByProblemID(ctx, c.ContestID, c.ProblemID)

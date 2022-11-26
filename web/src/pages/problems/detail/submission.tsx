@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collapse, Divider } from '@arco-design/web-react';
+import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collapse, Divider, Typography, Space } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { getSubmission, getSubmissionInfo, LanguageMap, listSubmissions, VerdictMap } from '@/api/submission';
-import styles from './style/description.module.less'
-import { FormatTime } from '@/utils/format';
+import { getSubmission, getSubmissionInfo, LanguageMap, listSubmissions, VerdictColorMap, VerdictMap } from '@/api/submission';
+import styles from './style/submission.module.less'
+import { FormatMemorySize, FormatTime } from '@/utils/format';
 import Highlight from '@/components/Highlight';
 const CollapseItem = Collapse.Item;
 
@@ -12,7 +12,7 @@ const Submission = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [submissionInfo, setSubmissionInfo] = useState({tests: [], compileMsg: ''});
+  const [submissionInfo, setSubmissionInfo] = useState({tests: [], compileMsg: '', acceptedTestCount: 0, totalTestCount: 0});
   const [submission, setSubmission] = useState({source: ''})
   const [visible, setVisible] = useState(false);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -61,6 +61,7 @@ const Submission = (props) => {
       current,
       pageSize,
     });
+    fetchData()
   }
   const columns: TableColumnProps[] = [
     {
@@ -78,7 +79,7 @@ const Submission = (props) => {
       title: t['verdict'],
       dataIndex: 'verdict',
       align: 'center',
-      render: (col) => VerdictMap[col]
+      render: (col) => <Typography.Text bold type={VerdictColorMap[col]}>{VerdictMap[col]}</Typography.Text>
     },
     {
       title: t['time'],
@@ -90,16 +91,12 @@ const Submission = (props) => {
       title: t['memory'],
       dataIndex: 'memory',
       align: 'center',
-      render: (col) => {
-        if (col < 1024 * 1024) {
-          return (col / 1024).toFixed(2) + 'MB';
-        }
-        return (col / 1024 / 1024).toFixed(2) + 'KB';
-      }
+      render: (col) => FormatMemorySize(col)
     },
     {
       title: t['createdAt'],
       dataIndex: 'createdAt',
+      align: 'center',
       render: (col) => FormatTime(col)
     },
     {
@@ -117,33 +114,47 @@ const Submission = (props) => {
     fetchData();
   }, []);
   return (
-    <Card>
+    <Card style={{height: '100%', overflow: 'auto'}}>
       <Drawer
         width={900}
         title={<span>{t['submission']}</span>}
         visible={visible}
-        onOk={() => {
-          setVisible(false);
-        }}
         onCancel={() => {
           setVisible(false);
         }}
+        footer={null}
       >
+        <Typography.Title heading={4}>源码</Typography.Title>
         <Highlight content={submission.source} />
-        <Divider />
         {submissionInfo.compileMsg != '' && (
-          <pre>
-            {submissionInfo.compileMsg}
-          </pre>
+          <>
+            <Divider />
+            <Typography.Title heading={4}>编译信息</Typography.Title>
+            <Highlight content={submissionInfo.compileMsg} />
+          </>
         )}
+        <Divider />
+        <Typography.Title heading={4}>测试点</Typography.Title>
+        <div>
+          {submissionInfo.acceptedTestCount} / {submissionInfo.totalTestCount}
+        </div>
         <Collapse
           style={{ maxWidth: 1180 }}
         >
           {
             submissionInfo.tests.map((item, index) => (
-              <CollapseItem header={
-                (<div>Test #{index + 1}: {VerdictMap[item.verdict]}, Time: {item.time}, Memory: {item.memory}</div>)
-              } name={`${index}`} key={index}>
+              <CollapseItem
+                header={(
+                  <Space split={<Divider type='vertical' />}>
+                    <span>#{index + 1}</span>
+                    <Typography.Text bold type={VerdictColorMap[item.verdict]}>{VerdictMap[item.verdict]}</Typography.Text>
+                    <span>{t['time']}: {(item.time / 1000)} ms</span>
+                    <span>{t['memory']}: {FormatMemorySize(item.memory)}</span>
+                  </Space>
+                )}
+                name={`${index}`}
+                key={index}
+              >
                 <div className={styles['sample-test']} key={index}>
                   <div className={styles.input}>
                     <h4>{t['input']}</h4>

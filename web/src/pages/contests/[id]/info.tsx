@@ -39,41 +39,41 @@ function StatisticItem(props: StatisticItemType) {
   );
 }
 
-const columns: TableColumnProps[] = [
-  {
-    title: 'Problem',
-    dataIndex: 'name',
-    render: (col, record, index) => (
-      <>
-        {String.fromCharCode(65 + record.number)}. {record.name}
-      </>
-    ),
-  },
-  {
-    title: 'Accepted / Submitted',
-    dataIndex: 'accpeted',
-    align: 'center',
-    render: (col, record, index) => (
-      <>
-        {record.acceptedCount} / {record.submitCount}
-      </>
-    ),
-  },
-  {
-    title: 'Solved',
-    dataIndex: 'solved',
-    align: 'center',
-    render: (col, record, index) => (
-      <>
-        {record.is_solved && (<IconCheckCircle />)}
-      </>
-    ),
-  },
-];
 function Info({contest}) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [problems, setProblems] = useState([])
+  const columns: TableColumnProps[] = [
+    {
+      title: t['info.table.column.problem'],
+      dataIndex: 'name',
+      render: (col, record, index) => (
+        <>
+          {String.fromCharCode(65 + record.number)}. {record.name}
+        </>
+      ),
+    },
+    {
+      title: t['info.table.column.acceptedSubmitted'],
+      dataIndex: 'accpeted',
+      align: 'center',
+      render: (col, record, index) => (
+        <>
+          {record.acceptedCount} / {record.submitCount}
+        </>
+      ),
+    },
+    {
+      title: t['info.table.column.isSolved'],
+      dataIndex: 'solved',
+      align: 'center',
+      render: (col, record, index) => (
+        <>
+          {record.is_solved && (<IconCheckCircle />)}
+        </>
+      ),
+    },
+  ];
   function fetchData() {
     setLoading(true);
     listContestProblems(contest.id)
@@ -113,15 +113,6 @@ function Info({contest}) {
             icon={<IconCalendar />}
             title='提交数量'
             count={123}
-            loading={loading}
-          />
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title='题目数量'
-            count={234}
             loading={loading}
           />
         </Col>

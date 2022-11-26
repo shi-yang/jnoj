@@ -89,6 +89,25 @@
             "format": "int32"
           },
           {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -273,6 +292,10 @@
                 "memoryLimit": {
                   "type": "string",
                   "format": "int64"
+                },
+                "status": {
+                  "type": "integer",
+                  "format": "int32"
                 }
               }
             }
@@ -478,7 +501,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemFile"
+              "properties": {}
             }
           },
           "default": {
@@ -662,7 +685,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ProblemStatement"
+              "properties": {}
             }
           },
           "default": {
@@ -783,6 +806,54 @@
             "required": true,
             "type": "integer",
             "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problems/{id}/test/sort": {
+      "post": {
+        "summary": "对题目测试点进行排序",
+        "operationId": "ProblemService_SortProblemTests",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         ],
         "tags": [
@@ -1174,7 +1245,7 @@
             "$ref": "#/definitions/v1Problem"
           }
         },
-        "count": {
+        "total": {
           "type": "string",
           "format": "int64"
         }
@@ -1214,6 +1285,14 @@
           "format": "int32"
         },
         "submitCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "checkerId": {
           "type": "integer",
           "format": "int32"
         },

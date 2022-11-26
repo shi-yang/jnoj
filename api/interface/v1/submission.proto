@@ -87,6 +87,8 @@ message SubmissionInfo {
     string compile_msg = 1;
     int64 memory = 2;
     int64 time = 3;
+    int32 total_test_count = 4;
+    int32 accepted_test_count = 5;
     message SubmissionTest {
         int32 verdict = 1;
         string stdin = 2;
@@ -100,5 +102,5 @@ message SubmissionInfo {
         string checker_stdout = 10;
         int32 checker_exit_code = 11;
     }
-    repeated SubmissionTest tests = 4;
+    repeated SubmissionTest tests = 6;
 }

@@ -84,8 +84,10 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		EndTime:          res.EndTime,
 		FrozenTime:       res.FrozenTime,
 		Type:             res.Type,
+		Status:           res.Status,
 		Description:      res.Description,
 		ParticipantCount: res.ParticipantCount,
+		UserID:           res.UserID,
 		CreatedAt:        res.CreatedAt,
 	}, err
 }

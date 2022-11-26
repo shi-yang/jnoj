@@ -63,22 +63,14 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (r
 	res.Stderr = runRes.Stderr
 	res.ErrMsg = runRes.Err
 	if req.CheckerSource != nil {
-		var checker = sandbox.Language{
-			Name: "checker",
-			CompileCommand: []string{"g++", "checker.cpp", "-o", "checker.exe", "-I" + uc.conf.TestlibPath, "-Wall",
-				"-fno-asm", "-O2", "-lm", "--static", "-std=c++11", "-DONLINE_JUDGE", "-save-temps", "-fmax-errors=10"},
-			RunCommand:   []string{"./checker.exe", "data.in", "user.stdout", "data.out"},
-			CodeFileName: "checker.cpp",
-			IsVMRun:      false,
-		}
-		err := sandbox.Compile(workDir, *req.CheckerSource, &checker)
+		err := sandbox.Compile(workDir, *req.CheckerSource, checkerLanguage)
 		if err != nil {
 			uc.log.Info("sandbox.Compile err:", err)
 		}
 		_ = os.WriteFile(filepath.Join(workDir, "user.stdout"), []byte(res.Stdout), 0444)
 		_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(req.Stdin), 0444)
 		_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(*req.Answer), 0444)
-		checkerRes := sandbox.Run(workDir, &checker, []byte(""), 256, 10000)
+		checkerRes := sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 2000)
 		res.CheckerExitCode = int32(checkerRes.ExitCode)
 		res.CheckerStdout = checkerRes.Stderr
 	}

@@ -16,6 +16,7 @@ const i18n = {
     'memory': 'Memory',
     'answer': 'Answer',
     'submission': 'Submission',
+    'console.runCode': 'Run Code',
   },
   'zh-CN': {
     'submit': '提交',
@@ -34,6 +35,7 @@ const i18n = {
     'memory': '内存',
     'answer': '答案',
     'submission': '提交',
+    'console.runCode': '运行',
   },
 };
 

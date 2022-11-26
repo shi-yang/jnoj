@@ -1,5 +1,11 @@
 import axios from '@/utils/request';
 
+export enum ContestRole {
+  GUEST = 'GUEST',
+  PLAYER = 'PLAYER',
+  ADMIN = 'ADMIN',
+};
+
 export function getContest(id) {
   return axios.get(`/contests/${id}`)
 }

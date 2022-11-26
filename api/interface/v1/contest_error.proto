@@ -10,4 +10,5 @@ enum ContestErrorReason {
 
     CONTEST_NOT_FOUND = 0 [(errors.code) = 404];
     CONTEST_PROBLEM_NOT_FOUND = 1 [(errors.code) = 404];
+    CONTEST_ALREADY_REGISTERED = 2 [(errors.code) = 400];
 }

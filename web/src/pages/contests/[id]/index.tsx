@@ -8,6 +8,9 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { FormatTime } from '@/utils/format';
 import { useRouter } from 'next/router';
+import { useAppSelector } from '@/hooks';
+import { setting, SettingState } from '@/store/reducers/setting';
+import Head from 'next/head';
 
 const Info = lazy(() => import('./info'));
 const Problem = lazy(() => import('./problem'));
@@ -27,7 +30,7 @@ const normalWidth = 220;
 
 function Index() {
   const t = useLocale(locale);
-  const [data, setData] = useState({name: '', startTime: new Date(), endTime: new Date()});
+  const [contest, setContest] = useState({name: '', startTime: new Date(), endTime: new Date()});
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [siderWidth, setSiderWidth] = useState(normalWidth);
@@ -36,6 +39,7 @@ function Index() {
   const [sliderValue, setSliderValue] = useState(0);
   const [menuSelected, setMenuSelected] = useState('info');
   const [problemNumber, setProblemNumber] = useState('A');
+  const settings = useAppSelector<SettingState>(setting);
   const router = useRouter();
 
   let timer = null;
@@ -45,8 +49,8 @@ function Index() {
     getContest(router.query.id)
       .then((res) => {
         const { data } = res;
-        setData(data);
-        updateTime(data.startTime, data.endTime)
+        setContest(data);
+        updateTime(contest.startTime, contest.endTime)
       })
       .finally(() => {
         setLoading(false);
@@ -103,13 +107,16 @@ function Index() {
   return (
     (!loading &&
       <div className={styles['contest-layout-basic']}>
+        <Head>
+          <title>{`${contest.name} - ${settings.name}`}</title>
+        </Head>
         <Layout style={{height: '100%'}}>
           <Header>
-            <Typography.Title className={styles.title}>{data.name}</Typography.Title>
+            <Typography.Title className={styles.title}>{contest.name}</Typography.Title>
             <Row style={{padding: '20px 20px 0 20px'}}>
               <Col md={8}>
                 <div>
-                  <strong>{t['header.start']}</strong> {FormatTime(data.startTime)}
+                  <strong>{t['header.start']}</strong> {FormatTime(contest.startTime)}
                 </div>
               </Col>
               <Col md={8}>
@@ -117,7 +124,7 @@ function Index() {
               </Col>
               <Col md={8} style={{textAlign: 'right'}}>
                 <div>
-                  <strong>{t['header.end']}</strong> {FormatTime(data.endTime)}
+                  <strong>{t['header.end']}</strong> {FormatTime(contest.endTime)}
                 </div>
               </Col>
             </Row>
@@ -154,11 +161,11 @@ function Index() {
             </Sider>
             <Content style={{ padding: '30px' }}>
               <Suspense>
-                {menuSelected === 'info' && <Info contest={data} />}
-                {menuSelected === 'setting' && <Setting contest={data} />}
-                {menuSelected === 'submission' && <Submission contest={data} />}
-                {menuSelected === 'standings' && <Standings contest={data} />}
-                {menuSelected === 'problem' && <Problem contest={data} number={problemNumber} />}
+                {menuSelected === 'info' && <Info contest={contest} />}
+                {menuSelected === 'setting' && <Setting contest={contest} />}
+                {menuSelected === 'submission' && <Submission contest={contest} />}
+                {menuSelected === 'standings' && <Standings contest={contest} />}
+                {menuSelected === 'problem' && <Problem contest={contest} number={problemNumber} />}
               </Suspense>
             </Content>
           </Layout>

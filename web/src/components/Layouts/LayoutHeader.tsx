@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { getUserInfo, userInfo } from '@/store/reducers/user';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { isLogged, removeAccessToken } from '@/utils/auth';
+import Logo from '@/assets/logo.png';
 
 const MenuItem = Menu.Item;
 
@@ -38,6 +39,7 @@ const LayoutHeader = () => {
     setIsMounted(true);
     dispatch(getUserInfo());
   }, []);
+  console.log(Logo)
 
   const droplist = (
     <Menu onClickMenuItem={onMenuItemClick}>
@@ -58,18 +60,11 @@ const LayoutHeader = () => {
         <Menu mode='horizontal' ellipsis={false} defaultSelectedKeys={['1']}>
           <MenuItem
             key='0'
-            style={{ padding: 0, marginRight: 38, }}
             disabled
           >
-            <div
-              style={{
-                width: 80,
-                height: 30,
-                borderRadius: 2,
-                background: 'var(--color-fill-3)',
-                cursor: 'text',
-              }}
-            />
+            <Link href='/'>
+              <img style={{width: 80, height: 30, cursor: 'pointer' }} src={Logo.src} />
+            </Link>
           </MenuItem>
           <MenuItem key='1'>
             <Link href='/'>{ t['menu.home'] }</Link>

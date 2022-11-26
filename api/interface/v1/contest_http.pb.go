@@ -22,6 +22,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+// auth.
 const OperationContestServiceCreateContest = "/jnoj.interface.v1.ContestService/CreateContest"
 const OperationContestServiceCreateContestProblem = "/jnoj.interface.v1.ContestService/CreateContestProblem"
 const OperationContestServiceCreateContestUser = "/jnoj.interface.v1.ContestService/CreateContestUser"
@@ -51,9 +52,11 @@ type ContestServiceHTTPServer interface {
 }
 
 func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServer) {
-	s.Use("/jnoj.interface.v1.ContestService/*Create*", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/CreateContest", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/*Update*", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/*Delete*", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/ListContests", auth.Guest())
+	s.Use("/jnoj.interface.v1.ContestService/GetContest", auth.Guest())
 	r := s.Route("/")
 	r.GET("/contests", _ContestService_ListContests0_HTTP_Handler(srv))
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))
