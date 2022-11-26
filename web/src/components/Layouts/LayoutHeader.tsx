@@ -39,7 +39,6 @@ const LayoutHeader = () => {
     setIsMounted(true);
     dispatch(getUserInfo());
   }, []);
-  console.log(Logo)
 
   const droplist = (
     <Menu onClickMenuItem={onMenuItemClick}>
@@ -63,7 +62,7 @@ const LayoutHeader = () => {
             disabled
           >
             <Link href='/'>
-              <img style={{width: 80, height: 30, cursor: 'pointer' }} src={Logo.src} />
+              <img style={{height: 21, cursor: 'pointer' }} src={Logo.src} />
             </Link>
           </MenuItem>
           <MenuItem key='1'>

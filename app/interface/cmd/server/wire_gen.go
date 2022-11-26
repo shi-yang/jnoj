@@ -42,7 +42,9 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	problemService := service.NewProblemService(problemUsecase)
 	submissionUsecase := biz.NewSubmissionUsecase(submissionRepo, problemRepo, contestRepo, sandboxServiceClient, logger)
 	submissionService := service.NewSubmissionService(submissionUsecase)
-	httpServer := server.NewHTTPServer(confServer, contestService, userService, problemService, submissionService, logger)
+	sandboxUsecase := biz.NewSandboxUsecase(sandboxServiceClient, logger)
+	sandboxService := service.NewSandboxService(sandboxUsecase)
+	httpServer := server.NewHTTPServer(confServer, contestService, userService, problemService, submissionService, sandboxService, logger)
 	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()

@@ -7,12 +7,12 @@ import {
   Select,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import locale from './detail/locale';
-import styles from './detail/style/index.module.less';
-import './detail/mock';
-import Editor from './detail/editor';
-import Description from './detail/description';
-import Submission from './detail/submission';
+import locale from './locale';
+import styles from './style/index.module.less';
+import './mock';
+import Editor from './editor';
+import Description from './description';
+import Submission from './submission';
 import { getProblem } from '@/api/problem';
 import { IconLanguage } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
@@ -117,7 +117,7 @@ function Index() {
                   </Tabs>
                 </div>,
                 <div key='second' className={styles.right}>
-                  <Editor problem={data} language={language} />
+                  <Editor problem={data} />
                 </div>,
               ]}
             />

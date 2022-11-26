@@ -17,6 +17,7 @@ func NewHTTPServer(c *conf.Server,
 	user *service.UserService,
 	problem *service.ProblemService,
 	submission *service.SubmissionService,
+	sandbox *service.SandboxService,
 	logger log.Logger,
 ) *http.Server {
 	var opts = []http.ServerOption{
@@ -48,5 +49,6 @@ func NewHTTPServer(c *conf.Server,
 	v1.RegisterProblemServiceHTTPServer(srv, problem)
 	v1.RegisterUserServiceHTTPServer(srv, user)
 	v1.RegisterSubmissionServiceHTTPServer(srv, submission)
+	v1.RegisterSandboxsServiceHTTPServer(srv, sandbox)
 	return srv
 }

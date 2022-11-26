@@ -17,6 +17,7 @@ const i18n = {
     'answer': 'Answer',
     'submission': 'Submission',
     'console.runCode': 'Run Code',
+    'console.addCase': 'Add Case',
   },
   'zh-CN': {
     'submit': '提交',
@@ -36,6 +37,7 @@ const i18n = {
     'answer': '答案',
     'submission': '提交',
     'console.runCode': '运行',
+    'console.addCase': '添加',
   },
 };
 

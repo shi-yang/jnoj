@@ -10,4 +10,5 @@ var ProviderSet = wire.NewSet(
 	NewDiscovery,
 	NewSandboxClient,
 	NewSubmissionUsecase,
+	NewSandboxUsecase,
 )

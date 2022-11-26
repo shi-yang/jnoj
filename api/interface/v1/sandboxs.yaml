@@ -1,0 +1,3 @@
+rules:
+- selector: "/jnoj.interface.v1.SandboxService/Run"
+  middleware: "jnoj/internal/middleware/auth.User()"
