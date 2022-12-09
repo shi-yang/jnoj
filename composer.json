@@ -12,23 +12,28 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=7.4.0",
         "yiisoft/yii2": "~2.0.5",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
-        "workerman/workerman": "dev-master",
-        "workerman/phpsocket.io": "dev-master",
-        "justinvoelker/yii2-tagging": "*"
+        "workerman/workerman": "~4.1.4",
+        "workerman/phpsocket.io": "~1.1.16"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
-        "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1",
-        "codeception/specify": "~0.4.3"
+        "codeception/codeception": "^5.0.0 || ^4.0",
+        "codeception/lib-innerbrowser": "^3.0 || ^1.1",
+        "codeception/module-asserts": "^3.0 || ^1.1",
+        "codeception/module-yii2": "^1.1",
+        "codeception/module-filesystem": "^2.0 || ^1.1",
+        "codeception/verify": "^2.2"
     },
     "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer" : true
+        },
         "process-timeout": 1800,
         "fxp-asset": {
             "enabled": false

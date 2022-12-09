@@ -1,7 +1,7 @@
 <?php
 namespace PHPSocketIO\Engine;
 use \PHPSocketIO\Event\Emitter;
-use \Workerman\Lib\Timer;
+use \Workerman\Timer;
 use \PHPSocketIO\Debug;
 class Socket extends Emitter
 {
@@ -261,7 +261,7 @@ class Socket extends Emitter
     
     public function send($data, $options, $callback)
     {
-        $this->sendPacket('message', $data, $options, $callback);
+        $this->sendPacket('message', $data, $callback);
         return $this;
     }
     

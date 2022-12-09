@@ -16,6 +16,7 @@ namespace Workerman\Connection;
 /**
  * ConnectionInterface.
  */
+#[\AllowDynamicProperties]
 abstract class  ConnectionInterface
 {
     /**
@@ -118,7 +119,7 @@ abstract class  ConnectionInterface
     /**
      * Close connection.
      *
-     * @param $data
+     * @param string|null $data
      * @return void
      */
     abstract public function close($data = null);

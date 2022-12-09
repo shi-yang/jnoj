@@ -1,8 +1,8 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
+ * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @license https://www.yiiframework.com/license/
  */
 
 namespace yii\data;
@@ -53,7 +53,7 @@ use yii\helpers\ArrayHelper;
 class ArrayDataProvider extends BaseDataProvider
 {
     /**
-     * @var string|callable the column that is used as the key of the data models.
+     * @var string|callable|null the column that is used as the key of the data models.
      * This can be either a column name, or a callable that returns the key value of a given data model.
      * If this is not set, the index of the [[models]] array will be used.
      * @see getKeys()
@@ -136,7 +136,7 @@ class ArrayDataProvider extends BaseDataProvider
     {
         $orders = $sort->getOrders();
         if (!empty($orders)) {
-            ArrayHelper::multisort($models, array_keys($orders), array_values($orders));
+            ArrayHelper::multisort($models, array_keys($orders), array_values($orders), $sort->sortFlags);
         }
 
         return $models;

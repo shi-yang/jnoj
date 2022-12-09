@@ -1,9 +1,8 @@
 version: '3'
 
 services:
-  myadminfortest:
+  phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: myadminfortest
     ports:
       - 8888:80
     depends_on:
@@ -15,19 +14,45 @@ services:
       - mysql:db
 
   mysql:
-    image: mysql:8.0
-    container_name: mysql
+    image: mysql:latest
     restart: always
     volumes:
-      - ./data/mysql/data:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
     environment:
       MYSQL_DATABASE: jnoj
       MYSQL_ROOT_PASSWORD: 123456
       TZ: Asia/Shanghai
+  
+  # judge:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile
+  #   restart: always
+  #   command: bash -c "make && ./dispatcher"
+  #   privileged: true
+  #   volumes:
+  #     - ./judge:/sandbox
+
+  # polygon:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile
+  #   command: bash -c "make && ./polygon"
+  #   restart: always
+  #   privileged: true
+  #   volumes:
+  #     - ./polygon:/sandbox
 
   php:
-    image: yiisoftware/yii2-php:7.4-apache
+    image: yiisoftware/yii2-php:8.1-fpm
     volumes:
       - ./:/app:delegated
+
+  web:
+    image: phundament/nginx-one:1.9-5.1.1
+    environment:
+      - FASTCGI_PASS_HOST=php
     ports:
-      - '8000:80'
+      - '8100:80'
+    volumes:
+      - ./:/app:delegated

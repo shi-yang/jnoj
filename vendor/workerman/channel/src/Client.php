@@ -1,11 +1,13 @@
 <?php
 namespace Channel;
-use Workerman\Lib\Timer;
+
 use Workerman\Connection\AsyncTcpConnection;
+use Workerman\Lib\Timer;
+use Workerman\Protocols\Frame;
 
 /**
  * Channel/Client
- * @version 1.0.5
+ * @version 1.0.7
  */
 class Client
 {
@@ -29,7 +31,7 @@ class Client
 
     /**
      * Connction to channel server.
-     * @var TcpConnection
+     * @var \Workerman\Connection\TcpConnection
      */
     protected static $_remoteConnection = null;
 
@@ -64,6 +66,12 @@ class Client
     protected static $_events = array();
 
     /**
+     * All queue callback.
+     * @var callable
+     */
+    protected static $_queues = array();
+
+    /**
      * @var bool
      */
     protected static $_isWorkermanEnv = true;
@@ -76,62 +84,82 @@ class Client
 
     /**
      * Connect to channel server
-     * @param string $ip
-     * @param int $port
-     * @return void
+     * @param string $ip Channel server ip address or unix domain socket address
+     * Ip like (TCP): 192.168.1.100
+     * Unix domain socket like: unix:///tmp/workerman-channel.sock
+     * @param int $port Port to connect when use tcp
      */
     public static function connect($ip = '127.0.0.1', $port = 2206)
     {
-        if(!self::$_remoteConnection)
-        {
-            self::$_remoteIp = $ip;
-            self::$_remotePort = $port;
-            if (PHP_SAPI !== 'cli' || !class_exists('Workerman\Worker', false)) {
-                self::$_isWorkermanEnv = false;
-            }
-            // For workerman environment.
-            if (self::$_isWorkermanEnv) {
-                self::$_remoteConnection = new AsyncTcpConnection('frame://' . self::$_remoteIp . ':' . self::$_remotePort);
-                self::$_remoteConnection->onClose = 'Channel\Client::onRemoteClose';
-                self::$_remoteConnection->onConnect = 'Channel\Client::onRemoteConnect';
-                self::$_remoteConnection->onMessage = 'Channel\Client::onRemoteMessage';
-                self::$_remoteConnection->connect();
+        if (self::$_remoteConnection) {
+            return;
+        }
 
-                if (empty(self::$_pingTimer)) {
-                    self::$_pingTimer = Timer::add(self::$pingInterval, 'Channel\Client::ping');
-                }
-                // Not workerman environment.
+        self::$_remoteIp = $ip;
+        self::$_remotePort = $port;
+
+        if (PHP_SAPI !== 'cli' || !class_exists('Workerman\Worker', false)) {
+            self::$_isWorkermanEnv = false;
+        }
+
+        // For workerman environment.
+        if (self::$_isWorkermanEnv) {
+            if (strpos($ip, 'unix://') === false) {
+                $conn = new AsyncTcpConnection('frame://' . self::$_remoteIp . ':' . self::$_remotePort);
             } else {
-                self::$_remoteConnection = stream_socket_client('tcp://'.self::$_remoteIp.':'.self::$_remotePort, $code, $message, 5);
-                if (!self::$_remoteConnection) {
-                    throw new \Exception($message);
-                }
+                $conn = new AsyncTcpConnection($ip);
+                $conn->protocol = Frame::class;
+            }
+
+            $conn->onClose = [self::class, 'onRemoteClose'];
+            $conn->onConnect = [self::class, 'onRemoteConnect'];
+            $conn->onMessage = [self::class , 'onRemoteMessage'];
+            $conn->connect();
+
+            if (empty(self::$_pingTimer)) {
+                self::$_pingTimer = Timer::add(self::$pingInterval, 'Channel\Client::ping');
+            }
+            // Not workerman environment.
+        } else {
+            $remote = strpos($ip, 'unix://') === false ? 'tcp://'.self::$_remoteIp.':'.self::$_remotePort : $ip;
+            $conn = stream_socket_client($remote, $code, $message, 5);
+            if (!$conn) {
+                throw new \Exception($message);
             }
         }
+
+        self::$_remoteConnection = $conn;
     }
 
     /**
      * onRemoteMessage.
-     * @param TcpConnection $connection
+     * @param \Workerman\Connection\TcpConnection $connection
      * @param string $data
      * @throws \Exception
      */
     public static function onRemoteMessage($connection, $data)
     {
         $data = unserialize($data);
+        $type = $data['type'];
         $event = $data['channel'];
         $event_data = $data['data'];
-        if(!empty(self::$_events[$event]))
-        {
-            call_user_func(self::$_events[$event], $event_data);
-        }
-        elseif(!empty(Client::$onMessage))
-        {
-            call_user_func(Client::$onMessage, $event, $event_data);
-        }
-        else
-        {
-            throw new \Exception("event:$event have not callback");
+
+        $callback = null;
+
+        if ($type == 'event') {
+	        if (!empty(self::$_events[$event])) {
+		        call_user_func(self::$_events[$event], $event_data);
+	        } elseif (!empty(Client::$onMessage)) {
+		        call_user_func(Client::$onMessage, $event, $event_data);
+	        } else {
+		        throw new \Exception("event:$event have not callback");
+	        }
+        } else {
+	        if (isset(self::$_queues[$event])) {
+		        call_user_func(self::$_queues[$event], $event_data);
+	        } else {
+		        throw new \Exception("queue:$event have not callback");
+	        }
         }
     }
 
@@ -204,15 +232,11 @@ class Client
      */
     public static function on($event, $callback)
     {
-        if (!self::$_isWorkermanEnv) {
-            throw new \Exception('Channel\\Client not support on method when it is not in the workerman environment.');
-        }
-        if(!is_callable($callback))
-        {
-            throw new \Exception('callback is not callable');
+        if (!is_callable($callback)) {
+            throw new \Exception('callback is not callable for event.');
         }
         self::$_events[$event] = $callback;
-        self::subscribe(array($event));
+        self::subscribe($event);
     }
 
     /**
@@ -222,19 +246,13 @@ class Client
      */
     public static function subscribe($events)
     {
-        if (!self::$_isWorkermanEnv) {
-            throw new \Exception('Channel\\Client not support subscribe method when it is not in the workerman environment.');
-        }
-        self::connect(self::$_remoteIp, self::$_remotePort);
         $events = (array)$events;
-        foreach($events as $event)
-        {
-            if(!isset(self::$_events[$event]))
-            {
+        self::send(array('type' => 'subscribe', 'channels'=>$events));
+        foreach ($events as $event) {
+            if(!isset(self::$_events[$event])) {
                 self::$_events[$event] = null;
             }
         }
-        self::$_remoteConnection->send(serialize(array('type' => 'subscribe', 'channels'=>(array)$events)));
     }
 
     /**
@@ -244,16 +262,11 @@ class Client
      */
     public static function unsubscribe($events)
     {
-        if (!self::$_isWorkermanEnv) {
-            throw new \Exception('Channel\\Client not support unsubscribe method when it is not in the workerman environment.');
-        }
-        self::connect(self::$_remoteIp, self::$_remotePort);
         $events = (array)$events;
-        foreach($events as $event)
-        {
+        self::send(array('type' => 'unsubscribe', 'channels'=>$events));
+        foreach($events as $event) {
             unset(self::$_events[$event]);
         }
-        self::$_remoteConnection->send(serialize(array('type' => 'unsubscribe', 'channels'=>$events)));
     }
 
     /**
@@ -263,13 +276,116 @@ class Client
      */
     public static function publish($events, $data)
     {
+        self::sendAnyway(array('type' => 'publish', 'channels' => (array)$events, 'data' => $data));
+    }
+
+    /**
+     * Watch a channel of queue
+     * @param string|array $channels
+     * @param callable $callback
+     * @param boolean $autoReserve Auto reserve after callback finished.
+     * But sometime you may don't want reserve immediately, or in some asynchronous job,
+     * you want reserve in finished callback, so you should set $autoReserve to false
+     * and call Client::reserve() after watch() and in finish callback manually.
+     * @throws \Exception
+     */
+    public static function watch($channels, $callback, $autoReserve=true)
+    {
+        if (!is_callable($callback)) {
+            throw new \Exception('callback is not callable for watch.');
+        }
+
+        if ($autoReserve) {
+        	$callback = static function($data) use ($callback) {
+		        try {
+			        call_user_func($callback, $data);
+		        } catch (\Exception $e) {
+			        throw $e;
+		        } catch (\Error $e) {
+			        throw $e;
+		        } finally {
+			        self::reserve();
+		        }
+	        };
+        }
+
+	    $channels = (array)$channels;
+        self::send(array('type' => 'watch', 'channels'=>$channels));
+
+        foreach ($channels as $channel) {
+        	self::$_queues[$channel] = $callback;
+        }
+
+        if ($autoReserve) {
+	        self::reserve();
+        }
+    }
+
+    /**
+     * Unwatch a channel of queue
+     * @param string $channel
+     * @throws \Exception
+     */
+    public static function unwatch($channels)
+    {
+	    $channels = (array)$channels;
+        self::send(array('type' => 'unwatch', 'channels'=>$channels));
+        foreach ($channels as $channel) {
+	        if (isset(self::$_queues[$channel])) {
+		        unset(self::$_queues[$channel]);
+	        }
+        }
+    }
+
+	/**
+	 * Put data to queue
+	 * @param string|array $channels
+	 * @param mixed $data
+	 * @throws \Exception
+	 */
+    public static function enqueue($channels, $data)
+    {
+        self::sendAnyway(array('type' => 'enqueue', 'channels' => (array)$channels, 'data' => $data));
+    }
+
+	/**
+	 * Start reserve queue manual
+	 * @throws \Exception
+	 */
+    public static function reserve()
+    {
+	    self::send(array('type' => 'reserve'));
+    }
+
+    /**
+     * Send through workerman environment
+     * @param $data
+     * @throws \Exception
+     */
+    protected static function send($data)
+    {
+        if (!self::$_isWorkermanEnv) {
+            throw new \Exception("Channel\\Client not support {$data['type']} method when it is not in the workerman environment.");
+        }
         self::connect(self::$_remoteIp, self::$_remotePort);
+        self::$_remoteConnection->send(serialize($data));
+    }
+
+    /**
+     * Send from any environment
+     * @param $data
+     * @throws \Exception
+     */
+    protected static function sendAnyway($data)
+    {
+        self::connect(self::$_remoteIp, self::$_remotePort);
+        $body = serialize($data);
         if (self::$_isWorkermanEnv) {
-            self::$_remoteConnection->send(serialize(array('type' => 'publish', 'channels' => (array)$events, 'data' => $data)));
+            self::$_remoteConnection->send($body);
         } else {
-            $body = serialize(array('type' => 'publish', 'channels'=>(array)$events, 'data' => $data));
             $buffer = pack('N', 4+strlen($body)) . $body;
             fwrite(self::$_remoteConnection, $buffer);
         }
     }
+
 }

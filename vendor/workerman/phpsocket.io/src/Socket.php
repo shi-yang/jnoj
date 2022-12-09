@@ -204,6 +204,7 @@ class Socket extends Emitter
 
      public function join($room)
      {
+        if (!$this->connected) return $this;
         if(isset($this->rooms[$room])) return $this;
         $this->adapter->add($this->id, $room);
         $this->rooms[$room] = $room;
@@ -345,7 +346,7 @@ class Socket extends Emitter
             call_user_func($ack, $packet['data']);
             unset($this->acks[$packet['id']]);
         } else {
-            echo ('bad ack '. packet.id);
+            echo ('bad ack '. $packet['id']);
         }
     }
 

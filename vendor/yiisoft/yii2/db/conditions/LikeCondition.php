@@ -1,8 +1,8 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
+ * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @license https://www.yiiframework.com/license/
  */
 
 namespace yii\db\conditions;
@@ -18,7 +18,7 @@ use yii\base\InvalidArgumentException;
 class LikeCondition extends SimpleCondition
 {
     /**
-     * @var array|false map of chars to their replacements, false if characters should not be escaped
+     * @var array|null|false map of chars to their replacements, false if characters should not be escaped
      * or either null or empty array if escaping is condition builder responsibility.
      * By default it's set to `null`.
      */

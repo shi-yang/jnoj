@@ -1,7 +1,13 @@
 yii-pjax Change Log
 ===================
 
-v2.0.7.1 under development
+2.0.8 Nov 9, 2022
+-----------------
+
+- Bug #71: Wrong events lifecycle in case when ajax request is not async (iovzt)
+
+
+v2.0.7.1 Oct 12, 2017
 ------------------------
 - Bug #61: Restore the last semicolon for Yii asset/compress (tanakahisateru)
 

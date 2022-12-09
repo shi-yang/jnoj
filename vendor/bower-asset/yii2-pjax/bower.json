@@ -1,6 +1,6 @@
 {
   "name": "yii2-pjax",
-  "version": "2.0.7.1",
+  "version": "2.0.8",
   "main": "./jquery.pjax.js",
   "license": "MIT",
   "dependencies": {

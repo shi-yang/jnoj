@@ -1,8 +1,8 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
+ * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @license https://www.yiiframework.com/license/
  */
 
 if (version_compare(PHP_VERSION, '4.3', '<')) {
@@ -295,9 +295,9 @@ class YiiRequirementChecker
      * This method includes the view file as a PHP script
      * and captures the display result if required.
      * @param string $_viewFile_ view file
-     * @param array $_data_ data to be extracted and made available to the view file
+     * @param array|null $_data_ data to be extracted and made available to the view file
      * @param bool $_return_ whether the rendering result should be returned as a string
-     * @return string the rendering result. Null if the rendering result is not required.
+     * @return string|null the rendering result. Null if the rendering result is not required.
      */
     function renderViewFile($_viewFile_, $_data_ = null, $_return_ = false)
     {

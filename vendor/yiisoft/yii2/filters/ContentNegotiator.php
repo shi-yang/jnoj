@@ -1,8 +1,8 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
+ * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @license https://www.yiiframework.com/license/
  */
 
 namespace yii\filters;
@@ -11,9 +11,9 @@ use Yii;
 use yii\base\ActionFilter;
 use yii\base\BootstrapInterface;
 use yii\web\BadRequestHttpException;
+use yii\web\NotAcceptableHttpException;
 use yii\web\Request;
 use yii\web\Response;
-use yii\web\UnsupportedMediaTypeHttpException;
 
 /**
  * ContentNegotiator supports response format negotiation and application language negotiation.
@@ -87,14 +87,14 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
 {
     /**
      * @var string the name of the GET parameter that specifies the response format.
-     * Note that if the specified format does not exist in [[formats]], a [[UnsupportedMediaTypeHttpException]]
+     * Note that if the specified format does not exist in [[formats]], a [[NotAcceptableHttpException]]
      * exception will be thrown.  If the parameter value is empty or if this property is null,
      * the response format will be determined based on the `Accept` HTTP header only.
      * @see formats
      */
     public $formatParam = '_format';
     /**
-     * @var string the name of the GET parameter that specifies the [[\yii\base\Application::language|application language]].
+     * @var string the name of the GET parameter that specifies the [[\yii\base\Application::$language|application language]].
      * Note that if the specified language does not match any of [[languages]], the first language in [[languages]]
      * will be used. If the parameter value is empty or if this property is null,
      * the application language will be determined based on the `Accept-Language` HTTP header only.
@@ -102,15 +102,15 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     public $languageParam = '_lang';
     /**
-     * @var array list of supported response formats. The keys are MIME types (e.g. `application/json`)
+     * @var array|null list of supported response formats. The keys are MIME types (e.g. `application/json`)
      * while the values are the corresponding formats (e.g. `html`, `json`) which must be supported
-     * as declared in [[\yii\web\Response::formatters]].
+     * as declared in [[\yii\web\Response::$formatters]].
      *
      * If this property is empty or not set, response format negotiation will be skipped.
      */
     public $formats;
     /**
-     * @var array a list of supported languages. The array keys are the supported language variants (e.g. `en-GB`, `en-US`),
+     * @var array|null a list of supported languages. The array keys are the supported language variants (e.g. `en-GB`, `en-US`),
      * while the array values are the corresponding language codes (e.g. `en`, `de`) recognized by the application.
      *
      * Array keys are not always required. When an array value does not have a key, the matching of the requested language
@@ -124,7 +124,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     public $request;
     /**
-     * @var Response the response to be sent. If not set, the `response` application component will be used.
+     * @var Response|null the response to be sent. If not set, the `response` application component will be used.
      */
     public $response;
 
@@ -172,7 +172,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      * @param Request $request
      * @param Response $response
      * @throws BadRequestHttpException if an array received for GET parameter [[formatParam]].
-     * @throws UnsupportedMediaTypeHttpException if none of the requested content types is accepted.
+     * @throws NotAcceptableHttpException if none of the requested content types is accepted.
      */
     protected function negotiateContentType($request, $response)
     {
@@ -188,7 +188,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
                 return;
             }
 
-            throw new UnsupportedMediaTypeHttpException('The requested response format is not supported: ' . $format);
+            throw new NotAcceptableHttpException('The requested response format is not supported: ' . $format);
         }
 
         $types = $request->getAcceptableContentTypes();
@@ -216,7 +216,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
             return;
         }
 
-        throw new UnsupportedMediaTypeHttpException('None of your requested content types is supported.');
+        throw new NotAcceptableHttpException('None of your requested content types is supported.');
     }
 
     /**

@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
-use justinvoelker\tagging\TaggingWidget;
+use app\widgets\tagging\TaggingWidget;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ProblemSearch */

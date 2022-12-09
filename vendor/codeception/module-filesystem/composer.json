@@ -1,0 +1,33 @@
+{
+	"name": "codeception/module-filesystem",
+	"description": "Codeception module for testing local filesystem",
+	"keywords": [ "codeception", "filesystem" ],
+	"homepage": "https://codeception.com/",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Michael Bodnarchuk"
+		},
+		{
+			"name": "Gintautas Miselis"
+		}
+	],
+	"minimum-stability": "RC",
+	"require": {
+		"php": "^7.4 | ^8.0",
+		"codeception/codeception": "^4.1 | *@dev",
+		"symfony/finder": "^4.4 | ^5.4 | ^6.0"
+	},
+	"conflict": {
+		"codeception/codeception": "<4.1"
+	},
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"config": {
+		"classmap-authoritative": true
+	}
+}

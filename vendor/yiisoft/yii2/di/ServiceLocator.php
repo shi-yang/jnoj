@@ -1,8 +1,8 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
+ * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @license https://www.yiiframework.com/license/
  */
 
 namespace yii\di;
@@ -13,7 +13,7 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 
 /**
- * ServiceLocator implements a [service locator](http://en.wikipedia.org/wiki/Service_locator_pattern).
+ * ServiceLocator implements a [service locator](https://en.wikipedia.org/wiki/Service_locator_pattern).
  *
  * To use ServiceLocator, you first need to register component IDs with the corresponding component
  * definitions with the locator by calling [[set()]] or [[setComponents()]].
@@ -199,7 +199,11 @@ class ServiceLocator extends Component
             $this->_definitions[$id] = $definition;
         } elseif (is_array($definition)) {
             // a configuration array
-            if (isset($definition['class']) || isset($definition['__class'])) {
+            if (isset($definition['__class'])) {
+                $this->_definitions[$id] = $definition;
+                $this->_definitions[$id]['class'] = $definition['__class'];
+                unset($this->_definitions[$id]['__class']);
+            } elseif (isset($definition['class'])) {
                 $this->_definitions[$id] = $definition;
             } else {
                 throw new InvalidConfigException("The configuration for the \"$id\" component must contain a \"class\" element.");
