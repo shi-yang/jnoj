@@ -13,7 +13,7 @@ use yii\filters\VerbFilter;
 use app\models\Problem;
 use app\models\Solution;
 use app\models\User;
-use justinvoelker\tagging\TaggingQuery;
+use app\widgets\tagging\TaggingQuery;
 use app\models\Discuss;
 
 /**

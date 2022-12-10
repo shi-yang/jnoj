@@ -389,6 +389,7 @@ $('[data-click=solution_info]').click(function() {
 });
 
 function updateVerdictByKey(submission) {
+    console.log(submission)
     $.get({
         url: "{$url}?id=" + submission.attr('data-submissionid'),
         success: function(data) {
@@ -401,6 +402,9 @@ function updateVerdictByKey(submission) {
             if (obj.waiting === "true") {
                 submission.append('<img src="{$loadingImgUrl}" alt="loading">');
             }
+        },
+        error: function(err) {
+            console.log(err)
         }
     });
 }
@@ -434,7 +438,7 @@ if (waitingCount > 0) {
             interval = null;
         }
     }
-    interval = setInterval(testWaitingsDone, 20000);
+    interval = setInterval(testWaitingsDone, 1000);
 }
 EOF;
 $this->registerJs($js);

@@ -407,7 +407,7 @@ void umount(char *work_dir)
     execute_cmd("/bin/umount -f %s/usr 2>/dev/null", work_dir);
     execute_cmd("/bin/umount -f %s/bin 2>/dev/null", work_dir);
     execute_cmd("/bin/umount -f %s/proc 2>/dev/null", work_dir);
-    execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>/dev/null");
+    execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives dev 2>/dev/null");
     execute_cmd("/bin/umount -f %s/* 2>/dev/null", work_dir);
     execute_cmd("/bin/umount -f %s/log/* 2>/dev/null", work_dir);
     execute_cmd("/bin/umount -f %s/log/etc/alternatives 2>/dev/null", work_dir);
@@ -456,7 +456,6 @@ int compile(int lang, char * work_dir)
             execute_cmd("mount -o bind /etc/alternatives etc/alternatives");
             execute_cmd("mount -o remount,ro etc/alternatives");
             execute_cmd("mount -o bind /proc proc");
-            execute_cmd("mount -o remount,ro proc");
             chroot(work_dir);
         }
         while (setgid(1536) != 0)
@@ -480,7 +479,7 @@ int compile(int lang, char * work_dir)
             status = get_file_size("ce.txt");
         if (DEBUG)
             printf("status = %d\n", status);
-        execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives proc dev 2>/dev/null");
+        execute_cmd("/bin/umount -f bin usr lib lib64 etc/alternatives dev 2>/dev/null");
         execute_cmd("/bin/umount -f %s/* 2>/dev/null", work_dir);
         umount(work_dir);
  

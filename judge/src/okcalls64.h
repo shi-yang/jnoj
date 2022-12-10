@@ -17,9 +17,12 @@
  * along with HUSTOJ. if not, see <http://www.gnu.org/licenses/>.
  */
 //c & c++
-int LANG_CV[256] = {0,1,2,3,4,5,8,9,11,12,20,21,59,63,89,99,158,202,231,240,272,273,275,511, SYS_time, SYS_read, SYS_uname, SYS_write, SYS_open,
-                    		SYS_close, SYS_execve, SYS_access, SYS_brk, SYS_munmap, SYS_mprotect,
-                    		SYS_mmap, SYS_fstat, SYS_set_thread_area, 252, SYS_arch_prctl, 0 };
+int LANG_CV[256] = {0,1,2,3,5,8,9,10,11,12,13,14,16,20,21,39,56,59,63,89,99,158,186,218,231,234,257,262,268,275,292,302,318,334,511,        
+	SYS_write, SYS_mprotect, SYS_munmap, SYS_brk, SYS_arch_prctl, SYS_pread64, SYS_open, SYS_writev,
+        SYS_time, SYS_futex, SYS_set_thread_area, SYS_access, SYS_clock_gettime, SYS_exit_group, SYS_mq_open,
+        SYS_ioprio_get, SYS_unshare, SYS_set_robust_list, SYS_splice, SYS_close, SYS_stat, SYS_fstat, SYS_execve,
+        SYS_uname, SYS_lseek, SYS_readlink, SYS_mmap, SYS_sysinfo, 0 };
+
 //java
 int LANG_JV[256] = {0,2,3,4,5,9,10,11,12,13,14,21,56,59,89,97,104,157,158,202,218,231,273,257,
 		61, 22, 6, 33, 8, 13, 16, 111, 110, 39, 79, 302, SYS_fcntl,
