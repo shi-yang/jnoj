@@ -24,14 +24,14 @@ int LANG_CV[256] = {0,1,2,3,5,8,9,10,11,12,13,14,16,20,21,39,56,59,63,89,99,158,
         SYS_uname, SYS_lseek, SYS_readlink, SYS_mmap, SYS_sysinfo, 0 };
 
 //java
-int LANG_JV[256] = {0,2,3,4,5,9,10,11,12,13,14,21,56,59,89,97,104,157,158,202,218,231,273,257,
-		61, 22, 6, 33, 8, 13, 16, 111, 110, 39, 79, 302, SYS_fcntl,
-		SYS_getdents64, SYS_getrlimit, SYS_rt_sigprocmask, SYS_futex, SYS_read,
-		SYS_mmap, SYS_stat, SYS_open, SYS_close, SYS_execve, SYS_access,
-		SYS_brk, SYS_readlink, SYS_munmap, SYS_close, SYS_uname, SYS_clone,
-		SYS_uname, SYS_mprotect, SYS_rt_sigaction, SYS_getrlimit, SYS_fstat,
-		SYS_getuid, SYS_getgid, SYS_geteuid, SYS_getegid, SYS_set_thread_area,
-		SYS_set_tid_address, SYS_set_robust_list, SYS_exit_group, 158, 0 };
+int LANG_JV[256] = {
+        0, 262,318,334,435, SYS_mprotect, SYS_getuid, SYS_getgid, SYS_geteuid, SYS_getegid, SYS_munmap, SYS_getppid, SYS_getpgrp,
+        SYS_brk, SYS_rt_sigaction, SYS_rt_sigprocmask, SYS_prctl, SYS_arch_prctl, SYS_ioctl, SYS_pread64, SYS_open,
+        SYS_futex, SYS_set_thread_area, SYS_access, SYS_getdents64, SYS_set_tid_address, SYS_pipe, SYS_exit_group,
+        SYS_openat, SYS_set_robust_list, SYS_close, SYS_prlimit64, SYS_dup2, SYS_getpid, SYS_stat, SYS_fstat, SYS_clone,
+        SYS_execve, SYS_lstat, SYS_wait4, SYS_uname, SYS_fcntl, SYS_getcwd, SYS_lseek, SYS_readlink, SYS_mmap,
+        SYS_getrlimit, 0 };
+
 //python
 int LANG_YV[256] = {0,2,3,4,5,6,8,9,10,11,12,13,14,16,21,32,59,72,78,79,89,97,99,102,104,107,108,131,158,218,228,231,272,273,318,39,99,302,99,32,72,131,1,202,257,41, 42, 146, SYS_mremap, 158, 117, 60, 39, 102, 191,
                     		SYS_access, SYS_arch_prctl, SYS_brk, SYS_close, SYS_execve,
