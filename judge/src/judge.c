@@ -741,7 +741,7 @@ void run_solution(problem_struct problem, int lang, char * work_dir,
     // set the memory
     LIM.rlim_cur = STD_MB * problem.memory_limit / 2 * 3;
     LIM.rlim_max = STD_MB * problem.memory_limit * 2;
-    if (lang == LANG_C || lang == LANG_CPP)
+    if (lang == LANG_C || lang == LANG_CPP || lang == LANG_PASCAL)
         setrlimit(RLIMIT_AS, &LIM);
 
     // run solution

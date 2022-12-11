@@ -49,5 +49,6 @@ struct language languages[] = {
 #define LANG_CPP        1
 #define LANG_JAVA       2
 #define LANG_PYTHON3    3
+#define LANG_PASCAL     4
 
 #endif //JUDGE_LANGUAGE_H

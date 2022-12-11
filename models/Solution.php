@@ -58,6 +58,7 @@ class Solution extends ActiveRecord
     const CPPLANG = 1;
     const JAVALANG = 2;
     const PYLANG = 3;
+    const PASCALLANG = 4;
 
     /**
      * @inheritdoc
@@ -87,7 +88,13 @@ class Solution extends ActiveRecord
               'code_length', 'score'], 'integer'],
             [['created_at', 'judgetime'], 'safe'],
             [['language', 'source'], 'required'],
-            [['language'], 'in', 'range' => [0, 1, 2, 3], 'message' => 'Please select a language'],
+            [['language'], 'in', 'range' => [
+                Solution::CLANG,
+                Solution::CPPLANG,
+                Solution::JAVALANG,
+                Solution::PYLANG,
+                Solution::PASCALLANG,
+            ], 'message' => 'Please select a language'],
             [['source', 'pass_info'], 'string'],
             [['judge'], 'string', 'max' => 16],
         ];
@@ -179,6 +186,9 @@ class Solution extends ActiveRecord
             case Solution::PYLANG:
                 $res = 'Python3';
                 break;
+            case Solution::PASCALLANG:
+                $res = 'Pascal';
+                break;
             default:
                 $res = 'not set';
                 break;
@@ -205,6 +215,9 @@ class Solution extends ActiveRecord
                 break;
             case Solution::PYLANG:
                 $res = 'py';
+                break;
+            case Solution::PYLANG:
+                $res = 'pas';
                 break;
             default:
                 $res = 'txt';
@@ -277,7 +290,8 @@ class Solution extends ActiveRecord
             '0' => 'C',
             '1' => 'C++',
             '2' => 'Java',
-            '3' => 'Python3'
+            '3' => 'Python3',
+            '4' => 'Pascal'
         ];
         return $status === '' ? $arr : $arr[$status];
     }

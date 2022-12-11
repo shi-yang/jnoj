@@ -42,6 +42,13 @@ struct language languages[] = {
         {"python3", "Main.py", NULL},
         "py",
         true
+    },
+    {
+        "pascal",
+		{"fpc", "Main.pas", "-Cs32000000", "-Sh", "-O2", "-Co", "-Ct", "-Ci", NULL},
+        {"./Main", NULL},
+        "pas",
+        false
     }
 };
 
@@ -49,5 +56,6 @@ struct language languages[] = {
 #define LANG_CPP        1
 #define LANG_JAVA       2
 #define LANG_PYTHON3    3
+#define LANG_PASCAL     4
 
 #endif //JUDGE_LANGUAGE_H

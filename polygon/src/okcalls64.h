@@ -31,6 +31,7 @@ int LANG_JV[256] = {
         SYS_openat, SYS_set_robust_list, SYS_close, SYS_prlimit64, SYS_dup2, SYS_getpid, SYS_stat, SYS_fstat, SYS_clone,
         SYS_execve, SYS_lstat, SYS_wait4, SYS_uname, SYS_fcntl, SYS_getcwd, SYS_lseek, SYS_readlink, SYS_mmap,
         SYS_getrlimit, 0 };
+
 //python
 int LANG_YV[256] = {0,2,3,4,5,6,8,9,10,11,12,13,14,16,21,32,59,72,78,79,89,97,99,102,104,107,108,131,158,218,228,231,272,273,318,39,99,302,99,32,72,131,1,202,257,41, 42, 146, SYS_mremap, 158, 117, 60, 39, 102, 191,
                     		SYS_access, SYS_arch_prctl, SYS_brk, SYS_close, SYS_execve,
@@ -40,6 +41,11 @@ int LANG_YV[256] = {0,2,3,4,5,6,8,9,10,11,12,13,14,16,21,32,59,72,78,79,89,97,99
                     		SYS_munmap, SYS_open, SYS_read, SYS_readlink, SYS_rt_sigaction,
                     		SYS_rt_sigprocmask, SYS_set_robust_list, SYS_set_tid_address, SYS_stat,
                     		SYS_write, 0 };
+//pascal
+int LANG_PAS[256] = {
+        0, SYS_write, SYS_mprotect, SYS_munmap, SYS_brk, SYS_rt_sigaction, SYS_arch_prctl, SYS_ioctl,
+        SYS_pread64, SYS_getxattr, SYS_open, SYS_time, SYS_set_thread_area, SYS_exit_group, SYS_ioprio_get, SYS_close,
+        SYS_stat, SYS_execve, SYS_uname, SYS_readlink, SYS_mmap, SYS_getrlimit, 0 };
 
 struct ok_call {
 	int * call;
@@ -48,5 +54,6 @@ struct ok_call ok_calls[] = {
 	{LANG_CV},
 	{LANG_CV},
 	{LANG_JV},
-	{LANG_YV}
+	{LANG_YV},
+	{LANG_PAS}
 };
