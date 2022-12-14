@@ -2,12 +2,13 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	objectstorage "jnoj/pkg/object_storage"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gorm/clause"
 )
 
@@ -104,22 +105,20 @@ func (r *contestRepo) GetContestProblemByNumber(ctx context.Context, cid int, nu
 		})
 	}
 	// 查样例
-	var filter = bson.D{{"problem_id", problem.ID}, {"is_example", true}}
-	db := r.data.mongodb.Collection(ProblemTestCollection)
-	cursor, err := db.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-	for cursor.Next(ctx) {
-		var result ProblemTest
-		err := cursor.Decode(&result)
-		if err != nil {
-			r.log.Error("cursor.Next() error:", err)
-		}
-		res.SampleTest = append(res.SampleTest, &biz.SampleTest{
-			Input:  string(result.InputFileContent),
-			Output: string(result.OutputFileContent),
+	var tests []ProblemTest
+	r.data.db.WithContext(ctx).
+		Model(&ProblemTest{}).
+		Where("is_example = ?", true).
+		Where("problem_id = ?", o.ProblemID).
+		Find(&tests)
+
+	for _, v := range tests {
+		store := objectstorage.NewSeaweed()
+		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, o.ProblemID, v.ID))
+		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, o.ProblemID, v.ID))
+		res.SampleTest = append(res.SampleTest, &biz.Test{
+			Input:  string(in),
+			Output: string(out),
 		})
 	}
 	return res, nil

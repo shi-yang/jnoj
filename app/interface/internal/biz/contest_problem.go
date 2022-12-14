@@ -19,7 +19,7 @@ type ContestProblem struct {
 	TimeLimit     int64
 	Memory        int64
 	Statements    []*ProblemStatement
-	SampleTest    []*SampleTest
+	SampleTest    []*Test
 	CreatedAt     time.Time
 }
 

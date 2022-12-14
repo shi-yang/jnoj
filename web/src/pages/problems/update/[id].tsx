@@ -13,6 +13,7 @@ import Statement from './statement';
 import Tests from './tests';
 import Checker from './checker';
 import SolutionFiles from './solution-files';
+import Files from './files';
 import { getProblem, Problem } from '@/api/problem';
 import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
@@ -45,7 +46,7 @@ function Index(props) {
   return (
     <>
       <Head>
-        <title>{`${t['page.title']} - ${data.name} - ${setting.name}`}</title>
+        <title>{`${t['page.title']} - ${data.name} - ${settings.name}`}</title>
       </Head>
       { !loading && (
         <div className={styles.container}>
@@ -56,7 +57,7 @@ function Index(props) {
               </Typography.Title>
             </Grid.Col>
           </Grid.Row>
-          <Tabs defaultActiveTab='info'>
+          <Tabs defaultActiveTab='info' destroyOnHide>
             <TabPane key='info' title={t['tab.baseInfo']}>
               <Info problem={data} />
             </TabPane>
@@ -71,6 +72,9 @@ function Index(props) {
             </TabPane>
             <TabPane key='solutionFiles' title={t['tab.solutionFiles']}>
               <SolutionFiles problem={data} />
+            </TabPane>
+            <TabPane key='files' title={t['tab.files']}>
+              <Files problem={data} />
             </TabPane>
           </Tabs>
         </div>

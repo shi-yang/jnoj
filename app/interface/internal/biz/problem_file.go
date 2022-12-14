@@ -10,21 +10,25 @@ import (
 
 // ProblemFile is a ProblemFile model.
 type ProblemFile struct {
-	ID        int
-	Name      string
-	Content   string
-	FileType  string
-	ProblemID int
-	UserID    int
-	Type      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID          int
+	Name        string
+	Content     string
+	FileType    string
+	ProblemID   int
+	UserID      int
+	Type        string
+	FileContent []byte
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
+type ProblemFileFileType string
+
 const (
-	ProblemFileFileTypeChecker   = "checker"
-	ProblemFileFileTypeValidator = "validator"
-	ProblemFileFileTypeSolution  = "solution"
+	ProblemFileFileTypeChecker    ProblemFileFileType = "checker"
+	ProblemFileFileTypeValidator  ProblemFileFileType = "validator"
+	ProblemFileFileTypeSolution   ProblemFileFileType = "solution"
+	ProblemFileFileTypeAttachment ProblemFileFileType = "attachment"
 )
 
 const (
@@ -75,12 +79,12 @@ func (uc *ProblemUsecase) RunProblemFile(ctx context.Context, id int) error {
 	if err != nil {
 		return err
 	}
-	tests, _ := uc.repo.ListProblemTests(context.TODO(), &v1.ListProblemTestsRequest{Id: int32(solution.ProblemID)})
+	tests, _ := uc.repo.ListProblemTestContent(context.TODO(), solution.ProblemID, false)
 	// 生成标准输出
 	for _, test := range tests {
 		if solution.Type == "model_solution" {
 			resp, err := uc.sandboxClient.Run(ctx, &sandboxV1.RunRequest{
-				Stdin:       string(test.InputFileContent),
+				Stdin:       test.Input,
 				Source:      solution.Content,
 				Language:    1, // C++
 				MemoryLimit: problem.MemoryLimit,
@@ -89,7 +93,15 @@ func (uc *ProblemUsecase) RunProblemFile(ctx context.Context, id int) error {
 			if err != nil {
 				return err
 			}
-			uc.repo.UpdateProblemTestStdOutput(ctx, test.ID, resp.Stdout)
+			var outputPreview string
+			if len(resp.Stdout) > 32 {
+				outputPreview = string(resp.Stdout[:32])
+			} else {
+				outputPreview = string(resp.Stdout)
+			}
+			uc.log.Info("stdin", len(test.Input))
+			uc.log.Info("stdout", len(resp.Stdout))
+			uc.repo.UpdateProblemTestStdOutput(ctx, test.ID, []byte(resp.Stdout), outputPreview)
 		}
 	}
 	return nil

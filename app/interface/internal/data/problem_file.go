@@ -1,7 +1,12 @@
 package data
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"net/url"
+	"path"
+	"strconv"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -9,6 +14,8 @@ import (
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	objectstorage "jnoj/pkg/object_storage"
 )
 
 type ProblemFile struct {
@@ -37,13 +44,19 @@ func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemF
 		Count(&count)
 	rv := make([]*biz.ProblemFile, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.ProblemFile{
+		i := &biz.ProblemFile{
 			ID:        v.ID,
 			Name:      v.Name,
 			Type:      v.Type,
+			FileType:  v.FileType,
+			Content:   v.Content,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
-		})
+		}
+		if i.FileType == string(biz.ProblemFileFileTypeAttachment) {
+			i.Content, _ = url.JoinPath("http://localhost:8333", r.data.conf.ObjectStorage.Bucket, i.Content)
+		}
+		rv = append(rv, i)
 	}
 	return rv, count
 }
@@ -78,11 +91,21 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 		UserID:    p.UserID,
 		FileType:  p.FileType,
 	}
+	// 保存文件
+	if p.FileType == string(biz.ProblemFileFileTypeAttachment) {
+		store := objectstorage.NewSeaweed()
+		fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
+		storeName := fmt.Sprintf("/problem_files/%d/attachments/%s", p.ProblemID, fileUnixName+path.Ext(p.Name))
+		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(p.FileContent))
+		res.Content = storeName
+	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error
 	return &biz.ProblemFile{
-		ID: res.ID,
+		ID:      res.ID,
+		Content: res.Content,
+		Name:    res.Name,
 	}, err
 }
 
@@ -102,7 +125,18 @@ func (r *problemRepo) UpdateProblemFile(ctx context.Context, p *biz.ProblemFile)
 
 // DeleteProblemFile .
 func (r *problemRepo) DeleteProblemFile(ctx context.Context, id int) error {
-	err := r.data.db.WithContext(ctx).
+	var p ProblemFile
+	err := r.data.db.Model(ProblemFile{}).
+		First(&p, "id = ?", id).Error
+	if err != nil {
+		return err
+	}
+	// 删除文件
+	if p.FileType == string(biz.ProblemFileFileTypeAttachment) {
+		store := objectstorage.NewSeaweed()
+		store.DeleteObject(r.data.conf.ObjectStorage, p.Content)
+	}
+	err = r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Delete(&ProblemFile{ID: id}).
 		Error

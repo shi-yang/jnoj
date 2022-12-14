@@ -32,6 +32,7 @@ type Data struct {
 	db      *gorm.DB
 	redisdb *redis.Client
 	mongodb *mongo.Database
+	conf    *conf.Data
 }
 
 // NewData .
@@ -68,6 +69,7 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	return &Data{
 		db:      db,
 		redisdb: redisdb,
+		conf:    c,
 		mongodb: mongoClient.Database(c.Mongodb.Database),
 	}, cleanup, nil
 }

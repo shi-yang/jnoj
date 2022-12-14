@@ -44,6 +44,7 @@ func NewHTTPServer(c *conf.Server,
 	// 处理上传文件
 	route := srv.Route("/")
 	route.POST("/problems/{id}/upload_test", problem.UploadProblemTest)
+	route.POST("/problems/{id}/upload_file", problem.UploadProblemFile)
 
 	v1.RegisterContestServiceHTTPServer(srv, contest)
 	v1.RegisterProblemServiceHTTPServer(srv, problem)

@@ -1,190 +1,197 @@
 package data
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	objectstorage "jnoj/pkg/object_storage"
+	"jnoj/pkg/pagination"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/gorm/clause"
 )
 
 type ProblemTest struct {
-	ID                primitive.ObjectID `bson:"_id"`
-	ProblemID         int                `bson:"problem_id"`
-	Order             int                `bson:"order"`
-	Content           string             `bson:"content"` // 预览的文件内容
-	InputSize         int64              `bson:"input_size"`
-	InputFileContent  []byte             `bson:"input_file_content"`
-	OutputSize        int64              `bson:"output_size"`
-	OutputFileContent []byte             `bson:"output_file_content"`
-	Remark            string             `bson:"remark"`
-	UserID            int                `bson:"user_id"`
-	IsExample         bool               `bson:"is_example"`
-	CreatedAt         time.Time          `bson:"created_at"`
-	UpdatedAt         time.Time          `bson:"updated_at"`
+	ID            int
+	ProblemID     int
+	Order         int
+	Name          string // 测试点名称
+	InputSize     int64  // 输入文件大小
+	InputPreview  string // 输入文件预览
+	OutputSize    int64  // 输出文件大小
+	OutputPreview string // 输出文件预览
+	Remark        string
+	UserID        int
+	IsExample     bool
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
-const ProblemTestCollection = "problem_test"
+const problemTestInputPath = "/problem_tests/%d/%d.in"
+const problemTestOutputPath = "/problem_tests/%d/%d.out"
 
-// ListProblemTests .
+// ListProblemTests 获取题目的测试点列表
 func (r *problemRepo) ListProblemTests(ctx context.Context, req *v1.ListProblemTestsRequest) ([]*biz.ProblemTest, int64) {
-	var filter = bson.D{{"problem_id", req.Id}}
-	var res []*biz.ProblemTest
-	db := r.data.mongodb.Collection(ProblemTestCollection)
-	count, err := db.CountDocuments(ctx, filter)
-	if err != nil {
-		return nil, count
-	}
-	opts := options.Find().SetSort(bson.D{{"order", 1}})
-	cursor, err := db.Find(ctx, filter, opts)
-	if err != nil {
-		return nil, count
-	}
-	defer cursor.Close(ctx)
-	for cursor.Next(ctx) {
-		var result ProblemTest
-		err := cursor.Decode(&result)
-		if err != nil {
-			r.log.Error("cursor.Next() error:", err)
-		}
+	var (
+		tests []ProblemTest
+		count int64
+	)
+	db := r.data.db.WithContext(ctx).
+		Model(&ProblemTest{}).
+		Where("problem_id = ?", req.Id)
+
+	page := pagination.NewPagination(req.Page, req.PerPage)
+	db.Count(&count).
+		Order("`order`").
+		Offset(page.GetOffset()).
+		Limit(page.GetPageSize()).
+		Find(&tests)
+	res := make([]*biz.ProblemTest, 0)
+	for _, v := range tests {
 		res = append(res, &biz.ProblemTest{
-			ID:                result.ID.Hex(),
-			Content:           result.Content,
-			CreatedAt:         result.CreatedAt,
-			Remark:            result.Remark,
-			IsExample:         result.IsExample,
-			InputSize:         result.InputSize,
-			InputFileContent:  result.InputFileContent,
-			OutputSize:        result.OutputSize,
-			OutputFileContent: result.OutputFileContent,
-			Order:             result.Order,
+			ID:            v.ID,
+			Name:          v.Name,
+			CreatedAt:     v.CreatedAt,
+			Remark:        v.Remark,
+			IsExample:     v.IsExample,
+			InputSize:     v.InputSize,
+			InputPreview:  v.InputPreview,
+			OutputSize:    v.OutputSize,
+			OutputPreview: v.OutputPreview,
+			Order:         v.Order,
 		})
 	}
 	return res, count
 }
 
-func (r *problemRepo) ListProblemSampleTest(ctx context.Context, id int) ([]*biz.SampleTest, error) {
-	var filter = bson.D{{"problem_id", id}, {"is_example", true}}
-	var res []*biz.SampleTest
-	db := r.data.mongodb.Collection(ProblemTestCollection)
-	opts := options.Find().SetSort(bson.D{{"order", 1}})
-	cursor, err := db.Find(ctx, filter, opts)
-	if err != nil {
-		return nil, err
+func (r *problemRepo) ListProblemTestContent(ctx context.Context, id int, isExample bool) ([]*biz.Test, error) {
+	var tests []ProblemTest
+	db := r.data.db.WithContext(ctx).
+		Model(&ProblemTest{}).
+		Where("problem_id = ?", id)
+	if isExample {
+		db.Where("is_example = ?", isExample)
 	}
-	defer cursor.Close(ctx)
-	for cursor.Next(ctx) {
-		var result ProblemTest
-		err := cursor.Decode(&result)
-		if err != nil {
-			r.log.Error("cursor.Next() error:", err)
-		}
-		res = append(res, &biz.SampleTest{
-			Input:  string(result.InputFileContent),
-			Output: string(result.OutputFileContent),
+	db.Find(&tests)
+
+	res := make([]*biz.Test, 0)
+	for _, v := range tests {
+		store := objectstorage.NewSeaweed()
+		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, id, v.ID))
+		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, id, v.ID))
+		res = append(res, &biz.Test{
+			ID:     v.ID,
+			Input:  string(in),
+			Output: string(out),
 		})
 	}
 	return res, nil
 }
 
 // GetProblemTest .
-func (r *problemRepo) GetProblemTest(ctx context.Context, id string) (*biz.ProblemTest, error) {
-	oid, _ := primitive.ObjectIDFromHex(id)
-	filter := bson.D{{"_id", oid}}
+func (r *problemRepo) GetProblemTest(ctx context.Context, id int) (*biz.ProblemTest, error) {
 	var res ProblemTest
-	err := r.data.mongodb.Collection(ProblemTestCollection).
-		FindOne(ctx, filter).
-		Decode(&res)
+	err := r.data.db.Model(&Problem{}).
+		First(&res, "id = ?", id).
+		Error
 	if err != nil {
 		return nil, err
 	}
 	return &biz.ProblemTest{
-		ID:        res.ID.Hex(),
-		Remark:    res.Remark,
-		Content:   res.Content,
-		IsExample: res.IsExample,
-	}, err
+		ID:            res.ID,
+		ProblemID:     res.ProblemID,
+		IsExample:     res.IsExample,
+		Name:          res.Name,
+		InputSize:     res.InputSize,
+		InputPreview:  res.InputPreview,
+		OutputSize:    res.OutputSize,
+		OutputPreview: res.OutputPreview,
+	}, nil
 }
 
 // CreateProblemTest .
 func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest) (*biz.ProblemTest, error) {
-	var filter = bson.D{{"problem_id", b.ProblemID}}
-	var o ProblemTest
-	db := r.data.mongodb.Collection(ProblemTestCollection)
-	opts := options.FindOne().SetSort(bson.D{{"order", -1}})
-	db.FindOne(ctx, filter, opts).Decode(&o)
-
-	_, err := r.data.mongodb.Collection(ProblemTestCollection).InsertOne(ctx, ProblemTest{
-		ID:               primitive.NewObjectID(),
-		ProblemID:        b.ProblemID,
-		InputFileContent: b.InputFileContent,
-		Order:            o.Order + 1,
-		Content:          b.Content,
-		UserID:           b.UserID,
-		IsExample:        b.IsExample,
-		Remark:           b.Remark,
-		InputSize:        b.InputSize,
-		CreatedAt:        time.Now(),
-		UpdatedAt:        time.Now(),
-	})
-
-	return &biz.ProblemTest{}, err
+	o := &ProblemTest{
+		ProblemID:     b.ProblemID,
+		Name:          b.Name,
+		IsExample:     b.IsExample,
+		InputSize:     b.InputSize,
+		InputPreview:  b.InputPreview,
+		OutputSize:    b.OutputSize,
+		OutputPreview: b.OutputPreview,
+		Order:         b.Order,
+	}
+	err := r.data.db.WithContext(ctx).
+		Create(o).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	// 保存文件
+	if len(b.InputFileContent) > 0 {
+		store := objectstorage.NewSeaweed()
+		storeName := fmt.Sprintf(problemTestInputPath, b.ProblemID, o.ID)
+		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(b.InputFileContent))
+	}
+	return &biz.ProblemTest{
+		ID: o.ID,
+	}, err
 }
 
 // UpdateProblemTest .
 func (r *problemRepo) UpdateProblemTest(ctx context.Context, p *biz.ProblemTest) (*biz.ProblemTest, error) {
-	id, _ := primitive.ObjectIDFromHex(p.ID)
-	filter := bson.D{{"_id", id}}
-	update := bson.D{
-		{"$set", bson.D{
-			{"remark", p.Remark},
-			{"is_example", p.IsExample},
-		}},
-	}
-	_, err := r.data.mongodb.Collection(ProblemTestCollection).
-		UpdateOne(ctx, filter, update)
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Model(&ProblemTest{ID: p.ID}).
+		Updates(map[string]interface{}{
+			"is_example": p.IsExample,
+			"remark":     p.Remark,
+		}).Error
 	return nil, err
 }
 
 // DeleteProblemTest .
-func (r *problemRepo) DeleteProblemTest(ctx context.Context, id string) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Delete(ProblemTest{ID: id}).
+		Error
+	return err
+}
+
+func (r *problemRepo) UpdateProblemTestStdOutput(ctx context.Context, id int, outputContent []byte, outputPreview string) error {
+	var res ProblemTest
+	err := r.data.db.Model(&ProblemTest{}).
+		First(&res, "id = ?", id).
+		Error
 	if err != nil {
 		return err
 	}
-	filter := bson.D{{"_id", oid}}
-	_, err = r.data.mongodb.Collection(ProblemTestCollection).
-		DeleteOne(ctx, filter)
-	return err
-}
-
-func (r *problemRepo) UpdateProblemTestStdOutput(ctx context.Context, id string, content string) error {
-	oid, _ := primitive.ObjectIDFromHex(id)
-	filter := bson.D{{"_id", oid}}
-	update := bson.D{
-		{"$set", bson.D{
-			{"output_size", len(content)},
-			{"output_file_content", []byte(content)},
-		}},
+	update := &ProblemTest{
+		ID:            id,
+		OutputSize:    int64(len(outputContent)),
+		OutputPreview: outputPreview,
 	}
-	_, err := r.data.mongodb.Collection(ProblemTestCollection).
-		UpdateOne(ctx, filter, update)
-	return err
-}
-
-func (r *problemRepo) SortProblemTests(ctx context.Context, ids []string) error {
-	for index, id := range ids {
-		oid, _ := primitive.ObjectIDFromHex(id)
-		r.data.mongodb.Collection(ProblemTestCollection).
-			UpdateOne(ctx, bson.D{{"_id", oid}}, bson.D{
-				{"$set", bson.D{
-					{"order", index},
-				}},
-			})
+	err = r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Updates(update).Error
+	if err != nil {
+		return err
 	}
+	// 保存文件
+	store := objectstorage.NewSeaweed()
+	storeName := fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID)
+	store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(outputContent))
 	return nil
+}
+
+func (r *problemRepo) SortProblemTests(ctx context.Context, ids []int32) {
+	for index, id := range ids {
+		r.data.db.WithContext(ctx).
+			Model(&ProblemTest{ID: int(id)}).
+			Update("order", index)
+	}
 }

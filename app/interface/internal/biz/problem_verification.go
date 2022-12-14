@@ -60,7 +60,7 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 	res.ProblemID = id
 	res.VerificationStatus = VerificationStatusPending
 	uc.log.Info("VerificationInfoActionTest")
-	t, _ := uc.repo.ListProblemSampleTest(ctx, id)
+	t, _ := uc.repo.ListProblemTestContent(ctx, id, true)
 	if len(t) == 0 {
 		res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
 			Action:       VerificationInfoActionTest,

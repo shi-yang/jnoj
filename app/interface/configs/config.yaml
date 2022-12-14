@@ -16,6 +16,11 @@ data:
   mongodb:
     uri: "${MONGODB_URI}"
     database: "jnoj"
+  object_storage:
+    bucket: "test"
+    secret_id: "id"
+    secret_key: "key"
+    endpoint: "http://s3:8333"
 
 consul:
   address: consul:8500

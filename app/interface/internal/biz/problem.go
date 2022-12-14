@@ -25,7 +25,7 @@ type Problem struct {
 	UpdatedAt     time.Time
 
 	Statements  []*ProblemStatement
-	SampleTests []*SampleTest
+	SampleTests []*Test
 }
 
 const (
@@ -93,7 +93,7 @@ func (uc *ProblemUsecase) GetProblem(ctx context.Context, id int) (*Problem, err
 	statements, _ := uc.repo.ListProblemStatements(ctx, &v1.ListProblemStatementsRequest{
 		Id: int32(id),
 	})
-	tests, _ := uc.repo.ListProblemSampleTest(ctx, id)
+	tests, _ := uc.repo.ListProblemTestContent(ctx, id, true)
 	for _, v := range statements {
 		p.Statements = append(p.Statements, &ProblemStatement{
 			ID:       v.ID,
@@ -105,7 +105,7 @@ func (uc *ProblemUsecase) GetProblem(ctx context.Context, id int) (*Problem, err
 		})
 	}
 	for _, v := range tests {
-		p.SampleTests = append(p.SampleTests, &SampleTest{
+		p.SampleTests = append(p.SampleTests, &Test{
 			Input:  v.Input,
 			Output: v.Output,
 		})

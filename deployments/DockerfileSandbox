@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-COPY deployments/sources.list /etc/apt/sources.list
+COPY sources.list /etc/apt/sources.list
 
 ENV GOVERSION 1.19.1
 ENV GOROOT /opt/go

@@ -2,13 +2,14 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"jnoj/app/sandbox/internal/biz"
 
+	objectstorage "jnoj/pkg/object_storage"
+
 	"github.com/go-kratos/kratos/v2/log"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -60,34 +61,24 @@ type Problem struct {
 	DeletedAt          gorm.DeletedAt
 }
 
-type ProblemFile struct {
-	ID        int
-	Name      string
-	Content   string
-	Type      string
-	ProblemID int
-	UserID    int
-	FileType  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+type ProblemTest struct {
+	ID            int
+	ProblemID     int
+	Order         int
+	Name          string // 测试点名称
+	InputSize     int64  // 输入文件大小
+	InputPreview  string // 输入文件预览
+	OutputSize    int64  // 输出文件大小
+	OutputPreview string // 输出文件预览
+	Remark        string
+	UserID        int
+	IsExample     bool
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
-type ProblemTest struct {
-	ID                primitive.ObjectID `bson:"_id"`
-	ProblemID         int                `bson:"problem_id"`
-	Order             int                `bson:"order"`
-	Content           string             `bson:"content"` // 预览的文件内容
-	InputSize         int64              `bson:"input_size"`
-	InputFileContent  []byte             `bson:"input_file_content"`
-	OutputSize        int64              `bson:"output_size"`
-	OutputFileContent []byte             `bson:"output_file_content"`
-	Remark            string             `bson:"remark"`
-	UserID            int                `bson:"user_id"`
-	IsExample         bool               `bson:"is_example"`
-	CreatedAt         time.Time          `bson:"created_at"`
-	UpdatedAt         time.Time          `bson:"updated_at"`
-}
+const problemTestInputPath = "/problem_tests/%d/%d.in"
+const problemTestOutputPath = "/problem_tests/%d/%d.out"
 
 type ContestProblem struct {
 	ID            int
@@ -120,7 +111,7 @@ func (r *submissionRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, 
 	if err != nil {
 		return res, err
 	}
-	res.Tests = r.listProblemTests(ctx, id)
+	res.Tests = r.ListProblemTests(ctx, id)
 	return res, nil
 }
 
@@ -132,7 +123,6 @@ func (r *submissionRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*bi
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Updates(&update).Error
-	r.log.Debug("(r *submissionRepo) UpdateProblem:", err)
 	return nil, err
 }
 
@@ -180,24 +170,21 @@ func (r *submissionRepo) getProblemChecker(ctx context.Context, id int) (string,
 	return f.Content, nil
 }
 
-func (r *submissionRepo) listProblemTests(ctx context.Context, id int) []*biz.Test {
-	var filter = bson.D{{"problem_id", id}}
-	var res []*biz.Test
-	db := r.data.mongodb.Collection(ProblemTestCollection)
-	cursor, err := db.Find(ctx, filter)
-	if err != nil {
-		return nil
-	}
-	defer cursor.Close(ctx)
-	for cursor.Next(ctx) {
-		var result ProblemTest
-		err := cursor.Decode(&result)
-		if err != nil {
-			r.log.Error("cursor.Next() error:", err)
-		}
+func (r *submissionRepo) ListProblemTests(ctx context.Context, id int) []*biz.Test {
+	var tests []ProblemTest
+	r.data.db.WithContext(ctx).
+		Model(&ProblemTest{}).
+		Where("problem_id = ?", id).
+		Find(&tests)
+
+	res := make([]*biz.Test, 0)
+	for _, v := range tests {
+		store := objectstorage.NewSeaweed()
+		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, id, v.ID))
+		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, id, v.ID))
 		res = append(res, &biz.Test{
-			Input:  string(result.InputFileContent),
-			Output: string(result.OutputFileContent),
+			Input:  in,
+			Output: out,
 		})
 	}
 	return res

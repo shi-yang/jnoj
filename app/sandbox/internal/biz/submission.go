@@ -64,8 +64,8 @@ type Problem struct {
 }
 
 type Test struct {
-	Input  string
-	Output string
+	Input  []byte
+	Output []byte
 }
 
 const (
@@ -98,6 +98,7 @@ type SubmissionRepo interface {
 
 	GetProblem(context.Context, int) (*Problem, error)
 	UpdateProblem(context.Context, *Problem) (*Problem, error)
+	ListProblemTests(context.Context, int) []*Test
 
 	GetContestProblemByProblemID(context.Context, int, int) (*ContestProblem, error)
 	UpdateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)

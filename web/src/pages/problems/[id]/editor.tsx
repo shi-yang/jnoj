@@ -83,7 +83,7 @@ function Console({problem, defaultCases, language, source}) {
               </Button>
             }
           >
-            <Tabs.TabPane key='cases' title={`测试用例`} style={{ width: '100%', padding: '15px' }}>
+            <Tabs.TabPane key='cases' title={t['console.testCase']} style={{ width: '100%', padding: '15px' }}>
               <Form
                 form={form}
                 autoComplete='off'
@@ -136,7 +136,7 @@ function Console({problem, defaultCases, language, source}) {
                 </Form.List>
               </Form>
             </Tabs.TabPane>
-            <Tabs.TabPane key='result' title={`执行结果`} style={{ width: '100%', padding: '15px' }}>
+            <Tabs.TabPane key='result' title={t['console.result']} style={{ width: '100%', padding: '15px' }}>
               <div>
                 { compileMsg === '' ? casesResult.map((item, index) => {
                   return (
@@ -215,7 +215,7 @@ export default function App({problem}) {
         </Select>
         <Select
           size='large'
-          addBefore='主题'
+          addBefore={t['theme']}
           defaultValue={theme}
           placeholder='编辑器主题'
           style={{ width: 200 }}
@@ -246,7 +246,7 @@ export default function App({problem}) {
             icon={consoleVisible ? <IconUp /> : <IconDown />}
             onClick={() => setConsoleVisible((v) => !v)}
           >
-            控制台
+            Console
           </Button>
         </div>
         <div className={styles.right}>

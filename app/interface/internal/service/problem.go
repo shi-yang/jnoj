@@ -7,6 +7,7 @@ import (
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -14,12 +15,16 @@ import (
 
 // ProblemService is a problem service.
 type ProblemService struct {
-	uc *biz.ProblemUsecase
+	uc  *biz.ProblemUsecase
+	log *log.Helper
 }
 
 // NewProblemService new a problem service.
-func NewProblemService(uc *biz.ProblemUsecase) *ProblemService {
-	return &ProblemService{uc: uc}
+func NewProblemService(uc *biz.ProblemUsecase, logger log.Logger) *ProblemService {
+	return &ProblemService{
+		uc:  uc,
+		log: log.NewHelper(logger),
+	}
 }
 
 // 题目列表
@@ -226,24 +231,27 @@ func (s *ProblemService) ListProblemTests(ctx context.Context, req *v1.ListProbl
 	resp.Count = count
 	for _, v := range data {
 		resp.Data = append(resp.Data, &v1.ProblemTest{
-			Id:        v.ID,
-			InputSize: v.InputSize,
-			Content:   v.Content,
-			Remark:    v.Remark,
-			IsExample: v.IsExample,
-			CreatedAt: timestamppb.New(v.CreatedAt),
-			UpdatedAt: timestamppb.New(v.UpdatedAt),
+			Id:            int32(v.ID),
+			Name:          v.Name,
+			InputPreview:  v.InputPreview,
+			InputSize:     v.InputSize,
+			OutputPreview: v.OutputPreview,
+			OutputSize:    v.OutputSize,
+			Remark:        v.Remark,
+			IsExample:     v.IsExample,
+			CreatedAt:     timestamppb.New(v.CreatedAt),
+			UpdatedAt:     timestamppb.New(v.UpdatedAt),
 		})
 	}
 	return resp, nil
 }
 
-// 获取题目测试点详情
+// GetProblemTest 获取题目测试点详情
 func (s *ProblemService) GetProblemTest(ctx context.Context, req *v1.GetProblemTestRequest) (*v1.ProblemTest, error) {
 	return nil, nil
 }
 
-// 创建题目测试点
+// CreateProblemTest 创建题目测试点
 func (s *ProblemService) CreateProblemTest(ctx context.Context, req *v1.CreateProblemTestRequest) (*v1.ProblemTest, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -254,16 +262,16 @@ func (s *ProblemService) CreateProblemTest(ctx context.Context, req *v1.CreatePr
 	}
 	res, err := s.uc.CreateProblemTest(ctx, &biz.ProblemTest{
 		ProblemID:        int(req.Id),
-		InputFileContent: req.InputFileContent,
-		Remark:           req.Filename,
+		InputFileContent: req.FileContent,
+		Name:             req.Filename,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return &v1.ProblemTest{Id: res.ID}, nil
+	return &v1.ProblemTest{Id: int32(res.ID)}, nil
 }
 
-// 上传题目测试点
+// UploadProblemTest 上传题目测试点
 func (s *ProblemService) UploadProblemTest(ctx http.Context) error {
 	var in v1.CreateProblemTestRequest
 	file, fileheader, err := ctx.Request().FormFile("file")
@@ -278,7 +286,7 @@ func (s *ProblemService) UploadProblemTest(ctx http.Context) error {
 	if err := ctx.BindVars(&in); err != nil {
 		return err
 	}
-	in.InputFileContent = fileContent
+	in.FileContent = fileContent
 	in.Filename = fileheader.Filename
 	http.SetOperation(ctx, v1.OperationProblemServiceCreateProblemTest)
 	h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -292,7 +300,7 @@ func (s *ProblemService) UploadProblemTest(ctx http.Context) error {
 	return ctx.Result(200, reply)
 }
 
-// 更新题目测试点
+// UpdateProblemTest 更新题目测试点
 func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdateProblemTestRequest) (*v1.ProblemTest, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -302,7 +310,7 @@ func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdatePr
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	s.uc.UpdateProblemTest(ctx, &biz.ProblemTest{
-		ID:        req.Tid,
+		ID:        int(req.Tid),
 		ProblemID: int(req.Id),
 		Remark:    req.Remark,
 		IsExample: req.IsExample,
@@ -310,7 +318,7 @@ func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdatePr
 	return nil, nil
 }
 
-// 删除题目测试点
+// DeleteProblemTest 删除题目测试点
 func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeleteProblemTestRequest) (*emptypb.Empty, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -319,11 +327,11 @@ func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeletePr
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err = s.uc.DeleteProblemTest(ctx, int64(req.Id), req.Tid)
+	err = s.uc.DeleteProblemTest(ctx, int64(req.Id), int(req.Tid))
 	return &emptypb.Empty{}, err
 }
 
-// 对题目测试点进行排序
+// SortProblemTests 对题目测试点进行排序
 func (s *ProblemService) SortProblemTests(ctx context.Context, req *v1.SortProblemTestsRequest) (*emptypb.Empty, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -332,11 +340,11 @@ func (s *ProblemService) SortProblemTests(ctx context.Context, req *v1.SortProbl
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err = s.uc.SortProblemTests(ctx, req.Ids)
-	return &emptypb.Empty{}, err
+	s.uc.SortProblemTests(ctx, req.Ids)
+	return &emptypb.Empty{}, nil
 }
 
-// 获取题目文件列表
+// ListProblemFiles 获取题目文件列表
 func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProblemFilesRequest) (*v1.ListProblemFilesResponse, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -353,6 +361,8 @@ func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProbl
 			Id:        int32(v.ID),
 			Name:      v.Name,
 			Type:      v.Type,
+			FileType:  v.FileType,
+			Content:   v.Content,
 			CreatedAt: timestamppb.New(v.CreatedAt),
 			UpdatedAt: timestamppb.New(v.UpdatedAt),
 		})
@@ -360,7 +370,7 @@ func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProbl
 	return resp, nil
 }
 
-// 获取题目文件详情
+// GetProblemFile 获取题目文件详情
 func (s *ProblemService) GetProblemFile(ctx context.Context, req *v1.GetProblemFileRequest) (*v1.ProblemFile, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -384,7 +394,7 @@ func (s *ProblemService) GetProblemFile(ctx context.Context, req *v1.GetProblemF
 	}, nil
 }
 
-// 创建题目文件
+// CreateProblemFile 创建题目文件
 func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreateProblemFileRequest) (*v1.ProblemFile, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -393,22 +403,58 @@ func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreatePr
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	res, err := s.uc.CreateProblemFile(ctx, &biz.ProblemFile{
+	f := &biz.ProblemFile{
 		ProblemID: int(req.Id),
 		Content:   req.Content,
 		Name:      req.Name,
 		Type:      req.Type,
 		FileType:  req.FileType,
-	})
+	}
+	if req.Filename != "" {
+		f.Name = req.Filename
+		f.FileContent = req.FileContent
+	}
+	res, err := s.uc.CreateProblemFile(ctx, f)
 	if err != nil {
 		return nil, err
 	}
 	return &v1.ProblemFile{
-		Id: int32(res.ID),
+		Id:      int32(res.ID),
+		Content: res.Content,
 	}, nil
 }
 
-// 更新题目文件
+// UploadProblemFile 上传题目文件
+func (s *ProblemService) UploadProblemFile(ctx http.Context) error {
+	var in v1.CreateProblemFileRequest
+	file, fileheader, err := ctx.Request().FormFile("file")
+	if err != nil {
+		return err
+	}
+	fileContent, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	if err := ctx.BindVars(&in); err != nil {
+		return err
+	}
+	in.FileContent = fileContent
+	in.Filename = fileheader.Filename
+	in.FileType = ctx.Request().PostForm.Get("fileType")
+	http.SetOperation(ctx, v1.OperationProblemServiceCreateProblemFile)
+	h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+		return s.CreateProblemFile(ctx, req.(*v1.CreateProblemFileRequest))
+	})
+	out, err := h(ctx, &in)
+	if err != nil {
+		return err
+	}
+	reply := out.(*v1.ProblemFile)
+	return ctx.Result(200, reply)
+}
+
+// UpdateProblemFile 更新题目文件
 func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdateProblemFileRequest) (*v1.ProblemFile, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -426,7 +472,7 @@ func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdatePr
 	return nil, nil
 }
 
-// 删除题目文件
+// DeleteProblemFile 删除题目文件
 func (s *ProblemService) DeleteProblemFile(ctx context.Context, req *v1.DeleteProblemFileRequest) (*emptypb.Empty, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -444,7 +490,7 @@ func (s *ProblemService) RunProblemFile(ctx context.Context, req *v1.RunProblemF
 	return &emptypb.Empty{}, err
 }
 
-// 获取题目文件列表
+// ListProblemStdCheckers 获取题目文件列表
 func (s *ProblemService) ListProblemStdCheckers(ctx context.Context, req *v1.ListProblemStdCheckersRequest) (*v1.ListProblemStdCheckersResponse, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {

@@ -1,5 +1,10 @@
 const i18n = {
   'en-US': {
+    'tab.description': 'Description',
+    'tab.submissions': 'Submissions',
+    'console.testCase': 'Test Case',
+    'console.result': 'Result',
+    'theme': 'theme',
     'submit': 'Submit',
     'input': 'Input',
     'output': 'Output',
@@ -20,6 +25,11 @@ const i18n = {
     'console.addCase': 'Add Case',
   },
   'zh-CN': {
+    'tab.description': '题目描述',
+    'tab.submissions': '提交记录',
+    'console.testCase': '测试样例',
+    'console.result': '执行结果',
+    'theme': '主题',
     'submit': '提交',
     'input': '输入',
     'output': '输出',

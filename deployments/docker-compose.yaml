@@ -2,10 +2,9 @@ version: '3'
 
 services:
   api:
-    container_name: api
     build:
       context: .
-      dockerfile: deployments/Dockerfile
+      dockerfile: Dockerfile
     command: bash -c "cd app/interface && make build && ./bin/server -conf ./configs/config.yaml"
     environment:
       MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
@@ -14,7 +13,7 @@ services:
     ports:
       - 8092:8000
     volumes:
-      - .:/go/src/jnoj
+      - ..:/go/src/jnoj
     depends_on:
       - mysql
       - consul
@@ -22,85 +21,55 @@ services:
     restart: always
 
   sandbox:
-    container_name: sandbox
     build:
       context: .
-      dockerfile: deployments/DockerfileSandbox
+      dockerfile: DockerfileSandbox
     command: bash -c "cd app/sandbox && make build && ./bin/server -conf ./configs/config.yaml"
     environment:
       MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
       REDIS_ADDR: redis:6379
       MONGODB_URI: mongodb://root:123456@mongo:27017
     volumes:
-      - .:/go/src/sandbox
+      - ..:/go/src/sandbox
     depends_on:
       - mysql
       - redis
       - consul
     restart: always
     privileged: true
-    
 
   consul:
     image: consul:latest
-    container_name: consul
     ports:
       - "9502:8500"
     command: agent -server -bootstrap -ui -node=1 -client=0.0.0.0
 
   mongo:
-    container_name: mongo
     image: mongo:5.0.5
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=123456
     volumes:
-      - ./data/mongo/db:/data/db
-
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    ports:
-      - "9501:8081"
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=123456
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-    restart: always
-    depends_on:
-      - mongo
+      - ../data/mongo/db:/data/db
 
   redis:
     image: redis:5.0-alpine
-    container_name: redis
     command: redis-server
     volumes:
-      - ./data/redis:/data
+      - ../data/redis:/data
     restart: always
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    ports:
-      - 9500:80
-    depends_on:
-      - mysql
-    environment: 
-      PMA_USER: root
-      PMA_PASSWORD: 123456
-    links:
-      - mysql:db
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
     restart: always
     volumes:
-      - ./data/mysql/logs:/logs
-      - ./data/mysql/data:/var/lib/mysql
+      - ../data/mysql/logs:/logs
+      - ../data/mysql/data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: jnoj
       MYSQL_ROOT_PASSWORD: 123456
       TZ: Asia/Shanghai
+
+networks:
+  jnoj_net:

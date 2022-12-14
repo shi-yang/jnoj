@@ -78,6 +78,7 @@ function Index() {
                 <div key='first' className={styles.left}>
                   <Tabs
                     className={styles['tabs-container']}
+                    destroyOnHide
                     extra={
                       languageOptions.length > 1 &&
                       <>
@@ -108,10 +109,10 @@ function Index() {
                       </>
                     }
                   >
-                    <TabPane key='problem' className={styles['tabs-pane']} style={{ height: '100%' }} title='题目描述'>
+                    <TabPane key='problem' className={styles['tabs-pane']} title={t['tab.description']}>
                       <Description problem={data} language={language} />
                     </TabPane>
-                    <TabPane key='submission' className={styles['tabs-pane']} style={{ height: '100%' }} title='提交记录'>
+                    <TabPane key='submission' className={styles['tabs-pane']} title={t['tab.submissions']}>
                       <Submission problem={data} />
                     </TabPane>
                   </Tabs>

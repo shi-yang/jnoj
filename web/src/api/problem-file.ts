@@ -1,6 +1,6 @@
 import axios from '@/utils/request';
 
-export function listProblemFiles(id: number, params) {
+export function listProblemFiles(id: number, params=undefined) {
   return axios.get(`/problems/${id}/files`, {
     params
   })
@@ -20,6 +20,10 @@ export function deleteProblemFile(id: number, sid: number) {
 
 export function updateProblemFile(id: number, sid: number, data: any) {
   return axios.put(`/problems/${id}/files/${sid}`, data)
+}
+
+export function uploadProblemFile(id:number, data:FormData) {
+  return axios.post(`/problems/${id}/upload_file`, data)
 }
 
 export function runProblemFile(id: number) {

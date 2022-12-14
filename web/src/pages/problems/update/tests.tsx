@@ -194,18 +194,35 @@ const App = (props) => {
       }
     },
     {
-      title: t['isExample'],
+      title: t['tests.table.name'],
+      dataIndex: 'name',
+      align: 'center'
+    },
+    {
+      title: t['tests.table.isExample'],
       dataIndex: 'isExample',
       align: 'center',
       render: (col, record) => col && '是'
     },
     {
-      title: t['content'],
-      dataIndex: 'content',
+      title: t['tests.table.inputPreview'],
+      dataIndex: 'inputPreview',
+      render: (col) => <pre className={styles['table-pre']}>{col}</pre>
     },
     {
-      title: t['size'],
+      title: t['tests.table.inputSize'],
       dataIndex: 'inputSize',
+      align: 'center',
+      render: (col) => FormatStorageSize(col)
+    },
+    {
+      title: t['tests.table.outputPreview'],
+      dataIndex: 'outputPreview',
+      render: (col) => <pre className={styles['table-pre']}>{col}</pre>
+    },
+    {
+      title: t['tests.table.outputSize'],
+      dataIndex: 'outputSize',
       align: 'center',
       render: (col) => FormatStorageSize(col)
     },

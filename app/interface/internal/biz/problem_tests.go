@@ -8,23 +8,27 @@ import (
 )
 
 // ProblemTest is a ProblemTest model.
+// 题目的测试点，包含测试点的输入和测试点的输出
 type ProblemTest struct {
-	ID                string
+	ID                int
 	ProblemID         int
-	Content           string // 预览的文件内容
-	IsExample         bool
-	InputSize         int64
-	InputFileContent  []byte
-	OutputSize        int64
-	OutputFileContent []byte
-	Order             int
-	Remark            string
+	IsExample         bool   // 是否样例
+	Name              string // 测试点名称
+	InputSize         int64  // 输入文件大小
+	InputPreview      string // 输入文件预览
+	InputFileContent  []byte // 输入文件内容
+	OutputSize        int64  // 输出文件大小
+	OutputFileContent []byte // 输出文件内容
+	OutputPreview     string // 输出文件预览
+	Order             int    // 测评顺序
+	Remark            string // 备注
 	UserID            int
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }
 
-type SampleTest struct {
+type Test struct {
+	ID     int
 	Input  string
 	Output string
 }
@@ -42,14 +46,14 @@ type TestGroup struct {
 // ProblemTestRepo is a ProblemTest repo.
 type ProblemTestRepo interface {
 	ListProblemTests(context.Context, *v1.ListProblemTestsRequest) ([]*ProblemTest, int64)
-	GetProblemTest(context.Context, string) (*ProblemTest, error)
+	GetProblemTest(context.Context, int) (*ProblemTest, error)
 	CreateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
 	UpdateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
-	DeleteProblemTest(context.Context, string) error
+	DeleteProblemTest(context.Context, int) error
 
-	ListProblemSampleTest(context.Context, int) ([]*SampleTest, error)
-	UpdateProblemTestStdOutput(context.Context, string, string) error
-	SortProblemTests(context.Context, []string) error
+	ListProblemTestContent(ctx context.Context, pid int, isSample bool) ([]*Test, error)
+	UpdateProblemTestStdOutput(context.Context, int, []byte, string) error
+	SortProblemTests(context.Context, []int32)
 }
 
 // ListProblemTests list ProblemTest
@@ -58,7 +62,7 @@ func (uc *ProblemUsecase) ListProblemTests(ctx context.Context, req *v1.ListProb
 }
 
 // GetProblemTest get a ProblemTest
-func (uc *ProblemUsecase) GetProblemTest(ctx context.Context, id string) (*ProblemTest, error) {
+func (uc *ProblemUsecase) GetProblemTest(ctx context.Context, id int) (*ProblemTest, error) {
 	return uc.repo.GetProblemTest(ctx, id)
 }
 
@@ -68,9 +72,9 @@ func (uc *ProblemUsecase) CreateProblemTest(ctx context.Context, p *ProblemTest)
 	p.InputSize = int64(len(p.InputFileContent))
 	// 读取 32 个字符作为内容
 	if len(p.InputFileContent) < 32 {
-		p.Content = string(p.InputFileContent)
+		p.InputPreview = string(p.InputFileContent)
 	} else {
-		p.Content = string(p.InputFileContent[:32])
+		p.InputPreview = string(p.InputFileContent[:32]) + "..."
 	}
 	return uc.repo.CreateProblemTest(ctx, p)
 }
@@ -81,11 +85,11 @@ func (uc *ProblemUsecase) UpdateProblemTest(ctx context.Context, p *ProblemTest)
 }
 
 // DeleteProblemTest delete a ProblemTest
-func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid string) error {
+func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid int) error {
 	return uc.repo.DeleteProblemTest(ctx, tid)
 }
 
 // SortProblemTests .
-func (uc *ProblemUsecase) SortProblemTests(ctx context.Context, ids []string) error {
-	return uc.repo.SortProblemTests(ctx, ids)
+func (uc *ProblemUsecase) SortProblemTests(ctx context.Context, ids []int32) {
+	uc.repo.SortProblemTests(ctx, ids)
 }

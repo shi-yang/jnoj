@@ -969,12 +969,19 @@
     "@babel/helper-validator-option" "^7.18.6"
     "@babel/plugin-transform-typescript" "^7.18.6"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.11.1", "@babel/runtime@^7.12.1", "@babel/runtime@^7.12.13", "@babel/runtime@^7.17.2", "@babel/runtime@^7.18.6", "@babel/runtime@^7.2.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.11.1", "@babel/runtime@^7.12.1", "@babel/runtime@^7.12.13", "@babel/runtime@^7.14.6", "@babel/runtime@^7.17.2", "@babel/runtime@^7.18.6", "@babel/runtime@^7.2.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.20.1"
   resolved "https://registry.npmmirror.com/@babel/runtime/-/runtime-7.20.1.tgz#1148bb33ab252b165a06698fde7576092a78b4a9"
   integrity sha512-mrzLkl6U9YLF8qpqI7TB82PESyEGjm/0Ly91jG575eVxMMlb8fYfOXFZIJ8XfLrJZQbm7dlKry2bJmXBUEkdFg==
   dependencies:
     regenerator-runtime "^0.13.10"
+
+"@babel/runtime@^7.6.2":
+  version "7.20.6"
+  resolved "https://registry.npmmirror.com/@babel/runtime/-/runtime-7.20.6.tgz#facf4879bfed9b5326326273a64220f099b0fce3"
+  integrity sha512-Q+8MqP7TiHMWzSfwiJwXCjyf4GYA4Dgw3emg/7xmwsdLJOZUp+nMqcOwOzzYheuM1rhDu8FSj2l0aoMygEuXuA==
+  dependencies:
+    regenerator-runtime "^0.13.11"
 
 "@babel/template@^7.18.10":
   version "7.18.10"
@@ -1030,7 +1037,7 @@
     "@codemirror/view" "^6.0.0"
     "@lezer/common" "^1.0.0"
 
-"@codemirror/lang-cpp@^6.0.0":
+"@codemirror/lang-cpp@^6.0.2":
   version "6.0.2"
   resolved "https://registry.npmmirror.com/@codemirror/lang-cpp/-/lang-cpp-6.0.2.tgz#076c98340c3beabde016d7d83e08eebe17254ef9"
   integrity sha512-6oYEYUKHvrnacXxWxYa6t4puTlbN3dgV662BDfSH8+MfjQjVmP697/KYTDOqpxgerkvoNm7q5wlFMBeX8ZMocg==
@@ -1038,31 +1045,7 @@
     "@codemirror/language" "^6.0.0"
     "@lezer/cpp" "^1.0.0"
 
-"@codemirror/lang-css@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-css/-/lang-css-6.0.1.tgz#470fff614e4cfbbe796ec43103420d59c797dd7a"
-  integrity sha512-rlLq1Dt0WJl+2epLQeAsfqIsx3lGu4HStHCJu95nGGuz2P2fNugbU3dQYafr2VRjM4eMC9HviI6jvS98CNtG5w==
-  dependencies:
-    "@codemirror/autocomplete" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/state" "^6.0.0"
-    "@lezer/css" "^1.0.0"
-
-"@codemirror/lang-html@^6.0.0":
-  version "6.1.4"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-html/-/lang-html-6.1.4.tgz#0c3cab2907dd557f214dd7b1be5a6f71bda0b709"
-  integrity sha512-sMXDSmOzQkvQdJq+v/Bfs7y29wDdhsFZfKftchfHBF6aBD+x7lGCBFzBpn5+JCdyvAYi7LLfQcjVvIxy41PkAw==
-  dependencies:
-    "@codemirror/autocomplete" "^6.0.0"
-    "@codemirror/lang-css" "^6.0.0"
-    "@codemirror/lang-javascript" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/state" "^6.0.0"
-    "@codemirror/view" "^6.2.2"
-    "@lezer/common" "^1.0.0"
-    "@lezer/html" "^1.0.1"
-
-"@codemirror/lang-java@^6.0.0":
+"@codemirror/lang-java@^6.0.1":
   version "6.0.1"
   resolved "https://registry.npmmirror.com/@codemirror/lang-java/-/lang-java-6.0.1.tgz#03bd06334da7c8feb9dff6db01ac6d85bd2e48bb"
   integrity sha512-OOnmhH67h97jHzCuFaIEspbmsT98fNdhVhmA3zCxW0cn7l8rChDhZtwiwJ/JOKXgfm4J+ELxQihxaI7bj7mJRg==
@@ -1070,7 +1053,7 @@
     "@codemirror/language" "^6.0.0"
     "@lezer/java" "^1.0.0"
 
-"@codemirror/lang-javascript@^6.0.0", "@codemirror/lang-javascript@^6.1.1":
+"@codemirror/lang-javascript@^6.1.1":
   version "6.1.1"
   resolved "https://registry.npmmirror.com/@codemirror/lang-javascript/-/lang-javascript-6.1.1.tgz#f920192db30531927a02b8a1af9cf3c3d895101c"
   integrity sha512-F4+kiuC5d5dUSJmff96tJQwpEXs/tX/4bapMRnZWW6bHKK1Fx6MunTzopkCUWRa9bF87GPmb9m7Qtg7Yv8f3uQ==
@@ -1083,106 +1066,16 @@
     "@lezer/common" "^1.0.0"
     "@lezer/javascript" "^1.0.0"
 
-"@codemirror/lang-json@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-json/-/lang-json-6.0.1.tgz#0a0be701a5619c4b0f8991f9b5e95fe33f462330"
-  integrity sha512-+T1flHdgpqDDlJZ2Lkil/rLiRy684WMLc74xUnjJH48GQdfJo/pudlTRreZmKwzP8/tGdKf83wlbAdOCzlJOGQ==
+"@codemirror/lang-python@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.npmmirror.com/@codemirror/lang-python/-/lang-python-6.1.0.tgz#9e46bd79373664322eff6035ec42a9916c1616bb"
+  integrity sha512-a/JhyPYn5qz5T8WtAfZCuAZcfClgNVb7UZzdLr76bWUeG7Usd3Un5o8UQOkZ/5Xw+EM5YGHHG+T6ickMYkDcRQ==
   dependencies:
-    "@codemirror/language" "^6.0.0"
-    "@lezer/json" "^1.0.0"
-
-"@codemirror/lang-markdown@^6.0.0":
-  version "6.0.5"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-markdown/-/lang-markdown-6.0.5.tgz#61393c7e2552528daee6aa4eca63428aa00832bd"
-  integrity sha512-qH0THRYc2M7pIJoAp6jstXZkv8ZMVhNaBm7Bs4+0SLHhHlwX53txFy98AcPwrfq0Sh8Zi6RAuj9j/GyL8E1MKw==
-  dependencies:
-    "@codemirror/lang-html" "^6.0.0"
-    "@codemirror/language" "^6.3.0"
-    "@codemirror/state" "^6.0.0"
-    "@codemirror/view" "^6.0.0"
-    "@lezer/common" "^1.0.0"
-    "@lezer/markdown" "^1.0.0"
-
-"@codemirror/lang-php@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-php/-/lang-php-6.0.0.tgz#d16f4244668c73cd76070e4d73f7405dfb895310"
-  integrity sha512-96CEjq0xEgbzc6bdFPwILPfZ6m8917JRbh2oPszZJABlYxG4Y+eYjtYkUTDb4yuyjQKyigHoeGC6zoIOYA1NWA==
-  dependencies:
-    "@codemirror/lang-html" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/state" "^6.0.0"
-    "@lezer/common" "^1.0.0"
-    "@lezer/php" "^1.0.0"
-
-"@codemirror/lang-python@^6.0.0":
-  version "6.0.4"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-python/-/lang-python-6.0.4.tgz#81dc262e57cce6cba72302420b22a63c2d2a5892"
-  integrity sha512-CuC7V6MVw4HshQuFaB1SMXHOSbKLnBnBXMzm9Zjb+uvkggyY8fXp79T9eYFzMn7fuadoPJcXyTcT/q/SRT7lvQ==
-  dependencies:
+    "@codemirror/autocomplete" "^6.3.2"
     "@codemirror/language" "^6.0.0"
     "@lezer/python" "^1.0.0"
 
-"@codemirror/lang-rust@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-rust/-/lang-rust-6.0.1.tgz#d6829fc7baa39a15bcd174a41a9e0a1bf7cf6ba8"
-  integrity sha512-344EMWFBzWArHWdZn/NcgkwMvZIWUR1GEBdwG8FEp++6o6vT6KL9V7vGs2ONsKxxFUPXKI0SPcWhyYyl2zPYxQ==
-  dependencies:
-    "@codemirror/language" "^6.0.0"
-    "@lezer/rust" "^1.0.0"
-
-"@codemirror/lang-sql@^6.0.0":
-  version "6.3.3"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-sql/-/lang-sql-6.3.3.tgz#3a0cad06cd5be5557850035c5f6592ea41dd21c2"
-  integrity sha512-VNsHju8500fkiDyDU8jZyGQ8M0iXU0SmfeCoCeAYkACcEFlX63BOT8311pICXyw43VYRbS23w54RgSEQmixGjQ==
-  dependencies:
-    "@codemirror/autocomplete" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/state" "^6.0.0"
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
-"@codemirror/lang-wast@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-wast/-/lang-wast-6.0.1.tgz#c15bec84548a5e9b0a43fa69fb63631d087d6047"
-  integrity sha512-sQLsqhRjl2MWG3rxZysX+2XAyed48KhLBHLgq9xcKxIJu3npH/G+BIXW5NM5mHeDUjG0jcGh9BcjP0NfMStuzA==
-  dependencies:
-    "@codemirror/language" "^6.0.0"
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
-"@codemirror/lang-xml@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/@codemirror/lang-xml/-/lang-xml-6.0.1.tgz#ac2dd701d26683163543248b5abc56829ba7fcc6"
-  integrity sha512-0tvycUTElajCcRKgsszhKjWX+uuOogdu5+enpfqYA+j0gnP8ek7LRxujh2/XMPRdXt/hwOML4slJLE7r2eX3yQ==
-  dependencies:
-    "@codemirror/autocomplete" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/state" "^6.0.0"
-    "@lezer/common" "^1.0.0"
-    "@lezer/xml" "^1.0.0"
-
-"@codemirror/language-data@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.npmmirror.com/@codemirror/language-data/-/language-data-6.1.0.tgz#479eff66289a6453493f7c8213d7b2ceb95c89f6"
-  integrity sha512-g9V23fuLRI9AEbpM6bDy1oquqgpFlIDHTihUhL21NPmxp+x67ZJbsKk+V71W7/Bj8SCqEO1PtqQA/tDGgt1nfw==
-  dependencies:
-    "@codemirror/lang-cpp" "^6.0.0"
-    "@codemirror/lang-css" "^6.0.0"
-    "@codemirror/lang-html" "^6.0.0"
-    "@codemirror/lang-java" "^6.0.0"
-    "@codemirror/lang-javascript" "^6.0.0"
-    "@codemirror/lang-json" "^6.0.0"
-    "@codemirror/lang-markdown" "^6.0.0"
-    "@codemirror/lang-php" "^6.0.0"
-    "@codemirror/lang-python" "^6.0.0"
-    "@codemirror/lang-rust" "^6.0.0"
-    "@codemirror/lang-sql" "^6.0.0"
-    "@codemirror/lang-wast" "^6.0.0"
-    "@codemirror/lang-xml" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/legacy-modes" "^6.1.0"
-
-"@codemirror/language@^6.0.0", "@codemirror/language@^6.3.0":
+"@codemirror/language@^6.0.0":
   version "6.3.1"
   resolved "https://registry.npmmirror.com/@codemirror/language/-/language-6.3.1.tgz#1d61f33aa5de9aa74a713ee1f5ce600adc74df6b"
   integrity sha512-MK+G1QKaGfSEUg9YEFaBkMBI6j1ge4VMBPZv9fDYotw7w695c42x5Ba1mmwBkesYnzYFBfte6Hh9TDcKa6xORQ==
@@ -1193,13 +1086,6 @@
     "@lezer/highlight" "^1.0.0"
     "@lezer/lr" "^1.0.0"
     style-mod "^4.0.0"
-
-"@codemirror/legacy-modes@^6.1.0":
-  version "6.2.0"
-  resolved "https://registry.npmmirror.com/@codemirror/legacy-modes/-/legacy-modes-6.2.0.tgz#473016ccafba0990f23c981b678843194be5e131"
-  integrity sha512-RtZfwALTSswzKsnU3zo5FytDBA+/6J85Z8qNO7hnJ3Lo+jbdKUHreiw5m9yAT1DoB5WFhSZODsSijksdSbnGqA==
-  dependencies:
-    "@codemirror/language" "^6.0.0"
 
 "@codemirror/lint@^6.0.0":
   version "6.1.0"
@@ -1234,7 +1120,7 @@
     "@codemirror/view" "^6.0.0"
     "@lezer/highlight" "^1.0.0"
 
-"@codemirror/view@^6.0.0", "@codemirror/view@^6.2.2", "@codemirror/view@^6.5.0", "@codemirror/view@^6.5.1":
+"@codemirror/view@^6.0.0", "@codemirror/view@^6.5.0", "@codemirror/view@^6.5.1":
   version "6.5.1"
   resolved "https://registry.npmmirror.com/@codemirror/view/-/view-6.5.1.tgz#f4533cd796f0569508822d0012bee9a15dc4b3f9"
   integrity sha512-xBKP8N3AXOs06VcKvIuvIQoUlGs7Hb78ftJWahLaRX909jKPMgGxR5XjvrawzTTZMSTU3DzdjDNPwG6fPM/ypQ==
@@ -1296,29 +1182,12 @@
     "@lezer/highlight" "^1.0.0"
     "@lezer/lr" "^1.0.0"
 
-"@lezer/css@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.npmmirror.com/@lezer/css/-/css-1.0.1.tgz#589d16d557024481f38dd8a036be3c3db1a199c2"
-  integrity sha512-kLGsbzXdp1ntzO2jDwFf+2w76EBlLiD4FKofx7tgkdqeFRoslFiMS2qqbNtAauXw8ihZ4cE5YpxSpfsKXSs5Sg==
-  dependencies:
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
 "@lezer/highlight@^1.0.0":
   version "1.1.2"
   resolved "https://registry.npmmirror.com/@lezer/highlight/-/highlight-1.1.2.tgz#60cd6c2a0a2cf753b8a026b04feeb0ea8df326ea"
   integrity sha512-CAun1WR1glxG9ZdOokTZwXbcwB7PXkIEyZRUMFBVwSrhTcogWq634/ByNImrkUnQhjju6xsIaOBIxvcRJtplXQ==
   dependencies:
     "@lezer/common" "^1.0.0"
-
-"@lezer/html@^1.0.1":
-  version "1.1.0"
-  resolved "https://registry.npmmirror.com/@lezer/html/-/html-1.1.0.tgz#b4c7e8f2d877cb979b0d4790c142d926a63386e1"
-  integrity sha512-94MMm4oyXnmphMldSy6cC/p1zbsIS+/m71kyo3dmId858iWOXslba23fvD5vGl3kcJIZZJA3+DLQv2+GR5AeYQ==
-  dependencies:
-    "@lezer/common" "^1.0.0"
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
 
 "@lezer/java@^1.0.0":
   version "1.0.0"
@@ -1336,14 +1205,6 @@
     "@lezer/highlight" "^1.0.0"
     "@lezer/lr" "^1.0.0"
 
-"@lezer/json@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmmirror.com/@lezer/json/-/json-1.0.0.tgz#848ad9c2c3e812518eb02897edd5a7f649e9c160"
-  integrity sha512-zbAuUY09RBzCoCA3lJ1+ypKw5WSNvLqGMtasdW6HvVOqZoCpPr8eWrsGnOVWGKGn8Rh21FnrKRVlJXrGAVUqRw==
-  dependencies:
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
 "@lezer/lr@^1.0.0":
   version "1.2.4"
   resolved "https://registry.npmmirror.com/@lezer/lr/-/lr-1.2.4.tgz#380b8586c5578ca5d1187afd2284d51af103951e"
@@ -1351,42 +1212,10 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@lezer/markdown@^1.0.0":
-  version "1.0.2"
-  resolved "https://registry.npmmirror.com/@lezer/markdown/-/markdown-1.0.2.tgz#8c804a9f6fe1ccca4a20acd2fd9fbe0fae1ae178"
-  integrity sha512-8CY0OoZ6V5EzPjSPeJ4KLVbtXdLBd8V6sRCooN5kHnO28ytreEGTyrtU/zUwo/XLRzGr/e1g44KlzKi3yWGB5A==
-  dependencies:
-    "@lezer/common" "^1.0.0"
-    "@lezer/highlight" "^1.0.0"
-
-"@lezer/php@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmmirror.com/@lezer/php/-/php-1.0.0.tgz#522d2d2d8a4eee6c598060e2a222526953c66adb"
-  integrity sha512-kFQu/mk/vmjpA+fjQU87d9eimqKJ9PFCa8CZCPFWGEwNnm7Ahpw32N+HYEU/YAQ0XcfmOAnW/YJCEa8WpUOMMw==
-  dependencies:
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
 "@lezer/python@^1.0.0":
   version "1.1.1"
   resolved "https://registry.npmmirror.com/@lezer/python/-/python-1.1.1.tgz#6d688071ed93d063a589a7d31df3279b1eba607a"
   integrity sha512-ArUGh9kvdaOVu6IkSaYUS9WFQeMAFVWKRuZo6vexnxoeCLnxf0Y9DCFEAMMa7W9SQBGYE55OarSpPqSkdOXSCA==
-  dependencies:
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
-"@lezer/rust@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmmirror.com/@lezer/rust/-/rust-1.0.0.tgz#939f3e7b0376ebe13f4ac336ed7d59ca2c8adf52"
-  integrity sha512-IpGAxIjNxYmX9ra6GfQTSPegdCAWNeq23WNmrsMMQI7YNSvKtYxO4TX5rgZUmbhEucWn0KTBMeDEPXg99YKtTA==
-  dependencies:
-    "@lezer/highlight" "^1.0.0"
-    "@lezer/lr" "^1.0.0"
-
-"@lezer/xml@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmmirror.com/@lezer/xml/-/xml-1.0.0.tgz#02817a3d421e7189b50fd31ed17430b2e1c8c0d8"
-  integrity sha512-73iI9UK8iqSvWtLlOEl/g+50ivwQn8Ge6foHVN66AXUS1RccFnAoc7BYU8b3c8/rP6dfCOGqAGaWLxBzhj60MA==
   dependencies:
     "@lezer/highlight" "^1.0.0"
     "@lezer/lr" "^1.0.0"
@@ -1707,11 +1536,6 @@
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
 
-"@uiw/codemirror-extensions-events@^4.12.3":
-  version "4.13.2"
-  resolved "https://registry.npmmirror.com/@uiw/codemirror-extensions-events/-/codemirror-extensions-events-4.13.2.tgz#d8f53b771c32e7aa9b4e53021cd66e21f2030edb"
-  integrity sha512-Rfj/1BXfDcvqgX6RHg5AjXwNWag7KLQaq2bTdrDqaDU5HDjBO8yidKQ7XCeuVuadZeXsreiTHGJKVjsuKDfVEQ==
-
 "@uiw/codemirror-theme-abcdef@4.13.2":
   version "4.13.2"
   resolved "https://registry.npmmirror.com/@uiw/codemirror-theme-abcdef/-/codemirror-theme-abcdef-4.13.2.tgz#a6b188cef1be549262105e1add79d6456829a8fa"
@@ -1831,7 +1655,7 @@
     "@uiw/codemirror-theme-xcode" "4.13.2"
     "@uiw/codemirror-themes" "4.13.2"
 
-"@uiw/codemirror-themes@4.13.2", "@uiw/codemirror-themes@^4.12.3":
+"@uiw/codemirror-themes@4.13.2":
   version "4.13.2"
   resolved "https://registry.npmmirror.com/@uiw/codemirror-themes/-/codemirror-themes-4.13.2.tgz#ae27b700a52190a51323f3eb50531a80ddecb8f7"
   integrity sha512-IPkHzt5SjLjXRPGmFOpRjXzRA9VWomJjWYETq21jXTTnFtZeEjAuhucgKMydt11ALUyGjwTzdReTA9yt9VNskA==
@@ -1845,7 +1669,7 @@
   resolved "https://registry.npmmirror.com/@uiw/copy-to-clipboard/-/copy-to-clipboard-1.0.12.tgz#46f563bd6f3007895f95855e5b4bb692c7251933"
   integrity sha512-3tt7FVSbjtBCNBhffy7k26rpnEmk8GQj9QkTGZBIfpHU7mG3Buryt69u6xooYM7/gmv7GIqD4QxxIauIp2HHKg==
 
-"@uiw/react-codemirror@^4.12.3", "@uiw/react-codemirror@^4.13.2":
+"@uiw/react-codemirror@^4.13.2":
   version "4.13.2"
   resolved "https://registry.npmmirror.com/@uiw/react-codemirror/-/react-codemirror-4.13.2.tgz#06e3aaba2fc6fef15aec6c15f3e08bbcb1e87c31"
   integrity sha512-sMfb8F82yLSqyq1gEUlr14E4KGXDfvsCnkGLLwJZqsq/TvJTRVcy0GX87wn3GXBtGhNp5TvGFUDaCnFzbU4bIQ==
@@ -1857,19 +1681,7 @@
     "@uiw/codemirror-extensions-basic-setup" "4.13.2"
     codemirror "^6.0.0"
 
-"@uiw/react-markdown-editor@^5.10.0":
-  version "5.10.0"
-  resolved "https://registry.npmmirror.com/@uiw/react-markdown-editor/-/react-markdown-editor-5.10.0.tgz#f2011736a92b9001c55f591e000ada9e75352dca"
-  integrity sha512-G1azyHOR47Pkvoc0yxrFAOzByTD89ini3J2GAZh33cgQq7/GjF1QZyIKau9BuRqDYOiwjBFFRqLW9xmBV7o1Dw==
-  dependencies:
-    "@codemirror/lang-markdown" "^6.0.0"
-    "@codemirror/language-data" "^6.1.0"
-    "@uiw/codemirror-extensions-events" "^4.12.3"
-    "@uiw/codemirror-themes" "^4.12.3"
-    "@uiw/react-codemirror" "^4.12.3"
-    "@uiw/react-markdown-preview" "^4.0.20"
-
-"@uiw/react-markdown-preview@^4.0.20":
+"@uiw/react-markdown-preview@^4.1.5":
   version "4.1.5"
   resolved "https://registry.npmmirror.com/@uiw/react-markdown-preview/-/react-markdown-preview-4.1.5.tgz#d133f7a90f7c0268871f209d90123f388a620d79"
   integrity sha512-CYiwzrarfg/jCsSHSfLkgxpLiqwZjmXhMJmwMa2SCct/PX/vt9wJJ84aNgUVbSjfQFKgmTlSWpDiN+kGnf8D/w==
@@ -1886,6 +1698,15 @@
     rehype-slug "~5.0.1"
     remark-gfm "~3.0.1"
     unist-util-visit "^4.1.0"
+
+"@uiw/react-md-editor@^3.19.7":
+  version "3.19.7"
+  resolved "https://registry.npmmirror.com/@uiw/react-md-editor/-/react-md-editor-3.19.7.tgz#e575c77a011083b806cdd90346f9ebe7a83e08f7"
+  integrity sha512-mZb8c6aTwq9k6t6xav8zNoD/f6q7w5BmMiixswiDCA7/YWc19Xp+qCtp5C5FQtb4AStxozIRjY1uWK4VQOI/gQ==
+  dependencies:
+    "@babel/runtime" "^7.14.6"
+    "@uiw/react-markdown-preview" "^4.1.5"
+    rehype "~12.0.1"
 
 ajv-keywords@^3.5.2:
   version "3.5.2"
@@ -2039,6 +1860,11 @@ chalk@^2.0.0:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
+character-entities-html4@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/character-entities-html4/-/character-entities-html4-2.1.0.tgz#1f1adb940c971a4b22ba39ddca6b618dc6e56b2b"
+  integrity sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==
+
 character-entities-legacy@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmmirror.com/character-entities-legacy/-/character-entities-legacy-3.0.0.tgz#76bc83a90738901d7bc223a9e93759fdd560125b"
@@ -2054,7 +1880,7 @@ character-reference-invalid@^2.0.0:
   resolved "https://registry.npmmirror.com/character-reference-invalid/-/character-reference-invalid-2.0.1.tgz#85c66b041e43b47210faf401278abf808ac45cb9"
   integrity sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==
 
-classnames@^2.3.2:
+classnames@^2.2.6, classnames@^2.3.2:
   version "2.3.2"
   resolved "https://registry.npmmirror.com/classnames/-/classnames-2.3.2.tgz#351d813bf0137fcc6a76a16b88208d2560a0d924"
   integrity sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==
@@ -2313,6 +2139,11 @@ detect-node-es@^1.1.0:
   resolved "https://registry.npmmirror.com/detect-node-es/-/detect-node-es-1.1.0.tgz#163acdf643330caa0b4cd7c21e7ee7755d6fa493"
   integrity sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==
 
+diff-match-patch@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmmirror.com/diff-match-patch/-/diff-match-patch-1.0.5.tgz#abb584d5f10cd1196dfc55aa03701592ae3f7b37"
+  integrity sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==
+
 diff@^5.0.0:
   version "5.1.0"
   resolved "https://registry.npmmirror.com/diff/-/diff-5.1.0.tgz#bc52d298c5ea8df9194800224445ed43ffc87e40"
@@ -2427,6 +2258,11 @@ esutils@^2.0.2:
   version "2.0.3"
   resolved "https://registry.npmmirror.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
+
+eventemitter3@^4.0.0:
+  version "4.0.7"
+  resolved "https://registry.npmmirror.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
+  integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
 
 extend@^3.0.0:
   version "3.0.2"
@@ -2627,6 +2463,22 @@ hast-util-select@~5.0.1:
     space-separated-tokens "^2.0.0"
     unist-util-visit "^4.0.0"
     zwitch "^2.0.0"
+
+hast-util-to-html@^8.0.0:
+  version "8.0.3"
+  resolved "https://registry.npmmirror.com/hast-util-to-html/-/hast-util-to-html-8.0.3.tgz#4e37580872e143ea9ce0dba87918b19e4ea997e3"
+  integrity sha512-/D/E5ymdPYhHpPkuTHOUkSatxr4w1ZKrZsG0Zv/3C2SRVT0JFJG53VS45AMrBtYk0wp5A7ksEhiC8QaOZM95+A==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    ccount "^2.0.0"
+    comma-separated-tokens "^2.0.0"
+    hast-util-is-element "^2.0.0"
+    hast-util-whitespace "^2.0.0"
+    html-void-elements "^2.0.0"
+    property-information "^6.0.0"
+    space-separated-tokens "^2.0.0"
+    stringify-entities "^4.0.2"
+    unist-util-is "^5.0.0"
 
 hast-util-to-parse5@^7.0.0:
   version "7.0.0"
@@ -3761,6 +3613,16 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.npmmirror.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-markdown-editor-lite@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.npmmirror.com/react-markdown-editor-lite/-/react-markdown-editor-lite-1.3.3.tgz#9f26013f3a974c10b06eb0ad900894918b38c694"
+  integrity sha512-n4IIiicC0c4BqjxPoZ5+tnK9JokjwRNJFo1m22MnDzdA+p5irCvUM1Ms8TNc7kn07nrETrxKP6TuD2jP12cSoA==
+  dependencies:
+    "@babel/runtime" "^7.6.2"
+    classnames "^2.2.6"
+    eventemitter3 "^4.0.0"
+    uuid "^8.3.2"
+
 react-markdown@^8.0.3, react-markdown@~8.0.0:
   version "8.0.3"
   resolved "https://registry.npmmirror.com/react-markdown/-/react-markdown-8.0.3.tgz#e8aba0d2f5a1b2124d476ee1fff9448a2f57e4b3"
@@ -3868,6 +3730,11 @@ regenerator-runtime@^0.13.10:
   version "0.13.10"
   resolved "https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.13.10.tgz#ed07b19616bcbec5da6274ebc75ae95634bfc2ee"
   integrity sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==
+
+regenerator-runtime@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regenerator-transform@^0.15.0:
   version "0.15.1"
@@ -3996,6 +3863,25 @@ rehype-slug@~5.0.1:
     hast-util-to-string "^2.0.0"
     unified "^10.0.0"
     unist-util-visit "^4.0.0"
+
+rehype-stringify@^9.0.0:
+  version "9.0.3"
+  resolved "https://registry.npmmirror.com/rehype-stringify/-/rehype-stringify-9.0.3.tgz#70e3bd6d4d29e7acf36b802deed350305d2c3c17"
+  integrity sha512-kWiZ1bgyWlgOxpqD5HnxShKAdXtb2IUljn3hQAhySeak6IOQPPt6DeGnsIh4ixm7yKJWzm8TXFuC/lPfcWHJqw==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    hast-util-to-html "^8.0.0"
+    unified "^10.0.0"
+
+rehype@~12.0.1:
+  version "12.0.1"
+  resolved "https://registry.npmmirror.com/rehype/-/rehype-12.0.1.tgz#68a317662576dcaa2565a3952e149d6900096bf6"
+  integrity sha512-ey6kAqwLM3X6QnMDILJthGvG1m1ULROS9NT4uG9IDCuv08SFyLlreSuvOa//DgEvbXx62DS6elGVqusWhRUbgw==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    rehype-parse "^8.0.0"
+    rehype-stringify "^9.0.0"
+    unified "^10.0.0"
 
 remark-gfm@^3.0.1, remark-gfm@~3.0.1:
   version "3.0.1"
@@ -4158,6 +4044,14 @@ strict-uri-encode@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmmirror.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
   integrity sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==
+
+stringify-entities@^4.0.2:
+  version "4.0.3"
+  resolved "https://registry.npmmirror.com/stringify-entities/-/stringify-entities-4.0.3.tgz#cfabd7039d22ad30f3cc435b0ca2c1574fc88ef8"
+  integrity sha512-BP9nNHMhhfcMbiuQKCqMjhDP5yBCAxsPu4pHFFzJ6Alo9dZgY4VLDPutXqIjpRiMoKdp7Av85Gr73Q5uH9k7+g==
+  dependencies:
+    character-entities-html4 "^2.0.0"
+    character-entities-legacy "^3.0.0"
 
 style-mod@^4.0.0:
   version "4.0.0"
@@ -4439,6 +4333,11 @@ use-sync-external-store@1.2.0, use-sync-external-store@^1.0.0:
   resolved "https://registry.npmmirror.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.npmmirror.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
 uvu@^0.5.0:
   version "0.5.6"
   resolved "https://registry.npmmirror.com/uvu/-/uvu-0.5.6.tgz#2754ca20bcb0bb59b64e9985e84d2e81058502df"
@@ -4448,6 +4347,13 @@ uvu@^0.5.0:
     diff "^5.0.0"
     kleur "^4.0.3"
     sade "^1.7.3"
+
+vditor@^3.8.18:
+  version "3.8.18"
+  resolved "https://registry.npmmirror.com/vditor/-/vditor-3.8.18.tgz#078b1eb1b00eaa27ab99013820e65d566c0648d3"
+  integrity sha512-RSKCPKy0zrKwkI5GuEXUSxsxUhEO8hcIQivj5JVYvtUDWHfEOS1W7xKP8+zFKvoZNC4qm8zly2qErSMzHcEbNQ==
+  dependencies:
+    diff-match-patch "^1.0.5"
 
 vfile-location@^4.0.0:
   version "4.0.1"

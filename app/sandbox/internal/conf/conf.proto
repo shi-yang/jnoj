@@ -41,9 +41,16 @@ message Data {
     string uri = 1;
     string database = 2;
   }
+  message ObjectStorage {
+    string bucket = 1;
+    string secret_id = 2;
+    string secret_key = 3;
+    string endpoint = 4;
+  }
   Database database = 1;
   Redis redis = 2;
   MongoDB mongodb = 3;
+  ObjectStorage object_storage = 4;
 }
 
 message Registry {
