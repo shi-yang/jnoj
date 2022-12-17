@@ -3,9 +3,9 @@ import useLocale from "@/utils/useLocale";
 import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm } from "@arco-design/web-react";
 import { IconDelete, IconPlus } from "@arco-design/web-react/icon";
 import { useEffect, useState } from "react";
-import locale from "./locale";
+import locale from "../locale";
 const { RangePicker } = DatePicker;
-import styles from './style/setting.module.less';
+import styles from '../style/setting.module.less';
 
 const AddProblem = ({contestId, callback}) => {
   const t = useLocale(locale);
@@ -34,10 +34,10 @@ const AddProblem = ({contestId, callback}) => {
   return (
     <div>
       <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
-        添加题目
+        {t['setting.info.addProblem']}
       </Button>
       <Modal
-        title='添加题目'
+        title={t['setting.info.addProblem']}
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
@@ -59,8 +59,8 @@ const ContestType = [
   { name: 'OI', description: 'Olympiad in Informatics', value: 3 },
 ]
 
-const Setting = ({contest}) => {
-  console.log('setting');
+const SettingInfo = ({contest}) => {
+  const t = useLocale(locale);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [problems, setProblems] = useState([]);
@@ -105,12 +105,12 @@ const Setting = ({contest}) => {
   }, [])
   return (
     <div>
-      <Card title='基本信息'>
+      <Card title={t['setting.info.basicInfo']}>
         <Form form={form} style={{ width: 600 }} autoComplete='off' onSubmit={onSubmit}>
-          <Form.Item label='比赛名称' required field='name' rules={[{ required: true }]}>
+          <Form.Item label={t['setting.info.contestName']} required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
           </Form.Item>
-          <Form.Item label='比赛时间' required field='time' rules={[{ required: true }]}>
+          <Form.Item label={t['setting.info.contestTime']} required field='time' rules={[{ required: true }]}>
             <RangePicker
               showTime={{
                 format: 'HH:mm:ss',
@@ -118,7 +118,7 @@ const Setting = ({contest}) => {
               format='YYYY-MM-DD HH:mm:ss'
             />
           </Form.Item>
-          <Form.Item label='比赛赛制' required field='type' rules={[{ required: true }]}>
+          <Form.Item label={t['setting.info.contestType']} required field='type' rules={[{ required: true }]}>
             <Radio.Group className={styles['card-radio-group']}>
               {ContestType.map((item, index) => {
                 return (
@@ -145,11 +145,11 @@ const Setting = ({contest}) => {
             </Radio.Group>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 5 }}>
-            <Button type='primary' htmlType='submit'>保存</Button>
+            <Button type='primary' htmlType='submit'>{t['save']}</Button>
           </Form.Item>
         </Form>
       </Card>
-      <Card title='题目列表'>
+      <Card title={t['problemList']}>
         <List
           style={{ width: 600 }}
           dataSource={problems}
@@ -184,4 +184,4 @@ const Setting = ({contest}) => {
     </div>
   )
 }
-export default Setting;
+export default SettingInfo;

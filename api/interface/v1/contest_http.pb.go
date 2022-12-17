@@ -57,6 +57,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/*Delete*", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContests", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/GetContest", auth.Guest())
+	s.Use("/jnoj.interface.v1.ContestService/ListContestProblems", auth.Guest())
 	r := s.Route("/")
 	r.GET("/contests", _ContestService_ListContests0_HTTP_Handler(srv))
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))

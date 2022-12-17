@@ -50,6 +50,7 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		Name:             res.Name,
 		Type:             int32(res.Type),
 		Description:      res.Description,
+		Status:           int32(res.Status),
 		ParticipantCount: int32(res.ParticipantCount),
 		StartTime:        timestamppb.New(res.StartTime),
 		EndTime:          timestamppb.New(res.EndTime),
@@ -115,7 +116,7 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if contest.HasPermission(ctx, biz.ContestPermissionView) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, count := s.uc.ListContestProblems(ctx, req)
@@ -137,7 +138,7 @@ func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetConte
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if contest.HasPermission(ctx, biz.ContestPermissionView) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.GetContestProblem(ctx, int(req.Id), int(req.Number))
@@ -178,7 +179,7 @@ func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.Creat
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	problem, err := s.uc.CreateContestProblem(ctx, &biz.ContestProblem{
@@ -199,7 +200,7 @@ func (s *ContestService) DeleteContestProblem(ctx context.Context, req *v1.Delet
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.uc.DeleteContestProblem(ctx, int(req.Id), int(req.Number))
@@ -266,7 +267,7 @@ func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.Lis
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if contest.HasPermission(ctx, biz.ContestPermissionView) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	submissions, count := s.uc.ListContestSubmissions(ctx, req)

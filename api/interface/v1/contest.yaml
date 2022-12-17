@@ -9,3 +9,5 @@ rules:
   middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector : "/jnoj.interface.v1.ContestService/GetContest"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector : "/jnoj.interface.v1.ContestService/ListContestProblems"
+  middleware: "jnoj/internal/middleware/auth.Guest()"

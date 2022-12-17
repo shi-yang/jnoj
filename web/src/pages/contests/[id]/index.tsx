@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
+import Forbidden from './forbidden';
 
 const Info = lazy(() => import('./info'));
 const Problem = lazy(() => import('./problem'));
@@ -30,7 +31,7 @@ const normalWidth = 220;
 
 function Index() {
   const t = useLocale(locale);
-  const [contest, setContest] = useState({name: '', startTime: new Date(), endTime: new Date()});
+  const [contest, setContest] = useState({name: '', startTime: new Date(), endTime: new Date(), status: 0, role: ''});
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [siderWidth, setSiderWidth] = useState(normalWidth);
@@ -44,7 +45,7 @@ function Index() {
 
   let timer = null;
   let contestDuration = 0;
-  function fetchData() {
+  const fetchData = () => {
     setLoading(true);
     getContest(router.query.id)
       .then((res) => {
@@ -60,7 +61,7 @@ function Index() {
     })
   }
 
-  function updateTime(startTime, endTime) {
+  const updateTime = (startTime, endTime) => {
     contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime()
     timer = setInterval(() => {
       const t = new Date();
@@ -97,11 +98,9 @@ function Index() {
       const a = key.split('/');
       setMenuSelected(a[0]);
       setProblemNumber(a[1]);
-      console.log(a)
     } else {
       setMenuSelected(key);
     }
-    // router.push(`/contests/${router.query.id}/${key}`)
   }
 
   return (
@@ -130,45 +129,47 @@ function Index() {
             </Row>
             <Slider defaultValue={sliderValue} />
           </Header>
-          <Layout style={{height: '100%'}}>
-            <Sider
-              collapsible
-              theme='light'
-              style={{height: '100%'}}
-              onCollapse={onCollapse}
-              collapsed={collapsed}
-              width={siderWidth}
-              resizeBoxProps={{
-                directions: ['right'],
-                onMoving: handleMoving,
-              }}
-            >
-              <div className='logo' />
-              <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
-                <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
-                <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
-                <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
-                <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>
-                <SubMenu
-                  key='layout'
-                  title={<span><IconSelectAll /> {t['menu.problem']}</span>}
-                >
-                  {problems.map(value => {
-                    return <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>{String.fromCharCode(65 + value.number)}. {value.name}</MenuItem>
-                  })}
-                </SubMenu>
-              </Menu>
-            </Sider>
-            <Content style={{ padding: '30px' }}>
-              <Suspense>
-                {menuSelected === 'info' && <Info contest={contest} />}
-                {menuSelected === 'setting' && <Setting contest={contest} />}
-                {menuSelected === 'submission' && <Submission contest={contest} />}
-                {menuSelected === 'standings' && <Standings contest={contest} />}
-                {menuSelected === 'problem' && <Problem contest={contest} number={problemNumber} />}
-              </Suspense>
-            </Content>
-          </Layout>
+          {contest.role === 'GUEST' ? <Forbidden /> :
+            <Layout style={{height: '100%'}}>
+              <Sider
+                collapsible
+                theme='light'
+                style={{height: '100%'}}
+                onCollapse={onCollapse}
+                collapsed={collapsed}
+                width={siderWidth}
+                resizeBoxProps={{
+                  directions: ['right'],
+                  onMoving: handleMoving,
+                }}
+              >
+                <div className='logo' />
+                <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
+                  <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
+                  <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
+                  <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
+                  <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>
+                  <SubMenu
+                    key='layout'
+                    title={<span><IconSelectAll /> {t['menu.problem']}</span>}
+                  >
+                    {problems.map(value => {
+                      return <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>{String.fromCharCode(65 + value.number)}. {value.name}</MenuItem>
+                    })}
+                  </SubMenu>
+                </Menu>
+              </Sider>
+              <Content style={{ padding: '30px' }}>
+                <Suspense>
+                  {menuSelected === 'info' && <Info contest={contest} />}
+                  {menuSelected === 'setting' && <Setting contest={contest} />}
+                  {menuSelected === 'submission' && <Submission contest={contest} />}
+                  {menuSelected === 'standings' && <Standings contest={contest} />}
+                  {menuSelected === 'problem' && <Problem contest={contest} number={problemNumber} />}
+                </Suspense>
+              </Content>
+            </Layout>
+          }
         </Layout>
       </div>
     )
