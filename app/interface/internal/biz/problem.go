@@ -69,14 +69,24 @@ type ProblemRepo interface {
 
 // ProblemUsecase is a Problem usecase.
 type ProblemUsecase struct {
-	repo          ProblemRepo
-	sandboxClient sandboxV1.SandboxServiceClient
-	log           *log.Helper
+	repo           ProblemRepo
+	sandboxClient  sandboxV1.SandboxServiceClient
+	submissionRepo SubmissionRepo
+	log            *log.Helper
 }
 
 // NewProblemUsecase new a Problem usecase.
-func NewProblemUsecase(repo ProblemRepo, sandboxClient sandboxV1.SandboxServiceClient, logger log.Logger) *ProblemUsecase {
-	return &ProblemUsecase{repo: repo, sandboxClient: sandboxClient, log: log.NewHelper(logger)}
+func NewProblemUsecase(repo ProblemRepo,
+	sandboxClient sandboxV1.SandboxServiceClient,
+	logger log.Logger,
+	submissionRepo SubmissionRepo,
+) *ProblemUsecase {
+	return &ProblemUsecase{
+		repo:           repo,
+		sandboxClient:  sandboxClient,
+		submissionRepo: submissionRepo,
+		log:            log.NewHelper(logger),
+	}
 }
 
 // ListProblems list Problem

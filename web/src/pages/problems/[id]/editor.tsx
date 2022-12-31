@@ -1,25 +1,112 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { cpp } from '@codemirror/lang-cpp';
 import { java } from '@codemirror/lang-java';
 import { python } from '@codemirror/lang-python';
 import styles from './style/editor.module.less';
-import { Button, Card, Form, Grid, Input, Message, ResizeBox, Select, Space, Spin, Tabs, Typography } from '@arco-design/web-react';
+import { Button, Card, Form, Grid, Input, Message, Popover, ResizeBox, Select, Space, Spin, Tabs, Typography } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { createSubmission } from '@/api/submission';
+import { createSubmission, getSubmission, listSubmissions } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
 import * as themes from '@uiw/codemirror-themes-all';
-import { IconDelete, IconDown, IconPlayArrow, IconPlus, IconShareExternal, IconUp } from '@arco-design/web-react/icon';
+import { IconCheckCircle, IconCloseCircle, IconDelete, IconDown, IconPlayArrow, IconPlus, IconShareExternal, IconSkin, IconUp } from '@arco-design/web-react/icon';
 import { runRequest, runSandbox } from '@/api/sandbox';
 import Highlight from '@/components/Highlight';
+import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
+import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
+import { useAppSelector } from '@/hooks';
+import { userInfo } from '@/store/reducers/user';
 
 const LANG_C = 'C';
 const LANG_CPP = 'C++';
 const LANG_JAVA = 'Java';
 const LANG_PYTHON = 'Python';
 
-function Console({problem, defaultCases, language, source}) {
+function RecentlySubmitted({ entityId = undefined, entityType = undefined, latestSubmissionID = undefined, problemId }) {
+  const t = useLocale(locale);
+  const ws = useRef<WebSocket | null>(null);
+  const [submission, setSubmission] = useState({ id: 0, verdict: 0 });
+  const [visible, setVisible] = useState(false);
+  const [isRunning, setIsRunning] = useState(false); 
+  const user = useAppSelector(userInfo);
+  const [btnContent, setBtnContent] = useState('');
+  // websocket 即时向用户反馈测评进度
+  useLayoutEffect(() => {
+    ws.current = new WebSocket(process.env.NEXT_PUBLIC_API_WS_URL + '?uid=' + user.id);
+    ws.current.onmessage = (e) => {
+      const msg = JSON.parse(e.data)
+      if (msg.type === 'SUBMISSION_RESULT') {
+        if (msg.message.status === 'running') {
+          setBtnContent(msg.message.message);
+          setIsRunning(true);
+        } else {
+          getSubmission(msg.message.sid)
+            .then(res => {
+              setIsRunning(false);
+              setSubmission(res.data)
+              setBtnContent('');
+            })
+        }
+      }
+    };
+    return () => {
+      ws.current?.close();
+    };
+  }, [ws]);
+  function icon() {
+    if (isRunning) {
+      return <Spin />;
+    } else if (submission.verdict === 4) {
+      return <IconCheckCircle />;
+    }
+    return <IconCloseCircle />;
+  }
+  useEffect(() => {
+    if (latestSubmissionID && latestSubmissionID !== '0') {
+      setIsRunning(true);
+      getSubmission(latestSubmissionID)
+        .then(res => {
+          if (res.data.verdict !== 0) {
+            setIsRunning(false);
+          }
+          setSubmission(res.data);
+        })
+    } else {
+      listSubmissions({ entityId, entityType, problemId })
+        .then(res => {
+          if (res.data.data.length > 0) {
+            setSubmission(res.data.data[0]);
+          }
+        })
+    }
+  }, [entityId, entityType, problemId, latestSubmissionID]);
+
+  function onCancel() {
+    setVisible(false);
+  }
+  return (
+    submission.id !== 0 &&
+    <Popover
+      trigger='hover'
+      title={t['editor.footer.recentlySubmitted']}
+      content={
+        <span>
+          <p>{t['editor.footer.submissionID']}: {submission.id}</p>
+          <p>{t['editor.footer.verdict']}: <SubmissionVerdict verdict={submission.verdict} /></p>
+        </span>
+      }
+    >
+      <Button type='dashed' icon={icon()} onClick={() => { setVisible(true) }}>
+        {btnContent === '' && <SubmissionVerdict verdict={submission.verdict} />}
+        {btnContent !== '' && <span>{btnContent}</span>}
+      </Button>
+      {visible && <SubmissionDrawer id={submission.id} visible={visible} onCancel={onCancel} />}
+    </Popover>
+  )
+}
+
+function Console({ problem, defaultCases, language, source }) {
   const t = useLocale(locale);
   const [casesResult, setCasesResult] = useState([]);
   const [activeTab, setActiveTab] = useState('cases');
@@ -33,7 +120,7 @@ function Console({problem, defaultCases, language, source}) {
       setActiveTab('result');
       const p = [];
       cases.forEach(value => {
-        const data:runRequest = {
+        const data: runRequest = {
           stdin: value,
           language,
           source,
@@ -51,7 +138,7 @@ function Console({problem, defaultCases, language, source}) {
               setCompileMsg(value.data.compileMsg);
               return;
             }
-            setCasesResult(v => [...v, {stdin: cases[index], ...value.data}]);
+            setCasesResult(v => [...v, { stdin: cases[index], ...value.data }]);
           })
         })
         .finally(() => {
@@ -67,8 +154,8 @@ function Console({problem, defaultCases, language, source}) {
         minWidth: 100,
         maxWidth: '100%',
       }}
-      >
-      <Spin loading={loading} style={{width: '100%', height: '100%'}} block={false}>
+    >
+      <Spin loading={loading} style={{ width: '100%', height: '100%' }} block={false}>
         <Card className={styles['console-container']}>
           <Tabs
             style={{
@@ -138,7 +225,7 @@ function Console({problem, defaultCases, language, source}) {
             </Tabs.TabPane>
             <Tabs.TabPane key='result' title={t['console.result']} style={{ width: '100%', padding: '15px' }}>
               <div>
-                { compileMsg === '' ? casesResult.map((item, index) => {
+                {compileMsg === '' ? casesResult.map((item, index) => {
                   return (
                     <div className={styles['sample-test']} key={index}>
                       <div className={styles.input}>
@@ -147,15 +234,15 @@ function Console({problem, defaultCases, language, source}) {
                       </div>
                       <div className={styles.output}>
                         <h4>{t['output']}</h4>
-                        <pre>{ item.stdout }</pre>
+                        <pre>{item.stdout}</pre>
                       </div>
                     </div>
                   )
                 }) :
-                <>
-                  <Typography.Title heading={4}>编译错误</Typography.Title>
-                  <Highlight content={compileMsg} />
-                </> }
+                  <>
+                    <Typography.Title heading={4}>{t['console.result.compileError']}</Typography.Title>
+                    <Highlight content={compileMsg} />
+                  </>}
               </div>
             </Tabs.TabPane>
           </Tabs>
@@ -165,16 +252,17 @@ function Console({problem, defaultCases, language, source}) {
   )
 }
 
-export default function App({problem}) {
+export default function App({ problem }) {
   const t = useLocale(locale);
+  const languageOptions = [LANG_C, LANG_CPP, LANG_JAVA, LANG_PYTHON];
+  const codemirrorLangs = [cpp, cpp, java, python];
   const [value, setValue] = useState('')
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
-  const languageOptions = [LANG_C, LANG_CPP, LANG_JAVA, LANG_PYTHON];
-  const codemirrorLangs = [cpp, cpp, java, python];
   const [extensions, setExtensions] = useState(codemirrorLangs[language]);
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
+  const [latestSubmissionID, setLatestSubmissionID] = useState('0');
   const onChange = React.useCallback((value, viewUpdate) => {
     setValue(value)
   }, []);
@@ -190,6 +278,7 @@ export default function App({problem}) {
     };
     createSubmission(data).then(res => {
       Message.success('已提交');
+      setLatestSubmissionID(res.data.id)
     });
   }
   useEffect(() => {
@@ -215,9 +304,8 @@ export default function App({problem}) {
         </Select>
         <Select
           size='large'
-          addBefore={t['theme']}
+          addBefore={<IconSkin />}
           defaultValue={theme}
-          placeholder='编辑器主题'
           style={{ width: 200 }}
           onChange={(e) => setTheme(e)}
         >
@@ -237,7 +325,7 @@ export default function App({problem}) {
         theme={themes[theme]}
         onChange={onChange}
       />
-      { consoleVisible && (
+      {consoleVisible && (
         <Console problem={problem} defaultCases={cases} language={language} source={value} />
       )}
       <div className={styles.footer}>
@@ -250,7 +338,10 @@ export default function App({problem}) {
           </Button>
         </div>
         <div className={styles.right}>
-          <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>{t['submit']}</Button>
+          <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} />
+          <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>
+            {t['submit']}
+          </Button>
         </div>
       </div>
     </div>

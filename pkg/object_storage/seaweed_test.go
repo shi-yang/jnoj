@@ -30,8 +30,8 @@ func TestSeaweed_PutObject(t *testing.T) {
 	s := NewSeaweed()
 	req := &testReq{
 		Bucket:    "bucketTest",
-		SecretKey: "1",
-		SecretId:  "2",
+		SecretKey: "some_secret_key1",
+		SecretId:  "some_access_key1",
 		Endpoint:  "http://localhost:8333",
 	}
 	f, err := os.Open("./seaweed.go")
@@ -55,8 +55,8 @@ func TestSeaweed_DeleteObject(t *testing.T) {
 	s := NewSeaweed()
 	req := &testReq{
 		Bucket:    "bucketTest",
-		SecretKey: "1",
-		SecretId:  "2",
+		SecretKey: "some_secret_key1",
+		SecretId:  "some_access_key1",
 		Endpoint:  "http://localhost:8333",
 	}
 	err := s.DeleteObject(req, "aaaaa")

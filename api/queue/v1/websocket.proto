@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package jnoj.api.queue.v1;
+
+option go_package = "jnoj/api/queue/v1;v1";
+
+// 给前端的消息
+message Message {
+    enum Type {
+        SUBMISSION_RESULT = 0;
+    }
+    Type type = 1;
+    int32 user_id = 2;
+    map<string, string> message = 3;
+}

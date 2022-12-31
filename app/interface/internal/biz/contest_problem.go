@@ -9,23 +9,24 @@ import (
 
 // ContestProblem is a ContestProblem model.
 type ContestProblem struct {
-	ID            int
-	Name          string
-	Number        int // 题目次序、A、B、C、D
-	ContestID     int
-	ProblemID     int
-	SubmitCount   int
-	AcceptedCount int
-	TimeLimit     int64
-	Memory        int64
-	Statements    []*ProblemStatement
-	SampleTest    []*Test
-	CreatedAt     time.Time
+	ID                int
+	Name              string
+	Number            int // 题目次序、A、B、C、D
+	ContestID         int
+	ProblemID         int
+	SubmitCount       int
+	AcceptedCount     int
+	TimeLimit         int64
+	Memory            int64
+	LoginUserIsSolved bool
+	Statements        []*ProblemStatement
+	SampleTest        []*Test
+	CreatedAt         time.Time
 }
 
 // ContestProblemRepo is a ContestProblem repo.
 type ContestProblemRepo interface {
-	ListContestProblems(context.Context, *v1.ListContestProblemsRequest) ([]*ContestProblem, int64)
+	ListContestProblems(context.Context, int) ([]*ContestProblem, int64)
 	GetContestProblemByProblemID(context.Context, int, int) (*ContestProblem, error)
 	GetContestProblemByNumber(context.Context, int, int) (*ContestProblem, error)
 	CreateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)
@@ -35,8 +36,8 @@ type ContestProblemRepo interface {
 }
 
 // ListContestProblems list ContestProblem
-func (uc *ContestUsecase) ListContestProblems(ctx context.Context, req *v1.ListContestProblemsRequest) ([]*ContestProblem, int64) {
-	return uc.repo.ListContestProblems(ctx, req)
+func (uc *ContestUsecase) ListContestProblems(ctx context.Context, cid int) ([]*ContestProblem, int64) {
+	return uc.repo.ListContestProblems(ctx, cid)
 }
 
 // GetContestProblem get a ContestProblem

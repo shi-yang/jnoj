@@ -8,8 +8,6 @@ import Editor from './editor';
 import ProblemContent from "@/components/Problem/ProblemContent";
 import { useRouter } from "next/router";
 
-const { Title, Paragraph } = Typography;
-
 export default ({contest, number}) => {
   const t = useLocale(locale);
   const router = useRouter();
@@ -44,14 +42,14 @@ export default ({contest, number}) => {
           <Grid.Row className={styles.header} justify="space-between" align="center">
             <Grid.Col span={24}>
               <Typography.Title className={styles.title} heading={5}>
-              {number} - {problem.statements[language].name}
+                {number} - {problem.statements[language].name}
               </Typography.Title>
             </Grid.Col>
           </Grid.Row>
           <ResizeBox.Split
             max={0.8}
             min={0.2}
-            style={{ height: '100%' }}
+            className={styles['resize-box']}
             panes={[
               <div key='first' className={styles.left}>
                 {!loading && (

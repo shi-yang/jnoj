@@ -38,7 +38,7 @@ function Index() {
   const [problems, setProblems] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [sliderValue, setSliderValue] = useState(0);
-  const [menuSelected, setMenuSelected] = useState('info');
+  const [menuSelected, setMenuSelected] = useState('');
   const [problemNumber, setProblemNumber] = useState('A');
   const settings = useAppSelector<SettingState>(setting);
   const router = useRouter();
@@ -51,24 +51,27 @@ function Index() {
       .then((res) => {
         const { data } = res;
         setContest(data);
-        updateTime(contest.startTime, contest.endTime)
+        updateTime(data.startTime, data.endTime);
+        if (data.role !== 'GUEST') {
+          setMenuSelected('info');
+          listContestProblems(router.query.id).then(res => {
+            setProblems(res.data.data);
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
       });
-    listContestProblems(router.query.id).then(res => {
-      setProblems(res.data.data)
-    })
   }
 
   const updateTime = (startTime, endTime) => {
     contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime()
     timer = setInterval(() => {
       const t = new Date();
-      const diff = t.getTime() - new Date(startTime).getTime()
-      setSliderValue(diff / contestDuration * 100)
-      setCurrentTime(new Date())
-    }, 1000)
+      const diff = t.getTime() - new Date(startTime).getTime();
+      setSliderValue(diff / contestDuration * 100);
+      setCurrentTime(new Date());
+    }, 1000);
   }
 
   useEffect(() => {
@@ -112,7 +115,7 @@ function Index() {
         <Layout style={{height: '100%'}}>
           <Header>
             <Typography.Title className={styles.title}>{contest.name}</Typography.Title>
-            <Row style={{padding: '20px 20px 0 20px'}}>
+            <Row className={styles['contest-header-time']}>
               <Col md={8}>
                 <div>
                   <strong>{t['header.start']}</strong> {FormatTime(contest.startTime)}
@@ -129,7 +132,7 @@ function Index() {
             </Row>
             <Slider defaultValue={sliderValue} />
           </Header>
-          {contest.role === 'GUEST' ? <Forbidden /> :
+          {contest.role === 'GUEST' ? <Forbidden contest={contest} /> :
             <Layout style={{height: '100%'}}>
               <Sider
                 collapsible
@@ -159,7 +162,7 @@ function Index() {
                   </SubMenu>
                 </Menu>
               </Sider>
-              <Content style={{ padding: '30px' }}>
+              <Content>
                 <Suspense>
                   {menuSelected === 'info' && <Info contest={contest} />}
                   {menuSelected === 'setting' && <Setting contest={contest} />}

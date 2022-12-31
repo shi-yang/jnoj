@@ -52,7 +52,6 @@ type ProblemTestRepo interface {
 	DeleteProblemTest(context.Context, int) error
 
 	ListProblemTestContent(ctx context.Context, pid int, isSample bool) ([]*Test, error)
-	UpdateProblemTestStdOutput(context.Context, int, []byte, string) error
 	SortProblemTests(context.Context, []int32)
 }
 

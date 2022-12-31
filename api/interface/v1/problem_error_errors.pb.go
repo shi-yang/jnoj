@@ -58,3 +58,15 @@ func IsProblemNotVerification(err error) bool {
 func ErrorProblemNotVerification(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ProblemErrorReason_PROBLEM_NOT_VERIFICATION.String(), fmt.Sprintf(format, args...))
 }
+
+func IsProblemTestSampleNotAllowed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ProblemErrorReason_PROBLEM_TEST_SAMPLE_NOT_ALLOWED.String() && e.Code == 400
+}
+
+func ErrorProblemTestSampleNotAllowed(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ProblemErrorReason_PROBLEM_TEST_SAMPLE_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
+}

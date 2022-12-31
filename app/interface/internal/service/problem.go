@@ -38,7 +38,7 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 	resp.Data = make([]*v1.Problem, 0)
 	resp.Total = count
 	for _, v := range data {
-		resp.Data = append(resp.Data, &v1.Problem{
+		p := &v1.Problem{
 			Id:            int32(v.ID),
 			Name:          v.Name,
 			SubmitCount:   int32(v.SubmitCount),
@@ -46,7 +46,14 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 			Status:        int32(v.Status),
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
-		})
+		}
+		for _, s := range v.Statements {
+			p.Statements = append(p.Statements, &v1.ProblemStatement{
+				Name:     s.Name,
+				Language: s.Language,
+			})
+		}
+		resp.Data = append(resp.Data, p)
 	}
 	return resp, nil
 }
@@ -309,6 +316,14 @@ func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdatePr
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
+	test, err := s.uc.GetProblemTest(ctx, int(req.Tid))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if test.InputSize > 1024 || test.OutputSize > 1024 {
+		return nil, v1.ErrorProblemTestSampleNotAllowed("Size limit 1024")
+	}
+
 	s.uc.UpdateProblemTest(ctx, &biz.ProblemTest{
 		ID:        int(req.Tid),
 		ProblemID: int(req.Id),

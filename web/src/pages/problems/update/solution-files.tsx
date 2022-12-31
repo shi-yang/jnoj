@@ -5,6 +5,7 @@ import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile,
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { FormatTime } from '@/utils/format';
+import Submission from '@/components/Submission/Submission';
 const FormItem = Form.Item;
 
 const App = (props) => {
@@ -152,47 +153,52 @@ const App = (props) => {
   function runFile(id) {
     runProblemFile(id)
       .then(res => {
-        Message.info('已运行')
+        Message.info('已提交')
       })
   }
   useEffect(() => {
     fetchData();
   }, []);
   return (
-    <Card>
-      <div className={styles['button-group']}>
-        <Space>
-          <Button type='primary' onClick={() => {setVisible(true); form.clearFields}}>添加</Button>
-          <Modal
-            title='添加'
-            visible={visible}
-            onOk={onOk}
-            onCancel={() => setVisible(false)}
-            autoFocus={false}
-            focusLock={true}
-          >
-            <Form
-              form={form}
+    <>
+      <Card title='解答文件'>
+        <div className={styles['button-group']}>
+          <Space>
+            <Button type='primary' onClick={() => {setVisible(true); form.clearFields}}>添加</Button>
+            <Modal
+              title='添加'
+              visible={visible}
+              onOk={onOk}
+              onCancel={() => setVisible(false)}
+              autoFocus={false}
+              focusLock={true}
             >
-              <FormItem field='name' label='名称' required>
-                <Input />
-              </FormItem>
-              <FormItem field='content' label='源码' required>
-                <Input.TextArea rows={10} />
-              </FormItem>
-              <FormItem field='type' label='类型' required>
-                <Select defaultValue='model_solution'>
-                  <Select.Option key='main' value='model_solution'>
-                    标准解答
-                  </Select.Option>
-                </Select>
-              </FormItem>
-            </Form>
-          </Modal>
-        </Space>
-      </div>
-      <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
-    </Card>
+              <Form
+                form={form}
+              >
+                <FormItem field='name' label='名称' required>
+                  <Input />
+                </FormItem>
+                <FormItem field='content' label='源码' required>
+                  <Input.TextArea rows={10} />
+                </FormItem>
+                <FormItem field='type' label='类型' required>
+                  <Select defaultValue='model_solution'>
+                    <Select.Option key='main' value='model_solution'>
+                      标准解答
+                    </Select.Option>
+                  </Select>
+                </FormItem>
+              </Form>
+            </Modal>
+          </Space>
+        </div>
+        <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
+      </Card>
+      <Card title={'运行信息'}>
+        <Submission pid={props.problem.id} entityType={2} />
+      </Card>
+    </>
   );
 };
 

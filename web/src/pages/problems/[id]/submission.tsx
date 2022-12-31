@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collapse, Divider, Typography, Space } from '@arco-design/web-react';
+import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { getSubmission, getSubmissionInfo, LanguageMap, listSubmissions, VerdictColorMap, VerdictMap } from '@/api/submission';
-import styles from './style/submission.module.less'
+import { LanguageMap, listSubmissions } from '@/api/submission';
 import { FormatMemorySize, FormatTime } from '@/utils/format';
-import Highlight from '@/components/Highlight';
-const CollapseItem = Collapse.Item;
+import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
+import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
 
 const Submission = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [submissionInfo, setSubmissionInfo] = useState({tests: [], compileMsg: '', acceptedTestCount: 0, totalTestCount: 0});
-  const [submission, setSubmission] = useState({source: ''})
   const [visible, setVisible] = useState(false);
+  const [id, setId] = useState(0);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -44,17 +42,6 @@ const Submission = (props) => {
         setLoading(false);
       });
   }
-  function onView(id) {
-    setVisible(true)
-    getSubmissionInfo(id)
-      .then(res => {
-        setSubmissionInfo(res.data)
-      })
-    getSubmission(id)
-      .then(res => {
-        setSubmission(res.data)
-      })
-  }
   function onChangeTable({ current, pageSize }) {
     setPatination({
       ...pagination,
@@ -62,6 +49,9 @@ const Submission = (props) => {
       pageSize,
     });
     fetchData()
+  }
+  function onDrawerCancel() {
+    setVisible(false);
   }
   const columns: TableColumnProps[] = [
     {
@@ -79,7 +69,7 @@ const Submission = (props) => {
       title: t['verdict'],
       dataIndex: 'verdict',
       align: 'center',
-      render: (col) => <Typography.Text bold type={VerdictColorMap[col]}>{VerdictMap[col]}</Typography.Text>
+      render: (col) => <SubmissionVerdict verdict={col} />
     },
     {
       title: t['time'],
@@ -105,7 +95,7 @@ const Submission = (props) => {
       align: 'center',
       render: (_, record) => (
         <>
-          <Button type="text" size="small" onClick={() => { onView(record.id) }}>查看</Button>
+          <Button type="text" size="small" onClick={(e) => { setVisible(true); setId(record.id) }}>查看</Button>
         </>
       ),
     },
@@ -115,69 +105,6 @@ const Submission = (props) => {
   }, []);
   return (
     <Card style={{height: '100%', overflow: 'auto'}}>
-      <Drawer
-        width={900}
-        title={<span>{t['submission']}</span>}
-        visible={visible}
-        onCancel={() => {
-          setVisible(false);
-        }}
-        footer={null}
-      >
-        <Typography.Title heading={4}>源码</Typography.Title>
-        <Highlight content={submission.source} />
-        {submissionInfo.compileMsg != '' && (
-          <>
-            <Divider />
-            <Typography.Title heading={4}>编译信息</Typography.Title>
-            <Highlight content={submissionInfo.compileMsg} />
-          </>
-        )}
-        <Divider />
-        <Typography.Title heading={4}>测试点</Typography.Title>
-        <div>
-          {submissionInfo.acceptedTestCount} / {submissionInfo.totalTestCount}
-        </div>
-        <Collapse
-          style={{ maxWidth: 1180 }}
-        >
-          {
-            submissionInfo.tests.map((item, index) => (
-              <CollapseItem
-                header={(
-                  <Space split={<Divider type='vertical' />}>
-                    <span>#{index + 1}</span>
-                    <Typography.Text bold type={VerdictColorMap[item.verdict]}>{VerdictMap[item.verdict]}</Typography.Text>
-                    <span>{t['time']}: {(item.time / 1000)} ms</span>
-                    <span>{t['memory']}: {FormatMemorySize(item.memory)}</span>
-                  </Space>
-                )}
-                name={`${index}`}
-                key={index}
-              >
-                <div className={styles['sample-test']} key={index}>
-                  <div className={styles.input}>
-                    <h4>{t['input']}</h4>
-                    <pre>{item.stdin}</pre>
-                  </div>
-                  <div className={styles.output}>
-                    <h4>{t['output']}</h4>
-                    <pre>{ item.stdout }</pre>
-                  </div>
-                  <div className={styles.output}>
-                    <h4>{t['answer']}</h4>
-                    <pre>{ item.answer }</pre>
-                  </div>
-                  <div className={styles.output}>
-                    <h4>Checker out</h4>
-                    <pre>{ item.checkerStdout }</pre>
-                  </div>
-                </div>
-              </CollapseItem>
-            ))
-          }
-        </Collapse>
-      </Drawer>
       <Table
         rowKey={r => r.id}
         loading={loading}
@@ -186,6 +113,7 @@ const Submission = (props) => {
         pagination={pagination}
         data={data}
       />
+      {visible && <SubmissionDrawer id={id} visible={visible} onCancel={onDrawerCancel} />}
     </Card>
   );
 };

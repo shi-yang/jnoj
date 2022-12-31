@@ -21,7 +21,8 @@ type Submission struct {
 	Score         int
 	UserID        int
 	Source        string
-	ContestID     int
+	EntityID      int
+	EntityType    int
 	ProblemNumber int
 	ProblemName   string
 	User          User
@@ -63,6 +64,12 @@ const (
 	SubmissionVerdictMemoryLimit
 	SubmissionVerdictRuntimeError
 	SubmissionVerdictSysemError
+)
+
+const (
+	SubmissionEntityTypeCommon = iota
+	SubmissionEntityTypeContest
+	SubmissionEntityTypeProblemFile
 )
 
 const (
@@ -126,16 +133,16 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 	s.UserID, _ = auth.GetUserID(ctx)
 	s.Verdict = SubmissionVerdictPending
 	// 处理比赛的提交
-	if s.ContestID != 0 {
+	if s.EntityType == SubmissionEntityTypeContest {
 		// TODO 判断提交权限
-		_, err := uc.contestRepo.GetContest(ctx, s.ContestID)
+		_, err := uc.contestRepo.GetContest(ctx, s.EntityID)
 		if err != nil {
 			return nil, v1.ErrorContestNotFound(err.Error())
 		}
-		if !uc.contestRepo.ExistContestUser(ctx, s.ContestID, s.UserID) {
-			uc.contestRepo.CreateContestUser(ctx, &ContestUser{ContestID: s.ContestID, UserID: s.UserID})
+		if !uc.contestRepo.ExistContestUser(ctx, s.EntityID, s.UserID) {
+			uc.contestRepo.CreateContestUser(ctx, &ContestUser{ContestID: s.EntityID, UserID: s.UserID})
 		}
-		contestProblem, err := uc.contestRepo.GetContestProblemByNumber(ctx, s.ContestID, s.ProblemNumber)
+		contestProblem, err := uc.contestRepo.GetContestProblemByNumber(ctx, s.EntityID, s.ProblemNumber)
 		if err != nil {
 			return nil, v1.ErrorContestProblemNotFound(err.Error())
 		}

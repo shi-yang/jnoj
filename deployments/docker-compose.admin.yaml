@@ -12,16 +12,3 @@ services:
       PMA_PASSWORD: 123456
     links:
       - mysql:db
-
-  mongo-express:
-    image: mongo-express
-    ports:
-      - "9501:8081"
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=123456
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-    restart: always
-    depends_on:
-      - mongo

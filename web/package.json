@@ -43,6 +43,7 @@
     "rehype-katex": "^6.0.2",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
+    "socket.io-client": "^4.5.4",
     "vditor": "^3.8.18"
   },
   "devDependencies": {

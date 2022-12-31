@@ -53,7 +53,7 @@ func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemF
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 		}
-		if i.FileType == string(biz.ProblemFileFileTypeAttachment) {
+		if i.FileType == string(biz.ProblemFileFileTypeStatement) {
 			i.Content, _ = url.JoinPath("http://localhost:8333", r.data.conf.ObjectStorage.Bucket, i.Content)
 		}
 		rv = append(rv, i)
@@ -92,7 +92,7 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 		FileType:  p.FileType,
 	}
 	// 保存文件
-	if p.FileType == string(biz.ProblemFileFileTypeAttachment) {
+	if p.FileType == string(biz.ProblemFileFileTypeStatement) {
 		store := objectstorage.NewSeaweed()
 		fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
 		storeName := fmt.Sprintf("/problem_files/%d/attachments/%s", p.ProblemID, fileUnixName+path.Ext(p.Name))
@@ -132,7 +132,7 @@ func (r *problemRepo) DeleteProblemFile(ctx context.Context, id int) error {
 		return err
 	}
 	// 删除文件
-	if p.FileType == string(biz.ProblemFileFileTypeAttachment) {
+	if p.FileType == string(biz.ProblemFileFileTypeStatement) {
 		store := objectstorage.NewSeaweed()
 		store.DeleteObject(r.data.conf.ObjectStorage, p.Content)
 	}

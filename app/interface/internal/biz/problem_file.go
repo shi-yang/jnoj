@@ -29,6 +29,7 @@ const (
 	ProblemFileFileTypeValidator  ProblemFileFileType = "validator"
 	ProblemFileFileTypeSolution   ProblemFileFileType = "solution"
 	ProblemFileFileTypeAttachment ProblemFileFileType = "attachment"
+	ProblemFileFileTypeStatement  ProblemFileFileType = "attachment"
 )
 
 const (
@@ -74,35 +75,24 @@ func (uc *ProblemUsecase) DeleteProblemFile(ctx context.Context, id int) error {
 
 // RunProblemFile .
 func (uc *ProblemUsecase) RunProblemFile(ctx context.Context, id int) error {
-	solution, _ := uc.repo.GetProblemFile(ctx, id)
-	problem, err := uc.repo.GetProblem(ctx, solution.ProblemID)
+	uid, _ := auth.GetUserID(ctx)
+	file, _ := uc.repo.GetProblemFile(ctx, id)
+	problem, err := uc.repo.GetProblem(ctx, file.ProblemID)
 	if err != nil {
 		return err
 	}
-	tests, _ := uc.repo.ListProblemTestContent(context.TODO(), solution.ProblemID, false)
-	// 生成标准输出
-	for _, test := range tests {
-		if solution.Type == "model_solution" {
-			resp, err := uc.sandboxClient.Run(ctx, &sandboxV1.RunRequest{
-				Stdin:       test.Input,
-				Source:      solution.Content,
-				Language:    1, // C++
-				MemoryLimit: problem.MemoryLimit,
-				TimeLimit:   problem.TimeLimit,
-			})
-			if err != nil {
-				return err
-			}
-			var outputPreview string
-			if len(resp.Stdout) > 32 {
-				outputPreview = string(resp.Stdout[:32])
-			} else {
-				outputPreview = string(resp.Stdout)
-			}
-			uc.log.Info("stdin", len(test.Input))
-			uc.log.Info("stdout", len(resp.Stdout))
-			uc.repo.UpdateProblemTestStdOutput(ctx, test.ID, []byte(resp.Stdout), outputPreview)
-		}
-	}
+	// create a submission
+	submission, _ := uc.submissionRepo.CreateSubmission(ctx, &Submission{
+		ProblemID:  problem.ID,
+		Source:     file.Content,
+		UserID:     uid,
+		Language:   1, // C++
+		EntityID:   file.ID,
+		EntityType: SubmissionEntityTypeProblemFile,
+	})
+
+	uc.sandboxClient.RunSubmission(ctx, &sandboxV1.RunSubmissionRequest{
+		SubmissionId: int64(submission.ID),
+	})
 	return nil
 }

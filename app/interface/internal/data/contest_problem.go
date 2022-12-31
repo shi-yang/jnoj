@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	objectstorage "jnoj/pkg/object_storage"
 
@@ -23,11 +22,11 @@ type ContestProblem struct {
 }
 
 // ListContestProblems .
-func (r *contestRepo) ListContestProblems(ctx context.Context, req *v1.ListContestProblemsRequest) ([]*biz.ContestProblem, int64) {
+func (r *contestRepo) ListContestProblems(ctx context.Context, cid int) ([]*biz.ContestProblem, int64) {
 	res := []ContestProblem{}
 	count := int64(0)
 	r.data.db.WithContext(ctx).
-		Where("contest_id = ?", req.Id).
+		Where("contest_id = ?", cid).
 		Order("number").
 		Find(&res).
 		Count(&count)
@@ -51,10 +50,12 @@ func (r *contestRepo) ListContestProblems(ctx context.Context, req *v1.ListConte
 	rv := make([]*biz.ContestProblem, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.ContestProblem{
-			ID:        v.ID,
-			Number:    v.Number,
-			ContestID: v.ContestID,
-			Name:      problemMap[v.ProblemID],
+			ID:            v.ID,
+			Number:        v.Number,
+			ContestID:     v.ContestID,
+			SubmitCount:   v.SubmitCount,
+			AcceptedCount: v.AcceptedCount,
+			Name:          problemMap[v.ProblemID],
 		})
 	}
 	return rv, count
@@ -83,12 +84,14 @@ func (r *contestRepo) GetContestProblemByNumber(ctx context.Context, cid int, nu
 		Model(ProblemStatement{}).
 		Find(&statements, "problem_id = ?", o.ProblemID)
 	res := &biz.ContestProblem{
-		ID:        o.ID,
-		Number:    o.Number,
-		ContestID: o.ContestID,
-		ProblemID: o.ProblemID,
-		TimeLimit: problem.TimeLimit,
-		Memory:    problem.MemoryLimit,
+		ID:            o.ID,
+		Number:        o.Number,
+		ContestID:     o.ContestID,
+		ProblemID:     o.ProblemID,
+		SubmitCount:   o.SubmitCount,
+		AcceptedCount: o.AcceptedCount,
+		TimeLimit:     problem.TimeLimit,
+		Memory:        problem.MemoryLimit,
 	}
 	if len(statements) > 0 {
 		res.Name = statements[0].Name

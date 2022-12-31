@@ -32,7 +32,7 @@ export default ({problem}) => {
         });
       }
     })
-    listProblemFiles(problem.id, {fileType: 'attachment'})
+    listProblemFiles(problem.id, {fileType: 'statement'})
       .then(res => {
         const { data } = res.data;
         const arr = [];
@@ -73,8 +73,7 @@ export default ({problem}) => {
     const { onError, onSuccess, file } = option;
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('fileType', 'attachment');
-    console.log('uploadFile')
+    formData.append('fileType', 'statement');
     uploadProblemFile(problem.id, formData)
       .then(res => {
         onSuccess();

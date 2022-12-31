@@ -10,6 +10,7 @@ import locale from './locale';
 import { createSubmission } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
 import * as themes from '@uiw/codemirror-themes-all';
+import { IconSkin } from '@arco-design/web-react/icon';
 
 const LANG_C = 'C';
 const LANG_CPP = 'C++';
@@ -43,7 +44,7 @@ export default function App(props) {
     });
   }
   return (
-    <>
+    <div className={styles['container']}>
       <div className={styles['code-header']}>
         <Select
           size='large'
@@ -62,7 +63,7 @@ export default function App(props) {
         </Select>
         <Select
           size='large'
-          addBefore='主题'
+          addBefore={<IconSkin />}
           defaultValue={theme}
           placeholder='编辑器主题'
           style={{ width: 200 }}
@@ -87,14 +88,14 @@ export default function App(props) {
           theme={themes[theme]}
           onChange={onChange}
         />
-        <div className={styles.footer}>
-          <div className={styles.left}>
-          </div>
-          <div className={styles.right}>
-            <Button type='primary' onClick={(e) => onSubmit()}>{t['submit']}</Button>
-          </div>
+      </div>
+      <div className={styles.footer}>
+        <div className={styles.left}>
+        </div>
+        <div className={styles.right}>
+          <Button type='primary' onClick={(e) => onSubmit()}>{t['submit']}</Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

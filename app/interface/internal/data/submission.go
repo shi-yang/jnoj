@@ -20,19 +20,20 @@ type submissionRepo struct {
 }
 
 type Submission struct {
-	ID        int
-	ProblemID int
-	ContestID int
-	Time      int
-	Memory    int
-	Verdict   int
-	Language  int
-	Score     int
-	UserID    int
-	Source    string
-	CreatedAt time.Time
-	User      *User    `json:"user" gorm:"foreignKey:UserID"`
-	Problem   *Problem `json:"problem" gorm:"foreignKey:ProblemID"`
+	ID         int
+	ProblemID  int
+	Time       int
+	Memory     int
+	Verdict    int
+	Language   int
+	Score      int
+	UserID     int
+	EntityID   int
+	EntityType int
+	Source     string
+	CreatedAt  time.Time
+	User       *User    `json:"user" gorm:"foreignKey:UserID"`
+	Problem    *Problem `json:"problem" gorm:"foreignKey:ProblemID"`
 }
 
 type SubmissionInfo struct {
@@ -64,9 +65,13 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	if req.ProblemId != 0 {
 		db.Where("problem_id = ?", req.ProblemId)
 	}
-	if req.ContestId != 0 {
-		db.Where("contest_id = ?", req.ContestId)
+	if len(req.Verdicts) > 0 {
+		db.Where("verdict in (?)", req.Verdicts)
 	}
+	if req.EntityId != 0 {
+		db.Where("entity_id = ?", req.EntityId)
+	}
+	db.Where("entity_type = ?", req.EntityType)
 	db.Count(&count)
 	db.
 		Limit(page.GetPageSize()).
@@ -118,11 +123,12 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 // CreateSubmission .
 func (r *submissionRepo) CreateSubmission(ctx context.Context, s *biz.Submission) (*biz.Submission, error) {
 	res := Submission{
-		Source:    s.Source,
-		UserID:    s.UserID,
-		Language:  s.Language,
-		ProblemID: s.ProblemID,
-		ContestID: s.ContestID,
+		Source:     s.Source,
+		UserID:     s.UserID,
+		Language:   s.Language,
+		ProblemID:  s.ProblemID,
+		EntityID:   s.EntityID,
+		EntityType: s.EntityType,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

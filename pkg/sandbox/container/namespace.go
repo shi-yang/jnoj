@@ -60,8 +60,8 @@ func initFileSystem(workDir string) error {
 		WithBind("/dev/null", filepath.Join(containerDir, "dev/null"), false).
 		WithBind("/var/lib/ghc", filepath.Join(containerDir, "var/lib/ghc"), true).
 		WithBind("/work", filepath.Join(containerDir, "work"), true).
-		WithTmpfs(filepath.Join(containerDir, "work"), "size=32m,nr_inodes=4k").
-		WithTmpfs(filepath.Join(containerDir, "tmp"), "size=32m,nr_inodes=4k")
+		WithTmpfs(filepath.Join(containerDir, "work"), "size=128m,nr_inodes=4k").
+		WithTmpfs(filepath.Join(containerDir, "tmp"), "size=128m,nr_inodes=4k")
 	_, err := mb.FilterNotExist().Build()
 	if err != nil {
 		return err

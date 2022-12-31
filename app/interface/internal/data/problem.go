@@ -32,7 +32,7 @@ type Problem struct {
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt
-	ProblemStatements []*ProblemStatement `gorm:"foreignKey:ProblemID"`
+	ProblemStatements []*ProblemStatement `gorm:"ForeignKey:ProblemID"`
 }
 
 // NewProblemRepo .
@@ -50,7 +50,10 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 	pager := pagination.NewPagination(req.Page, req.PerPage)
 
 	db := r.data.db.WithContext(ctx).
-		Model(&Problem{})
+		Model(&Problem{}).
+		Preload("ProblemStatements", func(db *gorm.DB) *gorm.DB {
+			return db.Select("name, language, problem_id")
+		})
 	if req.UserId != 0 {
 		db.Where("user_id = ?", req.UserId)
 		if req.Status != 0 {
@@ -68,7 +71,7 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 		Find(&res)
 	rv := make([]*biz.Problem, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.Problem{
+		p := &biz.Problem{
 			ID:            v.ID,
 			Name:          v.Name,
 			SubmitCount:   v.SubmitCount,
@@ -76,7 +79,14 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			CreatedAt:     v.CreatedAt,
 			UpdatedAt:     v.UpdatedAt,
 			Status:        v.Status,
-		})
+		}
+		for _, s := range v.ProblemStatements {
+			p.Statements = append(p.Statements, &biz.ProblemStatement{
+				Name:     s.Name,
+				Language: s.Language,
+			})
+		}
+		rv = append(rv, p)
 	}
 	return rv, count
 }

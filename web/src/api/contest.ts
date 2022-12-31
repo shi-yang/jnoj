@@ -46,6 +46,10 @@ export function listContestUsers(id) {
   return axios.get(`/contests/${id}/users`)
 }
 
+export function createContestUser(id, data = null) {
+  return axios.post(`/contests/${id}/users`, data)
+}
+
 export function getContestProblem(id, pkey) {
   return axios.get(`/contests/${id}/problems/${pkey}`)
 }

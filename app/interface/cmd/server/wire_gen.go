@@ -23,7 +23,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, confService *conf.Service, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
 	dataData, cleanup, err := data.NewData(confData, logger)
 	if err != nil {
 		return nil, nil, err
@@ -38,13 +38,15 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	userService := service.NewUserService(userUsecase)
 	discovery := biz.NewDiscovery(registry)
 	sandboxServiceClient := biz.NewSandboxClient(discovery)
-	problemUsecase := biz.NewProblemUsecase(problemRepo, sandboxServiceClient, logger)
+	problemUsecase := biz.NewProblemUsecase(problemRepo, sandboxServiceClient, logger, submissionRepo)
 	problemService := service.NewProblemService(problemUsecase, logger)
 	submissionUsecase := biz.NewSubmissionUsecase(submissionRepo, problemRepo, contestRepo, sandboxServiceClient, logger)
 	submissionService := service.NewSubmissionService(submissionUsecase)
 	sandboxUsecase := biz.NewSandboxUsecase(sandboxServiceClient, logger)
 	sandboxService := service.NewSandboxService(sandboxUsecase)
-	httpServer := server.NewHTTPServer(confServer, contestService, userService, problemService, submissionService, sandboxService, logger)
+	webSocketUsecase := biz.NewWebSocketUsecase(confService, logger)
+	webSocketService := service.NewWebSocketService(webSocketUsecase, logger)
+	httpServer := server.NewHTTPServer(confServer, contestService, userService, problemService, submissionService, sandboxService, webSocketService, logger)
 	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()

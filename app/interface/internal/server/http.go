@@ -18,6 +18,7 @@ func NewHTTPServer(c *conf.Server,
 	problem *service.ProblemService,
 	submission *service.SubmissionService,
 	sandbox *service.SandboxService,
+	websocket *service.WebSocketService,
 	logger log.Logger,
 ) *http.Server {
 	var opts = []http.ServerOption{
@@ -43,6 +44,8 @@ func NewHTTPServer(c *conf.Server,
 
 	// 处理上传文件
 	route := srv.Route("/")
+	// TODO websocket auth
+	srv.HandleFunc("/ws", websocket.WsHandler)
 	route.POST("/problems/{id}/upload_test", problem.UploadProblemTest)
 	route.POST("/problems/{id}/upload_file", problem.UploadProblemFile)
 

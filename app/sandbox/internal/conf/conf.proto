@@ -9,6 +9,7 @@ message Bootstrap {
   Server server = 1;
   Data data = 2;
   Sandbox sandbox = 3;
+  Service service = 4;
 }
 
 message Server {
@@ -37,10 +38,6 @@ message Data {
     google.protobuf.Duration read_timeout = 3;
     google.protobuf.Duration write_timeout = 4;
   }
-  message MongoDB {
-    string uri = 1;
-    string database = 2;
-  }
   message ObjectStorage {
     string bucket = 1;
     string secret_id = 2;
@@ -49,8 +46,14 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
-  MongoDB mongodb = 3;
-  ObjectStorage object_storage = 4;
+  ObjectStorage object_storage = 3;
+}
+
+message Service {
+  message MessageQueue {
+      string address = 1;
+  }
+  MessageQueue message_queue = 1;
 }
 
 message Registry {

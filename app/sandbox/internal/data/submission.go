@@ -1,6 +1,7 @@
 package data
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"time"
@@ -20,17 +21,18 @@ type submissionRepo struct {
 }
 
 type Submission struct {
-	ID        int
-	ProblemID int
-	ContestID int
-	Time      int
-	Memory    int
-	Verdict   int
-	Language  int
-	Score     int
-	UserID    int
-	Source    string
-	CreatedAt time.Time
+	ID         int
+	ProblemID  int
+	Time       int
+	Memory     int
+	Verdict    int
+	Language   int
+	Score      int
+	UserID     int
+	Source     string
+	EntityID   int
+	EntityType int
+	CreatedAt  time.Time
 }
 
 type SubmissionInfo struct {
@@ -183,6 +185,7 @@ func (r *submissionRepo) ListProblemTests(ctx context.Context, id int) []*biz.Te
 		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, id, v.ID))
 		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, id, v.ID))
 		res = append(res, &biz.Test{
+			ID:     v.ID,
 			Input:  in,
 			Output: out,
 		})
@@ -199,15 +202,17 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 		return nil, err
 	}
 	return &biz.Submission{
-		ID:        res.ID,
-		ProblemID: res.ProblemID,
-		ContestID: res.ContestID,
-		Source:    res.Source,
-		Memory:    res.Memory,
-		Time:      res.Time,
-		Verdict:   res.Verdict,
-		Language:  res.Language,
-		CreatedAt: res.CreatedAt,
+		ID:         res.ID,
+		ProblemID:  res.ProblemID,
+		EntityID:   res.EntityID,
+		EntityType: res.EntityType,
+		Source:     res.Source,
+		Memory:     res.Memory,
+		Time:       res.Time,
+		Verdict:    res.Verdict,
+		Language:   res.Language,
+		UserID:     res.UserID,
+		CreatedAt:  res.CreatedAt,
 	}, err
 }
 
@@ -251,4 +256,33 @@ func (r *submissionRepo) CreateSubmissionInfo(ctx context.Context, id int, runIn
 		Omit(clause.Associations).
 		Create(&res).Error
 	return err
+}
+
+func (r *submissionRepo) UpdateProblemTestStdOutput(ctx context.Context, id int, outputContent []byte, outputPreview string) error {
+	var res ProblemTest
+	err := r.data.db.Model(&ProblemTest{}).
+		First(&res, "id = ?", id).
+		Error
+	if err != nil {
+		return err
+	}
+	update := &ProblemTest{
+		ID:            id,
+		OutputSize:    int64(len(outputContent)),
+		OutputPreview: outputPreview,
+	}
+	err = r.data.db.WithContext(ctx).
+		Model(&ProblemTest{ID: id}).
+		Select("OutputSize", "OutputPreview").
+		Updates(update).Error
+	if err != nil {
+		return err
+	}
+	// 保存文件
+	if update.OutputSize > 0 {
+		store := objectstorage.NewSeaweed()
+		storeName := fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID)
+		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(outputContent))
+	}
+	return nil
 }

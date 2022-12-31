@@ -50,7 +50,7 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		Name:             res.Name,
 		Type:             int32(res.Type),
 		Description:      res.Description,
-		Status:           int32(res.Status),
+		Status:           v1.Contest_Status(res.Status),
 		ParticipantCount: int32(res.ParticipantCount),
 		StartTime:        timestamppb.New(res.StartTime),
 		EndTime:          timestamppb.New(res.EndTime),
@@ -119,14 +119,16 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	res, count := s.uc.ListContestProblems(ctx, req)
+	res, count := s.uc.ListContestProblems(ctx, int(req.Id))
 	resp := new(v1.ListContestProblemsResponse)
 	resp.Total = count
 	for _, v := range res {
 		resp.Data = append(resp.Data, &v1.ContestProblem{
-			Id:     int32(v.ID),
-			Number: int32(v.Number),
-			Name:   v.Name,
+			Id:            int32(v.ID),
+			Number:        int32(v.Number),
+			Name:          v.Name,
+			SubmitCount:   int32(v.SubmitCount),
+			AcceptedCount: int32(v.AcceptedCount),
 		})
 	}
 	return resp, nil

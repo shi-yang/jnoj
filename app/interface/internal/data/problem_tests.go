@@ -94,7 +94,7 @@ func (r *problemRepo) ListProblemTestContent(ctx context.Context, id int, isExam
 // GetProblemTest .
 func (r *problemRepo) GetProblemTest(ctx context.Context, id int) (*biz.ProblemTest, error) {
 	var res ProblemTest
-	err := r.data.db.Model(&Problem{}).
+	err := r.data.db.Model(&ProblemTest{}).
 		First(&res, "id = ?", id).
 		Error
 	if err != nil {
@@ -160,32 +160,6 @@ func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
 		Delete(ProblemTest{ID: id}).
 		Error
 	return err
-}
-
-func (r *problemRepo) UpdateProblemTestStdOutput(ctx context.Context, id int, outputContent []byte, outputPreview string) error {
-	var res ProblemTest
-	err := r.data.db.Model(&ProblemTest{}).
-		First(&res, "id = ?", id).
-		Error
-	if err != nil {
-		return err
-	}
-	update := &ProblemTest{
-		ID:            id,
-		OutputSize:    int64(len(outputContent)),
-		OutputPreview: outputPreview,
-	}
-	err = r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Updates(update).Error
-	if err != nil {
-		return err
-	}
-	// 保存文件
-	store := objectstorage.NewSeaweed()
-	storeName := fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID)
-	store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(outputContent))
-	return nil
 }
 
 func (r *problemRepo) SortProblemTests(ctx context.Context, ids []int32) {

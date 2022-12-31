@@ -78,6 +78,7 @@ type ProblemServiceHTTPServer interface {
 }
 
 func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServer) {
+	s.Use("/jnoj.interface.v1.ProblemService/GetProblem", auth.Guest())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblem*", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblem*", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblem*", auth.User())
@@ -90,6 +91,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/SortProblemTests", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblems", auth.Guest())
 	s.Use("/jnoj.interface.v1.ProblemService/VerifyProblem", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/RunProblemFile", auth.User())
 	r := s.Route("/")
 	r.GET("/problems", _ProblemService_ListProblems0_HTTP_Handler(srv))
 	r.GET("/problems/{id}", _ProblemService_GetProblem0_HTTP_Handler(srv))

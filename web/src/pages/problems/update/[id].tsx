@@ -73,9 +73,9 @@ function Index(props) {
             <TabPane key='solutionFiles' title={t['tab.solutionFiles']}>
               <SolutionFiles problem={data} />
             </TabPane>
-            <TabPane key='files' title={t['tab.files']}>
+            {/* <TabPane key='files' title={t['tab.files']}>
               <Files problem={data} />
-            </TabPane>
+            </TabPane> */}
           </Tabs>
         </div>
       )}

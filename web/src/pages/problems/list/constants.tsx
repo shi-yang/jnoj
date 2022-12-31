@@ -29,6 +29,12 @@ export function getColumns(
     {
       title: t['problem.columns.name'],
       dataIndex: 'name',
+      render: (col, record) => {
+        if (record.statements.length === 0) {
+          return col
+        }
+        return record.statements[0].name
+      }
     },
     {
       title: t['problem.columns.submitAndPass'],

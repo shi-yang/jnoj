@@ -90,7 +90,7 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 		})
 	} else {
 		uc.log.Info("VerificationInfoActionRunSolution")
-		if err := uc.RunProblemFile(context.TODO(), problemFiles[modelSolutionIndex].ID); err != nil {
+		if err := uc.RunProblemFile(ctx, problemFiles[modelSolutionIndex].ID); err != nil {
 			res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
 				Action:       VerificationInfoActionRunSolution,
 				ErrorMessage: "run model solution error",

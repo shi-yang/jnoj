@@ -1,7 +1,7 @@
 const i18n = {
   'en-US': {
     'menu.list': 'List',
-    'menu.list.searchTable': 'Search Table',
+    'menu.list.createProblem': 'Create Problem',
     'searchTable.form.search': 'Search',
     'searchTable.form.reset': 'Reset',
     'searchTable.columns.id': 'Problem ID',
@@ -25,7 +25,7 @@ const i18n = {
   },
   'zh-CN': {
     'menu.list': '列表页',
-    'menu.list.searchTable': '查询表格',
+    'menu.list.createProblem': '创建题目',
     'searchTable.form.search': '查询',
     'searchTable.form.reset': '重置',
     'searchTable.columns.id': '题目ID',

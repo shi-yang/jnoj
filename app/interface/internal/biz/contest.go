@@ -52,9 +52,9 @@ const (
 )
 
 const (
-	ContestStatusHidden  = iota + 1 // 隐藏
-	ContestStatusPublic             // 公开
-	ContestStatusPrivate            // 私有
+	ContestStatusHidden  = iota // 隐藏
+	ContestStatusPublic         // 公开
+	ContestStatusPrivate        // 私有
 )
 
 const (
@@ -108,10 +108,7 @@ func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bo
 		return true
 	}
 	// 调用该函数前确保设置了 Role
-	if c.Role == ContestRolePlayer {
-		return true
-	}
-	return false
+	return c.Role == ContestRolePlayer
 }
 
 func (c *Contest) setRole(loginId int, isRegistered bool) {
@@ -201,9 +198,10 @@ func (uc *ContestUsecase) ListContestStandings(ctx context.Context, id int) []*C
 func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) ([]*ContestSubmission, int64) {
 	res := make([]*ContestSubmission, 0)
 	submissions, count := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
-		ContestId: req.Id,
-		Page:      req.Page,
-		PerPage:   req.PerPage,
+		EntityId:   req.Id,
+		EntityType: SubmissionEntityTypeContest,
+		Page:       req.Page,
+		PerPage:    req.PerPage,
 	})
 	for _, v := range submissions {
 		res = append(res, &ContestSubmission{

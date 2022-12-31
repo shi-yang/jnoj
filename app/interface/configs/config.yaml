@@ -13,14 +13,14 @@ data:
     addr: "${REDIS_ADDR}"
     read_timeout: 0.2s
     write_timeout: 0.2s
-  mongodb:
-    uri: "${MONGODB_URI}"
-    database: "jnoj"
   object_storage:
     bucket: "test"
-    secret_id: "id"
-    secret_key: "key"
-    endpoint: "http://s3:8333"
+    secret_id: "some_access_key1"
+    secret_key: "some_secret_key1"
+    endpoint: "http://jnoj-s3:8333"
+service:
+  message_queue:
+    address: "amqp://admin:admin@rabbitmq:5672/"
 
 consul:
   address: consul:8500

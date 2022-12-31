@@ -54,7 +54,7 @@ func sandboxInit() {
 	// 由于沙箱只能限制程序的 real time，但要返回的是 user time + sys time
 	// 为防止用户调用 sleep 之类的函数不能很好的测量 user time + sys time，
 	// 因此在此处根据题目给出的时间限制加 1s 作为限制 real time 时间
-	timeLimit += 1000
+	timeLimit += 2000
 	// 限制内存时，多给 4 MB
 	memoryLimit += 4
 
@@ -90,7 +90,6 @@ func sandboxInit() {
 	// 异常结束
 	if err != nil {
 		os.Stderr.WriteString(err.Error())
-		os.Stderr.WriteString("runtime out")
 		r.RuntimeErr = err.Error()
 	}
 

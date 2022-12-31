@@ -9,7 +9,6 @@ services:
     environment:
       MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
       REDIS_ADDR: redis:6379
-      MONGODB_URI: mongodb://root:123456@mongo:27017
     ports:
       - 8092:8000
     volumes:
@@ -28,7 +27,6 @@ services:
     environment:
       MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
       REDIS_ADDR: redis:6379
-      MONGODB_URI: mongodb://root:123456@mongo:27017
     volumes:
       - ..:/go/src/sandbox
     depends_on:
@@ -43,15 +41,6 @@ services:
     ports:
       - "9502:8500"
     command: agent -server -bootstrap -ui -node=1 -client=0.0.0.0
-
-  mongo:
-    image: mongo:5.0.5
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=123456
-    volumes:
-      - ../data/mongo/db:/data/db
 
   redis:
     image: redis:5.0-alpine
@@ -70,6 +59,20 @@ services:
       MYSQL_DATABASE: jnoj
       MYSQL_ROOT_PASSWORD: 123456
       TZ: Asia/Shanghai
+
+  rabbitmq:
+    image: rabbitmq:management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "admin"
+    volumes:
+        - '../data/rabbitmq:/var/lib/rabbitmq/mnesia/'
+    ports:
+      - "15672:15672"
+      - "4369:4369"
+      - "5672:5672"
+      - "25672:25672"
 
 networks:
   jnoj_net:

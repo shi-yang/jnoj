@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps, Typography } from '@arco-design/web-react';
+import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { LanguageMap, VerdictColorMap, VerdictMap } from '@/api/submission';
+import { LanguageMap } from '@/api/submission';
 import { listContestSubmissions } from '@/api/contest';
 import { FormatTime } from '@/utils/format';
+import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
+import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
 
 const Submission = ({contest}) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [id, setId] = useState(0);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -40,6 +43,9 @@ const Submission = ({contest}) => {
         setLoading(false);
       });
   }
+  function onDrawerCancel() {
+    setVisible(false);
+  }
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -64,12 +70,13 @@ const Submission = ({contest}) => {
       title: t['problem'],
       dataIndex: 'problemName',
       align: 'center',
+      render: (col, record) => <span> {String.fromCharCode(65 + record.problemNumber)}.{col}</span>
     },
     {
       title: t['verdict'],
       dataIndex: 'verdict',
       align: 'center',
-      render: (col) => <Typography.Text bold type={VerdictColorMap[col]}>{VerdictMap[col]}</Typography.Text>
+      render: (col) => <SubmissionVerdict verdict={col} />
     },
     {
       title: t['language'],
@@ -85,11 +92,10 @@ const Submission = ({contest}) => {
     },
     {
       title: t['action'],
-      dataIndex: 'action',
       align: 'center',
       render: (_, record) => (
         <>
-          <Button type="text" size="small" onClick={(e) => { setVisible(true) }}>查看</Button>
+          <Button type="text" size="small" onClick={(e) => { setVisible(true); setId(record.id) }}>查看</Button>
         </>
       ),
     },
@@ -108,6 +114,7 @@ const Submission = ({contest}) => {
         pagination={pagination}
         data={data}
       />
+      {visible && <SubmissionDrawer id={id} visible={visible} onCancel={onDrawerCancel} />}
     </Card>
   );
 };

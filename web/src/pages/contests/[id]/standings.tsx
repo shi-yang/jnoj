@@ -53,13 +53,13 @@ const App = ({contest}) => {
     // 初始化用户排名数据
     let res = {};
     users.forEach(user => {
-      res[user.id] = {};
-      res[user.id].userId = user.id;
-      res[user.id].who = user.nickname;
-      res[user.id].solved = 0;
-      res[user.id].problem = {};
+      res[user.userId] = {};
+      res[user.userId].userId = user.userId;
+      res[user.userId].who = user.nickname;
+      res[user.userId].solved = 0;
+      res[user.userId].problem = {};
       problems.forEach(p => {
-        res[user.id].problem[p.number] = {
+        res[user.userId].problem[p.number] = {
           attempted: 0,
           isFirstBlood: false,
           status: 'UNSUBMIT',
@@ -67,9 +67,6 @@ const App = ({contest}) => {
         }
       })
     })
-    // submissions.sort((a, b) => {
-    //   return a.sinceStarted - b.sinceStarted
-    // })
     let firstBlood = {}
     submissions.forEach(submission => {
       // 已经通过，则直接跳过

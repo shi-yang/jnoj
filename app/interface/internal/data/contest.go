@@ -141,7 +141,7 @@ func (r *contestRepo) ListContestStandings(ctx context.Context, id int) (res []*
 	var submissions []Submission
 	r.data.db.WithContext(ctx).
 		Select("id, problem_id, user_id, verdict, score, created_at").
-		Where("contest_id = ?", id).
+		Where("entity_id = ? and entity_type = ?", id, biz.SubmissionEntityTypeContest).
 		Find(&submissions)
 	var problems []ContestProblem
 	r.data.db.WithContext(ctx).
