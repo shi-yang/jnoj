@@ -8,7 +8,6 @@ export const LanguageMap = {
 }
 
 export function listSubmissions(params) {
-  console.log('params', params)
   return axios.get('/submissions', {params})
 }
 

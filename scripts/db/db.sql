@@ -95,14 +95,19 @@ CREATE TABLE `problem_tag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `problem_test` (
-  `id` bigint NOT NULL,
-  `content` text COLLATE utf8mb4_general_ci NOT NULL,
-  `size` bigint UNSIGNED NOT NULL,
-  `remark` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `user_id` int UNSIGNED NOT NULL,
+  `id` int UNSIGNED NOT NULL,
+  `problem_id` int UNSIGNED NOT NULL,
+  `order` smallint UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `input_size` int NOT NULL DEFAULT '0',
+  `input_preview` varchar(255) NOT NULL DEFAULT '',
+  `output_size` int NOT NULL DEFAULT '0',
+  `output_preview` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `remark` varchar(255) NOT NULL DEFAULT '',
+  `user_id` int NOT NULL,
   `is_example` tinyint NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `problem_user_status` (
@@ -131,7 +136,8 @@ CREATE TABLE `submission` (
   `verdict` tinyint NOT NULL DEFAULT '0',
   `language` tinyint NOT NULL DEFAULT '0',
   `status` tinyint NOT NULL DEFAULT '0',
-  `contest_id` int UNSIGNED NOT NULL,
+  `entity_id` int UNSIGNED NOT NULL,
+  `entity_type` tinyint NOT NULL,
   `score` smallint UNSIGNED NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

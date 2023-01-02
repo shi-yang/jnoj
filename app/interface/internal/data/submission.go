@@ -65,6 +65,9 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	if req.ProblemId != 0 {
 		db.Where("problem_id = ?", req.ProblemId)
 	}
+	if req.UserId != 0 {
+		db.Where("user_id = ?", req.UserId)
+	}
 	if len(req.Verdicts) > 0 {
 		db.Where("verdict in (?)", req.Verdicts)
 	}

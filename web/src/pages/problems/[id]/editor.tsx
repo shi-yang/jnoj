@@ -17,6 +17,7 @@ import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
 import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
+import { isLogged } from '@/utils/auth';
 
 const LANG_C = 'C';
 const LANG_CPP = 'C++';
@@ -28,7 +29,7 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
   const ws = useRef<WebSocket | null>(null);
   const [submission, setSubmission] = useState({ id: 0, verdict: 0 });
   const [visible, setVisible] = useState(false);
-  const [isRunning, setIsRunning] = useState(false); 
+  const [isRunning, setIsRunning] = useState(false);
   const user = useAppSelector(userInfo);
   const [btnContent, setBtnContent] = useState('');
   // websocket 即时向用户反馈测评进度
@@ -73,7 +74,7 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
           setSubmission(res.data);
         })
     } else {
-      listSubmissions({ entityId, entityType, problemId })
+      listSubmissions({ entityId, entityType, problemId, userId: user.id })
         .then(res => {
           if (res.data.data.length > 0) {
             setSubmission(res.data.data[0]);
@@ -338,7 +339,7 @@ export default function App({ problem }) {
           </Button>
         </div>
         <div className={styles.right}>
-          <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} />
+          { isLogged() && <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} /> }
           <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>
             {t['submit']}
           </Button>

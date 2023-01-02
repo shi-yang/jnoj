@@ -20,7 +20,9 @@ const App = ({ children }) => {
       <Footer className={styles.footer}>
         <div className='container'>
           <div style={{padding: '15px 0'}}>
-            &copy; 2022 {settings.name} 
+            &copy; {new Date().getFullYear()} {settings.name}
+            <Divider type='vertical' />
+            Powered by <a href='https://github.com/shi-yang/jnoj' target="_blank">jnoj</a>
             {settings.beian && (
               <>
                 <Divider type='vertical' />

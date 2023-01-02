@@ -18,7 +18,7 @@ import { getColumns } from './constants';
 import CreateModal from './create';
 import { listProblems } from '@/api/problem';
 import { useAppSelector } from '@/hooks';
-import { userInfo, UserInfoState } from '@/store/reducers/user';
+import { userInfo } from '@/store/reducers/user';
 
 const { Title } = Typography;
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
@@ -33,7 +33,7 @@ function SearchTable() {
   };
 
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
-  const user = useAppSelector<UserInfoState>(userInfo);
+  const user = useAppSelector(userInfo);
 
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -51,11 +51,10 @@ function SearchTable() {
   function fetchData() {
     const { current, pageSize } = pagination;
     setLoading(true);
-    console.log(user)
     listProblems({
       page: current,
       perPage: pageSize,
-      userId: 1,
+      userId: user.id,
       ...formParams,
     })
       .then((res) => {

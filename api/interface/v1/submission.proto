@@ -56,8 +56,9 @@ message ListSubmissionsRequest {
     int32 entity_id = 2;
     int32 entity_type = 3;
     repeated int32 verdicts = 4;
-    int32 page = 5;
-    int32 per_page = 6;
+    int32 user_id = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 
 message ListSubmissionsResponse {

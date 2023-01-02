@@ -6,32 +6,37 @@ import { LanguageMap, listSubmissions } from '@/api/submission';
 import { FormatMemorySize, FormatTime } from '@/utils/format';
 import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
 import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
+import { userInfo } from '@/store/reducers/user';
+import { useAppSelector } from '@/hooks';
 
 const Submission = (props) => {
   const t = useLocale(locale);
+  const user = useAppSelector(userInfo);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
   const [id, setId] = useState(0);
-  const [pagination, setPatination] = useState<PaginationProps>({
+  const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
     pageSize: 10,
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
+  const [formParams, setFormParams] = useState({});
   function fetchData() {
     const { current, pageSize } = pagination;
-    const params = {
+    setLoading(true);
+    listSubmissions({
+      problemId: props.problem.id,
+      userId: user.id,
       page: current,
       perPage: pageSize,
-      problemId: props.problem.id
-    };
-    setLoading(true);
-    listSubmissions(params)
+      ...formParams,
+    })
       .then((res) => {
         setData(res.data.data || []);
-        setPatination({
+        setPagination({
           ...pagination,
           current,
           pageSize,
@@ -43,12 +48,11 @@ const Submission = (props) => {
       });
   }
   function onChangeTable({ current, pageSize }) {
-    setPatination({
+    setPagination({
       ...pagination,
       current,
       pageSize,
     });
-    fetchData()
   }
   function onDrawerCancel() {
     setVisible(false);
@@ -102,7 +106,7 @@ const Submission = (props) => {
   ];
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
   return (
     <Card style={{height: '100%', overflow: 'auto'}}>
       <Table

@@ -1,11 +1,13 @@
 import useLocale from "@/utils/useLocale";
-import { Divider, Typography } from "@arco-design/web-react"
+import { Divider, Message, Typography } from "@arco-design/web-react"
 import ReactMarkdown from "react-markdown";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import locale from "./locale";
 import styles from './style/index.module.less';
+import { IconCopy } from "@arco-design/web-react/icon";
 const { Title, Paragraph } = Typography;
 export default ({problem, language}) => {
   const t = useLocale(locale);
@@ -48,11 +50,21 @@ export default ({problem, language}) => {
           return (
             <div className={styles['sample-test']} key={index}>
               <div className={styles.input}>
-                <h4>{t['input']}</h4>
+                <h4>
+                  {t['input']} {index + 1}
+                  <CopyToClipboard text={item.input} onCopy={() => Message.success(t['copied'])}>
+                    <span className={styles['btn-copy']}><IconCopy />{t['copy']}</span>
+                  </CopyToClipboard>
+                </h4>
                 <pre>{item.input}</pre>
               </div>
               <div className={styles.output}>
-                <h4>{t['output']}</h4>
+                <h4>
+                  {t['output']} {index + 1}
+                  <CopyToClipboard text={item.output} onCopy={() => Message.success(t['copied'])}>
+                    <span className={styles['btn-copy']}><IconCopy />{t['copy']}</span>
+                  </CopyToClipboard>
+                </h4>
                 <pre>{ item.output }</pre>
               </div>
             </div>

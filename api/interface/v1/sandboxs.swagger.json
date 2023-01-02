@@ -1,0 +1,133 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "v1/sandboxs.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "SandboxsService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/sandboxs": {
+      "post": {
+        "operationId": "SandboxsService_Run",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RunResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RunRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SandboxsService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "v1RunRequest": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "stdin": {
+          "type": "string"
+        },
+        "language": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "memoryLimit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "timeLimit": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1RunResponse": {
+      "type": "object",
+      "properties": {
+        "stdout": {
+          "type": "string"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memory": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exitCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "compileMsg": {
+          "type": "string"
+        },
+        "errMsg": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

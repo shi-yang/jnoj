@@ -6,6 +6,8 @@ const i18n = {
     'notes': 'Notes',
     'timeLimit': 'Time Limit',
     'memoryLimit': 'Memory Limit',
+    'copy': 'Copy',
+    'copied': 'Copied',
   },
   'zh-CN': {
     'input': '输入',
@@ -14,6 +16,8 @@ const i18n = {
     'notes': '提示',
     'timeLimit': '时间限制',
     'memoryLimit': '内存限制',
+    'copy': '复制',
+    'copied': '已复制',
   },
 };
 
