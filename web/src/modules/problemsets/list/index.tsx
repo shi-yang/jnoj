@@ -10,22 +10,23 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
-import { listProblems } from '@/api/problem';
+import { listProblemsetProblems } from '@/api/problemset';
 
-function SearchTable() {
+function ProblemList({problemsetID = 0}) {
   const t = useLocale(locale);
   const tableCallback = async (record, type) => {
     console.log(record, type);
   };
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
 
-  const [data, setData] = useState([]);
+  const [problems, setProblems] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
     pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
+    sizeOptions: [25, 50, 100]
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
@@ -40,12 +41,11 @@ function SearchTable() {
     const params = {
       page: current,
       perPage: pageSize,
-      status: 2,
       ...formParams,
     };
-    listProblems(params)
+    listProblemsetProblems(problemsetID, params)
       .then((res) => {
-        setData(res.data.data);
+        setProblems(res.data.data);
         setPatination({
           ...pagination,
           current,
@@ -67,7 +67,6 @@ function SearchTable() {
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
-    fetchData();
   }
 
   return (
@@ -79,10 +78,10 @@ function SearchTable() {
         onChange={onChangeTable}
         pagination={pagination}
         columns={columns}
-        data={data}
+        data={problems}
       />
     </Card>
   );
 }
 
-export default SearchTable;
+export default ProblemList;

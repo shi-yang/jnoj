@@ -15,15 +15,19 @@ import (
 
 // ProblemService is a problem service.
 type ProblemService struct {
-	uc  *biz.ProblemUsecase
-	log *log.Helper
+	uc           *biz.ProblemUsecase
+	problemsetUc *biz.ProblemsetUsecase
+	log          *log.Helper
 }
 
 // NewProblemService new a problem service.
-func NewProblemService(uc *biz.ProblemUsecase, logger log.Logger) *ProblemService {
+func NewProblemService(uc *biz.ProblemUsecase,
+	problemsetUc *biz.ProblemsetUsecase,
+	logger log.Logger) *ProblemService {
 	return &ProblemService{
-		uc:  uc,
-		log: log.NewHelper(logger),
+		uc:           uc,
+		problemsetUc: problemsetUc,
+		log:          log.NewHelper(logger),
 	}
 }
 
@@ -577,4 +581,156 @@ func (s *ProblemService) GetProblemVerification(ctx context.Context, req *v1.Get
 		}
 	}
 	return resp, nil
+}
+
+// ListProblemsets 题目列表
+func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProblemsetsRequest) (*v1.ListProblemsetsResponse, error) {
+	res, count := s.problemsetUc.ListProblemsets(ctx, req)
+	resp := new(v1.ListProblemsetsResponse)
+	resp.Total = count
+	for _, v := range res {
+		resp.Data = append(resp.Data, &v1.Problemset{
+			Id:           int32(v.ID),
+			Name:         v.Name,
+			Description:  v.Description,
+			ProblemCount: int32(v.ProblemCount),
+			UserId:       int32(v.UserID),
+			CreatedAt:    timestamppb.New(v.CreatedAt),
+		})
+	}
+	return resp, nil
+}
+
+// GetProblemset 获取题目列表
+func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemsetRequest) (*v1.Problemset, error) {
+	res, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	return &v1.Problemset{
+		Id:           int32(res.ID),
+		Name:         res.Name,
+		Description:  res.Description,
+		ProblemCount: int32(res.ProblemCount),
+		UserId:       int32(res.UserID),
+		CreatedAt:    timestamppb.New(res.CreatedAt),
+	}, nil
+}
+
+// CreateProblemset 创建题目列表
+func (s *ProblemService) CreateProblemset(ctx context.Context, req *v1.CreateProblemsetRequest) (*v1.Problemset, error) {
+	uid, _ := auth.GetUserID(ctx)
+	res, err := s.problemsetUc.CreateProblemset(ctx, &biz.Problemset{
+		Name:   req.Name,
+		UserID: uid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.Problemset{
+		Id: int32(res.ID),
+	}, nil
+}
+
+// DeleteProblemset 删除题目列表
+func (s *ProblemService) DeleteProblemset(ctx context.Context, req *v1.DeleteProblemsetRequest) (*emptypb.Empty, error) {
+	err := s.problemsetUc.DeleteProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// UpdateProblemset 修改题目列表
+func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdateProblemsetRequest) (*v1.Problemset, error) {
+	res, err := s.problemsetUc.UpdateProblemset(ctx, &biz.Problemset{
+		ID:          int(req.Id),
+		Name:        req.Name,
+		Description: req.Description,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.Problemset{
+		Id: int32(res.ID),
+	}, nil
+}
+
+// ListProblemsetProblems 获取题目列表的题目
+func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) (*v1.ListProblemsetProblemsResponse, error) {
+	res, count := s.problemsetUc.ListProblemsetProblems(ctx, req)
+	resp := new(v1.ListProblemsetProblemsResponse)
+	resp.Total = count
+	for _, v := range res {
+		p := &v1.ProblemsetProblem{
+			Id:            int32(v.ID),
+			Name:          v.Name,
+			Order:         int32(v.Order),
+			SubmitCount:   int32(v.SubmitCount),
+			AcceptedCount: int32(v.AcceptedCount),
+			ProblemsetId:  req.Id,
+			ProblemId:     int32(v.ProblemID),
+		}
+		resp.Data = append(resp.Data, p)
+	}
+	return resp, nil
+}
+
+// GetProblemsetProblem 获取题目列表的题目
+func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetProblemsetProblemRequest) (*v1.Problem, error) {
+	problemsetProblem, err := s.problemsetUc.GetProblemsetProblem(ctx, int(req.Id), int(req.Pid))
+	if err != nil {
+		return nil, err
+	}
+	data, err := s.uc.GetProblem(ctx, problemsetProblem.ProblemID)
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	resp := &v1.Problem{
+		Id:            int32(data.ID),
+		Name:          data.Name,
+		Status:        int32(data.Status),
+		MemoryLimit:   int32(data.MemoryLimit),
+		TimeLimit:     int32(data.TimeLimit),
+		SubmitCount:   int32(data.SubmitCount),
+		AcceptedCount: int32(data.AcceptedCount),
+		CheckerId:     int32(data.CheckerID),
+	}
+	resp.Statements = make([]*v1.ProblemStatement, 0)
+	resp.SampleTests = make([]*v1.Problem_SampleTest, 0)
+	for _, v := range data.Statements {
+		resp.Statements = append(resp.Statements, &v1.ProblemStatement{
+			Id:       int32(v.ID),
+			Name:     v.Name,
+			Input:    v.Input,
+			Output:   v.Output,
+			Note:     v.Note,
+			Legend:   v.Legend,
+			Language: v.Language,
+		})
+	}
+	for _, v := range data.SampleTests {
+		resp.SampleTests = append(resp.SampleTests, &v1.Problem_SampleTest{
+			Input:  v.Input,
+			Output: v.Output,
+		})
+	}
+	return resp, nil
+}
+
+// CreateProblemset 添加题目到题目列表
+func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.AddProblemToProblemsetRequest) (*emptypb.Empty, error) {
+	err := s.problemsetUc.AddProblemToProblemset(ctx, int(req.Id), int(req.ProblemId))
+	return &emptypb.Empty{}, err
+}
+
+// CreateProblemset 从题目列表中删除题目
+func (s *ProblemService) DeleteProblemFromProblemset(ctx context.Context, req *v1.DeleteProblemFromProblemsetRequest) (*emptypb.Empty, error) {
+	err := s.problemsetUc.DeleteProblemFromProblemset(ctx, int(req.Id), int(req.ProblemId))
+	return &emptypb.Empty{}, err
+}
+
+func (s *ProblemService) SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) (*emptypb.Empty, error) {
+	err := s.problemsetUc.SortProblemsetProblems(ctx, req)
+	return &emptypb.Empty{}, err
 }

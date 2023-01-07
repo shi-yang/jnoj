@@ -5,6 +5,8 @@ import {
   Grid,
   ResizeBox,
   Select,
+  Divider,
+  Link,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -13,13 +15,14 @@ import './mock';
 import Editor from './editor';
 import Description from './description';
 import Submission from './submission';
-import { getProblem } from '@/api/problem';
 import { IconLanguage } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
+import { getProblemset, getProblemsetProblem } from '@/api/problemset';
 const TabPane = Tabs.TabPane;
+import ProblemContext from './context';
 
 function Index() {
   const t = useLocale(locale);
@@ -28,23 +31,29 @@ function Index() {
   const [data, setData] = useState({
     id: 0,
     name: '',
-    statements: []
+    statements: [],
+    sampleTests: []
+  });
+  const [problemset, setProblemset] = useState({
+    id: 0,
+    name: ''
   });
   const [language, setLanguage] = useState(0);
   const [languageOptions, setLanguageOptions] = useState([]);
   const router = useRouter();
-  const { id } = router.query
-  function fetchData() {
+  const { id, pid } = router.query
+  function fetchData(order) {
     setLoading(true);
-    getProblem(id)
+    getProblemsetProblem(id, order)
       .then((res) => {
         setData(res.data);
-        res.data.statements.forEach((item, index) => {
-          setLanguageOptions((prev) => [...prev, {
+        const langs = res.data.statements.map((item, index) => {
+          return {
             label: item.language,
             value: index,
-          }])
-        })
+          }
+        });
+        setLanguageOptions(langs);
       })
       .finally(() => {
         setLoading(false);
@@ -52,21 +61,30 @@ function Index() {
   }
 
   useEffect(() => {
-    fetchData();
+    fetchData(pid);
+    getProblemset(id)
+      .then(res => {
+        setProblemset(res.data)
+      })
   }, []);
 
   return (
     <>
       { !loading && (
-        <>
+        <ProblemContext.Provider value={{
+          problem: data,
+          updateProblem: fetchData,
+        }}>
           <Head>
-            <title>{ data.id }.{ data.statements[language].name } - {settings.name}</title>
+            <title>{`${problemset.name} - ${pid}. ${data.statements[language].name} - ${settings.name}`}</title>
           </Head>
           <div className={styles.container}>
             <Grid.Row className={styles.header} justify="space-between" align="center">
               <Grid.Col span={24}>
                 <Typography.Title className={styles.title} heading={5}>
-                  { data.id } - { data.statements[language].name }
+                  <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
+                  <Divider type='vertical' />
+                  {`${pid}. ${data.statements[language].name}`}
                 </Typography.Title>
               </Grid.Col>
             </Grid.Row>
@@ -110,7 +128,7 @@ function Index() {
                     }
                   >
                     <TabPane key='problem' className={styles['tabs-pane']} title={t['tab.description']}>
-                      <Description problem={data} language={language} />
+                      <Description language={language} problemset={problemset} />
                     </TabPane>
                     <TabPane key='submission' className={styles['tabs-pane']} title={t['tab.submissions']}>
                       <Submission problem={data} />
@@ -118,12 +136,12 @@ function Index() {
                   </Tabs>
                 </div>,
                 <div key='second' className={styles.right}>
-                  <Editor problem={data} />
+                  <Editor />
                 </div>,
               ]}
             />
           </div>
-        </>
+        </ProblemContext.Provider>
       )}
     </>
   );

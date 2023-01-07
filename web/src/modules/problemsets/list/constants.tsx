@@ -22,18 +22,15 @@ export function getColumns(
   return [
     {
       title: t['problem.columns.id'],
-      dataIndex: 'id',
+      dataIndex: 'order',
       align: 'center' as 'center',
       width: 150,
     },
     {
       title: t['problem.columns.name'],
       dataIndex: 'name',
-      render: (col, record) => {
-        if (record.statements.length === 0) {
-          return col
-        }
-        return record.statements[0].name
+      render: (col) => {
+        return col
       }
     },
     {
@@ -60,7 +57,7 @@ export function getColumns(
           size="small"
           onClick={() => callback(record, 'view')}
         >
-          <Link href={`/problems/${record.id}`}>
+          <Link href={`/problemsets/${record.problemsetId}/problems/${record.order}`}>
             {t['problem.columns.operations.view']}
           </Link>
         </Button>

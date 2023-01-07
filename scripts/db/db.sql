@@ -59,6 +59,34 @@ CREATE TABLE `problem` (
   `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `problemset` (
+  `id` int UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `problem_count` int UNSIGNED NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `problemset_problem` (
+  `id` int NOT NULL,
+  `problemset_id` int NOT NULL,
+  `problem_id` int NOT NULL,
+  `order` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `problemset`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `problemset_problem`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `problemset`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `problemset_problem`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+COMMIT;
+
 CREATE TABLE `problem_file` (
   `id` int NOT NULL,
   `problem_id` int UNSIGNED NOT NULL,

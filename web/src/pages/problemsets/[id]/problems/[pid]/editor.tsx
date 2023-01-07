@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { cpp } from '@codemirror/lang-cpp';
 import { java } from '@codemirror/lang-java';
@@ -18,11 +18,109 @@ import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
 import { isLogged } from '@/utils/auth';
+import ProblemContext from './context';
 
 const LANG_C = 'C';
 const LANG_CPP = 'C++';
 const LANG_JAVA = 'Java';
 const LANG_PYTHON = 'Python';
+
+export default function App() {
+  const t = useLocale(locale);
+  const { problem } = useContext(ProblemContext);
+  const languageOptions = [LANG_C, LANG_CPP, LANG_JAVA, LANG_PYTHON];
+  const codemirrorLangs = [cpp, cpp, java, python];
+  const [value, setValue] = useState('')
+  const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
+  const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
+  const [extensions, setExtensions] = useState(codemirrorLangs[language]);
+  const [consoleVisible, setConsoleVisible] = useState(false);
+  const [cases, setCases] = useState([]);
+  const [latestSubmissionID, setLatestSubmissionID] = useState('0');
+  const onChange = React.useCallback((value, viewUpdate) => {
+    setValue(value)
+  }, []);
+  const onChangeLanguage = (e) => {
+    setLanguage(e);
+    setExtensions(codemirrorLangs[e]);
+  }
+  const onSubmit = () => {
+    const data = {
+      problemId: problem.id,
+      source: value,
+      language: language,
+    };
+    createSubmission(data).then(res => {
+      Message.success('已提交');
+      setLatestSubmissionID(res.data.id)
+    });
+  }
+  useEffect(() => {
+    setCases(problem.sampleTests.map(item => item.input))
+  }, [])
+  return (
+    <div className={styles['container']}>
+      <div className={styles['code-header']}>
+        <Select
+          size='large'
+          defaultValue={language}
+          placeholder='请选择语言'
+          style={{ width: 154 }}
+          onChange={(e) => onChangeLanguage(e)}
+        >
+          {languageOptions.map((item, index) => {
+            return (
+              <Select.Option key={item} value={`${index}`}>
+                {item}
+              </Select.Option>
+            )
+          })}
+        </Select>
+        <Select
+          size='large'
+          addBefore={<IconSkin />}
+          defaultValue={theme}
+          style={{ width: 200 }}
+          onChange={(e) => setTheme(e)}
+        >
+          {Object.keys(themes).map((item, index) => {
+            return (
+              <Select.Option key={index} value={item}>
+                {item}
+              </Select.Option>
+            )
+          })}
+        </Select>
+      </div>
+      <CodeMirror
+        height="100%"
+        className={styles['code-editor']}
+        extensions={extensions}
+        theme={themes[theme]}
+        onChange={onChange}
+      />
+      {consoleVisible && (
+        <Console problem={problem} defaultCases={cases} language={language} source={value} />
+      )}
+      <div className={styles.footer}>
+        <div className={styles.left}>
+          <Button
+            icon={consoleVisible ? <IconUp /> : <IconDown />}
+            onClick={() => setConsoleVisible((v) => !v)}
+          >
+            Console
+          </Button>
+        </div>
+        <div className={styles.right}>
+          { isLogged() && <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} /> }
+          <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>
+            {t['submit']}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function RecentlySubmitted({ entityId = undefined, entityType = undefined, latestSubmissionID = undefined, problemId }) {
   const t = useLocale(locale);
@@ -251,100 +349,4 @@ function Console({ problem, defaultCases, language, source }) {
       </Spin>
     </ResizeBox>
   )
-}
-
-export default function App({ problem }) {
-  const t = useLocale(locale);
-  const languageOptions = [LANG_C, LANG_CPP, LANG_JAVA, LANG_PYTHON];
-  const codemirrorLangs = [cpp, cpp, java, python];
-  const [value, setValue] = useState('')
-  const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
-  const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
-  const [extensions, setExtensions] = useState(codemirrorLangs[language]);
-  const [consoleVisible, setConsoleVisible] = useState(false);
-  const [cases, setCases] = useState([]);
-  const [latestSubmissionID, setLatestSubmissionID] = useState('0');
-  const onChange = React.useCallback((value, viewUpdate) => {
-    setValue(value)
-  }, []);
-  const onChangeLanguage = (e) => {
-    setLanguage(e);
-    setExtensions(codemirrorLangs[e]);
-  }
-  const onSubmit = () => {
-    const data = {
-      problemId: problem.id,
-      source: value,
-      language: language,
-    };
-    createSubmission(data).then(res => {
-      Message.success('已提交');
-      setLatestSubmissionID(res.data.id)
-    });
-  }
-  useEffect(() => {
-    setCases(problem.sampleTests.map(item => item.input))
-  }, [])
-  return (
-    <div className={styles['container']}>
-      <div className={styles['code-header']}>
-        <Select
-          size='large'
-          defaultValue={language}
-          placeholder='请选择语言'
-          style={{ width: 154 }}
-          onChange={(e) => onChangeLanguage(e)}
-        >
-          {languageOptions.map((item, index) => {
-            return (
-              <Select.Option key={item} value={`${index}`}>
-                {item}
-              </Select.Option>
-            )
-          })}
-        </Select>
-        <Select
-          size='large'
-          addBefore={<IconSkin />}
-          defaultValue={theme}
-          style={{ width: 200 }}
-          onChange={(e) => setTheme(e)}
-        >
-          {Object.keys(themes).map((item, index) => {
-            return (
-              <Select.Option key={index} value={item}>
-                {item}
-              </Select.Option>
-            )
-          })}
-        </Select>
-      </div>
-      <CodeMirror
-        height="100%"
-        className={styles['code-editor']}
-        extensions={extensions}
-        theme={themes[theme]}
-        onChange={onChange}
-      />
-      {consoleVisible && (
-        <Console problem={problem} defaultCases={cases} language={language} source={value} />
-      )}
-      <div className={styles.footer}>
-        <div className={styles.left}>
-          <Button
-            icon={consoleVisible ? <IconUp /> : <IconDown />}
-            onClick={() => setConsoleVisible((v) => !v)}
-          >
-            Console
-          </Button>
-        </div>
-        <div className={styles.right}>
-          { isLogged() && <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} /> }
-          <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>
-            {t['submit']}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
 }

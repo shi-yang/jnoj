@@ -55,7 +55,7 @@ export function getColumns(
           type="text"
           size="small"
         >
-          <Link href={`/problems/update/${record.id}`}>{t['searchTable.columns.operations.view']}</Link>
+          <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.view']}</Link>
         </Button>
       ),
     },

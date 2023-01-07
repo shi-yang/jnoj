@@ -21,8 +21,6 @@ interface RenderConfig {
 
 const PageLayout = ({ Component, pageProps }) => {
   if (Component.getLayout) {
-    console.log('Component.getLayout', Component)
-    console.log('Component.getLayout', Component.getLayout)
     return Component.getLayout(<Component {...pageProps} />);
   } else {
     return <Component {...pageProps} />;

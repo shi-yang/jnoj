@@ -12,8 +12,8 @@ const i18n = {
     'searchTable.operations.add': 'New',
     'searchTable.operations.upload': 'Bulk upload',
     'searchTable.operation.download': 'Download',
-    'searchForm.id.placeholder': 'Please enter the collection ID',
-    'searchForm.name.placeholder': 'Please enter the collection name',
+    'searchForm.id.placeholder': 'Please enter the problem ID',
+    'searchForm.name.placeholder': 'Please enter the problem name',
     'searchForm.all.placeholder': 'all',
   },
   'zh-CN': {

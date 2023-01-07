@@ -69,11 +69,11 @@ const LayoutHeader = () => {
             <Link href='/'>{ t['menu.home'] }</Link>
           </MenuItem>
           <MenuItem key='2'>
-            <Link href='/problems'>{ t['menu.problem'] }</Link>
+            <Link href='/problemsets'>{ t['menu.problem'] }</Link>
           </MenuItem>
-          <MenuItem key='3'>
+          {/* <MenuItem key='3'>
             <Link href='/contests'>{ t['menu.contest'] }</Link>
-          </MenuItem>
+          </MenuItem> */}
           {/* <MenuItem key='4'>
             <Link to='/about'>{ t['menu.about'] }</Link>
           </MenuItem> */}

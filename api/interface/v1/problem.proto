@@ -171,6 +171,70 @@ service ProblemService {
             get: "/problems/{id}/verification"
         };
     }
+    // 题单列表
+    rpc ListProblemsets (ListProblemsetsRequest) returns (ListProblemsetsResponse) {
+        option (google.api.http) = {
+            get: "/problemsets"
+        };
+    }
+    // 获取题单
+    rpc GetProblemset (GetProblemsetRequest) returns (Problemset) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}"
+        };
+    }
+    // 创建题单
+    rpc CreateProblemset (CreateProblemsetRequest) returns (Problemset) {
+        option (google.api.http) = {
+            post: "/problemsets"
+            body: "*"
+        };
+    }
+    // 删除题单
+    rpc DeleteProblemset (DeleteProblemsetRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/problemsets/{id}"
+        };
+    }
+    // 修改题单
+    rpc UpdateProblemset (UpdateProblemsetRequest) returns (Problemset) {
+        option (google.api.http) = {
+            put: "/problemsets/{id}"
+            body: "*"
+        };
+    }
+    // 获取题单的题目
+    rpc ListProblemsetProblems (ListProblemsetProblemsRequest) returns (ListProblemsetProblemsResponse) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}/problems"
+        };
+    }
+    // 获取题单的题目
+    rpc GetProblemsetProblem (GetProblemsetProblemRequest) returns (Problem) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}/problems/{pid}"
+        };
+    }
+    // 添加题目到题单
+    rpc AddProblemToProblemset (AddProblemToProblemsetRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/problems"
+            body: "*"
+        };
+    }
+    // 从题单中删除题目
+    rpc DeleteProblemFromProblemset (DeleteProblemFromProblemsetRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/problemsets/{id}/problems/{problem_id}"
+        };
+    }
+    // 对题单的题目进行排序
+    rpc SortProblemsetProblems (SortProblemsetProblemsRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/problem/sort"
+            body: "*"
+        };
+    };
 }
 
 // 题目
@@ -423,4 +487,95 @@ message ProblemVerification {
         string error_message = 2;
     }
     repeated VerificaitionInfo verificaiton_info = 4;
+}
+
+message Problemset {
+    int32 id = 1;
+    string name = 2;
+    int32 user_id = 3;
+    string description = 4;
+    int32 problem_count = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
+
+message ListProblemsetsRequest {
+    string name = 1;
+    int32 page = 2;
+    int32 per_page = 3;
+}
+
+message ListProblemsetsResponse {
+    repeated Problemset data = 1;
+    int64 total = 2;
+}
+
+message GetProblemsetRequest {
+    int32 id = 1;
+}
+
+message CreateProblemsetRequest {
+    string name = 1;
+}
+
+message DeleteProblemsetRequest {
+    int32 id = 1;
+}
+
+message UpdateProblemsetRequest {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message ListProblemsetProblemsRequest {
+    int32 id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
+}
+
+message ProblemsetProblem {
+    // 题目ID
+    int32 id = 1;
+    // 名称
+    string name = 2;
+    // 次序
+    int32 order = 3;
+    // 时间限制
+    int32 time_limit = 4;
+    // 内存限制
+    int32 memory_limit = 5;
+    int32 accepted_count = 6;
+    int32 submit_count = 7;
+    int32 problemset_id = 8;
+    int32 problem_id = 9;
+}
+
+message ListProblemsetProblemsResponse {
+    repeated ProblemsetProblem data = 1;
+    int64 total = 2;
+}
+
+message GetProblemsetProblemRequest {
+    int32 id = 1;
+    int32 pid = 2;
+}
+
+message AddProblemToProblemsetRequest {
+    int32 id = 1;
+    int32 problem_id = 2;
+}
+
+message DeleteProblemFromProblemsetRequest {
+    int32 id = 1;
+    int32 problem_id = 2;
+}
+
+message SortProblemsetProblemsRequest {
+    int32 id = 1;
+    message ProblemsetProblems {
+        int32 order = 1;
+        int32 id = 2;
+    }
+    repeated ProblemsetProblems ids = 2;
 }

@@ -3,8 +3,11 @@ import { isSSR } from "./is"
 const ACCESS_TOKEN = 'token'
 
 export const isLogged = ():boolean => {
-  const token = localStorage.getItem(ACCESS_TOKEN)
-  return !isSSR && token !== '' && token !== null
+  if (isSSR) {
+    return false;
+  }
+  const token = localStorage.getItem(ACCESS_TOKEN);
+  return token !== '' && token !== null;
 }
 
 export const setAccessToken = (token) => {
