@@ -12,7 +12,6 @@ import { GlobalContext } from '@/context';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import { IconRefresh, IconSearch } from '@arco-design/web-react/icon';
-import { Status } from './constants';
 import styles from './style/index.module.less';
 
 const { Row, Col } = Grid;
@@ -58,19 +57,6 @@ function SearchForm(props: {
               <Input
                 allowClear
                 placeholder={t['searchForm.name.placeholder']}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={colSpan}>
-            <Form.Item label={t['searchTable.columns.status']} field="status">
-              <Select
-                placeholder={t['searchForm.all.placeholder']}
-                options={Status.map((item, index) => ({
-                  label: item,
-                  value: index,
-                }))}
-                mode="multiple"
-                allowClear
               />
             </Form.Item>
           </Col>

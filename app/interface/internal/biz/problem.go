@@ -135,6 +135,13 @@ func (uc *ProblemUsecase) CreateProblem(ctx context.Context, p *Problem) (*Probl
 
 // UpdateProblem update a Problem
 func (uc *ProblemUsecase) UpdateProblem(ctx context.Context, p *Problem) (*Problem, error) {
+	// 题目设为公开，需要保证题目通过验证
+	if p.Status == ProblemStatusPublic {
+		// 检查题目是否通过验证
+		if res, err := uc.GetProblemVerification(ctx, p.ID); err != nil || res.VerificationStatus != VerificationStatusSuccess {
+			return nil, v1.ErrorProblemNotVerification("题目未通过验证")
+		}
+	}
 	return uc.repo.UpdateProblem(ctx, p)
 }
 

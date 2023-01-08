@@ -14,6 +14,10 @@ export interface Problem {
     memoryLimit: number;
     notes: string;
   }>
+  sampleTests: Array<{
+    input: string;
+    output: string;
+  }>
 }
 
 export function listProblems(params) {

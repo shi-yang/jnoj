@@ -753,6 +753,10 @@ func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.Add
 	if !problem.HasPermission(ctx, biz.ProblemPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
+	// 题目是否通过验证
+	if res, err := s.uc.GetProblemVerification(ctx, problem.ID); err != nil || res.VerificationStatus != biz.VerificationStatusSuccess {
+		return nil, v1.ErrorProblemNotVerification("题目未通过验证")
+	}
 	err = s.problemsetUc.AddProblemToProblemset(ctx, int(req.Id), int(req.ProblemId))
 	return &emptypb.Empty{}, err
 }
