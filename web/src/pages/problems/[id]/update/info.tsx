@@ -7,9 +7,13 @@ const App = (props) => {
   const [form] = Form.useForm();
   const [verification, setVerification] = useState({verificationStatus: 0, verificaitonInfo: []});
   function onSubmit(values) {
-    updateProblem(props.problem.id, values).then(res => {
-      Message.info('已保存')
-    })
+    updateProblem(props.problem.id, values)
+      .then(res => {
+        Message.info('已保存')
+      })
+      .catch(err => {
+        Message.error(err.response.data.message)
+      })
   }
   function fetchData() {
     getProblemVerification(props.problem.id)

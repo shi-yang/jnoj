@@ -93,8 +93,9 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 // CreateProblemset .
 func (r *ProblemsetRepo) CreateProblemset(ctx context.Context, b *biz.Problemset) (*biz.Problemset, error) {
 	res := Problemset{
-		Name:   b.Name,
-		UserID: b.UserID,
+		Name:        b.Name,
+		UserID:      b.UserID,
+		Description: b.Description,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

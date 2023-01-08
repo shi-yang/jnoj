@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"jnoj/internal/middleware/auth"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -17,6 +18,12 @@ type Problemset struct {
 	Description  string
 	ProblemCount int
 	CreatedAt    time.Time
+}
+
+// HasPermission 是否有权限修改
+func (p *Problemset) HasPermission(ctx context.Context) bool {
+	uid, _ := auth.GetUserID(ctx)
+	return uid == p.UserID
 }
 
 // ProblemsetProblem Problemset's Problem model.

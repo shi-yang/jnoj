@@ -6,6 +6,7 @@ import useLocale from '@/utils/useLocale';
 import { Button, Card, Descriptions, Form, Grid, Input, Message, Modal, Typography, Link, Pagination, PaginationProps } from '@arco-design/web-react'
 import { IconPlus } from '@arco-design/web-react/icon';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
@@ -60,7 +61,7 @@ export default () => {
           title={t['page.title']}
           extra={
             <div>
-              { user.id !== 0 && <AddProblemset callback={fetchData} />}
+              { user.id && <AddProblemset />}
             </div>
           }
         >
@@ -102,11 +103,12 @@ export default () => {
   )
 }
 
-function AddProblemset({callback}) {
+function AddProblemset() {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
+  const router = useRouter();
 
   function onOk() {
     form.validate().then((values) => {
@@ -114,7 +116,8 @@ function AddProblemset({callback}) {
       createProblemset(values)
         .then(res => {
           setVisible(false);
-          callback();
+          Message.success(t['all.create.savedSuccessfully'])
+          router.push(`/problemsets/${res.data.id}/update`)
         })
         .catch(err => {
           Message.error(err.response.data.message)

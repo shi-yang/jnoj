@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/docker/docker v20.10.20+incompatible
+	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/go-kratos/kratos/v2 v2.5.2
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/google/uuid v1.3.0

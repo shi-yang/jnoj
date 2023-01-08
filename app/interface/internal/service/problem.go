@@ -583,7 +583,7 @@ func (s *ProblemService) GetProblemVerification(ctx context.Context, req *v1.Get
 	return resp, nil
 }
 
-// ListProblemsets 题目列表
+// ListProblemsets 题单列表
 func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProblemsetsRequest) (*v1.ListProblemsetsResponse, error) {
 	res, count := s.problemsetUc.ListProblemsets(ctx, req)
 	resp := new(v1.ListProblemsetsResponse)
@@ -601,7 +601,7 @@ func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProble
 	return resp, nil
 }
 
-// GetProblemset 获取题目列表
+// GetProblemset 获取题单
 func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemsetRequest) (*v1.Problemset, error) {
 	res, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
 	if err != nil {
@@ -617,12 +617,13 @@ func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemse
 	}, nil
 }
 
-// CreateProblemset 创建题目列表
+// CreateProblemset 创建题单
 func (s *ProblemService) CreateProblemset(ctx context.Context, req *v1.CreateProblemsetRequest) (*v1.Problemset, error) {
 	uid, _ := auth.GetUserID(ctx)
 	res, err := s.problemsetUc.CreateProblemset(ctx, &biz.Problemset{
-		Name:   req.Name,
-		UserID: uid,
+		Name:        req.Name,
+		UserID:      uid,
+		Description: req.Description,
 	})
 	if err != nil {
 		return nil, err
@@ -632,17 +633,31 @@ func (s *ProblemService) CreateProblemset(ctx context.Context, req *v1.CreatePro
 	}, nil
 }
 
-// DeleteProblemset 删除题目列表
+// DeleteProblemset 删除题单
 func (s *ProblemService) DeleteProblemset(ctx context.Context, req *v1.DeleteProblemsetRequest) (*emptypb.Empty, error) {
-	err := s.problemsetUc.DeleteProblemset(ctx, int(req.Id))
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.problemsetUc.DeleteProblemset(ctx, int(req.Id))
 	if err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
 }
 
-// UpdateProblemset 修改题目列表
+// UpdateProblemset 修改题单
 func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdateProblemsetRequest) (*v1.Problemset, error) {
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	res, err := s.problemsetUc.UpdateProblemset(ctx, &biz.Problemset{
 		ID:          int(req.Id),
 		Name:        req.Name,
@@ -656,7 +671,7 @@ func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdatePro
 	}, nil
 }
 
-// ListProblemsetProblems 获取题目列表的题目
+// ListProblemsetProblems 获取题单的题目
 func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) (*v1.ListProblemsetProblemsResponse, error) {
 	res, count := s.problemsetUc.ListProblemsetProblems(ctx, req)
 	resp := new(v1.ListProblemsetProblemsResponse)
@@ -676,7 +691,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 	return resp, nil
 }
 
-// GetProblemsetProblem 获取题目列表的题目
+// GetProblemsetProblem 获取题单的题目
 func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetProblemsetProblemRequest) (*v1.Problem, error) {
 	problemsetProblem, err := s.problemsetUc.GetProblemsetProblem(ctx, int(req.Id), int(req.Pid))
 	if err != nil {
@@ -718,19 +733,55 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 	return resp, nil
 }
 
-// CreateProblemset 添加题目到题目列表
+// CreateProblemset 添加题目到题单
 func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.AddProblemToProblemsetRequest) (*emptypb.Empty, error) {
-	err := s.problemsetUc.AddProblemToProblemset(ctx, int(req.Id), int(req.ProblemId))
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	// 题目是否存在
+	problem, err := s.uc.GetProblem(ctx, int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题目
+	if !problem.HasPermission(ctx, biz.ProblemPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.problemsetUc.AddProblemToProblemset(ctx, int(req.Id), int(req.ProblemId))
 	return &emptypb.Empty{}, err
 }
 
-// CreateProblemset 从题目列表中删除题目
+// CreateProblemset 从题单中删除题目
 func (s *ProblemService) DeleteProblemFromProblemset(ctx context.Context, req *v1.DeleteProblemFromProblemsetRequest) (*emptypb.Empty, error) {
-	err := s.problemsetUc.DeleteProblemFromProblemset(ctx, int(req.Id), int(req.ProblemId))
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.problemsetUc.DeleteProblemFromProblemset(ctx, int(req.Id), int(req.ProblemId))
 	return &emptypb.Empty{}, err
 }
 
 func (s *ProblemService) SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) (*emptypb.Empty, error) {
-	err := s.problemsetUc.SortProblemsetProblems(ctx, req)
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.problemsetUc.SortProblemsetProblems(ctx, req)
 	return &emptypb.Empty{}, err
 }

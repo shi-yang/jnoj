@@ -5,6 +5,7 @@ package jnoj.interface.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -308,8 +309,8 @@ message CreateProblemResponse {
 
 message UpdateProblemRequest {
     int32 id = 1;
-    int64 time_limit = 2;
-    int64 memory_limit = 3;
+    int64 time_limit = 2 [(validate.rules).int64 = {gte:250, lte: 15000}];
+    int64 memory_limit = 3 [(validate.rules).int64 = {gte:4, lte: 1024}];
     int32 status = 4;
 }
 
@@ -516,6 +517,7 @@ message GetProblemsetRequest {
 
 message CreateProblemsetRequest {
     string name = 1;
+    string description = 2;
 }
 
 message DeleteProblemsetRequest {
