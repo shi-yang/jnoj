@@ -81,7 +81,7 @@ const Editor = ({imageRequest, imageUploadedFile, ...props}: JSX.IntrinsicAttrib
   return (
     <MarkdownEditor
       {...props}
-      height="100%"
+      style={{height: '100%'}}
       minHeight={300}
       commands={[
         image({imageRequest, imageUploadedFile}),
