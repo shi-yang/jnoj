@@ -25,7 +25,7 @@ const TabPane = Tabs.TabPane;
 function Index(props) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<Problem>({id: 0, statements: [], name: ''});
+  const [data, setData] = useState<Problem>({id: 0, statements: [], name: '', sampleTests:[]});
   const router = useRouter();
   const settings = useAppSelector<SettingState>(setting);
   function fetchData() {
