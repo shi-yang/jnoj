@@ -1,34 +1,32 @@
-import { Notification } from '@arco-design/web-react';
 import axios from 'axios';
+import Router from 'next/router';
 import { getAccessToken } from './auth';
 
 const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL
 })
+
+http.interceptors.request.use(config => {
+  const token = getAccessToken();
+  if (token) {
+    config.headers['Authorization'] = 'Bearer ' + token;
+  }
+  return config;
+})
+
 const err = (error) => {
   if (error.response) {
-    const data = error.response.data
-    if (error.response.status === 403) {
-      Notification.error({
-        title: 'Forbidden',
-        content: data.message
-      })
+    if (error.response.status === 401 && error.config.url !== '/user/info') {
+      Router.push('/user/login');
+    } else if (error.response.status === 403) {
+      Router.push('/403');
     }
   }
   return Promise.reject(error)
 }
 
-http.interceptors.request.use(config => {
-  const token = getAccessToken()
-  if (token) {
-    config.headers['Authorization'] = 'Bearer ' + token
-  }
-  return config
+http.interceptors.response.use(response => {
+  return response;
 }, err)
-
-
-// http.interceptors.response.use((response) => {
-//   return response.data
-// }, err)
 
 export default http;

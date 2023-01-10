@@ -4,8 +4,8 @@ const App = () => {
   return (
     <div>
       <Result
-        status='404'
-        subTitle='Whoops, that page is gone. '
+        status='403'
+        subTitle='Access to this resource on the server is denied.'
       ></Result>
     </div>
   );
