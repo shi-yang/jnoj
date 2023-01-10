@@ -132,7 +132,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 	db := r.data.db.WithContext(ctx).
 		Model(&ProblemsetProblem{}).
 		Preload("Problem", func(db *gorm.DB) *gorm.DB {
-			return db.Select("name, id")
+			return db.Select("name, id, submit_count, accepted_count")
 		}).
 		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("name, language, problem_id")
