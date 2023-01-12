@@ -106,6 +106,8 @@ func (m *Problem) validate(all bool) error {
 
 	// no validation rules for CheckerId
 
+	// no validation rules for Source
+
 	for idx, item := range m.GetSampleTests() {
 		_, _ = idx, item
 
@@ -1006,6 +1008,8 @@ func (m *UpdateProblemRequest) validate(all bool) error {
 	}
 
 	// no validation rules for Status
+
+	// no validation rules for Source
 
 	if len(errors) > 0 {
 		return UpdateProblemRequestMultiError(errors)
@@ -5249,6 +5253,8 @@ func (m *ListProblemsetProblemsRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for Keyword
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage
@@ -5373,6 +5379,8 @@ func (m *ProblemsetProblem) validate(all bool) error {
 	// no validation rules for ProblemsetId
 
 	// no validation rules for ProblemId
+
+	// no validation rules for Source
 
 	if len(errors) > 0 {
 		return ProblemsetProblemMultiError(errors)

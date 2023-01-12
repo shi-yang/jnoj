@@ -61,5 +61,13 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 
 // GetUser 获取用户主页信息
 func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.User, error) {
-	return &v1.User{}, nil
+	res, err := s.uc.GetUser(ctx, int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	return &v1.User{
+		Id:       int32(res.ID),
+		Nickname: res.Nickname,
+		Username: res.Username,
+	}, nil
 }

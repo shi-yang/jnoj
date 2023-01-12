@@ -35,6 +35,7 @@ type ProblemsetProblem struct {
 	ProblemsetID  int
 	SubmitCount   int
 	AcceptedCount int
+	Source        string
 	CreatedAt     time.Time
 }
 

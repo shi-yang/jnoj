@@ -254,14 +254,16 @@ message Problem {
     int32 submit_count = 7;
     int32 status = 8;
     int32 checker_id = 9;
+    // 题目来源
+    string source = 10;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 10;
-    google.protobuf.Timestamp created_at = 11;
-    google.protobuf.Timestamp updated_at = 12;
+    repeated SampleTest sample_tests = 11;
+    google.protobuf.Timestamp created_at = 12;
+    google.protobuf.Timestamp updated_at = 13;
 }
 
 // 题目描述
@@ -312,6 +314,7 @@ message UpdateProblemRequest {
     int64 time_limit = 2 [(validate.rules).int64 = {gte:250, lte: 15000}];
     int64 memory_limit = 3 [(validate.rules).int64 = {gte:4, lte: 1024}];
     int32 status = 4;
+    string source = 5;
 }
 
 message ListProblemStatementsRequest {
@@ -532,8 +535,9 @@ message UpdateProblemsetRequest {
 
 message ListProblemsetProblemsRequest {
     int32 id = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    string keyword = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }
 
 message ProblemsetProblem {
@@ -551,6 +555,8 @@ message ProblemsetProblem {
     int32 submit_count = 7;
     int32 problemset_id = 8;
     int32 problem_id = 9;
+    // 题目来源
+    string source = 10;
 }
 
 message ListProblemsetProblemsResponse {

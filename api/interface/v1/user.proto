@@ -31,7 +31,7 @@ service UserService {
     // 获取用户主页信息
     rpc GetUser (GetUserRequest) returns (User) {
         option (google.api.http) = {
-            get: "/user/{id}"
+            get: "/users/{id}"
         };
     };
 }
@@ -69,6 +69,9 @@ message GetUserInfoResponse {
 }
 
 message User {
+    int32 id = 1;
+    string nickname = 2;
+    string username = 3;
 }
 
 

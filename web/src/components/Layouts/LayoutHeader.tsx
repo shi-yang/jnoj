@@ -31,6 +31,8 @@ const LayoutHeader = () => {
   function onMenuItemClick(key) {
     if (key === 'logout') {
       logout();
+    } else if (key === 'homepage') {
+      router.push(`/u/${user.id}`);
     } else {
       router.push(`/user/${key}`);
     }
@@ -42,6 +44,10 @@ const LayoutHeader = () => {
 
   const droplist = (
     <Menu onClickMenuItem={onMenuItemClick}>
+      <Menu.Item key="homepage">
+        <IconUser className={styles['dropdown-icon']} />
+        {t['menu.user.home']}
+      </Menu.Item>
       <Menu.Item key="setting">
         <IconSettings className={styles['dropdown-icon']} />
         {t['menu.user.setting']}

@@ -27,14 +27,7 @@ const { Title } = Typography;
 
 export default function() {
   const t = useLocale(locale);
-
-  const tableCallback = async (record, type) => {
-    console.log(record, type);
-  };
-
-  const columns = useMemo(() => getColumns(t, tableCallback), [t]);
   const user = useAppSelector(userInfo);
-
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     showTotal: true,
@@ -44,7 +37,61 @@ export default function() {
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
-
+  const [id, setId] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const Status = ['', '私有', '公开'];
+  const columns = [
+    {
+      title: t['searchTable.columns.id'],
+      dataIndex: 'id',
+      align: 'center' as 'center',
+      render: (value) => <Typography.Text copyable>{value}</Typography.Text>,
+    },
+    {
+      title: t['searchTable.columns.name'],
+      dataIndex: 'name',
+    },
+    {
+      title: t['searchTable.columns.createdTime'],
+      align: 'center' as 'center',
+      dataIndex: 'createdAt',
+      sorter: (a, b) => b.createdAt - a.createdAt,
+      render: (x) => FormatTime(x)
+    },
+    {
+      title: t['searchTable.columns.source'],
+      dataIndex: 'source',
+      align: 'center' as 'center',
+    },
+    {
+      title: t['searchTable.columns.status'],
+      dataIndex: 'status',
+      align: 'center' as 'center',
+      render: (x) => Status[x],
+    },
+    {
+      title: t['searchTable.columns.operations'],
+      dataIndex: 'operations',
+      align: 'center' as 'center',
+      headerCellStyle: { paddingLeft: '15px' },
+      render: (_, record) => (
+        <>
+          <Button type='text' size='small' onClick={() => {
+            setId(record.id);
+            setVisible(true);
+          }}>
+            {t['searchTable.columns.operations.view']}
+          </Button>
+          <Button
+            type="text"
+            size="small"
+          >
+            <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.update']}</Link>
+          </Button>
+        </>
+      ),
+    },
+  ];
   useEffect(() => {
     fetchData();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
@@ -104,63 +151,12 @@ export default function() {
         columns={columns}
         data={data}
       />
+      <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
     </Card>
   );
 }
 
-
-const Status = ['', '私有', '公开'];
-function getColumns(
-  t: any,
-  callback: (record: Record<string, any>, type: string) => Promise<void>
-) {
-  return [
-    {
-      title: t['searchTable.columns.id'],
-      dataIndex: 'id',
-      align: 'center' as 'center',
-      render: (value) => <Typography.Text copyable>{value}</Typography.Text>,
-    },
-    {
-      title: t['searchTable.columns.name'],
-      dataIndex: 'name',
-    },
-    {
-      title: t['searchTable.columns.createdTime'],
-      align: 'center' as 'center',
-      dataIndex: 'createdAt',
-      sorter: (a, b) => b.createdAt - a.createdAt,
-      render: (x) => FormatTime(x)
-    },
-    {
-      title: t['searchTable.columns.status'],
-      dataIndex: 'status',
-      align: 'center' as 'center',
-      render: (x) => Status[x],
-    },
-    {
-      title: t['searchTable.columns.operations'],
-      dataIndex: 'operations',
-      align: 'center' as 'center',
-      headerCellStyle: { paddingLeft: '15px' },
-      render: (_, record) => (
-        <>
-          <ProblemView id={record.id} />
-          <Button
-            type="text"
-            size="small"
-          >
-            <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.update']}</Link>
-          </Button>
-        </>
-      ),
-    },
-  ];
-}
-
-function ProblemView({id}) {
-  const t = useLocale(locale);
-  const [visible, setVisible] = useState(false);
+function ProblemView({id, visible, onCancel}) {
   const [data, setData] = useState({
     id: 0,
     name: '',
@@ -170,7 +166,8 @@ function ProblemView({id}) {
   const [language, setLanguage] = useState(0);
   const [languageOptions, setLanguageOptions] = useState([]);
   useEffect(() => {
-    getProblem(id)
+    if (id !== 0) {
+      getProblem(id)
       .then(res => {
         setData(res.data);
         const langs = res.data.statements.map((item, index) => {
@@ -181,59 +178,47 @@ function ProblemView({id}) {
         });
         setLanguageOptions(langs);
       })
+    }
   }, [id])
   return (
-    <>
-      <Button
-        onClick={() => {
-          setVisible(true);
-        }}
-        type='text'
-        size='small'
-      >
-        {t['searchTable.columns.operations.view']}
-      </Button>
-      <Drawer
-        width={800}
-        title={<span>{data.id} - {data.name}</span>}
-        visible={visible}
-        footer={null}
-        onCancel={() => {
-          setVisible(false);
-        }}
-      >
-        { 
-          languageOptions.length > 0 &&
-          <div>
-            <Select
-              bordered={false}
-              size='small'
-              defaultValue={language}
-              onChange={(value) =>
-                setLanguage(value)
-              }
-              triggerProps={{
-                autoAlignPopupWidth: false,
-                autoAlignPopupMinWidth: true,
-                position: 'bl',
-              }}
-              triggerElement={
-                <span className={styles['header-language']}>
-                  <IconLanguage /> {languageOptions[language].label}
-                </span>
-              }
-            >
-              {languageOptions.map((option, index) => (
-                <Select.Option key={index} value={option.value}>
-                  {option.label}
-                </Select.Option>
-              ))}
-            </Select>
-            <Typography.Title heading={4}>{data.statements[language].name}</Typography.Title>
-          </div>
-        }
-        <ProblemContent problem={data} language={language} />
-      </Drawer>
-    </>
+    <Drawer
+      width={800}
+      title={<span>{data.id} - {data.name}</span>}
+      visible={visible}
+      footer={null}
+      onCancel={onCancel}
+    >
+      { 
+        languageOptions.length > 0 &&
+        <div>
+          <Select
+            bordered={false}
+            size='small'
+            defaultValue={language}
+            onChange={(value) =>
+              setLanguage(value)
+            }
+            triggerProps={{
+              autoAlignPopupWidth: false,
+              autoAlignPopupMinWidth: true,
+              position: 'bl',
+            }}
+            triggerElement={
+              <span className={styles['header-language']}>
+                <IconLanguage /> {languageOptions[language].label}
+              </span>
+            }
+          >
+            {languageOptions.map((option, index) => (
+              <Select.Option key={index} value={option.value}>
+                {option.label}
+              </Select.Option>
+            ))}
+          </Select>
+          <Typography.Title heading={4}>{data.statements[language].name}</Typography.Title>
+          <ProblemContent problem={data} language={language} />
+        </div>
+      }
+    </Drawer>
   )
 }

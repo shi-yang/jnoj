@@ -136,8 +136,8 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 		}).
 		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("name, language, problem_id")
-		}).
-		Where("problemset_id = ?", req.Id).
+		})
+	db.Where("problemset_id = ?", req.Id).
 		Order("`order`").
 		Count(&count)
 	db.
@@ -151,6 +151,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			Order:         v.Order,
 			SubmitCount:   v.Problem.SubmitCount,
 			AcceptedCount: v.Problem.AcceptedCount,
+			Source:        v.Problem.Source,
 			ProblemsetID:  v.ProblemsetID,
 			ProblemID:     v.ProblemID,
 		}

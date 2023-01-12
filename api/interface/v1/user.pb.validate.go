@@ -579,6 +579,12 @@ func (m *User) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Id
+
+	// no validation rules for Nickname
+
+	// no validation rules for Username
+
 	if len(errors) > 0 {
 		return UserMultiError(errors)
 	}

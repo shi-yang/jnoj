@@ -19,7 +19,7 @@ function App() {
       setConfirmLoading(true);
       createProblem(values)
         .then(res => {
-          router.push(`/problems/update/${res.data.id}`);
+          router.push(`/problems/${res.data.id}/update`);
         })
         .finally(() => {
           setConfirmLoading(false);

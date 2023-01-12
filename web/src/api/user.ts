@@ -28,3 +28,7 @@ export function Register(data: RegisterRequest) {
 export function getUserInfo() {
   return axios.get('/user/info')
 }
+
+export function getUsers(id) {
+  return axios.get(`/users/${id}`)
+}

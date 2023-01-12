@@ -29,6 +29,7 @@ type Problem struct {
 	UserID            int
 	CheckerID         int
 	Status            int
+	Source            string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt
@@ -54,16 +55,11 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 		Preload("ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("name, language, problem_id")
 		})
-	if req.UserId != 0 {
-		db.Where("user_id = ?", req.UserId)
-		if req.Status != 0 {
-			db.Where("status = ?", req.Status)
-		}
-	} else {
-		db.Where("status = ?", biz.ProblemStatusPublic)
-	}
+	db.Where("user_id = ? or status = ?", req.UserId, biz.ProblemStatusPublic)
 	if req.Name != "" {
-		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
+		db.Where("name like ? or id in (?)", fmt.Sprintf("%%%s%%", req.Name),
+			r.data.db.WithContext(ctx).Select("problem_id").
+				Model(&ProblemStatement{}).Where("name like ?", fmt.Sprintf("%%%s%%", req.Name)))
 	}
 	db.Count(&count)
 	db.Offset(pager.GetOffset()).
@@ -79,6 +75,7 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			CreatedAt:     v.CreatedAt,
 			UpdatedAt:     v.UpdatedAt,
 			Status:        v.Status,
+			Source:        v.Source,
 		}
 		for _, s := range v.ProblemStatements {
 			p.Statements = append(p.Statements, &biz.ProblemStatement{
@@ -110,6 +107,7 @@ func (r *problemRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, err
 		UserID:        res.UserID,
 		Status:        res.Status,
 		CheckerID:     res.CheckerID,
+		Source:        res.Source,
 	}, err
 }
 
@@ -139,6 +137,7 @@ func (r *problemRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*biz.P
 		Status:        p.Status,
 		SubmitCount:   p.SubmitCount,
 		AcceptedCount: p.AcceptedCount,
+		Source:        p.Source,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

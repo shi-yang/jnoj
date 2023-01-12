@@ -33,10 +33,8 @@ func NewProblemService(uc *biz.ProblemUsecase,
 
 // 题目列表
 func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsRequest) (*v1.ListProblemsResponse, error) {
-	if req.UserId != 0 {
-		u, _ := auth.GetUserID(ctx)
-		req.UserId = int32(u)
-	}
+	u, _ := auth.GetUserID(ctx)
+	req.UserId = int32(u)
 	data, count := s.uc.ListProblems(ctx, req)
 	resp := new(v1.ListProblemsResponse)
 	resp.Data = make([]*v1.Problem, 0)
@@ -48,6 +46,7 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 			SubmitCount:   int32(v.SubmitCount),
 			AcceptedCount: int32(v.AcceptedCount),
 			Status:        int32(v.Status),
+			Source:        v.Source,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
 		}
@@ -80,6 +79,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 		SubmitCount:   int32(data.SubmitCount),
 		AcceptedCount: int32(data.AcceptedCount),
 		CheckerId:     int32(data.CheckerID),
+		Source:        data.Source,
 	}
 	resp.Statements = make([]*v1.ProblemStatement, 0)
 	resp.SampleTests = make([]*v1.Problem_SampleTest, 0)
@@ -130,6 +130,7 @@ func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProble
 		TimeLimit:   req.TimeLimit,
 		MemoryLimit: req.MemoryLimit,
 		Status:      int(req.Status),
+		Source:      req.Source,
 	})
 	return nil, err
 }

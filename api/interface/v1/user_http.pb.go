@@ -40,7 +40,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/login", _UserService_Login0_HTTP_Handler(srv))
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
-	r.GET("/user/{id}", _UserService_GetUser0_HTTP_Handler(srv))
+	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 }
 
 func _UserService_Login0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
@@ -139,7 +139,7 @@ func NewUserServiceHTTPClient(client *http.Client) UserServiceHTTPClient {
 
 func (c *UserServiceHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequest, opts ...http.CallOption) (*User, error) {
 	var out User
-	pattern := "/user/{id}"
+	pattern := "/users/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceGetUser))
 	opts = append(opts, http.PathTemplate(pattern))

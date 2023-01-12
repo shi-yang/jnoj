@@ -1750,6 +1750,11 @@
     "@uiw/codemirror-extensions-basic-setup" "4.19.5"
     codemirror "^6.0.0"
 
+"@uiw/react-heat-map@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.npmmirror.com/@uiw/react-heat-map/-/react-heat-map-2.0.5.tgz#65755f16c84d6f0c0dcfad4c7e5ff1b4769a2e8c"
+  integrity sha512-VM/mEm46+ykX3AMu0FOUVP45plC9j1X0PDwyBgOdjCucE4weXj1nAzUmGb1tsDgaLh9yrQMHArvltJebAgkx4g==
+
 "@uiw/react-markdown-preview@^4.1.5":
   version "4.1.6"
   resolved "https://registry.npmmirror.com/@uiw/react-markdown-preview/-/react-markdown-preview-4.1.6.tgz#2a662706e17a10cdd727b85ac24c74d737b73b18"

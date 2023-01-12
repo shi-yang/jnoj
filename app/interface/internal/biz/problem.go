@@ -21,6 +21,7 @@ type Problem struct {
 	SubmitCount   int
 	CheckerID     int
 	Status        int
+	Source        string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 

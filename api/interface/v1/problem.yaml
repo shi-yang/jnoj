@@ -1,6 +1,8 @@
 rules:
 - selector: "/jnoj.interface.v1.ProblemService/GetProblem"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.ProblemService/ListProblems"
+  middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/CreateProblem*"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/UpdateProblem*"
@@ -21,8 +23,6 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/SortProblemTests"
   middleware: "jnoj/internal/middleware/auth.User()"
-- selector: "/jnoj.interface.v1.ProblemService/ListProblems"
-  middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector: "/jnoj.interface.v1.ProblemService/VerifyProblem"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/RunProblemFile"
