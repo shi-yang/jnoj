@@ -54,6 +54,7 @@ CREATE TABLE `problem` (
   `checker_id` int NOT NULL,
   `status` tinyint NOT NULL DEFAULT '0',
   `user_id` int UNSIGNED NOT NULL,
+  `source` varchar(255) DEFAULT '' CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL

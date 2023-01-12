@@ -640,7 +640,7 @@ func (s *ProblemService) DeleteProblemset(ctx context.Context, req *v1.DeletePro
 	if err != nil {
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
-	if set.HasPermission(ctx) {
+	if !set.HasPermission(ctx) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.problemsetUc.DeleteProblemset(ctx, int(req.Id))
@@ -656,7 +656,7 @@ func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdatePro
 	if err != nil {
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
-	if set.HasPermission(ctx) {
+	if !set.HasPermission(ctx) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.problemsetUc.UpdateProblemset(ctx, &biz.Problemset{
@@ -742,7 +742,7 @@ func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.Add
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
 	// 是否有权限访问题单
-	if set.HasPermission(ctx) {
+	if !set.HasPermission(ctx) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	// 题目是否存在
@@ -770,7 +770,7 @@ func (s *ProblemService) DeleteProblemFromProblemset(ctx context.Context, req *v
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
 	// 是否有权限访问题单
-	if set.HasPermission(ctx) {
+	if !set.HasPermission(ctx) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.problemsetUc.DeleteProblemFromProblemset(ctx, int(req.Id), int(req.ProblemId))
@@ -784,7 +784,7 @@ func (s *ProblemService) SortProblemsetProblems(ctx context.Context, req *v1.Sor
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
 	// 是否有权限访问题单
-	if set.HasPermission(ctx) {
+	if !set.HasPermission(ctx) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.problemsetUc.SortProblemsetProblems(ctx, req)

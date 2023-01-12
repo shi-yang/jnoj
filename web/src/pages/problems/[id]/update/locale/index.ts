@@ -118,8 +118,8 @@ const i18n = {
     'checker.std.rcmp9.cpp.intro': '将输出和答案作为实数序列进行比较。忽略空格不匹配。如果两个实数的绝对或相对误差不超过 1E-9，则认为它们相等。',
     'checker.std.wcmp.cpp.title': '字符序列',
     'checker.std.wcmp.cpp.intro': '按行来比较用户输出的字符。忽略空格不匹配。',
-    'checker.std.yesno.cpp.title': '1个或多个 yes/no，区分大小写',
-    'checker.std.yesno.cpp.intro': '1个或多个 "yes" "no" (区分大小写)，忽略空格',
+    'checker.std.yesno.cpp.title': '1个或多个 yes/no，不区分大小写',
+    'checker.std.yesno.cpp.intro': '1个或多个 "yes" "no" (不区分大小写)，忽略空格',
   },
 };
 

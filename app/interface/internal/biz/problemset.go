@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"fmt"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/internal/middleware/auth"
 	"time"
@@ -23,6 +24,7 @@ type Problemset struct {
 // HasPermission 是否有权限修改
 func (p *Problemset) HasPermission(ctx context.Context) bool {
 	uid, _ := auth.GetUserID(ctx)
+	fmt.Println(uid, p.UserID)
 	return uid == p.UserID
 }
 

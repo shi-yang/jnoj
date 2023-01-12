@@ -52,13 +52,6 @@ export default function() {
       dataIndex: 'name',
     },
     {
-      title: t['searchTable.columns.createdTime'],
-      align: 'center' as 'center',
-      dataIndex: 'createdAt',
-      sorter: (a, b) => b.createdAt - a.createdAt,
-      render: (x) => FormatTime(x)
-    },
-    {
       title: t['searchTable.columns.source'],
       dataIndex: 'source',
       align: 'center' as 'center',
