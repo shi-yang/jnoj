@@ -240,7 +240,7 @@ func (s *ProblemService) ListProblemTests(ctx context.Context, req *v1.ListProbl
 	}
 	data, count := s.uc.ListProblemTests(ctx, req)
 	resp := new(v1.ListProblemTestsResponse)
-	resp.Count = count
+	resp.Total = count
 	for _, v := range data {
 		resp.Data = append(resp.Data, &v1.ProblemTest{
 			Id:            int32(v.ID),

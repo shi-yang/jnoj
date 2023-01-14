@@ -51,11 +51,12 @@ const App = (props) => {
     pageSize: 50,
     current: 1,
     pageSizeChangeResetCurrent: true,
+    sizeOptions: [50, 100, 200],
   });
   function fetchData() {
     const { current, pageSize } = pagination;
     setLoading(true);
-    listProblemTests(props.problem.id, {page: current, pageSize}).then(res => {
+    listProblemTests(props.problem.id, {page: current, perPage: pageSize}).then(res => {
       setData(res.data.data);
       setPagination({
         ...pagination,
@@ -309,6 +310,7 @@ const App = (props) => {
         loading={loading}
         columns={columns}
         data={data}
+        pagination={pagination}
         rowSelection={{
           type: 'checkbox',
         }}

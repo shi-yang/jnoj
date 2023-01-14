@@ -361,7 +361,7 @@ message ListProblemTestsRequest {
 
 message ListProblemTestsResponse {
     repeated ProblemTest data = 1;
-    int64 count = 2;
+    int64 total = 2;
 }
 
 message GetProblemTestRequest {

@@ -15,7 +15,7 @@ export interface ListProblemTetstsResponse {
   total: number;
 }
 export function listProblemTests(id: number, params) {
-  return axios.get<ListProblemTetstsResponse>(`/problems/${id}/tests`, params)
+  return axios.get<ListProblemTetstsResponse>(`/problems/${id}/tests`, {params})
 }
 
 export function deleteProblemTests(pid: number, testId: number) {

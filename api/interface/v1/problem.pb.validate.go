@@ -1940,7 +1940,7 @@ func (m *ListProblemTestsResponse) validate(all bool) error {
 
 	}
 
-	// no validation rules for Count
+	// no validation rules for Total
 
 	if len(errors) > 0 {
 		return ListProblemTestsResponseMultiError(errors)
