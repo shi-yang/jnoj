@@ -109,11 +109,11 @@ func (r *submissionRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, 
 		MemoryLimit:   p.MemoryLimit,
 		AcceptedCount: p.AcceptedCount,
 	}
+	res.Tests = r.ListProblemTests(ctx, id)
 	res.Checker, err = r.getProblemChecker(ctx, id)
 	if err != nil {
 		return res, err
 	}
-	res.Tests = r.ListProblemTests(ctx, id)
 	return res, nil
 }
 

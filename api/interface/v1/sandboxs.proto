@@ -5,6 +5,7 @@ package jnoj.interface.v1;
 option go_package = "api/interface/v1;v1";
 
 import "google/api/annotations.proto";
+import "validate/validate.proto";
 
 service SandboxsService {
     rpc Run (RunRequest) returns (RunResponse) {
@@ -19,8 +20,8 @@ message RunRequest {
     string source = 1;
     string stdin = 2;
     int32 language = 3;
-    int64 memory_limit = 4;
-    int64 time_limit = 5;
+    int64 memory_limit = 4 [(validate.rules).int64 = {gte:4, lte: 1024}];
+    int64 time_limit = 5 [(validate.rules).int64 = {gte:250, lte: 15000}];
 }
 
 message RunResponse {

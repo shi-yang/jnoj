@@ -18,5 +18,5 @@ func NewSandboxService(uc *biz.SandboxUsecase) *SandboxService {
 }
 
 func (s *SandboxService) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunResponse, error) {
-	return s.uc.Run(ctx, req.Stdin, req.Source, int(req.Language))
+	return s.uc.Run(ctx, req)
 }

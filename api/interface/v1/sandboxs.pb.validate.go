@@ -63,9 +63,27 @@ func (m *RunRequest) validate(all bool) error {
 
 	// no validation rules for Language
 
-	// no validation rules for MemoryLimit
+	if val := m.GetMemoryLimit(); val < 4 || val > 1024 {
+		err := RunRequestValidationError{
+			field:  "MemoryLimit",
+			reason: "value must be inside range [4, 1024]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for TimeLimit
+	if val := m.GetTimeLimit(); val < 250 || val > 15000 {
+		err := RunRequestValidationError{
+			field:  "TimeLimit",
+			reason: "value must be inside range [250, 15000]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return RunRequestMultiError(errors)

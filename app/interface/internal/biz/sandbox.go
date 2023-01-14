@@ -34,11 +34,13 @@ func NewSandboxUsecase(
 	}
 }
 
-func (uc *SandboxUsecase) Run(ctx context.Context, stdin string, source string, language int) (*v1.RunResponse, error) {
+func (uc *SandboxUsecase) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunResponse, error) {
 	resp, err := uc.sandboxClient.Run(ctx, &sandboxV1.RunRequest{
-		Stdin:    stdin,
-		Source:   source,
-		Language: int32(language),
+		Stdin:       req.Stdin,
+		Source:      req.Source,
+		Language:    int32(req.Language),
+		TimeLimit:   req.TimeLimit,
+		MemoryLimit: req.MemoryLimit,
 	})
 	if err != nil {
 		return nil, err
