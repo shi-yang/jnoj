@@ -686,6 +686,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			AcceptedCount: int32(v.AcceptedCount),
 			ProblemsetId:  req.Id,
 			ProblemId:     int32(v.ProblemID),
+			Source:        v.Source,
 		}
 		resp.Data = append(resp.Data, p)
 	}

@@ -35,6 +35,7 @@ const App = (props) => {
       status: props.problem.status,
       timeLimit: props.problem.timeLimit,
       memoryLimit: props.problem.memoryLimit,
+      source: props.problem.source,
     })
   }, [])
   return (
