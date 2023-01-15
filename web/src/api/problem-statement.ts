@@ -17,7 +17,7 @@ export interface statement {
   input: string;
   output: string;
   legend: string;
-  notes: string;
+  note: string;
 }
 
 export interface listProblemStatementsResponse {

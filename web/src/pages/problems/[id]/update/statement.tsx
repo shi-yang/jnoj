@@ -28,7 +28,7 @@ export default ({problem}) => {
           legend: d[0].legend,
           input: d[0].input,
           output: d[0].output,
-          notes: d[0].notes,
+          note: d[0].note,
         });
       }
     })
@@ -59,7 +59,7 @@ export default ({problem}) => {
       legend: statements[index].legend,
       input: statements[index].input,
       output: statements[index].output,
-      notes: statements[index].notes,
+      note: statements[index].note,
     })
   }
   function deleteStatement(index) {
