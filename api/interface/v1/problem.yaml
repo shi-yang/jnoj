@@ -25,6 +25,8 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/VerifyProblem"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/PackProblem"
+  middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/RunProblemFile"
   middleware: "jnoj/internal/middleware/auth.User()"
 # 题单

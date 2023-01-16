@@ -166,6 +166,13 @@ service ProblemService {
             body: "*"
         };
     }
+    // 打包题目
+    rpc PackProblem (PackProblemRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problems/{id}/pack"
+            body: "*"
+        };
+    }
     // 获取题目验证状态
     rpc GetProblemVerification (GetProblemVerificationRequest) returns (ProblemVerification) {
         option (google.api.http) = {
@@ -256,14 +263,15 @@ message Problem {
     int32 checker_id = 9;
     // 题目来源
     string source = 10;
+    int32 user_id = 11;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 11;
-    google.protobuf.Timestamp created_at = 12;
-    google.protobuf.Timestamp updated_at = 13;
+    repeated SampleTest sample_tests = 12;
+    google.protobuf.Timestamp created_at = 13;
+    google.protobuf.Timestamp updated_at = 14;
 }
 
 // 题目描述
@@ -431,8 +439,9 @@ message ProblemFile {
     string type = 4;
     int32 user_id = 5;
     string file_type = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
+    int64 file_size = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
 
 message CreateProblemFileRequest {
@@ -475,6 +484,10 @@ message UpdateProblemCheckerRequest {
 }
 
 message VerifyProblemRequest {
+    int32 id = 1;
+}
+
+message PackProblemRequest {
     int32 id = 1;
 }
 

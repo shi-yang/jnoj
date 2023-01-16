@@ -1,7 +1,11 @@
 package biz
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	v1 "jnoj/api/interface/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
@@ -154,4 +158,85 @@ func (uc *ProblemUsecase) DeleteProblem(ctx context.Context, id int) error {
 
 func (uc *ProblemUsecase) UpdateProblemChecker(ctx context.Context, id int, checkerID int) error {
 	return uc.repo.UpdateProblemChecker(ctx, id, checkerID)
+}
+
+// PackProblem 打包题目
+func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
+	problem, _ := uc.repo.GetProblem(ctx, id)
+	// 创建一个压缩文档
+	buf := new(bytes.Buffer)
+	zipFile := zip.NewWriter(buf)
+
+	// 创建 tests 文件
+	tests, _ := uc.repo.ListProblemTestContent(ctx, id, false)
+	zero := 2
+	if len(tests) >= 100 {
+		zero = 3
+	}
+	for index, v := range tests {
+		fin, _ := zipFile.Create(fmt.Sprintf("tests/%0*d", zero, index+1))
+		fin.Write([]byte(v.Input))
+		fout, _ := zipFile.Create(fmt.Sprintf("tests/%0*d.ans", zero, index+1))
+		fout.Write([]byte(v.Output))
+	}
+	// 创建 statements
+	statements, _ := uc.repo.ListProblemStatements(ctx, &v1.ListProblemStatementsRequest{
+		Id: int32(id),
+	})
+	type statementSampleTest struct {
+		Input string `json:"input"`
+		Ouput string `json:"output"`
+	}
+	type statement struct {
+		Name        string                `json:"name"`
+		Input       string                `json:"input"`
+		Output      string                `json:"output"`
+		Notes       string                `json:"notes"`
+		Legend      string                `json:"legend"`
+		TimeLimit   int64                 `json:"timeLimit"`
+		MemoryLimit int64                 `json:"memoryLimit"`
+		Language    string                `json:"language"`
+		SampleTest  []statementSampleTest `json:"sampleTests"`
+	}
+	samples, _ := uc.repo.ListProblemTestContent(ctx, id, true)
+	for _, v := range statements {
+		fstatement, _ := zipFile.Create(fmt.Sprintf("%s/problem-properites.json", v.Language))
+		s := statement{
+			Name:        v.Name,
+			Input:       v.Input,
+			Output:      v.Output,
+			Notes:       v.Note,
+			Legend:      v.Legend,
+			TimeLimit:   problem.TimeLimit,
+			MemoryLimit: problem.MemoryLimit * 1024 * 1024,
+			Language:    v.Language,
+		}
+		for _, sample := range samples {
+			s.SampleTest = append(s.SampleTest, statementSampleTest{
+				Input: sample.Input,
+				Ouput: sample.Output,
+			})
+		}
+		sjson, _ := json.Marshal(s)
+		fstatement.Write(sjson)
+	}
+	// 创建 check
+	checker, err := uc.repo.GetProblemChecker(ctx, id)
+	if err == nil {
+		checkFile, _ := zipFile.Create("check.cpp")
+		checkFile.Write([]byte(checker.Content))
+	}
+	// zip 结束
+	if err := zipFile.Close(); err != nil {
+		return err
+	}
+	// 储存文件
+	uc.repo.CreateProblemFile(ctx, &ProblemFile{
+		ProblemID:   id,
+		Name:        problem.Name + ".zip",
+		FileType:    string(ProblemFileFileTypePackage),
+		UserID:      problem.UserID,
+		FileContent: buf.Bytes(),
+	})
+	return nil
 }

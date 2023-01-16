@@ -14,6 +14,7 @@ type ProblemFile struct {
 	Name        string
 	Content     string
 	FileType    string
+	FileSize    int64
 	ProblemID   int
 	UserID      int
 	Type        string
@@ -29,7 +30,8 @@ const (
 	ProblemFileFileTypeValidator  ProblemFileFileType = "validator"
 	ProblemFileFileTypeSolution   ProblemFileFileType = "solution"
 	ProblemFileFileTypeAttachment ProblemFileFileType = "attachment"
-	ProblemFileFileTypeStatement  ProblemFileFileType = "attachment"
+	ProblemFileFileTypeStatement  ProblemFileFileType = "statement"
+	ProblemFileFileTypePackage    ProblemFileFileType = "package"
 )
 
 const (

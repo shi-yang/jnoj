@@ -60,14 +60,14 @@ func (o *Seaweed) DeleteObject(cosReq ObjectStorageRequest, objectName string) e
 		Bucket: aws.String(cosReq.GetBucket()),
 		Key:    aws.String(objectName),
 	}
-	resp, err := svc.DeleteObject(inputObject)
+	_, err = svc.DeleteObject(inputObject)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-	fmt.Println(resp)
 	return nil
 }
+
 func (o *Seaweed) GetObject(cosReq ObjectStorageRequest, objectName string) (res []byte, err error) {
 	cres := credentials.NewStaticCredentials(cosReq.GetSecretId(), cosReq.GetSecretKey(), "")
 	cfg := aws.NewConfig().

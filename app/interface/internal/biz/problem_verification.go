@@ -54,7 +54,6 @@ func (uc *ProblemUsecase) VerifyProblem(ctx context.Context, id int) error {
 // 3. 存在 model_solution 标程，并可运行
 // 4. 基于 model_solution 生成测试点的输出
 func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
-	ctx = context.TODO()
 	problem, _ := uc.repo.GetProblem(ctx, id)
 	var res ProblemVerification
 	res.ProblemID = id

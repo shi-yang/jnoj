@@ -75,12 +75,15 @@ export default function() {
           }}>
             {t['searchTable.columns.operations.view']}
           </Button>
-          <Button
-            type="text"
-            size="small"
-          >
-            <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.update']}</Link>
-          </Button>
+          {
+            user.id === record.userId &&
+              <Button
+                type="text"
+                size="small"
+              >
+                <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.update']}</Link>
+              </Button>
+          }
         </>
       ),
     },

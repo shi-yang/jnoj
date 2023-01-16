@@ -94,6 +94,7 @@ CREATE TABLE `problem_file` (
   `name` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `file_type` varchar(16) NOT NULL,
+  `file_size` BIGINT NOT NULL DEFAULT '0',
   `type` varchar(64) NOT NULL,
   `user_id` int UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

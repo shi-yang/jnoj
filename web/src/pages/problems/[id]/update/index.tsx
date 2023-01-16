@@ -14,6 +14,7 @@ import Tests from './tests';
 import Checker from './checker';
 import SolutionFiles from './solution-files';
 import Files from './files';
+import Package from './package';
 import { getProblem, Problem } from '@/api/problem';
 import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
@@ -76,6 +77,9 @@ function Index(props) {
             {/* <TabPane key='files' title={t['tab.files']}>
               <Files problem={data} />
             </TabPane> */}
+            <TabPane key='package' title={t['tab.package']}>
+              <Package problem={data} />
+            </TabPane>
           </Tabs>
         </div>
       )}

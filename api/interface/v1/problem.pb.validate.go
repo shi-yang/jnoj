@@ -108,6 +108,8 @@ func (m *Problem) validate(all bool) error {
 
 	// no validation rules for Source
 
+	// no validation rules for UserId
+
 	for idx, item := range m.GetSampleTests() {
 		_, _ = idx, item
 
@@ -3121,6 +3123,8 @@ func (m *ProblemFile) validate(all bool) error {
 
 	// no validation rules for FileType
 
+	// no validation rules for FileSize
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -4146,6 +4150,110 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = VerifyProblemRequestValidationError{}
+
+// Validate checks the field values on PackProblemRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PackProblemRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PackProblemRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PackProblemRequestMultiError, or nil if none found.
+func (m *PackProblemRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PackProblemRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return PackProblemRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PackProblemRequestMultiError is an error wrapping multiple validation errors
+// returned by PackProblemRequest.ValidateAll() if the designated constraints
+// aren't met.
+type PackProblemRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PackProblemRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PackProblemRequestMultiError) AllErrors() []error { return m }
+
+// PackProblemRequestValidationError is the validation error returned by
+// PackProblemRequest.Validate if the designated constraints aren't met.
+type PackProblemRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PackProblemRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PackProblemRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PackProblemRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PackProblemRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PackProblemRequestValidationError) ErrorName() string {
+	return "PackProblemRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PackProblemRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPackProblemRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PackProblemRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PackProblemRequestValidationError{}
 
 // Validate checks the field values on GetProblemVerificationRequest with the
 // rules defined in the proto definition for this message. If any rules are

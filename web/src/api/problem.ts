@@ -47,3 +47,7 @@ export function verifyProblem(id) {
 export function getProblemVerification(id) {
   return axios.get(`/problems/${id}/verification`)
 }
+
+export function packProblem(id) {
+  return axios.post(`/problems/${id}/pack`, {})
+}

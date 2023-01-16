@@ -74,6 +74,7 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			AcceptedCount: v.AcceptedCount,
 			CreatedAt:     v.CreatedAt,
 			UpdatedAt:     v.UpdatedAt,
+			UserID:        v.UserID,
 			Status:        v.Status,
 			Source:        v.Source,
 		}

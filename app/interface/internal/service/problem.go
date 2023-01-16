@@ -31,7 +31,7 @@ func NewProblemService(uc *biz.ProblemUsecase,
 	}
 }
 
-// 题目列表
+// ListProblems 题目列表
 func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsRequest) (*v1.ListProblemsResponse, error) {
 	u, _ := auth.GetUserID(ctx)
 	req.UserId = int32(u)
@@ -49,6 +49,7 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 			Source:        v.Source,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
+			UserId:        int32(v.UserID),
 		}
 		for _, s := range v.Statements {
 			p.Statements = append(p.Statements, &v1.ProblemStatement{
@@ -61,7 +62,7 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 	return resp, nil
 }
 
-// 题目详情
+// GetProblem 题目详情
 func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemRequest) (*v1.Problem, error) {
 	data, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -103,7 +104,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 	return resp, nil
 }
 
-// 创建题目
+// CreateProblem 创建题目
 func (s *ProblemService) CreateProblem(ctx context.Context, req *v1.CreateProblemRequest) (*v1.CreateProblemResponse, error) {
 	data, err := s.uc.CreateProblem(ctx, &biz.Problem{
 		Name: req.Name,
@@ -116,7 +117,7 @@ func (s *ProblemService) CreateProblem(ctx context.Context, req *v1.CreateProble
 	}, nil
 }
 
-// 创建题目
+// UpdateProblem 创建题目
 func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProblemRequest) (*v1.Problem, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -135,7 +136,7 @@ func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProble
 	return nil, err
 }
 
-// 获取题目描述列表
+// ListProblemStatements 获取题目描述列表
 func (s *ProblemService) ListProblemStatements(ctx context.Context, req *v1.ListProblemStatementsRequest) (*v1.ListProblemStatementsResponse, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -161,12 +162,12 @@ func (s *ProblemService) ListProblemStatements(ctx context.Context, req *v1.List
 	return resp, nil
 }
 
-// 获取题目描述详情
+// GetProblemStatement 获取题目描述详情
 func (s *ProblemService) GetProblemStatement(ctx context.Context, req *v1.GetProblemStatementRequest) (*v1.ProblemStatement, error) {
 	return nil, nil
 }
 
-// 创建题目描述
+// CreateProblemStatement 创建题目描述
 func (s *ProblemService) CreateProblemStatement(ctx context.Context, req *v1.CreateProblemStatementRequest) (*v1.ProblemStatement, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -187,7 +188,7 @@ func (s *ProblemService) CreateProblemStatement(ctx context.Context, req *v1.Cre
 	}, nil
 }
 
-// 更新题目描述
+// UpdateProblemStatement 更新题目描述
 func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.UpdateProblemStatementRequest) (*v1.ProblemStatement, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
@@ -382,6 +383,7 @@ func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProbl
 			Name:      v.Name,
 			Type:      v.Type,
 			FileType:  v.FileType,
+			FileSize:  v.FileSize,
 			Content:   v.Content,
 			CreatedAt: timestamppb.New(v.CreatedAt),
 			UpdatedAt: timestamppb.New(v.UpdatedAt),
@@ -535,16 +537,34 @@ func (s *ProblemService) ListProblemStdCheckers(ctx context.Context, req *v1.Lis
 	return resp, nil
 }
 
+// VerifyProblem 验证题目完整性
 func (s *ProblemService) VerifyProblem(ctx context.Context, req *v1.VerifyProblemRequest) (*emptypb.Empty, error) {
 	p, err := s.uc.GetProblem(ctx, int(req.Id))
 	if err != nil {
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
-	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
+	if !p.HasPermission(ctx, biz.ProblemPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.uc.VerifyProblem(ctx, int(req.Id))
 	return &emptypb.Empty{}, err
+}
+
+// PackProblem 打包题目
+func (s *ProblemService) PackProblem(ctx context.Context, req *v1.PackProblemRequest) (*emptypb.Empty, error) {
+	problem, err := s.uc.GetProblem(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if !problem.HasPermission(ctx, biz.ProblemPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	// 题目是否通过验证
+	if res, err := s.uc.GetProblemVerification(ctx, problem.ID); err != nil || res.VerificationStatus != biz.VerificationStatusSuccess {
+		return nil, v1.ErrorProblemNotVerification("题目未通过验证")
+	}
+	err = s.uc.PackProblem(ctx, problem.ID)
+	return &emptypb.Empty{}, nil
 }
 
 func (s *ProblemService) UpdateProblemChecker(ctx context.Context, req *v1.UpdateProblemCheckerRequest) (*emptypb.Empty, error) {

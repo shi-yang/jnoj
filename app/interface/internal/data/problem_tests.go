@@ -155,11 +155,26 @@ func (r *problemRepo) UpdateProblemTest(ctx context.Context, p *biz.ProblemTest)
 
 // DeleteProblemTest .
 func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
-	err := r.data.db.WithContext(ctx).
+	var res ProblemTest
+	err := r.data.db.Model(&ProblemTest{}).
+		First(&res, "id = ?", id).
+		Error
+	if err != nil {
+		return err
+	}
+	// 删除数据库的记录
+	err = r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Delete(ProblemTest{ID: id}).
 		Error
-	return err
+	if err != nil {
+		return err
+	}
+	// 删除文件
+	store := objectstorage.NewSeaweed()
+	store.DeleteObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, res.ProblemID, res.ID))
+	store.DeleteObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID))
+	return nil
 }
 
 func (r *problemRepo) SortProblemTests(ctx context.Context, ids []int32) {
