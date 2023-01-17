@@ -27,14 +27,26 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 	resp := new(v1.ListContestsResponse)
 	resp.Total = count
 	for _, v := range res {
-		resp.Data = append(resp.Data, &v1.Contest{
+		runningStatus := v.GetRunningStatus()
+		c := &v1.Contest{
 			Id:               int32(v.ID),
 			Name:             v.Name,
 			ParticipantCount: int32(v.ParticipantCount),
 			StartTime:        timestamppb.New(v.StartTime),
 			EndTime:          timestamppb.New(v.EndTime),
 			Type:             int32(v.Type),
-		})
+		}
+		switch runningStatus {
+		case biz.ContestRunningStatusNotStarted:
+			c.RunningStatus = v1.Contest_NOT_STARTED
+		case biz.ContestRunningStatusFrozenStandings:
+			c.RunningStatus = v1.Contest_FROZEN_STANDINGS
+		case biz.ContestRunningStatusInProgress:
+			c.RunningStatus = v1.Contest_IN_PROGRESS
+		case biz.ContestRunningStatusFinished:
+			c.RunningStatus = v1.Contest_FINISHED
+		}
+		resp.Data = append(resp.Data, c)
 	}
 	return resp, nil
 }
@@ -56,11 +68,13 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		EndTime:          timestamppb.New(res.EndTime),
 		IsRegistered:     res.IsRegistered,
 	}
-	if res.Role == biz.ContestRoleAdmin {
+	role := res.GetRole(ctx)
+	switch role {
+	case biz.ContestRoleAdmin:
 		resp.Role = v1.Contest_ADMIN
-	} else if res.Role == biz.ContestRolePlayer {
+	case biz.ContestRolePlayer:
 		resp.Role = v1.Contest_PLAYER
-	} else {
+	default:
 		resp.Role = v1.Contest_GUEST
 	}
 	return resp, nil

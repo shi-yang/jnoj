@@ -113,13 +113,16 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 		return nil, err
 	}
 	return &biz.Submission{
-		ID:        res.ID,
-		Source:    res.Source,
-		Memory:    res.Memory,
-		Time:      res.Time,
-		Verdict:   res.Verdict,
-		Language:  res.Language,
-		CreatedAt: res.CreatedAt,
+		ID:         res.ID,
+		Source:     res.Source,
+		Memory:     res.Memory,
+		Time:       res.Time,
+		Verdict:    res.Verdict,
+		Language:   res.Language,
+		EntityID:   res.EntityID,
+		EntityType: res.EntityType,
+		UserID:     res.UserID,
+		CreatedAt:  res.CreatedAt,
 	}, err
 }
 

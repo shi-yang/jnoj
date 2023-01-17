@@ -21,6 +21,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+// auth.
 const OperationSubmissionServiceCreateSubmission = "/jnoj.interface.v1.SubmissionService/CreateSubmission"
 const OperationSubmissionServiceGetSubmission = "/jnoj.interface.v1.SubmissionService/GetSubmission"
 const OperationSubmissionServiceGetSubmissionInfo = "/jnoj.interface.v1.SubmissionService/GetSubmissionInfo"
@@ -34,6 +35,7 @@ type SubmissionServiceHTTPServer interface {
 }
 
 func RegisterSubmissionServiceHTTPServer(s *http.Server, srv SubmissionServiceHTTPServer) {
+	s.Use("/jnoj.interface.v1.SubmissionService/GetSubmission*", auth.Guest())
 	s.Use("/jnoj.interface.v1.SubmissionService/CreateSubmission", auth.User())
 	r := s.Route("/")
 	r.GET("/submissions", _SubmissionService_ListSubmissions0_HTTP_Handler(srv))

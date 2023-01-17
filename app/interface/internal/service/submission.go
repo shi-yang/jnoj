@@ -79,6 +79,9 @@ func (s *SubmissionService) CreateSubmission(ctx context.Context, req *v1.Create
 
 // GetSubmissionInfo .
 func (s *SubmissionService) GetSubmissionInfo(ctx context.Context, req *v1.GetSubmissionInfoRequest) (*v1.SubmissionInfo, error) {
+	if _, err := s.uc.GetSubmission(ctx, int(req.Id)); err != nil {
+		return nil, err
+	}
 	res, err := s.uc.GetSubmissionInfo(ctx, int(req.Id))
 	if err != nil {
 		return nil, err

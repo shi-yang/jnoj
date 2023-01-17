@@ -45,11 +45,6 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={colSpan}>
-            <Form.Item label={t['problem.columns.id']} field="id">
-              <Input placeholder={t['searchForm.id.placeholder']} allowClear />
-            </Form.Item>
-          </Col>
-          <Col span={colSpan}>
             <Form.Item label={t['problem.columns.name']} field="name">
               <Input
                 allowClear

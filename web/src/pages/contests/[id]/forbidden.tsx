@@ -1,12 +1,12 @@
 import { createContestUser } from "@/api/contest"
-import { Button, Divider, Empty, Typography } from "@arco-design/web-react"
+import { Button, Divider, Empty, Message, Typography } from "@arco-design/web-react"
 import { IconExclamation } from "@arco-design/web-react/icon"
 
 export default ({contest}) => {
   function register() {
     createContestUser(contest.id)
       .then(res => {
-        
+        Message.success('注册成功')
       })
   }
   return (

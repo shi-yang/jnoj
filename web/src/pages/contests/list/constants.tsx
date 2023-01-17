@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { FormatTime } from '@/utils/format';
 import { IconUser } from '@arco-design/web-react/icon';
 
-export const ContestStatus = ['', 'ICPC', 'IOI', 'OI'];
 export const ContestType = ['', 'ICPC', 'IOI', 'OI'];
 
 const ContentIcon = [
@@ -40,10 +39,10 @@ export function getColumns(
       title: t['contest.columns.status'],
       dataIndex: 'status',
       align: 'center' as 'center',
-      width: 180,
+      width: 220,
       render: (col, record) => (
         <>
-          尚未开始 <IconUser /> x {record.participantCount}
+          {t[record.runningStatus]} <IconUser /> x {record.participantCount}
         </>
       )
     },

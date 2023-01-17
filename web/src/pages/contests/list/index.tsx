@@ -13,13 +13,13 @@ import './mock';
 import { getColumns } from './constants';
 import CreateModal from './create';
 import { listContests } from '@/api/contest';
-
-export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
-export const Status = ['已上线', '未上线'];
+import Head from 'next/head';
+import { setting, SettingState } from '@/store/reducers/setting';
+import { useAppSelector } from '@/hooks';
 
 function SearchTable() {
   const t = useLocale(locale);
+  const settings = useAppSelector<SettingState>(setting);
 
   const tableCallback = async (record, type) => {
     console.log(record, type);
@@ -31,9 +31,10 @@ function SearchTable() {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
-    pageSize: 10,
+    pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
+    sizeOptions: [25, 50, 100]
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
@@ -47,7 +48,7 @@ function SearchTable() {
     setLoading(true);
     const params = {
       page: current,
-      pageSize,
+      perPage: pageSize,
       ...formParams,
     };
     listContests(params)
@@ -78,13 +79,16 @@ function SearchTable() {
 
   return (
     <div className='container'>
+      <Head>
+        <title>{`${t['list.title']} - ${settings.name}`}</title>
+      </Head>
       <Card>
         <SearchForm onSearch={handleSearch} />
-        <div className={styles['button-group']}>
-        <Space>
-          <CreateModal />
-        </Space>
-      </div>
+        {/* <div className={styles['button-group']}>
+          <Space>
+            <CreateModal />
+          </Space>
+        </div> */}
         <Table
           rowKey="id"
           loading={loading}

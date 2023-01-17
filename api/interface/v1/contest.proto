@@ -138,6 +138,18 @@ message Contest {
         ADMIN = 2;
     };
     Role role = 12;
+    enum RunningStatus {
+        // 尚未开始
+        NOT_STARTED = 0;
+        // 进行中
+        IN_PROGRESS = 1;
+        // 进行中（封榜）
+        FROZEN_STANDINGS = 2;
+        // 已结束
+        FINISHED = 3;
+    }
+    // 运行状态
+    RunningStatus running_status = 13;
 }
 
 message ListContestProblemsRequest {

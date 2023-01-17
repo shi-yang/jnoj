@@ -20,9 +20,8 @@ type Contest struct {
 	Description      string
 	Status           int // 隐藏，公开，私有
 	UserID           int
-	ParticipantCount int    // 参与人数
-	IsRegistered     bool   // 是否参赛
-	Role             string // 当前登录用户的角色
+	ParticipantCount int  // 参与人数
+	IsRegistered     bool // 是否参赛
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
@@ -69,7 +68,7 @@ func (c *Contest) GetRunningStatus() int {
 	now := time.Now()
 	if now.Before(c.StartTime) {
 		return ContestRunningStatusNotStarted
-	} else if c.FrozenTime != nil && now.Before(*c.FrozenTime) {
+	} else if c.FrozenTime != nil && now.After(*c.FrozenTime) {
 		return ContestRunningStatusFrozenStandings
 	} else if now.Before(c.EndTime) {
 		return ContestRunningStatusInProgress
@@ -107,20 +106,18 @@ func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bo
 	if c.Status == ContestStatusPublic && runningStatus == ContestRunningStatusFinished {
 		return true
 	}
-	// 调用该函数前确保设置了 Role
-	return c.Role == ContestRolePlayer
+	return c.GetRole(ctx) == ContestRolePlayer
 }
 
-func (c *Contest) setRole(loginId int, isRegistered bool) {
-	c.IsRegistered = isRegistered
-	// 判断登录用户角色
-	if c.UserID == loginId {
-		c.Role = ContestRoleAdmin
+// GetRole 获取当前用户的角色
+func (c *Contest) GetRole(ctx context.Context) string {
+	userID, ok := auth.GetUserID(ctx)
+	if ok && c.UserID == userID {
+		return ContestRoleAdmin
 	} else if c.IsRegistered {
-		c.Role = ContestRolePlayer
-	} else {
-		c.Role = ContestRoleGuest
+		return ContestRolePlayer
 	}
+	return ContestRoleGuest
 }
 
 // ContestRepo is a Contest repo.
@@ -164,11 +161,6 @@ func (uc *ContestUsecase) GetContest(ctx context.Context, id int) (*Contest, err
 	contest, err := uc.repo.GetContest(ctx, id)
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
-	}
-	uid, isLogin := auth.GetUserID(ctx)
-	if isLogin {
-		isRegistered := uc.repo.ExistContestUser(ctx, contest.ID, uid)
-		contest.setRole(uid, isRegistered)
 	}
 	return contest, nil
 }

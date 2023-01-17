@@ -2,10 +2,12 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/internal/middleware/auth"
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -49,9 +51,12 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	count := int64(0)
 	pager := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
-		Model(&Contest{}).
-		Count(&count)
-	db.Order("id desc")
+		Model(&Contest{})
+	if req.Name != "" {
+		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
+	}
+	db.Count(&count).
+		Order("id desc")
 	db.Offset(pager.GetOffset()).
 		Limit(pager.GetPageSize()).
 		Find(&res)
@@ -71,25 +76,29 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 
 // GetContest .
 func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, error) {
-	var res Contest
+	var c Contest
 	err := r.data.db.Model(Contest{}).
-		First(&res, "id = ?", id).Error
+		First(&c, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Contest{
-		ID:               res.ID,
-		Name:             res.Name,
-		StartTime:        res.StartTime,
-		EndTime:          res.EndTime,
-		FrozenTime:       res.FrozenTime,
-		Type:             res.Type,
-		Status:           res.Status,
-		Description:      res.Description,
-		ParticipantCount: res.ParticipantCount,
-		UserID:           res.UserID,
-		CreatedAt:        res.CreatedAt,
-	}, err
+	res := &biz.Contest{
+		ID:               c.ID,
+		Name:             c.Name,
+		StartTime:        c.StartTime,
+		EndTime:          c.EndTime,
+		FrozenTime:       c.FrozenTime,
+		Type:             c.Type,
+		Status:           c.Status,
+		Description:      c.Description,
+		ParticipantCount: c.ParticipantCount,
+		UserID:           c.UserID,
+		CreatedAt:        c.CreatedAt,
+	}
+	if uid, ok := auth.GetUserID(ctx); ok {
+		res.IsRegistered = r.ExistContestUser(ctx, c.ID, uid)
+	}
+	return res, err
 }
 
 // CreateContest .

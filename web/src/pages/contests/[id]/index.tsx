@@ -151,7 +151,7 @@ function Index() {
                   <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
                   <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
                   <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
-                  <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>
+                  {contest.role === 'ADMIN' && <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>}
                   <SubMenu
                     key='layout'
                     title={<span><IconSelectAll /> {t['menu.problem']}</span>}
@@ -165,7 +165,7 @@ function Index() {
               <Content>
                 <Suspense>
                   {menuSelected === 'info' && <Info contest={contest} />}
-                  {menuSelected === 'setting' && <Setting contest={contest} />}
+                  {contest.role === 'ADMIN' && menuSelected === 'setting' && <Setting contest={contest} />}
                   {menuSelected === 'submission' && <Submission contest={contest} />}
                   {menuSelected === 'standings' && <Standings contest={contest} />}
                   {menuSelected === 'problem' && <Problem contest={contest} number={problemNumber} />}

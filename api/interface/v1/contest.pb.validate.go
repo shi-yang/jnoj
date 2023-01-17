@@ -712,6 +712,8 @@ func (m *Contest) validate(all bool) error {
 
 	// no validation rules for Role
 
+	// no validation rules for RunningStatus
+
 	if len(errors) > 0 {
 		return ContestMultiError(errors)
 	}

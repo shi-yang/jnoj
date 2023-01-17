@@ -125,7 +125,34 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 
 // GetSubmission get a Submission
 func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submission, error) {
-	return uc.repo.GetSubmission(ctx, id)
+	s, err := uc.repo.GetSubmission(ctx, id)
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	uid, _ := auth.GetUserID(ctx)
+	// 检查访问权限
+	// 处理比赛的提交
+	if s.EntityType == SubmissionEntityTypeContest {
+		contest, err := uc.contestRepo.GetContest(ctx, s.EntityID)
+		if err != nil {
+			return nil, v1.ErrorContestNotFound(err.Error())
+		}
+		runningStatus := contest.GetRunningStatus()
+		role := contest.GetRole(ctx)
+		// 比赛未结束时，仅 比赛管理员 admin 或者当前选手可查看
+		if runningStatus != ContestRunningStatusFinished {
+			if role != ContestRoleAdmin && s.UserID != uid {
+				return nil, v1.ErrorForbidden("contest is running...")
+			}
+		}
+	} else if s.EntityType == SubmissionEntityTypeProblemFile {
+		// 处理提交至出题时的文件
+		problem, _ := uc.problemRepo.GetProblem(ctx, s.ProblemID)
+		if !problem.HasPermission(ctx, ProblemPermissionUpdate) {
+			return nil, v1.ErrorPermissionDenied("cannot update problem...")
+		}
+	}
+	return s, nil
 }
 
 // CreateSubmission creates a Submission, and returns the new Submission.
