@@ -2,6 +2,7 @@ const i18n = {
   'en-US': {
     'menu.home': 'Home',
     'menu.problem': 'Problem',
+    'menu.group': 'Group',
     'menu.contest': 'Contest',
     'menu.about': 'About',
     'menu.user.info': 'User Info',
@@ -14,6 +15,7 @@ const i18n = {
   'zh-CN': {
     'menu.home': '首页',
     'menu.problem': '题目',
+    'menu.group': '小组',
     'menu.contest': '比赛',
     'menu.about': '关于',
     'menu.user.home': '用户主页',

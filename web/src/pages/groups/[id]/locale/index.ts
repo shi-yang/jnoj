@@ -1,0 +1,40 @@
+const i18n = {
+  'en-US': {
+    'page.title': 'Problem List',
+    'header.edit': 'Edit',
+    'problemset.title': 'Problem Set',
+    'update.form': 'Update Problemset',
+    'update.form.name': 'Name',
+    'update.form.description': 'Description',
+    'update.form.save': 'Save',
+    'update.form.saveInfo': 'Saved successfully',
+    'update.table.column.name': 'Name',
+    'update.table.column.id': 'ID',
+    'update.table.column.problemId': 'Problem ID',
+    'update.table.column.action': 'Action',
+    'update.table.column.action.remove': 'Remove',
+    'update.table.column.action.remove.tips': 'Are you sure you want to delete?',
+    'update.table.add': 'Add',
+    'update.table.add.form.problemId': 'Problem ID',
+  },
+  'zh-CN': {
+    'page.title': '题目列表',
+    'header.edit': '编辑',
+    'problemset.title': '题单',
+    'update.form': '编辑题单',
+    'update.form.name': '题单名称',
+    'update.form.description': '题单描述',
+    'update.form.save': '保存',
+    'update.form.saveInfo': '保存成功',
+    'update.table.column.name': '题目名称',
+    'update.table.column.id': 'ID',
+    'update.table.column.problemId': '题目 ID',
+    'update.table.column.action': '操作',
+    'update.table.column.action.remove': '移除',
+    'update.table.column.action.remove.tips': '你确定要移除该项吗？',
+    'update.table.add': '添加',
+    'update.table.add.form.problemId': '题目ID'
+  },
+};
+
+export default i18n;

@@ -1,0 +1,97 @@
+.card-content {
+  min-height: 180px;
+  width: 100%;
+}
+
+.card-block {
+  margin-bottom: 16px;
+  width: 100%;
+  :global(.arco-card-header) {
+    border-bottom: none;
+    height: auto;
+    padding: 16px;
+    padding-bottom: 0;
+  }
+
+  .title {
+    display: flex;
+    line-height: 24px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+
+    .icon {
+      height: 24px;
+      width: 24px;
+      color: var(--color-white);
+      background: #626aea;
+      text-align: center;
+      line-height: 24px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .more {
+      color: var(--color-text-4);
+      font-size: 16px;
+      position: absolute;
+      right: 16px;
+      cursor: pointer;
+      opacity: 0;
+    }
+  }
+  .title-more {
+    .more {
+      opacity: 1;
+    }
+  }
+  .time,
+  .content > :global(.arco-typography),
+  :global(.arco-descriptions-item-label),
+  :global(.arco-descriptions-item-value) {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-text-3);
+    padding: 0;
+    line-height: 20px;
+  }
+  :global(.arco-descriptions-item-value) {
+    color: var(--color-text-2);
+    padding-left: 6px;
+  }
+
+  .content {
+    height: 48px;
+  }
+
+  .extra {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+
+  &-skeleton {
+    :global(.arco-skeleton-content .arco-skeleton-text-row:not(:last-child)) {
+      height: 14px;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.card-block:hover {
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 10%);
+  .title {
+    .more {
+      opacity: 1;
+    }
+  }
+}
+.content {
+  margin-bottom: 10px;
+  height: 60px;
+}
+.description {
+  margin: 0 !important;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-3);
+  line-height: 20px;
+}

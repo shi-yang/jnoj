@@ -110,6 +110,9 @@ export default function App() {
           >
             Console
           </Button>
+          <Button type='outline' icon={<IconPlayArrow />} status='success' onClick={onSubmit}>
+            {t['console.runCode']}
+          </Button>
         </div>
         <div className={styles.right}>
           { isLogged() && <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} /> }

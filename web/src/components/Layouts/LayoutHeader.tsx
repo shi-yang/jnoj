@@ -4,7 +4,7 @@ import styles from './style/layout-header.module.less';
 import useLocale from '@/utils/useLocale';
 import { GlobalContext } from '@/context';
 import IconButton from './IconButton';
-import { IconLanguage, IconMoonFill, IconPoweroff, IconSettings, IconSunFill, IconUser } from '@arco-design/web-react/icon';
+import { IconCodeSquare, IconHeart, IconHome, IconLanguage, IconList, IconMoonFill, IconPoweroff, IconSettings, IconSunFill, IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 import defaultLocale from '@/locale';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -28,7 +28,11 @@ const LayoutHeader = () => {
     window.location.href = '/user/login';
   }
 
-  function onMenuItemClick(key) {
+  function onMainClickMenuItem(key) {
+    router.push(key);
+  }
+
+  function onDropListMenuItemClick(key) {
     if (key === 'logout') {
       logout();
     } else if (key === 'homepage') {
@@ -43,7 +47,7 @@ const LayoutHeader = () => {
   }, []);
 
   const droplist = (
-    <Menu onClickMenuItem={onMenuItemClick}>
+    <Menu onClickMenuItem={onDropListMenuItemClick}>
       <Menu.Item key="homepage">
         <IconUser className={styles['dropdown-icon']} />
         {t['menu.user.home']}
@@ -62,7 +66,7 @@ const LayoutHeader = () => {
   return (
     <div className={styles.navbar}>
       <div className={styles.left}>
-        <Menu mode='horizontal' ellipsis={false} defaultSelectedKeys={['1']}>
+        <Menu mode='horizontal' ellipsis={false} defaultSelectedKeys={['1']} onClickMenuItem={onMainClickMenuItem}>
           <MenuItem
             key='0'
             disabled
@@ -71,18 +75,21 @@ const LayoutHeader = () => {
               <img style={{height: 21, cursor: 'pointer' }} src={Logo.src} />
             </Link>
           </MenuItem>
-          <MenuItem key='1'>
-            <Link href='/'>{ t['menu.home'] }</Link>
+          <MenuItem key='/'>
+            <Link href='/'><IconHome /> { t['menu.home'] }</Link>
           </MenuItem>
-          <MenuItem key='2'>
-            <Link href='/problemsets'>{ t['menu.problem'] }</Link>
+          <MenuItem key='/problemsets'>
+            <Link href='/problemsets'><IconCodeSquare /> { t['menu.problem'] }</Link>
           </MenuItem>
-          {/* <MenuItem key='3'>
-            <Link href='/contests'>{ t['menu.contest'] }</Link>
-          </MenuItem> */}
-          {/* <MenuItem key='4'>
-            <Link to='/about'>{ t['menu.about'] }</Link>
-          </MenuItem> */}
+          <MenuItem key='/groups'>
+            <Link href='/groups'><IconUserGroup /> { t['menu.group'] }</Link>
+          </MenuItem>
+          <MenuItem key='/contests'>
+            <Link href='/contests'><IconList />{ t['menu.contest'] }</Link>
+          </MenuItem>
+          <MenuItem key='/home/about'>
+            <Link href='/home/about'><IconHeart /> { t['menu.about'] }</Link>
+          </MenuItem>
         </Menu>
       </div>
       <ul className={styles.right}>
