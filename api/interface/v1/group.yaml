@@ -1,0 +1,5 @@
+rules:
+- selector: "/jnoj.interface.v1.GroupService/CreateGroup"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.GroupService/ListGroups"
+  middleware: "jnoj/internal/middleware/auth.Guest()"

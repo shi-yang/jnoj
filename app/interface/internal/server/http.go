@@ -19,6 +19,7 @@ func NewHTTPServer(c *conf.Server,
 	problem *service.ProblemService,
 	submission *service.SubmissionService,
 	sandbox *service.SandboxService,
+	group *service.GroupService,
 	websocket *service.WebSocketService,
 	logger log.Logger,
 ) *http.Server {
@@ -56,5 +57,6 @@ func NewHTTPServer(c *conf.Server,
 	v1.RegisterUserServiceHTTPServer(srv, user)
 	v1.RegisterSubmissionServiceHTTPServer(srv, submission)
 	v1.RegisterSandboxsServiceHTTPServer(srv, sandbox)
+	v1.RegisterGroupServiceHTTPServer(srv, group)
 	return srv
 }

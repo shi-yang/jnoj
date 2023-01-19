@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service GroupService {
+    // 获取小组列表
+    rpc ListGroups (ListGroupsRequest) returns (ListGroupsResponse) {
+        option (google.api.http) = {
+            get: "/groups"
+        };
+    }
+    rpc GetGroup (GetGroupRequest) returns (Group) {
+        option (google.api.http) = {
+            get: "/groups/{id}"
+        };
+    }
+    rpc CreateGroup (CreateGroupRequest) returns (Group) {
+        option (google.api.http) = {
+            post: "/groups"
+            body: "*"
+        };
+    }
+    rpc UpdateGroup (UpdateGroupRequest) returns (Group) {
+        option (google.api.http) = {
+            put: "/groups/{id}"
+            body: "*"
+        };
+    }
+    // 获取小组用户
+    rpc ListGroupUsers (ListGroupUsersRequest) returns (ListGroupUsersResponse) {
+        option (google.api.http) = {
+            get: "/groups/{id}/users"
+        };
+    }
+    // 新增小组用户
+    rpc CreateGroupUser (CreateGroupUserRequest) returns (GroupUser) {
+        option (google.api.http) = {
+            post: "/groups/{gid}/users"
+            body: "*"
+        };
+    }
+    // 移除小组用户
+    rpc DeleteGroupUser (DeleteGroupUserRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/groups/{gid}/users/{uid}"
+        };
+    }
+}
+
+message Group {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    int32 user_id = 4;
+    int32 member_count = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message ListGroupsRequest {
+    string name = 1;
+    optional bool mygroup = 2;
+    int32 page = 3;
+    int32 per_page = 4;
+}
+
+message ListGroupsResponse {
+    repeated Group data = 1;
+    int64 total = 2;
+}
+
+message GetGroupRequest {
+    int32 id = 1;
+}
+
+message CreateGroupRequest {
+    string name = 1;
+    string description = 2;
+}
+
+message UpdateGroupRequest {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message GroupUser {
+    int32 id = 1;
+    string nickname = 2;
+    int32 user_id = 3;
+    int32 group_id = 4;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message ListGroupUsersRequest {
+    int32 id = 1;
+}
+
+message ListGroupUsersResponse {
+    repeated GroupUser data = 1;
+    int64 total = 2;
+}
+
+message DeleteGroupUserRequest {
+    int32 gid = 1;
+    int32 uid = 2;
+}
+
+message CreateGroupUserRequest {
+    int32 gid = 1;
+    int32 uid = 2;
+}

@@ -1,3 +1,4 @@
+import { createGroup, listGroups } from '@/api/group';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { userInfo } from '@/store/reducers/user';
@@ -12,6 +13,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
+import './mock';
 
 export default () => {
   const t = useLocale(locale);
@@ -25,25 +27,40 @@ export default () => {
     pageSizeChangeResetCurrent: true,
     sizeOptions: [25, 50, 100]
   });
+  const [formParams, setFormParams] = useState({});
+  const [activeTab, setActiveTab] = useState('all');
   const user = useAppSelector(userInfo);
   useEffect(() => {
+    if (user.isLogged) {
+      setActiveTab('mygroup');
+    }
     fetchData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
   function fetchData() {
     const { current, pageSize } = pagination;
     const params = {
       page: current,
       perPage: pageSize,
+      ...formParams,
     };
-    setGroups([
-      { id: 1, name: 'test1', description: '123123', userCount: '12'},
-      { id: 2, name: 'test2', description: '123123', userCount: '12'},
-      { id: 3, name: 'test3', description: '123123', userCount: '12'},
-      { id: 4, name: 'test4', description: '123123', userCount: '12'},
-      { id: 5, name: 'test5', description: '123123', userCount: '12'},
-      { id: 6, name: 'test6', description: '123123', userCount: '12'},
-      { id: 7, name: 'test7', description: '123123', userCount: '12'},
-    ])
+    listGroups(params)
+      .then(res => {
+        setGroups(res.data.data);
+        setPatination({
+          ...pagination,
+          current,
+          pageSize,
+          total: Number(res.data.total),
+        });
+      })
+  }
+  function onTabsChange(key) {
+    setActiveTab(key);
+    if (key === 'mygroup') {
+      setFormParams({...formParams, mygroup: true })
+    } else {
+      setFormParams({...formParams, mygroup: false })
+    }
   }
   function onChange(current, pageSize) {
     setPatination({
@@ -69,13 +86,18 @@ export default () => {
           <Tabs
             type='rounded'
             style={{marginBottom: '10px'}}
+            activeTab={activeTab}
             extra={
               <Input.Search
                 style={{ width: '240px' }}
+                onSearch={(value) => {
+                  setFormParams({...formParams, name: value})
+                }}
               />
             }
+            onChange={onTabsChange}
           >
-            <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />
+            {user.isLogged && <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />}
             <Tabs.TabPane key="all" title={t['index.tab.allgroup']} />
           </Tabs>
           <Grid.Row gutter={24} className={styles['card-content']}>
@@ -100,7 +122,7 @@ export default () => {
                     <Descriptions
                       size="small"
                       data={[
-                        { label: <IconUser />, value: item.userCount  },
+                        { label: <IconUser />, value: item.memberCount  },
                       ]}
                     />
                   </Card>
@@ -129,7 +151,12 @@ function AddGroup() {
   function onOk() {
     form.validate().then((values) => {
       setConfirmLoading(true);
-      Message.error('暂未支持');
+      createGroup(values)
+        .then(res => {
+          setVisible(false);
+          Message.success(t['index.create.savedSuccessfully']);
+          router.push(`/groups/${res.data.id}`);
+        })
     });
   }
 

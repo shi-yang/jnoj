@@ -1,18 +1,31 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
-import { Divider, Link, Typography } from '@arco-design/web-react';
+import { Link, Tabs, Typography } from '@arco-design/web-react';
 import { userInfo } from '@/store/reducers/user';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
+import { getGroup } from '@/api/group';
 
 export default () => {
+  const t = useLocale(locale);
+  const router = useRouter();
+  const { id } = router.query;
   const [group, setGroup] = useState({id: 12, name: '123', description: '123', userId: 1});
   const settings = useAppSelector<SettingState>(setting);
-  const t = useLocale(locale);
   const user = useAppSelector(userInfo);
+  function fetchData() {
+    getGroup(id)
+      .then(res => {
+        setGroup(res.data);
+      })
+  }
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <div className='container'>
       <Head>
@@ -25,13 +38,25 @@ export default () => {
               {group.name}
               {
                 user.id === group.userId
-                && <Link href={`/problemsets/${group.id}/setting`}>{t['header.edit']}</Link>
+                && <Link href={`/groups/${group.id}/setting`}>{t['header.edit']}</Link>
               }
             </Typography.Title>
           </div>
           <div>{group.description}</div>
         </div>
-        <Divider />
+        <Tabs
+          defaultActiveTab='1'
+        >
+          <Tabs.TabPane key='1' title='主页'>
+            <Typography.Paragraph>Content of Tab Panel 1</Typography.Paragraph>
+          </Tabs.TabPane>
+          <Tabs.TabPane key='2' title='比赛'>
+            <Typography.Paragraph>Content of Tab Panel 2</Typography.Paragraph>
+          </Tabs.TabPane>
+          <Tabs.TabPane key='3' title='成员'>
+            <Typography.Paragraph>Content of Tab Panel 3</Typography.Paragraph>
+          </Tabs.TabPane>
+        </Tabs>
       </div>
     </div>
   )

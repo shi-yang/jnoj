@@ -13,4 +13,5 @@ var ProviderSet = wire.NewSet(
 	NewSandboxUsecase,
 	NewWebSocketUsecase,
 	NewProblemsetUsecase,
+	NewGroupUsecase,
 )

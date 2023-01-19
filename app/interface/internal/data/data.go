@@ -23,6 +23,7 @@ var ProviderSet = wire.NewSet(
 	NewUserRepo,
 	NewSubmissionRepo,
 	NewProblemsetRepo,
+	NewGroupRepo,
 )
 
 // Data .
