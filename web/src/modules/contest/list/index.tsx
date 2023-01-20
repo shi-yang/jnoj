@@ -3,6 +3,7 @@ import {
   Table,
   Card,
   PaginationProps,
+  Space,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
@@ -16,7 +17,7 @@ import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
 
-function SearchTable() {
+function ContestList({groupId = 0}) {
   const t = useLocale(locale);
   const settings = useAppSelector<SettingState>(setting);
 
@@ -46,6 +47,7 @@ function SearchTable() {
     const { current, pageSize } = pagination;
     setLoading(true);
     const params = {
+      groupId: groupId,
       page: current,
       perPage: pageSize,
       ...formParams,
@@ -83,11 +85,11 @@ function SearchTable() {
       </Head>
       <Card>
         <SearchForm onSearch={handleSearch} />
-        {/* <div className={styles['button-group']}>
+        <div className={styles['button-group']}>
           <Space>
-            <CreateModal />
+            <CreateModal groupId={groupId} />
           </Space>
-        </div> */}
+        </div>
         <Table
           rowKey="id"
           loading={loading}
@@ -101,4 +103,4 @@ function SearchTable() {
   );
 }
 
-export default SearchTable;
+export default ContestList;

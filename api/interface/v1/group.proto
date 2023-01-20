@@ -32,16 +32,28 @@ service GroupService {
             body: "*"
         };
     }
-    // 获取小组用户
+    // 获取小组用户列表
     rpc ListGroupUsers (ListGroupUsersRequest) returns (ListGroupUsersResponse) {
         option (google.api.http) = {
             get: "/groups/{id}/users"
+        };
+    }
+    rpc GetGroupUser (GetGroupUserRequest) returns (GroupUser) {
+        option (google.api.http) = {
+            get: "/groups/{gid}/users/{uid}"
         };
     }
     // 新增小组用户
     rpc CreateGroupUser (CreateGroupUserRequest) returns (GroupUser) {
         option (google.api.http) = {
             post: "/groups/{gid}/users"
+            body: "*"
+        };
+    }
+    // 修改小组用户
+    rpc UpdateGroupUser (UpdateGroupUserRequest) returns (GroupUser) {
+        option (google.api.http) = {
+            put: "/groups/{gid}/users/{uid}"
             body: "*"
         };
     }
@@ -59,7 +71,8 @@ message Group {
     string description = 3;
     int32 user_id = 4;
     int32 member_count = 5;
-    google.protobuf.Timestamp created_at = 6;
+    GroupUserRole role = 6;
+    google.protobuf.Timestamp created_at = 7;
 }
 
 message ListGroupsRequest {
@@ -89,11 +102,19 @@ message UpdateGroupRequest {
     string description = 3;
 }
 
+enum GroupUserRole {
+    ADMIN = 0;
+    MANAGER = 1;
+    MEMBER = 2;
+    GUEST = 3;
+}
+
 message GroupUser {
     int32 id = 1;
     string nickname = 2;
     int32 user_id = 3;
     int32 group_id = 4;
+    GroupUserRole role = 5;
     google.protobuf.Timestamp created_at = 6;
 }
 
@@ -106,6 +127,11 @@ message ListGroupUsersResponse {
     int64 total = 2;
 }
 
+message GetGroupUserRequest {
+    int32 gid = 1;
+    int32 uid = 2;
+}
+
 message DeleteGroupUserRequest {
     int32 gid = 1;
     int32 uid = 2;
@@ -114,4 +140,10 @@ message DeleteGroupUserRequest {
 message CreateGroupUserRequest {
     int32 gid = 1;
     int32 uid = 2;
+}
+
+message UpdateGroupUserRequest {
+    int32 gid = 1;
+    int32 uid = 2;
+    GroupUserRole role = 3;
 }

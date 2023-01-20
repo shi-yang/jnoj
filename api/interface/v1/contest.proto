@@ -89,8 +89,9 @@ service ContestService {
 
 message ListContestsRequest {
     string name = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    int32 group_id = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }
 message ListContestsResponse {
     repeated Contest data = 1;
@@ -168,6 +169,7 @@ message GetContestProblemRequest{
 
 message CreateContestRequest {
     string name = 1;
+    int32 group_id = 2;
     google.protobuf.Timestamp start_time = 7;
     google.protobuf.Timestamp end_time = 8;
 }

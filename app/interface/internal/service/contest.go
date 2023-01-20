@@ -113,6 +113,7 @@ func (s *ContestService) CreateContest(ctx context.Context, req *v1.CreateContes
 	res, err := s.uc.CreateContest(ctx, &biz.Contest{
 		Name:      req.Name,
 		UserID:    userID,
+		GroupId:   int(req.GroupId),
 		StartTime: req.StartTime.AsTime(),
 		EndTime:   req.EndTime.AsTime(),
 	})

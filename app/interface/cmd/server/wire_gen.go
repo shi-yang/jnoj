@@ -47,7 +47,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, confService *conf.Ser
 	sandboxUsecase := biz.NewSandboxUsecase(sandboxServiceClient, logger)
 	sandboxService := service.NewSandboxService(sandboxUsecase)
 	groupRepo := data.NewGroupRepo(dataData, logger)
-	groupUsecase := biz.NewGroupUsecase(groupRepo, logger)
+	groupUsecase := biz.NewGroupUsecase(groupRepo, userRepo, logger)
 	groupService := service.NewGroupService(groupUsecase)
 	webSocketUsecase := biz.NewWebSocketUsecase(confService, logger)
 	webSocketService := service.NewWebSocketService(webSocketUsecase, logger)

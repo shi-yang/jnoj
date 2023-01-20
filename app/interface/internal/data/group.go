@@ -11,6 +11,7 @@ import (
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -33,7 +34,9 @@ type GroupUser struct {
 	ID        int
 	GroupID   int
 	UserID    int
+	Role      int
 	CreatedAt time.Time
+	User      *User `json:"user" gorm:"foreignKey:UserID"`
 }
 
 // NewGroupRepo .
@@ -117,7 +120,11 @@ func (r *groupRepo) UpdateGroup(ctx context.Context, g *biz.Group) (*biz.Group, 
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Updates(&res).Error
-	return nil, err
+	return &biz.Group{
+		ID:          res.ID,
+		Name:        res.Name,
+		Description: res.Description,
+	}, err
 }
 
 // DeleteGroup .
@@ -134,15 +141,40 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 	res := []GroupUser{}
 	count := int64(0)
 	r.data.db.WithContext(ctx).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		}).
+		Where("group_id = ?", req.Id).
 		Find(&res).
 		Count(&count)
 	rv := make([]*biz.GroupUser, 0)
 	for _, v := range res {
 		rv = append(rv, &biz.GroupUser{
-			ID: v.ID,
+			ID:        v.ID,
+			Nickname:  v.User.Nickname,
+			UserID:    v.UserID,
+			GroupID:   v.GroupID,
+			Role:      v.Role,
+			CreatedAt: v.CreatedAt,
 		})
 	}
 	return rv, count
+}
+
+// GetGroupUser .
+func (r *groupRepo) GetGroupUser(ctx context.Context, gid int, uid int) (*biz.GroupUser, error) {
+	var res GroupUser
+	err := r.data.db.WithContext(ctx).
+		Model(&GroupUser{}).
+		First(&res, "group_id = ? and user_id = ?", gid, uid).
+		Error
+	return &biz.GroupUser{
+		ID:        res.ID,
+		UserID:    res.UserID,
+		GroupID:   res.GroupID,
+		Role:      res.Role,
+		CreatedAt: res.CreatedAt,
+	}, err
 }
 
 // CreateGroupUser .
@@ -150,10 +182,36 @@ func (r *groupRepo) CreateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz
 	res := GroupUser{
 		UserID:  g.UserID,
 		GroupID: g.GroupID,
+		Role:    g.Role,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Create(&res).Error
+		FirstOrCreate(&res, map[string]interface{}{
+			"user_id":  g.UserID,
+			"group_id": g.GroupID,
+		}).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	r.updateGroupMember(ctx, g.GroupID)
+	return &biz.GroupUser{
+		ID: res.ID,
+	}, err
+}
+
+// UpdateGroupUser .
+func (r *groupRepo) UpdateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz.GroupUser, error) {
+	res := GroupUser{
+		UserID:  g.UserID,
+		GroupID: g.GroupID,
+		Role:    g.Role,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Where("group_id = ? and user_id = ?", g.GroupID, g.UserID).
+		Updates(&res).
+		Error
 	return &biz.GroupUser{
 		ID: res.ID,
 	}, err
@@ -164,6 +222,22 @@ func (r *groupRepo) DeleteGroupUser(ctx context.Context, groupID, userID int) er
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Delete(GroupUser{}, "group_id = ? and user_id = ?", groupID, userID).
+		Error
+	r.updateGroupMember(ctx, groupID)
+	return err
+}
+
+// updateGroupMember 更新成员数
+func (r *groupRepo) updateGroupMember(ctx context.Context, groupID int) error {
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Model(&Group{ID: groupID}).
+		UpdateColumn("member_count",
+			r.data.db.WithContext(ctx).
+				Select("count(*)").
+				Model(&GroupUser{}).
+				Where("group_id = ?", groupID).
+				Where("role in (?)", []int{biz.GroupUserRoleAdmin, biz.GroupUserRoleManager, biz.GroupUserRoleMember})).
 		Error
 	return err
 }

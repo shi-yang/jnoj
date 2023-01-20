@@ -66,6 +66,8 @@ func (m *Group) validate(all bool) error {
 
 	// no validation rules for MemberCount
 
+	// no validation rules for Role
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -768,6 +770,8 @@ func (m *GroupUser) validate(all bool) error {
 
 	// no validation rules for GroupId
 
+	// no validation rules for Role
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -1116,6 +1120,112 @@ var _ interface {
 	ErrorName() string
 } = ListGroupUsersResponseValidationError{}
 
+// Validate checks the field values on GetGroupUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetGroupUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetGroupUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetGroupUserRequestMultiError, or nil if none found.
+func (m *GetGroupUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetGroupUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Gid
+
+	// no validation rules for Uid
+
+	if len(errors) > 0 {
+		return GetGroupUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetGroupUserRequestMultiError is an error wrapping multiple validation
+// errors returned by GetGroupUserRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetGroupUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetGroupUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetGroupUserRequestMultiError) AllErrors() []error { return m }
+
+// GetGroupUserRequestValidationError is the validation error returned by
+// GetGroupUserRequest.Validate if the designated constraints aren't met.
+type GetGroupUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetGroupUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetGroupUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetGroupUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetGroupUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetGroupUserRequestValidationError) ErrorName() string {
+	return "GetGroupUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetGroupUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetGroupUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetGroupUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetGroupUserRequestValidationError{}
+
 // Validate checks the field values on DeleteGroupUserRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -1327,3 +1437,111 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateGroupUserRequestValidationError{}
+
+// Validate checks the field values on UpdateGroupUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateGroupUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateGroupUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateGroupUserRequestMultiError, or nil if none found.
+func (m *UpdateGroupUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateGroupUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Gid
+
+	// no validation rules for Uid
+
+	// no validation rules for Role
+
+	if len(errors) > 0 {
+		return UpdateGroupUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateGroupUserRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateGroupUserRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateGroupUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateGroupUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateGroupUserRequestMultiError) AllErrors() []error { return m }
+
+// UpdateGroupUserRequestValidationError is the validation error returned by
+// UpdateGroupUserRequest.Validate if the designated constraints aren't met.
+type UpdateGroupUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateGroupUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateGroupUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateGroupUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateGroupUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateGroupUserRequestValidationError) ErrorName() string {
+	return "UpdateGroupUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateGroupUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateGroupUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateGroupUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateGroupUserRequestValidationError{}

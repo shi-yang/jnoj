@@ -55,6 +55,9 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
+	if req.GroupId != 0 {
+		db.Where("group_id = ?", req.GroupId)
+	}
 	db.Count(&count).
 		Order("id desc")
 	db.Offset(pager.GetOffset()).
@@ -69,6 +72,7 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 			EndTime:          v.EndTime,
 			ParticipantCount: v.ParticipantCount,
 			Type:             v.Type,
+			GroupId:          v.GroupID,
 		})
 	}
 	return rv, count
@@ -93,6 +97,7 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		Description:      c.Description,
 		ParticipantCount: c.ParticipantCount,
 		UserID:           c.UserID,
+		GroupId:          c.GroupID,
 		CreatedAt:        c.CreatedAt,
 	}
 	if uid, ok := auth.GetUserID(ctx); ok {
@@ -109,6 +114,7 @@ func (r *contestRepo) CreateContest(ctx context.Context, c *biz.Contest) (*biz.C
 		EndTime:   c.EndTime,
 		UserID:    c.UserID,
 		Type:      c.Type,
+		GroupID:   c.GroupId,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

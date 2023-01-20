@@ -9,31 +9,40 @@ import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
 import { getGroup } from '@/api/group';
+import { IconHome, IconSettings, IconUser } from '@arco-design/web-react/icon';
+
+import Overview from './overview';
+import People from './people';
+import Settings from './settings';
 
 export default () => {
   const t = useLocale(locale);
   const router = useRouter();
   const { id } = router.query;
-  const [group, setGroup] = useState({id: 12, name: '123', description: '123', userId: 1});
+  const [group, setGroup] = useState({id: 0, name: '', description: '', userId: 0, role: ''});
   const settings = useAppSelector<SettingState>(setting);
   const user = useAppSelector(userInfo);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isLoading, setIsLoading] = useState(true);
   function fetchData() {
     getGroup(id)
       .then(res => {
         setGroup(res.data);
-      })
+        setIsLoading(false);
+      });
   }
   useEffect(() => {
     fetchData();
   }, []);
   return (
-    <div className='container'>
+    !isLoading &&
+    <>
       <Head>
         <title>{`${group.name} - ${settings.name}`}</title>
       </Head>
       <div>
         <div className={styles['header']}>
-          <div>
+          <div className='container'>
             <Typography.Title>
               {group.name}
               {
@@ -41,23 +50,25 @@ export default () => {
                 && <Link href={`/groups/${group.id}/setting`}>{t['header.edit']}</Link>
               }
             </Typography.Title>
+            <div>{group.description}</div>
+            <Tabs
+              size='large'
+              activeTab={activeTab}
+              onChange={setActiveTab}
+            >
+              <Tabs.TabPane key='overview' title={<span><IconHome /> {t['header.tab.overview']}</span>} />
+              <Tabs.TabPane key='people' title={<span><IconUser /> {t['header.tab.people']}</span>} />
+              <Tabs.TabPane key='settings' title={<span><IconSettings /> {t['header.tab.settings']}</span>} />
+            </Tabs>
           </div>
-          <div>{group.description}</div>
         </div>
-        <Tabs
-          defaultActiveTab='1'
-        >
-          <Tabs.TabPane key='1' title='主页'>
-            <Typography.Paragraph>Content of Tab Panel 1</Typography.Paragraph>
-          </Tabs.TabPane>
-          <Tabs.TabPane key='2' title='比赛'>
-            <Typography.Paragraph>Content of Tab Panel 2</Typography.Paragraph>
-          </Tabs.TabPane>
-          <Tabs.TabPane key='3' title='成员'>
-            <Typography.Paragraph>Content of Tab Panel 3</Typography.Paragraph>
-          </Tabs.TabPane>
-        </Tabs>
+        <div className='container'>
+          {activeTab === 'overview' && <Overview group={group} />}
+          {activeTab === 'people' && <People group={group} />}
+          {(group.role === 'ADMIN' || group.role === 'MANAGER') &&  activeTab === 'settings'
+            && <Settings group={group} callback={fetchData} />}
+        </div>
       </div>
-    </div>
+    </>
   )
 }

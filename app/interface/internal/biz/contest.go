@@ -22,6 +22,7 @@ type Contest struct {
 	UserID           int
 	ParticipantCount int  // 参与人数
 	IsRegistered     bool // 是否参赛
+	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }

@@ -3,3 +3,5 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.GroupService/ListGroups"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.GroupService/GetGroup"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
