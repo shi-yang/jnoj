@@ -1,3 +1,3 @@
-import Index from './list';
+import Index from '@/modules/contest/list';
 
 export default Index;
