@@ -44,6 +44,37 @@ CREATE TABLE `contest_user` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `group` (
+  `id` int NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `member_count` int NOT NULL DEFAULT '0',
+  `user_id` int NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `group_user` (
+  `id` int NOT NULL,
+  `group_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `role` tinyint NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `group`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `group_user`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `group`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10000;
+
+ALTER TABLE `group_user`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10000;
+COMMIT;
+
+
 CREATE TABLE `problem` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL DEFAULT '',
