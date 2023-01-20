@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { forwardRef, useContext, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { cpp } from '@codemirror/lang-cpp';
 import { java } from '@codemirror/lang-java';
@@ -37,6 +37,11 @@ export default function App() {
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
   const [latestSubmissionID, setLatestSubmissionID] = useState('0');
+  const consoleRef = useRef(null);
+  const runCode = () => {
+    setConsoleVisible(true);
+    consoleRef.current.runCode();
+  }
   const onChange = React.useCallback((value, viewUpdate) => {
     setValue(value)
   }, []);
@@ -100,7 +105,7 @@ export default function App() {
         onChange={onChange}
       />
       {consoleVisible && (
-        <Console problem={problem} defaultCases={cases} language={language} source={value} />
+        <Console ref={consoleRef} problem={problem} defaultCases={cases} language={language} source={value} />
       )}
       <div className={styles.footer}>
         <div className={styles.left}>
@@ -110,7 +115,12 @@ export default function App() {
           >
             Console
           </Button>
-          <Button type='outline' icon={<IconPlayArrow />} status='success' onClick={onSubmit}>
+          <Button
+            type='outline'
+            icon={<IconPlayArrow />}
+            status='success'
+            onClick={runCode}
+          >
             {t['console.runCode']}
           </Button>
         </div>
@@ -208,7 +218,7 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
   )
 }
 
-function Console({ problem, defaultCases, language, source }) {
+function ConsoleComponent({ problem, defaultCases, language, source }, ref) {
   const t = useLocale(locale);
   const [casesResult, setCasesResult] = useState([]);
   const [activeTab, setActiveTab] = useState('cases');
@@ -216,6 +226,11 @@ function Console({ problem, defaultCases, language, source }) {
   const [compileMsg, setCompileMsg] = useState('');
   const [form] = Form.useForm();
   const [cases, setCases] = useState(defaultCases);
+  useImperativeHandle(ref, () => ({
+    runCode: () => {
+      onSubmit()
+    }
+  }))
   const onSubmit = () => {
     form.validate().then((values) => {
       setCasesResult([]);
@@ -246,6 +261,8 @@ function Console({ problem, defaultCases, language, source }) {
         .finally(() => {
           setLoading(false);
         })
+    }).catch(err => {
+      console.log(err)
     })
   }
   return (
@@ -266,11 +283,6 @@ function Console({ problem, defaultCases, language, source }) {
             activeTab={activeTab}
             onClickTab={(e) => setActiveTab(e)}
             destroyOnHide
-            extra={
-              <Button type='outline' icon={<IconPlayArrow />} status='success' onClick={onSubmit}>
-                {t['console.runCode']}
-              </Button>
-            }
           >
             <Tabs.TabPane key='cases' title={t['console.testCase']} style={{ width: '100%', padding: '15px' }}>
               <Form
@@ -353,3 +365,5 @@ function Console({ problem, defaultCases, language, source }) {
     </ResizeBox>
   )
 }
+
+const Console = forwardRef(ConsoleComponent)
