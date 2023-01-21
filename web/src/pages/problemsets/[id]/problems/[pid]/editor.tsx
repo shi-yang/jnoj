@@ -37,6 +37,7 @@ export default function App() {
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
   const [latestSubmissionID, setLatestSubmissionID] = useState('0');
+  const [isMounted, setIsMounted] = useState(false); 
   const consoleRef = useRef(null);
   const runCode = () => {
     setConsoleVisible(true);
@@ -62,6 +63,7 @@ export default function App() {
   }
   useEffect(() => {
     setCases(problem.sampleTests.map(item => item.input))
+    setIsMounted(true);
   }, [])
   return (
     <div className={styles['container']}>
@@ -104,9 +106,12 @@ export default function App() {
         theme={themes[theme]}
         onChange={onChange}
       />
-      {consoleVisible && (
-        <Console ref={consoleRef} problem={problem} defaultCases={cases} language={language} source={value} />
-      )}
+      {
+        isMounted &&
+        <div style={{display: consoleVisible ? 'block' : 'none'}}>
+          <Console ref={consoleRef} problem={problem} defaultCases={cases} language={language} source={value} />
+        </div>
+      }
       <div className={styles.footer}>
         <div className={styles.left}>
           <Button
