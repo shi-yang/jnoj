@@ -61,7 +61,7 @@ export default ({group}) => {
             </Popconfirm>
           }
           {
-            (group.role === 'ADMIN' || group.role === 'MANAGER') &&
+            (group.role === 'ADMIN' || group.role === 'MANAGER') && (record.role !== 'ADMIN') &&
             <Button type='text' onClick={() => {
               setUpdateUserId(record.userId);
               setUpdateModalVisible(true);
@@ -100,6 +100,7 @@ export default ({group}) => {
       <AddUser group={group} callback={fetchData} />
       <UpdateUserModal visible={updateModalVisible} gid={group.id} uid={updateUserId} callback={callback} />
       <Table
+        rowKey={r => r.id}
         data={users}
         columns={columns}
         pagination={pagination}
@@ -136,7 +137,7 @@ function UpdateUserModal({visible, gid, uid, callback}) {
       visible={visible}
       onOk={onOk}
       confirmLoading={confirmLoading}
-      onCancel={callback()}
+      onCancel={callback}
     >
       <Form
         form={form}
