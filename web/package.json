@@ -32,9 +32,6 @@
     "next-redux-wrapper": "^8.0.0",
     "nprogress": "^0.2.0",
     "query-string": "^7.1.1",
-    "rc-queue-anim": "^2.0.0",
-    "rc-scroll-anim": "^2.7.6",
-    "rc-tween-one": "^3.0.6",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
@@ -42,7 +39,8 @@
     "react-redux": "^8.0.5",
     "react-sortable-hoc": "^2.0.0",
     "rehype-katex": "^6.0.2",
-    "remark-math": "^5.1.1"
+    "remark-math": "^5.1.1",
+    "sharp": "^0.31.3"
   },
   "devDependencies": {
     "@svgr/webpack": "^6.5.1",

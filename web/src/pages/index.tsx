@@ -1,10 +1,7 @@
 import { useAppSelector } from '@/hooks'
 import { setting, SettingState } from '@/store/reducers/setting'
-import dynamic from 'next/dynamic'
 import Head from 'next/head'
-const HomeContent = dynamic(() => import('./home/index'), {
-  ssr: false,
-})
+import HomeContent from '@/pages/home/index';
 export default function() {
   const settings = useAppSelector<SettingState>(setting);
   return <>
