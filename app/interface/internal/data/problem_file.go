@@ -21,15 +21,24 @@ import (
 type ProblemFile struct {
 	ID        int
 	Name      string
-	Content   string
+	Content   string // 文件内容或路径
 	Type      string
-	FileSize  int64
+	FileSize  int64 // 文件大小
 	ProblemID int
 	UserID    int
-	FileType  string
+	FileType  string // 业务类型
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
+}
+
+// 定义文件储存路径。定义了的储存在公开的对象储存，没有定义的直接储存在数据库
+// %d problemId
+// %s filename
+var problemFileStorePath = map[biz.ProblemFileFileType]string{
+	biz.ProblemFileFileTypeAttachment: "/problem_files/%d/attachment/%s",
+	biz.ProblemFileFileTypePackage:    "/problem_files/%d/package/%s",
+	biz.ProblemFileFileTypeStatement:  "/problem_files/%d/statement/%s",
 }
 
 // ListProblemFiles .
@@ -55,8 +64,12 @@ func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemF
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 		}
-		if i.FileType == string(biz.ProblemFileFileTypeStatement) {
-			i.Content, _ = url.JoinPath("http://localhost:8333", r.data.conf.ObjectStorage.Bucket, i.Content)
+		if _, ok := problemFileStorePath[biz.ProblemFileFileType(i.FileType)]; ok {
+			i.Content, _ = url.JoinPath(
+				r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+				r.data.conf.ObjectStorage.PublicBucket.Bucket,
+				i.Content,
+			)
 		}
 		rv = append(rv, i)
 	}
@@ -94,18 +107,11 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 		FileType:  p.FileType,
 	}
 	// 保存文件
-	res.FileSize = int64(len(p.FileContent))
-	if p.FileType == string(biz.ProblemFileFileTypeStatement) {
+	if filepath, ok := problemFileStorePath[biz.ProblemFileFileType(p.FileType)]; ok {
 		store := objectstorage.NewSeaweed()
 		fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
-		storeName := fmt.Sprintf("/problem_files/%d/statements/%s", p.ProblemID, fileUnixName+path.Ext(p.Name))
-		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(p.FileContent))
-		res.Content = storeName
-	} else if p.FileType == string(biz.ProblemFileFileTypePackage) {
-		store := objectstorage.NewSeaweed()
-		fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
-		storeName := fmt.Sprintf("/problem_files/%d/packages/%s", p.ProblemID, fileUnixName+path.Ext(p.Name))
-		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(p.FileContent))
+		storeName := fmt.Sprintf(filepath, p.ProblemID, fileUnixName+path.Ext(p.Name))
+		store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(p.FileContent))
 		res.Content = storeName
 	}
 	err := r.data.db.WithContext(ctx).
@@ -141,12 +147,9 @@ func (r *problemRepo) DeleteProblemFile(ctx context.Context, id int) error {
 		return err
 	}
 	// 删除文件
-	if p.FileType == string(biz.ProblemFileFileTypeStatement) {
+	if _, ok := problemFileStorePath[biz.ProblemFileFileType(p.FileType)]; ok {
 		store := objectstorage.NewSeaweed()
-		store.DeleteObject(r.data.conf.ObjectStorage, p.Content)
-	} else if p.FileType == string(biz.ProblemFileFileTypePackage) {
-		store := objectstorage.NewSeaweed()
-		store.DeleteObject(r.data.conf.ObjectStorage, p.Content)
+		store.DeleteObject(r.data.conf.ObjectStorage.PublicBucket, p.Content)
 	}
 	err = r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

@@ -9,6 +9,7 @@ services:
     environment:
       MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
       REDIS_ADDR: redis:6379
+      USER_CONTENT_DOMAIN: https://usercontent.yourdomain.com
     ports:
       - 8092:8000
     volumes:
@@ -27,6 +28,7 @@ services:
     environment:
       MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
       REDIS_ADDR: redis:6379
+      USER_CONTENT_DOMAIN: https://usercontent.yourdomain.com
     volumes:
       - ..:/go/src/sandbox
     depends_on:

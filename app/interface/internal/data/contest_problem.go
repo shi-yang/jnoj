@@ -117,8 +117,8 @@ func (r *contestRepo) GetContestProblemByNumber(ctx context.Context, cid int, nu
 
 	for _, v := range tests {
 		store := objectstorage.NewSeaweed()
-		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, o.ProblemID, v.ID))
-		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, o.ProblemID, v.ID))
+		in, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, o.ProblemID, v.ID))
+		out, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, o.ProblemID, v.ID))
 		res.SampleTest = append(res.SampleTest, &biz.Test{
 			Input:  string(in),
 			Output: string(out),

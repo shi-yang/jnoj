@@ -38,11 +38,15 @@ message Data {
     google.protobuf.Duration read_timeout = 3;
     google.protobuf.Duration write_timeout = 4;
   }
-  message ObjectStorage {
+  message Bucket {
     string bucket = 1;
     string secret_id = 2;
     string secret_key = 3;
     string endpoint = 4;
+  }
+  message ObjectStorage {
+    Bucket private_bucket = 1;
+    Bucket public_bucket = 2;
   }
   Database database = 1;
   Redis redis = 2;

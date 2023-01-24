@@ -30,6 +30,7 @@ type ProblemTest struct {
 	UpdatedAt     time.Time
 }
 
+// 测试点的储存路径
 const problemTestInputPath = "/problem_tests/%d/%d.in"
 const problemTestOutputPath = "/problem_tests/%d/%d.out"
 
@@ -80,8 +81,8 @@ func (r *problemRepo) ListProblemTestContent(ctx context.Context, id int, isExam
 	res := make([]*biz.Test, 0)
 	for _, v := range tests {
 		store := objectstorage.NewSeaweed()
-		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, id, v.ID))
-		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, id, v.ID))
+		in, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, id, v.ID))
+		out, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, id, v.ID))
 		res = append(res, &biz.Test{
 			ID:     v.ID,
 			Input:  string(in),
@@ -134,7 +135,7 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 	if len(b.InputFileContent) > 0 {
 		store := objectstorage.NewSeaweed()
 		storeName := fmt.Sprintf(problemTestInputPath, b.ProblemID, o.ID)
-		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(b.InputFileContent))
+		store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(b.InputFileContent))
 	}
 	return &biz.ProblemTest{
 		ID: o.ID,
@@ -172,8 +173,8 @@ func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
 	}
 	// 删除文件
 	store := objectstorage.NewSeaweed()
-	store.DeleteObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, res.ProblemID, res.ID))
-	store.DeleteObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID))
+	store.DeleteObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, res.ProblemID, res.ID))
+	store.DeleteObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID))
 	return nil
 }
 

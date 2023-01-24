@@ -182,8 +182,8 @@ func (r *submissionRepo) ListProblemTests(ctx context.Context, id int) []*biz.Te
 	res := make([]*biz.Test, 0)
 	for _, v := range tests {
 		store := objectstorage.NewSeaweed()
-		in, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestInputPath, id, v.ID))
-		out, _ := store.GetObject(r.data.conf.ObjectStorage, fmt.Sprintf(problemTestOutputPath, id, v.ID))
+		in, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, id, v.ID))
+		out, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, id, v.ID))
 		res = append(res, &biz.Test{
 			ID:     v.ID,
 			Input:  in,
@@ -282,7 +282,7 @@ func (r *submissionRepo) UpdateProblemTestStdOutput(ctx context.Context, id int,
 	if update.OutputSize > 0 {
 		store := objectstorage.NewSeaweed()
 		storeName := fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID)
-		store.PutObject(r.data.conf.ObjectStorage, storeName, bytes.NewReader(outputContent))
+		store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(outputContent))
 	}
 	return nil
 }

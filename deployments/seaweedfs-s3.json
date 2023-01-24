@@ -3,15 +3,15 @@
       {
         "name": "anonymous",
         "actions": [
-          "Read"
+          "Read:public"
         ]
       },
       {
-        "name": "some_admin_user",
+        "name": "admin_user",
         "credentials": [
           {
-            "accessKey": "some_access_key1",
-            "secretKey": "some_secret_key1"
+            "accessKey": "jnoj_access_key1",
+            "secretKey": "jnoj_secret_key1"
           }
         ],
         "actions": [

@@ -14,10 +14,16 @@ data:
     read_timeout: 0.2s
     write_timeout: 0.2s
   object_storage:
-    bucket: "test"
-    secret_id: "some_access_key1"
-    secret_key: "some_secret_key1"
-    endpoint: "http://jnoj-s3:8333"
+    private_bucket:
+      bucket: "private"
+      secret_id: "jnoj_access_key1"
+      secret_key: "jnoj_secret_key1"
+      endpoint: "http://jnoj-s3:8333"
+    public_bucket:
+      bucket: "public"
+      secret_id: "jnoj_access_key1"
+      secret_key: "jnoj_secret_key1"
+      endpoint: "http://jnoj-s3:8333"
 service:
   message_queue:
     address: "amqp://admin:admin@rabbitmq:5672/"

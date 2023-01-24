@@ -431,10 +431,12 @@ func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreatePr
 		Name:      req.Name,
 		Type:      req.Type,
 		FileType:  req.FileType,
+		FileSize:  int64(len(req.Content)),
 	}
 	if req.Filename != "" {
 		f.Name = req.Filename
 		f.FileContent = req.FileContent
+		f.FileSize = int64(len(req.FileContent))
 	}
 	res, err := s.uc.CreateProblemFile(ctx, f)
 	if err != nil {
