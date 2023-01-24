@@ -6,6 +6,7 @@ import (
 	"jnoj/pkg/message_queue/rabbitmq"
 	"strconv"
 	"sync"
+	"time"
 
 	queueV1 "jnoj/api/queue/v1"
 
@@ -22,6 +23,12 @@ type WebSocketUsecase struct {
 
 const (
 	DataLen = 1000
+
+	// Time allowed to read the next pong message from the peer.
+	pongWait = 30 * time.Second
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	pingPeriod = (pongWait * 9) / 10
 )
 
 // NewWebSocketUsecase new a WebSocket usecase.
@@ -101,6 +108,10 @@ func (c *Connection) ReadLoop() {
 		data []byte
 		err  error
 	)
+	c.WsConn.SetPongHandler(func(string) error {
+		c.WsConn.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
 	for {
 		if _, data, err = c.WsConn.ReadMessage(); err != nil {
 			c.Close()
@@ -115,13 +126,21 @@ func (c *Connection) ReadLoop() {
 }
 
 func (c *Connection) WriteLoop() {
+	ticker := time.NewTicker(pingPeriod)
 	var (
 		data []byte
 		err  error
 	)
+	defer func() {
+		ticker.Stop()
+	}()
 	for {
 		select {
 		case data = <-c.OutChan:
+		case <-ticker.C:
+			if err := c.WsConn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				return
+			}
 		case <-c.CloseChan:
 			c.Close()
 		}

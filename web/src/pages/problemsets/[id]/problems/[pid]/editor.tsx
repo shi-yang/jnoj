@@ -152,6 +152,9 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
   useLayoutEffect(() => {
     ws.current = new WebSocket(process.env.NEXT_PUBLIC_API_WS_URL + '?uid=' + user.id);
     ws.current.onmessage = (e) => {
+      if (e.data === '') {
+        return;
+      }
       const msg = JSON.parse(e.data)
       if (msg.type === 'SUBMISSION_RESULT') {
         if (msg.message.status === 'running') {
