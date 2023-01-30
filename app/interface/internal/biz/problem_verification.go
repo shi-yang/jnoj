@@ -45,8 +45,7 @@ func (uc *ProblemUsecase) GetProblemVerification(ctx context.Context, id int) (*
 // VerifyProblem 验证题目完整性
 // TODO 该函数需要更加完善
 func (uc *ProblemUsecase) VerifyProblem(ctx context.Context, id int) error {
-	go uc.verifyProblem(context.TODO(), id)
-	return nil
+	return uc.verifyProblem(ctx, id)
 }
 
 // 1. 题目描述 ProblemStatement

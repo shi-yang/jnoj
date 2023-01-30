@@ -105,6 +105,7 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 		Type:      p.Type,
 		UserID:    p.UserID,
 		FileType:  p.FileType,
+		FileSize:  p.FileSize,
 	}
 	// 保存文件
 	if filepath, ok := problemFileStorePath[biz.ProblemFileFileType(p.FileType)]; ok {

@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Message, Modal, Popconfirm, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
+import { Button, Card, Divider, Message, Popconfirm, Popover, Table, TableColumnProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile } from '@/api/problem-file';
+import { listProblemFiles,  deleteProblemFile } from '@/api/problem-file';
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { FormatStorageSize, FormatTime } from '@/utils/format';
 import { packProblem } from '@/api/problem';
-const FormItem = Form.Item;
 
 const App = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState(false);
-  const [editVisible, setEditVisible] = useState(false);
-  const [form] = Form.useForm();
   const columns: TableColumnProps[] = [
     {
       title: '#',
@@ -49,6 +45,8 @@ const App = (props) => {
       align: 'center',
       render: (_, record) => (
         <>
+          <Button onClick={(e) => downloadFile(record)}>下载</Button>
+          <Divider type='vertical' />
           <Popover
             trigger='click'
             title='你确定要删除吗？'
@@ -64,6 +62,12 @@ const App = (props) => {
       ),
     },
   ];
+  function downloadFile(record) {
+    const a = document.createElement('a');
+    a.href = record.content;
+    a.download = props.problem.id + '.' + record.name;
+    a.click();
+  }
   function fetchData() {
     setLoading(true);
     listProblemFiles(props.problem.id, { fileType: 'package' })
@@ -97,7 +101,7 @@ const App = (props) => {
     <Card>
       <Popconfirm
         focusLock
-        title='提交打包？'
+        title='提交打包？若题目设为公开，题目包将被允许下载'
         onOk={pack}
       >
         <Button

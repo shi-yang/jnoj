@@ -237,6 +237,7 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 		FileType:    string(ProblemFileFileTypePackage),
 		UserID:      problem.UserID,
 		FileContent: buf.Bytes(),
+		FileSize:    int64(buf.Len()),
 	})
 	return nil
 }
