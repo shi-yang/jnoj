@@ -119,6 +119,7 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 		Time:       res.Time,
 		Verdict:    res.Verdict,
 		Language:   res.Language,
+		ProblemID:  res.ProblemID,
 		EntityID:   res.EntityID,
 		EntityType: res.EntityType,
 		UserID:     res.UserID,
