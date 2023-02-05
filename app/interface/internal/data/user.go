@@ -102,6 +102,8 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 		start = time.Date(int(req.Year), 1, 1, 0, 0, 0, 0, time.UTC)
 		end = time.Date(int(req.Year)+1, 1, 1, 0, 0, 0, 0, time.UTC)
 	}
+	res.Start = start.Format("2006/01/02")
+	res.End = end.Format("2006/01/02")
 	db := r.data.db.WithContext(ctx).
 		Select("DATE_FORMAT(created_at, '%Y/%m/%d') as date, count(*)").
 		Table("submission").
@@ -112,16 +114,23 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 	for rows.Next() {
 		var r v1.GetUserProfileCalendarResponse_ProfileCalendar
 		rows.Scan(&r.Date, &r.Count)
-		res.Total += r.Count
+		res.TotalSubmission += r.Count
 		res.TotalActiveDays++
 		res.SubmissionCalendar = append(res.SubmissionCalendar, &r)
 	}
 	r.data.db.WithContext(ctx).
 		Select("year(created_at) as date").
 		Table("submission").
+		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeCommon).
 		Group("date").
 		Scan(&res.ActiveYears)
-	res.Start = start.Format("2006/01/02")
-	res.End = end.Format("2006/01/02")
+	r.data.db.WithContext(ctx).
+		Select("count(*)").
+		Table("submission").
+		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeCommon).
+		Where("verdict = ?", biz.SubmissionVerdictAccepted).
+		Where("created_at >= ? and created_at < ?", start, end).
+		Group("problem_id").
+		Scan(&res.TotalProblemSolved)
 	return res, nil
 }
