@@ -929,7 +929,9 @@ func (m *GetUserProfileCalendarResponse) validate(all bool) error {
 
 	// no validation rules for TotalActiveDays
 
-	// no validation rules for Total
+	// no validation rules for TotalSubmission
+
+	// no validation rules for TotalProblemSolved
 
 	// no validation rules for Start
 

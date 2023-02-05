@@ -98,7 +98,8 @@ message GetUserProfileCalendarResponse {
     }
     repeated ProfileCalendar submissionCalendar = 2;
     int32 totalActiveDays = 3;
-    int32 total = 4;
-    string start = 5;
-    string end = 6;
+    int32 totalSubmission = 4;
+    int32 totalProblemSolved = 5;
+    string start = 6;
+    string end = 7;
 }

@@ -2,25 +2,29 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { getUserProfileCalendar, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Divider, Select, Space, Typography } from '@arco-design/web-react';
+import { Card, Divider, Select, Space, Statistic, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
 import Submission from '@/components/Submission/Submission';
+import useLocale from '@/utils/useLocale';
+import locale from './locale';
 
 export default function() {
   const router = useRouter();
+  const t = useLocale(locale);
   const { id } = router.query;
   const [user, setUser] = useState({username: ''});
   const [profileCalendar, setProfileCalendar] = useState({
     submissionCalendar: [],
-    total: 0,
+    totalSubmission: 0,
+    totalProblemSolved: 0,
     totalActiveDays: 0,
     start: '',
     end: '',
   });
   const settings = useAppSelector<SettingState>(setting);
-  const [calendarOptions, setCalendarOptions] = useState([{name: '过去一年', value: 0}]);
+  const [calendarOptions, setCalendarOptions] = useState([]);
   function onCalendarSelectChange(e) {
     getUserProfileCalendar(id, { year: e })
       .then(res => {
@@ -57,12 +61,13 @@ export default function() {
           </Typography.Title>
         </div>
         <Card 
-          title={`总提交：${profileCalendar.total}`}
           extra={
             <div>
               <Space>
-                <span>累计提交天数：{profileCalendar.totalActiveDays}</span>
                 <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
+                  <Select.Option value={0}>
+                    {t['pastYear']}
+                  </Select.Option>
                   {calendarOptions.map((option, index) => (
                     <Select.Option key={index} value={option.value}>
                       {option.name}
@@ -80,6 +85,11 @@ export default function() {
             rectSize={20}
             startDate={new Date(profileCalendar.start)}
           />
+          <Space>
+            <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
+            <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
+            <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
+          </Space>
         </Card>
         <Divider type='horizontal' />
         <Submission userId={id} />
