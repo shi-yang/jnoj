@@ -125,12 +125,11 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 		Group("date").
 		Scan(&res.ActiveYears)
 	r.data.db.WithContext(ctx).
-		Select("count(*)").
+		Select("COUNT(DISTINCT(problem_id))").
 		Table("submission").
 		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeCommon).
 		Where("verdict = ?", biz.SubmissionVerdictAccepted).
 		Where("created_at >= ? and created_at < ?", start, end).
-		Group("problem_id").
 		Scan(&res.TotalProblemSolved)
 	return res, nil
 }
