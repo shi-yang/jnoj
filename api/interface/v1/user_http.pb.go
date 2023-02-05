@@ -24,12 +24,14 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 const OperationUserServiceGetUser = "/jnoj.interface.v1.UserService/GetUser"
 const OperationUserServiceGetUserInfo = "/jnoj.interface.v1.UserService/GetUserInfo"
+const OperationUserServiceGetUserProfileCalendar = "/jnoj.interface.v1.UserService/GetUserProfileCalendar"
 const OperationUserServiceLogin = "/jnoj.interface.v1.UserService/Login"
 const OperationUserServiceRegister = "/jnoj.interface.v1.UserService/Register"
 
 type UserServiceHTTPServer interface {
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetUserInfo(context.Context, *emptypb.Empty) (*GetUserInfoResponse, error)
+	GetUserProfileCalendar(context.Context, *GetUserProfileCalendarRequest) (*GetUserProfileCalendarResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 }
@@ -41,6 +43,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
+	r.GET("/users/{id}/profile_calendar", _UserService_GetUserProfileCalendar0_HTTP_Handler(srv))
 }
 
 func _UserService_Login0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
@@ -122,9 +125,32 @@ func _UserService_GetUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http
 	}
 }
 
+func _UserService_GetUserProfileCalendar0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserProfileCalendarRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceGetUserProfileCalendar)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserProfileCalendar(ctx, req.(*GetUserProfileCalendarRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetUserProfileCalendarResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserServiceHTTPClient interface {
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	GetUserInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetUserInfoResponse, err error)
+	GetUserProfileCalendar(ctx context.Context, req *GetUserProfileCalendarRequest, opts ...http.CallOption) (rsp *GetUserProfileCalendarResponse, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterResponse, err error)
 }
@@ -155,6 +181,19 @@ func (c *UserServiceHTTPClientImpl) GetUserInfo(ctx context.Context, in *emptypb
 	pattern := "/user/info"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceGetUserInfo))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) GetUserProfileCalendar(ctx context.Context, in *GetUserProfileCalendarRequest, opts ...http.CallOption) (*GetUserProfileCalendarResponse, error) {
+	var out GetUserProfileCalendarResponse
+	pattern := "/users/{id}/profile_calendar"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceGetUserProfileCalendar))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

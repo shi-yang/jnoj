@@ -34,6 +34,12 @@ service UserService {
             get: "/users/{id}"
         };
     };
+    // 用户主页提交统计
+    rpc GetUserProfileCalendar (GetUserProfileCalendarRequest) returns (GetUserProfileCalendarResponse) {
+        option (google.api.http) = {
+            get: "/users/{id}/profile_calendar"
+        };
+    };
 }
 
 message LoginRequest {
@@ -77,4 +83,22 @@ message User {
 
 message GetUserRequest {
     int32 id = 1;
+}
+
+message GetUserProfileCalendarRequest {
+    int32 id = 1;
+    int32 year = 2;
+}
+
+message GetUserProfileCalendarResponse {
+    repeated int32 activeYears = 1;
+    message ProfileCalendar {
+        string date = 1;
+        int32 count = 2;
+    }
+    repeated ProfileCalendar submissionCalendar = 2;
+    int32 totalActiveDays = 3;
+    int32 total = 4;
+    string start = 5;
+    string end = 6;
 }

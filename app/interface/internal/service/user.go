@@ -71,3 +71,8 @@ func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.
 		Username: res.Username,
 	}, nil
 }
+
+// GetUserProfileCalendar 用户主页提交统计
+func (s UserService) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {
+	return s.uc.GetUserProfileCalendar(ctx, req)
+}

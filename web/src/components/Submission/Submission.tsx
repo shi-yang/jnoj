@@ -9,7 +9,7 @@ import Highlight from '@/components/Highlight';
 import SubmissionVerdict from './SubmissionVerdict';
 const CollapseItem = Collapse.Item;
 
-const Submission = ({pid, entityType}) => {
+const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -29,6 +29,7 @@ const Submission = ({pid, entityType}) => {
       page: current,
       perPage: pageSize,
       problemId: pid,
+      userId: userId,
       entityType: entityType,
     };
     setLoading(true);
@@ -63,7 +64,6 @@ const Submission = ({pid, entityType}) => {
       current,
       pageSize,
     });
-    fetchData()
   }
   const columns: TableColumnProps[] = [
     {
@@ -114,9 +114,9 @@ const Submission = ({pid, entityType}) => {
   ];
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pagination.current, pagination.pageSize]);
   return (
-    <Card style={{height: '100%', overflow: 'auto'}}>
+    <Card>
       <Drawer
         width={900}
         title={<span>{t['submission']}</span>}

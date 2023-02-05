@@ -28,6 +28,7 @@ type UserRepo interface {
 	GetUser(context.Context, *User) (*User, error)
 	Update(context.Context, *User) (*User, error)
 	FindByID(context.Context, int) (*User, error)
+	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
 }
 
 // UserUsecase is a User usecase.
@@ -84,4 +85,8 @@ func generatePasswordHash(password string) (string, error) {
 func validatePassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {
+	return uc.repo.GetUserProfileCalendar(ctx, req)
 }

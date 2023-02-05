@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -87,4 +88,40 @@ func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 		Username: o.Username,
 		Nickname: o.Nickname,
 	}, nil
+}
+
+func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {
+	res := new(v1.GetUserProfileCalendarResponse)
+	var (
+		start, end time.Time
+	)
+	if req.Year == 0 {
+		end = time.Now()
+		start = end.AddDate(-1, 0, 0)
+	} else {
+		start = time.Date(int(req.Year), 1, 1, 0, 0, 0, 0, time.UTC)
+		end = time.Date(int(req.Year)+1, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
+	db := r.data.db.WithContext(ctx).
+		Select("DATE_FORMAT(created_at, '%Y/%m/%d') as date, count(*)").
+		Table("submission").
+		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeCommon).
+		Where("created_at >= ? and created_at < ?", start, end)
+	db.Group("date")
+	rows, _ := db.Rows()
+	for rows.Next() {
+		var r v1.GetUserProfileCalendarResponse_ProfileCalendar
+		rows.Scan(&r.Date, &r.Count)
+		res.Total += r.Count
+		res.TotalActiveDays++
+		res.SubmissionCalendar = append(res.SubmissionCalendar, &r)
+	}
+	r.data.db.WithContext(ctx).
+		Select("year(created_at) as date").
+		Table("submission").
+		Group("date").
+		Scan(&res.ActiveYears)
+	res.Start = start.Format("2006/01/02")
+	res.End = end.Format("2006/01/02")
+	return res, nil
 }

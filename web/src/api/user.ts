@@ -32,3 +32,7 @@ export function getUserInfo() {
 export function getUsers(id) {
   return axios.get(`/users/${id}`)
 }
+
+export function getUserProfileCalendar(id, params = undefined) {
+  return axios.get(`/users/${id}/profile_calendar`, { params })
+}
