@@ -17,11 +17,16 @@ service SandboxsService {
 }
 
 message RunRequest {
+    // 源码
     string source = 1;
+    // 输入
     string stdin = 2;
+    // 语言
     int32 language = 3;
-    int64 memory_limit = 4 [(validate.rules).int64 = {gte:4, lte: 1024}];
-    int64 time_limit = 5 [(validate.rules).int64 = {gte:250, lte: 15000}];
+    // 针对 函数题，需要查询对应的输入输出主体函数
+    optional int32 language_id = 4;
+    int64 memory_limit = 5 [(validate.rules).int64 = {gte:4, lte: 1024}];
+    int64 time_limit = 6 [(validate.rules).int64 = {gte:250, lte: 15000}];
 }
 
 message RunResponse {

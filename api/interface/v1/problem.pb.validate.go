@@ -60,6 +60,8 @@ func (m *Problem) validate(all bool) error {
 
 	// no validation rules for Name
 
+	// no validation rules for Type
+
 	// no validation rules for TimeLimit
 
 	// no validation rules for MemoryLimit
@@ -2761,6 +2763,10 @@ func (m *ListProblemFilesRequest) validate(all bool) error {
 
 	// no validation rules for FileType
 
+	// no validation rules for Type
+
+	// no validation rules for Name
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage
@@ -3115,6 +3121,8 @@ func (m *ProblemFile) validate(all bool) error {
 
 	// no validation rules for Name
 
+	// no validation rules for Language
+
 	// no validation rules for Content
 
 	// no validation rules for Type
@@ -3285,6 +3293,8 @@ func (m *CreateProblemFileRequest) validate(all bool) error {
 	// no validation rules for Id
 
 	// no validation rules for Name
+
+	// no validation rules for Language
 
 	// no validation rules for Content
 
@@ -6170,6 +6180,795 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SortProblemsetProblemsRequestValidationError{}
+
+// Validate checks the field values on ProblemLanguage with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ProblemLanguage) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ProblemLanguage with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ProblemLanguageMultiError, or nil if none found.
+func (m *ProblemLanguage) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ProblemLanguage) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for LanguageCode
+
+	// no validation rules for LanguageName
+
+	// no validation rules for UserContent
+
+	// no validation rules for MainContent
+
+	if len(errors) > 0 {
+		return ProblemLanguageMultiError(errors)
+	}
+
+	return nil
+}
+
+// ProblemLanguageMultiError is an error wrapping multiple validation errors
+// returned by ProblemLanguage.ValidateAll() if the designated constraints
+// aren't met.
+type ProblemLanguageMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ProblemLanguageMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ProblemLanguageMultiError) AllErrors() []error { return m }
+
+// ProblemLanguageValidationError is the validation error returned by
+// ProblemLanguage.Validate if the designated constraints aren't met.
+type ProblemLanguageValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ProblemLanguageValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ProblemLanguageValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ProblemLanguageValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ProblemLanguageValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ProblemLanguageValidationError) ErrorName() string { return "ProblemLanguageValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ProblemLanguageValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sProblemLanguage.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ProblemLanguageValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ProblemLanguageValidationError{}
+
+// Validate checks the field values on ListProblemLanguagesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListProblemLanguagesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListProblemLanguagesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListProblemLanguagesRequestMultiError, or nil if none found.
+func (m *ListProblemLanguagesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListProblemLanguagesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemId
+
+	if len(errors) > 0 {
+		return ListProblemLanguagesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListProblemLanguagesRequestMultiError is an error wrapping multiple
+// validation errors returned by ListProblemLanguagesRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ListProblemLanguagesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListProblemLanguagesRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListProblemLanguagesRequestMultiError) AllErrors() []error { return m }
+
+// ListProblemLanguagesRequestValidationError is the validation error returned
+// by ListProblemLanguagesRequest.Validate if the designated constraints
+// aren't met.
+type ListProblemLanguagesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListProblemLanguagesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListProblemLanguagesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListProblemLanguagesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListProblemLanguagesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListProblemLanguagesRequestValidationError) ErrorName() string {
+	return "ListProblemLanguagesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListProblemLanguagesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListProblemLanguagesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListProblemLanguagesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListProblemLanguagesRequestValidationError{}
+
+// Validate checks the field values on ListProblemLanguagesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListProblemLanguagesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListProblemLanguagesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListProblemLanguagesResponseMultiError, or nil if none found.
+func (m *ListProblemLanguagesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListProblemLanguagesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListProblemLanguagesResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListProblemLanguagesResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListProblemLanguagesResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListProblemLanguagesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListProblemLanguagesResponseMultiError is an error wrapping multiple
+// validation errors returned by ListProblemLanguagesResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ListProblemLanguagesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListProblemLanguagesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListProblemLanguagesResponseMultiError) AllErrors() []error { return m }
+
+// ListProblemLanguagesResponseValidationError is the validation error returned
+// by ListProblemLanguagesResponse.Validate if the designated constraints
+// aren't met.
+type ListProblemLanguagesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListProblemLanguagesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListProblemLanguagesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListProblemLanguagesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListProblemLanguagesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListProblemLanguagesResponseValidationError) ErrorName() string {
+	return "ListProblemLanguagesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListProblemLanguagesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListProblemLanguagesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListProblemLanguagesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListProblemLanguagesResponseValidationError{}
+
+// Validate checks the field values on GetProblemLanguageRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetProblemLanguageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetProblemLanguageRequestMultiError, or nil if none found.
+func (m *GetProblemLanguageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetProblemLanguageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemId
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return GetProblemLanguageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetProblemLanguageRequestMultiError is an error wrapping multiple validation
+// errors returned by GetProblemLanguageRequest.ValidateAll() if the
+// designated constraints aren't met.
+type GetProblemLanguageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetProblemLanguageRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetProblemLanguageRequestMultiError) AllErrors() []error { return m }
+
+// GetProblemLanguageRequestValidationError is the validation error returned by
+// GetProblemLanguageRequest.Validate if the designated constraints aren't met.
+type GetProblemLanguageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetProblemLanguageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetProblemLanguageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetProblemLanguageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetProblemLanguageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetProblemLanguageRequestValidationError) ErrorName() string {
+	return "GetProblemLanguageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetProblemLanguageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetProblemLanguageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetProblemLanguageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetProblemLanguageRequestValidationError{}
+
+// Validate checks the field values on CreateProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateProblemLanguageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateProblemLanguageRequestMultiError, or nil if none found.
+func (m *CreateProblemLanguageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateProblemLanguageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemId
+
+	// no validation rules for UserContent
+
+	// no validation rules for MainContent
+
+	// no validation rules for Language
+
+	if len(errors) > 0 {
+		return CreateProblemLanguageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateProblemLanguageRequestMultiError is an error wrapping multiple
+// validation errors returned by CreateProblemLanguageRequest.ValidateAll() if
+// the designated constraints aren't met.
+type CreateProblemLanguageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateProblemLanguageRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateProblemLanguageRequestMultiError) AllErrors() []error { return m }
+
+// CreateProblemLanguageRequestValidationError is the validation error returned
+// by CreateProblemLanguageRequest.Validate if the designated constraints
+// aren't met.
+type CreateProblemLanguageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateProblemLanguageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateProblemLanguageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateProblemLanguageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateProblemLanguageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateProblemLanguageRequestValidationError) ErrorName() string {
+	return "CreateProblemLanguageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateProblemLanguageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateProblemLanguageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateProblemLanguageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateProblemLanguageRequestValidationError{}
+
+// Validate checks the field values on UpdateProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateProblemLanguageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateProblemLanguageRequestMultiError, or nil if none found.
+func (m *UpdateProblemLanguageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateProblemLanguageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemId
+
+	// no validation rules for Id
+
+	// no validation rules for UserContent
+
+	// no validation rules for MainContent
+
+	if len(errors) > 0 {
+		return UpdateProblemLanguageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateProblemLanguageRequestMultiError is an error wrapping multiple
+// validation errors returned by UpdateProblemLanguageRequest.ValidateAll() if
+// the designated constraints aren't met.
+type UpdateProblemLanguageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateProblemLanguageRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateProblemLanguageRequestMultiError) AllErrors() []error { return m }
+
+// UpdateProblemLanguageRequestValidationError is the validation error returned
+// by UpdateProblemLanguageRequest.Validate if the designated constraints
+// aren't met.
+type UpdateProblemLanguageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateProblemLanguageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateProblemLanguageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateProblemLanguageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateProblemLanguageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateProblemLanguageRequestValidationError) ErrorName() string {
+	return "UpdateProblemLanguageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateProblemLanguageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateProblemLanguageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateProblemLanguageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateProblemLanguageRequestValidationError{}
+
+// Validate checks the field values on DeleteProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteProblemLanguageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteProblemLanguageRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteProblemLanguageRequestMultiError, or nil if none found.
+func (m *DeleteProblemLanguageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteProblemLanguageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemId
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteProblemLanguageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteProblemLanguageRequestMultiError is an error wrapping multiple
+// validation errors returned by DeleteProblemLanguageRequest.ValidateAll() if
+// the designated constraints aren't met.
+type DeleteProblemLanguageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteProblemLanguageRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteProblemLanguageRequestMultiError) AllErrors() []error { return m }
+
+// DeleteProblemLanguageRequestValidationError is the validation error returned
+// by DeleteProblemLanguageRequest.Validate if the designated constraints
+// aren't met.
+type DeleteProblemLanguageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteProblemLanguageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteProblemLanguageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteProblemLanguageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteProblemLanguageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteProblemLanguageRequestValidationError) ErrorName() string {
+	return "DeleteProblemLanguageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteProblemLanguageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteProblemLanguageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteProblemLanguageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteProblemLanguageRequestValidationError{}
 
 // Validate checks the field values on Problem_SampleTest with the rules
 // defined in the proto definition for this message. If any rules are

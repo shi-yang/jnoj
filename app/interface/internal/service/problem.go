@@ -47,6 +47,7 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 			AcceptedCount: int32(v.AcceptedCount),
 			Status:        int32(v.Status),
 			Source:        v.Source,
+			Type:          v1.ProblemType(v.Type),
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
 			UserId:        int32(v.UserID),
@@ -74,6 +75,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 	resp := &v1.Problem{
 		Id:            int32(data.ID),
 		Name:          data.Name,
+		Type:          v1.ProblemType(data.Type),
 		Status:        int32(data.Status),
 		MemoryLimit:   int32(data.MemoryLimit),
 		TimeLimit:     int32(data.TimeLimit),
@@ -108,6 +110,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 func (s *ProblemService) CreateProblem(ctx context.Context, req *v1.CreateProblemRequest) (*v1.CreateProblemResponse, error) {
 	data, err := s.uc.CreateProblem(ctx, &biz.Problem{
 		Name: req.Name,
+		Type: int(req.Type),
 	})
 	if err != nil {
 		return nil, err
@@ -381,6 +384,7 @@ func (s *ProblemService) ListProblemFiles(ctx context.Context, req *v1.ListProbl
 		resp.Data = append(resp.Data, &v1.ProblemFile{
 			Id:        int32(v.ID),
 			Name:      v.Name,
+			Language:  int32(v.Language),
 			Type:      v.Type,
 			FileType:  v.FileType,
 			FileSize:  v.FileSize,
@@ -429,6 +433,7 @@ func (s *ProblemService) CreateProblemFile(ctx context.Context, req *v1.CreatePr
 		ProblemID: int(req.Id),
 		Content:   req.Content,
 		Name:      req.Name,
+		Language:  int(req.Language),
 		Type:      req.Type,
 		FileType:  req.FileType,
 		FileSize:  int64(len(req.Content)),
@@ -509,6 +514,100 @@ func (s *ProblemService) DeleteProblemFile(ctx context.Context, req *v1.DeletePr
 	return &emptypb.Empty{}, nil
 }
 
+// ListProblemLanguages 获取题目语言列表
+func (s *ProblemService) ListProblemLanguages(ctx context.Context, req *v1.ListProblemLanguagesRequest) (*v1.ListProblemLanguagesResponse, error) {
+	p, err := s.uc.GetProblem(ctx, int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if !p.HasPermission(ctx, biz.ProblemPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	res, count := s.uc.ListProblemLanguages(ctx, p)
+	resp := new(v1.ListProblemLanguagesResponse)
+	resp.Total = count
+	for _, v := range res {
+		resp.Data = append(resp.Data, &v1.ProblemLanguage{
+			Id:           v.Id,
+			LanguageCode: v.LanguageCode,
+			LanguageName: v.LanguageName,
+		})
+	}
+	return resp, nil
+}
+
+// GetProblemLanguage 获取题目语言详情
+func (s *ProblemService) GetProblemLanguage(ctx context.Context, req *v1.GetProblemLanguageRequest) (*v1.ProblemLanguage, error) {
+	p, err := s.uc.GetProblem(ctx, int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if !p.HasPermission(ctx, biz.ProblemPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	res, err := s.uc.GetProblemLanguage(ctx, int(req.ProblemId), int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	if !p.HasPermission(ctx, biz.ProblemPermissionUpdate) {
+		res.MainContent = ""
+	}
+	return res, nil
+}
+
+// CreateProblemLanguage 创建题目语言
+func (s *ProblemService) CreateProblemLanguage(ctx context.Context, req *v1.CreateProblemLanguageRequest) (*v1.ProblemLanguage, error) {
+	p, err := s.uc.GetProblem(ctx, int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	l := &biz.ProblemLanguage{
+		UserContent: req.UserContent,
+		MainContent: req.MainContent,
+	}
+	_, err = s.uc.CreateProblemLanguage(ctx, p.ID, int(req.Language), l)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ProblemLanguage{}, nil
+}
+
+// UpdateProblemLanguage 更新题目语言
+func (s *ProblemService) UpdateProblemLanguage(ctx context.Context, req *v1.UpdateProblemLanguageRequest) (*v1.ProblemLanguage, error) {
+	p, err := s.uc.GetProblem(ctx, int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	_, err = s.uc.UpdateProblemLanguage(ctx, p.ID, int(req.Id), &biz.ProblemLanguage{
+		UserContent: req.UserContent,
+		MainContent: req.MainContent,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ProblemLanguage{}, err
+}
+
+// DeleteProblemLanguage 删除题目语言
+func (s *ProblemService) DeleteProblemLanguage(ctx context.Context, req *v1.DeleteProblemLanguageRequest) (*emptypb.Empty, error) {
+	p, err := s.uc.GetProblem(ctx, int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	s.uc.DeleteProblemLanguage(ctx, int(req.ProblemId), int(req.Id))
+	return &emptypb.Empty{}, nil
+}
+
+// RunProblemFile 运行文件
 func (s *ProblemService) RunProblemFile(ctx context.Context, req *v1.RunProblemFileRequest) (*emptypb.Empty, error) {
 	err := s.uc.RunProblemFile(ctx, int(req.Sid))
 	return &emptypb.Empty{}, err
@@ -566,7 +665,7 @@ func (s *ProblemService) PackProblem(ctx context.Context, req *v1.PackProblemReq
 		return nil, v1.ErrorProblemNotVerification("题目未通过验证")
 	}
 	err = s.uc.PackProblem(ctx, problem.ID)
-	return &emptypb.Empty{}, nil
+	return &emptypb.Empty{}, err
 }
 
 func (s *ProblemService) UpdateProblemChecker(ctx context.Context, req *v1.UpdateProblemCheckerRequest) (*emptypb.Empty, error) {
@@ -728,6 +827,7 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 	resp := &v1.Problem{
 		Id:            int32(data.ID),
 		Name:          data.Name,
+		Type:          v1.ProblemType(data.Type),
 		Status:        int32(data.Status),
 		MemoryLimit:   int32(data.MemoryLimit),
 		TimeLimit:     int32(data.TimeLimit),
@@ -800,6 +900,7 @@ func (s *ProblemService) DeleteProblemFromProblemset(ctx context.Context, req *v
 	return &emptypb.Empty{}, err
 }
 
+// SortProblemsetProblems 对题单的题目进行排序
 func (s *ProblemService) SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) (*emptypb.Empty, error) {
 	// 题单是否存在
 	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))

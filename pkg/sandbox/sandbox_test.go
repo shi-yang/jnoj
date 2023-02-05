@@ -45,7 +45,7 @@ func TestCAccepted(t *testing.T) {
 	u, _ := uuid.NewUUID()
 	workPath := filepath.Join(workDir, u.String())
 	source := readSourceFile("./testdata/accepted/main.c")
-	if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+	if err := Compile(workPath, source, &Languages[LangC]); err != nil {
 		t.Error("Compiled Error\n", err)
 	}
 	tests := []struct {
@@ -66,7 +66,7 @@ func TestCAccepted(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		res := Run(workPath, &Languages[LANG_C], test.input, 256, 1000)
+		res := Run(workPath, &Languages[LangC], test.input, 256, 1000)
 		if res.Stdout != string(test.expected) {
 			t.Error("Wrong Answer")
 		}
@@ -77,7 +77,7 @@ func TestChecker(t *testing.T) {
 	u, _ := uuid.NewUUID()
 	workPath := filepath.Join(workDir, u.String())
 	source := readSourceFile("./testdata/accepted/main.c")
-	if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+	if err := Compile(workPath, source, &Languages[LangC]); err != nil {
 		t.Error("Compiled Error\n", err)
 	}
 	tests := []struct {
@@ -112,7 +112,7 @@ func TestChecker(t *testing.T) {
 		t.Error("Compiled Error\n", err)
 	}
 	for _, test := range tests {
-		runRes := Run(workPath, &Languages[LANG_C], test.input, 256, 1000)
+		runRes := Run(workPath, &Languages[LangC], test.input, 256, 1000)
 		t.Logf("Program output:[%+v]\n", runRes)
 		if runRes.RuntimeErr == "" {
 			// 准备运行 checker 所需文件
@@ -217,10 +217,10 @@ func TestLangC(t *testing.T) {
 			source := readSourceFile(filepath.Join("./testdata/c", test.name))
 			u, _ := uuid.NewUUID()
 			workPath := filepath.Join(workDir, u.String())
-			if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+			if err := Compile(workPath, source, &Languages[LangC]); err != nil {
 				t.Errorf("compile error. err = [%s]", err.Error())
 			}
-			res := Run(workPath, &Languages[LANG_C], []byte(""), 256, 1000)
+			res := Run(workPath, &Languages[LangC], []byte(""), 256, 1000)
 			msg, ok := test.expected(res)
 			if ok {
 				t.Log("ok", msg)
@@ -243,10 +243,10 @@ func TestLangJava(t *testing.T) {
 			source := readSourceFile(filepath.Join("./testdata/java", test.name))
 			u, _ := uuid.NewUUID()
 			workPath := filepath.Join(workDir, u.String())
-			if err := Compile(workPath, source, &Languages[LANG_JAVA]); err != nil {
+			if err := Compile(workPath, source, &Languages[LangJava]); err != nil {
 				t.Errorf("compile error. err = [%s]", err.Error())
 			}
-			res := Run(workPath, &Languages[LANG_JAVA], []byte(""), 256, 1000)
+			res := Run(workPath, &Languages[LangJava], []byte(""), 256, 1000)
 			msg, ok := test.expected(res)
 			if ok {
 				t.Log("ok", msg)
@@ -264,7 +264,7 @@ func BenchmarkCompile(b *testing.B) {
 		u, _ := uuid.NewUUID()
 		workPath := filepath.Join(workDir, u.String())
 		source := readSourceFile("./testdata/accepted/main.c")
-		if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+		if err := Compile(workPath, source, &Languages[LangC]); err != nil {
 			b.Error("Compiled Error\n", err)
 		}
 		os.RemoveAll(workPath)
@@ -275,14 +275,14 @@ func BenchmarkRun(b *testing.B) {
 	u, _ := uuid.NewUUID()
 	workPath := filepath.Join(workDir, u.String())
 	source := readSourceFile("./testdata/accepted/main.c")
-	if err := Compile(workPath, source, &Languages[LANG_C]); err != nil {
+	if err := Compile(workPath, source, &Languages[LangC]); err != nil {
 		b.Error("Compiled Error\n", err)
 	}
 	input := "1 2"
 	excepted := "3"
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		res := Run(workPath, &Languages[LANG_C], []byte(input), 256, 1000)
+		res := Run(workPath, &Languages[LangC], []byte(input), 256, 1000)
 		if res.Stdout != excepted {
 			b.Errorf("excepted %s, got %s", input, excepted)
 		}

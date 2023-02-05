@@ -21,6 +21,7 @@ import (
 type ProblemFile struct {
 	ID        int
 	Name      string
+	Language  int    // 语言
 	Content   string // 文件内容或路径
 	Type      string
 	FileSize  int64 // 文件大小
@@ -50,6 +51,12 @@ func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemF
 	if req.FileType != "" {
 		db.Where("file_type = ?", req.FileType)
 	}
+	if req.Type != "" {
+		db.Where("type = ?", req.Type)
+	}
+	if req.Name != "" {
+		db.Where("name = ?", req.Name)
+	}
 	db.Find(&res).
 		Count(&count)
 	rv := make([]*biz.ProblemFile, 0)
@@ -57,6 +64,7 @@ func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemF
 		i := &biz.ProblemFile{
 			ID:        v.ID,
 			Name:      v.Name,
+			Language:  v.Language,
 			Type:      v.Type,
 			FileType:  v.FileType,
 			FileSize:  v.FileSize,
@@ -77,10 +85,10 @@ func (r *problemRepo) ListProblemFiles(ctx context.Context, req *v1.ListProblemF
 }
 
 // GetProblemFile .
-func (r *problemRepo) GetProblemFile(ctx context.Context, id int) (*biz.ProblemFile, error) {
+func (r *problemRepo) GetProblemFile(ctx context.Context, p *biz.ProblemFile) (*biz.ProblemFile, error) {
 	var res ProblemFile
 	err := r.data.db.Model(ProblemFile{}).
-		First(&res, "id = ?", id).Error
+		First(&res, p).Error
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +96,7 @@ func (r *problemRepo) GetProblemFile(ctx context.Context, id int) (*biz.ProblemF
 		ID:        res.ID,
 		ProblemID: res.ProblemID,
 		Name:      res.Name,
+		Language:  res.Language,
 		Content:   res.Content,
 		Type:      res.Type,
 		UserID:    res.UserID,
@@ -101,6 +110,7 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 	res := ProblemFile{
 		ProblemID: p.ProblemID,
 		Name:      p.Name,
+		Language:  p.Language,
 		Content:   p.Content,
 		Type:      p.Type,
 		UserID:    p.UserID,

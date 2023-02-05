@@ -9,6 +9,18 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/DeleteProblem*"
   middleware: "jnoj/internal/middleware/auth.User()"
+# 题目语言文件
+- selector: "/jnoj.interface.v1.ProblemService/CreateProblemLanguage"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/DeleteProblemLanguage"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/GetProblemLanguage*"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.ProblemService/ListProblemLanguages*"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.ProblemService/UpdateProblemLanguage*"
+  middleware: "jnoj/internal/middleware/auth.User()"
+
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemFiles"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemStdCheckers"

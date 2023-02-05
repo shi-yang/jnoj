@@ -5,6 +5,7 @@ export interface runRequest {
   memoryLimit: string
   timeLimit: string
   language: number
+  languageId?: number
   source: string
 }
 

@@ -27,6 +27,7 @@ type Problem struct {
 	AcceptedCount     int
 	SubmitCount       int
 	UserID            int
+	Type              int
 	CheckerID         int
 	Status            int
 	Source            string
@@ -70,6 +71,7 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 		p := &biz.Problem{
 			ID:            v.ID,
 			Name:          v.Name,
+			Type:          v.Type,
 			SubmitCount:   v.SubmitCount,
 			AcceptedCount: v.AcceptedCount,
 			CreatedAt:     v.CreatedAt,
@@ -106,6 +108,7 @@ func (r *problemRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, err
 		AcceptedCount: res.AcceptedCount,
 		SubmitCount:   res.SubmitCount,
 		UserID:        res.UserID,
+		Type:          res.Type,
 		Status:        res.Status,
 		CheckerID:     res.CheckerID,
 		Source:        res.Source,
@@ -120,6 +123,7 @@ func (r *problemRepo) CreateProblem(ctx context.Context, p *biz.Problem) (*biz.P
 		TimeLimit:   p.TimeLimit,
 		MemoryLimit: p.MemoryLimit,
 		Status:      p.Status,
+		Type:        p.Type,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

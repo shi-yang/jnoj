@@ -10,11 +10,15 @@ var name string
 
 func init() {
 	flag.StringVar(&t, "t", "biz", "eg: -t biz or -t data")
-	flag.StringVar(&name, "name", "Test", "eg: -name test")
+	flag.StringVar(&name, "name", "", "eg: -name Test")
 }
 
 func main() {
 	flag.Parse()
+	if name == "" {
+		flag.Usage()
+		return
+	}
 	var bizDesc = bizDesc{
 		Name: name,
 	}

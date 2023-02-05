@@ -51,6 +51,7 @@ func NewSubmissionRepo(data *Data, logger log.Logger) biz.SubmissionRepo {
 type Problem struct {
 	ID                 int
 	Name               string
+	Type               int
 	TimeLimit          int64
 	MemoryLimit        int64
 	AcceptedCount      int
@@ -105,6 +106,7 @@ func (r *submissionRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, 
 	}
 	res := &biz.Problem{
 		ID:            p.ID,
+		Type:          p.Type,
 		TimeLimit:     p.TimeLimit,
 		MemoryLimit:   p.MemoryLimit,
 		AcceptedCount: p.AcceptedCount,

@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/encoding"
@@ -64,12 +65,18 @@ type SubmissionTest struct {
 
 type Problem struct {
 	ID            int
+	Type          int
 	TimeLimit     int64
 	MemoryLimit   int64
 	Checker       string
 	AcceptedCount int
 	Tests         []*Test
 }
+
+const (
+	ProblemTypeDefault = iota
+	ProblemTypeFunction
+)
 
 type Test struct {
 	ID     int
@@ -104,6 +111,12 @@ const (
 	CheckerVerdictSystemError
 )
 
+// ProblemLanguage 语言文件
+type ProblemLanguage struct {
+	UserContent string
+	MainContent string
+}
+
 // SubmissionRepo is a Submission repo.
 type SubmissionRepo interface {
 	GetSubmission(context.Context, int) (*Submission, error)
@@ -113,7 +126,7 @@ type SubmissionRepo interface {
 
 	GetProblem(context.Context, int) (*Problem, error)
 	UpdateProblem(context.Context, *Problem) (*Problem, error)
-	GetProblemFile(context.Context, int) (*ProblemFile, error)
+	GetProblemFile(context.Context, *ProblemFile) (*ProblemFile, error)
 	ListProblemTests(context.Context, int) []*Test
 
 	GetContestProblemByProblemID(context.Context, int, int) (*ContestProblem, error)
@@ -154,18 +167,41 @@ func NewSubmissionUsecase(c *conf.Sandbox, cf *conf.Service, repo SubmissionRepo
 
 // RunSubmission run a Submission
 func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submission, error) {
+	var source string
 	s, _ := uc.repo.GetSubmission(ctx, id)
 	problem, _ := uc.repo.GetProblem(ctx, s.ProblemID)
 	needUpdateAnswer := false
 	if s.EntityType == SubmissionEntityTypeProblemFile {
-		problemFile, err := uc.repo.GetProblemFile(ctx, s.EntityID)
+		problemFile, err := uc.repo.GetProblemFile(ctx, &ProblemFile{ID: s.EntityID})
 		if err == nil && problemFile.Type == "model_solution" {
 			needUpdateAnswer = true
 		}
 	}
+	source = s.Source
+	// 函数题
+	if problem.Type == ProblemTypeFunction {
+		// 查询对应的语言文件
+		lang, err := uc.repo.GetProblemFile(ctx, &ProblemFile{
+			ProblemID: problem.ID,
+			Language:  s.Language,
+		})
+		if err != nil {
+			s.Verdict = SubmissionVerdictSysemError
+			uc.repo.UpdateSubmission(context.TODO(), s)
+			return nil, err
+		}
+		var problemLang ProblemLanguage
+		if err := json.Unmarshal([]byte(lang.Content), &problemLang); err != nil {
+			s.Verdict = SubmissionVerdictSysemError
+			uc.repo.UpdateSubmission(context.TODO(), s)
+			return nil, err
+		}
+		// @@@替换
+		source = strings.ReplaceAll(problemLang.MainContent, "@@@", s.Source)
+	}
 	uc.log.Infof("RunSubmission = [%+v] needUpdateAnswer=[%+v]\n", s.ID, needUpdateAnswer)
 	go func(s *Submission) {
-		res := uc.runTests(context.TODO(), s, problem, needUpdateAnswer)
+		res := uc.runTests(context.TODO(), s.ID, source, s.Language, s.UserID, problem, needUpdateAnswer)
 		for index, v := range res.Tests {
 			if needUpdateAnswer {
 				var outputPreview string
@@ -224,7 +260,16 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 	return nil, nil
 }
 
-func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, problem *Problem, needUpdateAnswer bool) *SubmissionResult {
+func (uc *SubmissionUsecase) runTests(
+	ctx context.Context,
+	submissionId int,
+	source string,
+	langCode int,
+	userId int,
+	problem *Problem,
+	needUpdateAnswer bool,
+) *SubmissionResult {
+	uc.log.Info(source)
 	result := new(SubmissionResult)
 	result.Verdict = SubmissionVerdictAccepted
 	result.Tests = make([]*SubmissionTest, 0)
@@ -233,9 +278,7 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 	u, _ := uuid.NewUUID()
 	workDir := filepath.Join("/tmp/sandbox", u.String())
 	defer os.RemoveAll(workDir)
-	uc.log.Infof("Submission[%d] Compile start:%s", s.ID, workDir)
-	err := sandbox.Compile(workDir, s.Source, &sandbox.Languages[s.Language])
-	uc.log.Infof("Submission[%d] Compile done:%s", s.ID, workDir)
+	err := sandbox.Compile(workDir, source, &sandbox.Languages[langCode])
 	if err != nil {
 		result.Verdict = SubmissionVerdictCompileError
 		result.CompileMsg = err.Error()
@@ -253,22 +296,22 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 	}
 	result.TotalTestCount = len(problem.Tests)
 	for index, test := range problem.Tests {
-		uc.log.Infof("Submission[%d] runing test [%d/%d] start...", s.ID, index+1, len(problem.Tests))
+		uc.log.Infof("Submission[%d] runing test [%d/%d] start...", submissionId, index+1, len(problem.Tests))
 		// 向客户端发送测评进度
 		go func() {
 			m := queueV1.Message{
 				Type:    queueV1.Message_SUBMISSION_RESULT,
-				UserId:  int32(s.UserID),
+				UserId:  int32(userId),
 				Message: make(map[string]string),
 			}
-			m.Message["sid"] = strconv.Itoa(s.ID)
+			m.Message["sid"] = strconv.Itoa(submissionId)
 			m.Message["status"] = "running"
 			m.Message["message"] = fmt.Sprintf("testing on %d/%d", index+1, result.TotalTestCount)
 			jsonCodec := encoding.GetCodec("json")
 			res, _ := jsonCodec.Marshal(&m)
 			uc.queueClient.Push(context.TODO(), res)
 		}()
-		runRes := sandbox.Run(workDir, &sandbox.Languages[s.Language], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
+		runRes := sandbox.Run(workDir, &sandbox.Languages[langCode], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
 		var checkerRes *sandbox.Result
 		if runRes.RuntimeErr == "" && !needUpdateAnswer {
 			// 准备运行 checker 所需文件
@@ -279,7 +322,7 @@ func (uc *SubmissionUsecase) runTests(ctx context.Context, s *Submission, proble
 			uc.log.Info("Run checker:", workDir)
 			checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 10000)
 		}
-		uc.log.Infof("Submission[%d] runing test [%d/%d] done...", s.ID, index+1, len(problem.Tests))
+		uc.log.Infof("Submission[%d] runing test [%d/%d] done...", submissionId, index+1, len(problem.Tests))
 		// 记录 Memory 最大值
 		if runRes.Memory > result.Memory {
 			result.Memory = runRes.Memory

@@ -85,6 +85,10 @@ func (m *RunRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if m.LanguageId != nil {
+		// no validation rules for LanguageId
+	}
+
 	if len(errors) > 0 {
 		return RunRequestMultiError(errors)
 	}

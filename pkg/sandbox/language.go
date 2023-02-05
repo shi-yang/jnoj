@@ -2,6 +2,7 @@ package sandbox
 
 // Language .
 type Language struct {
+	Code           int
 	Name           string
 	CompileCommand []string
 	CodeFileName   string
@@ -10,15 +11,33 @@ type Language struct {
 }
 
 const (
-	LANG_C       = 0
-	Lang_CPP     = 1
-	LANG_JAVA    = 2
-	LANG_PYTHON3 = 3
+	LangC      = 0
+	LangCpp    = 1
+	LangJava   = 2
+	LangPython = 3
 )
 
-// Languages .
+// LanguageText returns a text for the language code. It returns the empty
+// string if the code is unknown.
+func LanguageText(code int) string {
+	switch code {
+	case LangC:
+		return "C"
+	case LangCpp:
+		return "C++"
+	case LangJava:
+		return "Java"
+	case LangPython:
+		return "Python"
+	default:
+		return ""
+	}
+}
+
+// Languages 支持的语言
 var Languages = []Language{
 	{
+		Code:         LangC,
 		Name:         "C",
 		CodeFileName: "main.c",
 		CompileCommand: []string{"gcc", "main.c", "-o", "main", "-Wall", "-O2", "-lm", "--static", "-std=c99",
@@ -27,6 +46,7 @@ var Languages = []Language{
 		IsVMRun:    false,
 	},
 	{
+		Code:         LangCpp,
 		Name:         "C++",
 		CodeFileName: "main.cpp",
 		CompileCommand: []string{"g++", "main.cpp", "-o", "main", "-Wall", "-fno-asm", "-O2", "-lm", "--static", "-std=c++11",
@@ -35,6 +55,7 @@ var Languages = []Language{
 		IsVMRun:    false,
 	},
 	{
+		Code:           LangJava,
 		Name:           "Java",
 		CodeFileName:   "Main.java",
 		CompileCommand: []string{"javac", "-J-Xms64M", "-J-Xmx128M", "-encoding", "UTF-8", "Main.java"},
@@ -42,6 +63,7 @@ var Languages = []Language{
 		IsVMRun:        true,
 	},
 	{
+		Code:           LangPython,
 		Name:           "Python",
 		CodeFileName:   "main.py",
 		CompileCommand: []string{"python3", "-c", "import py_compile; py_compile.compile(r'main.py')"},

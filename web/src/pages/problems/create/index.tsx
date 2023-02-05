@@ -40,6 +40,10 @@ export default function() {
   const [id, setId] = useState(0);
   const [visible, setVisible] = useState(false);
   const Status = ['', '私有', '公开'];
+  const Type = {
+    'DEFAULT': '标准输入输出',
+    'FUNCTION': '函数题',
+  };
   const columns = [
     {
       title: t['searchTable.columns.id'],
@@ -55,6 +59,12 @@ export default function() {
       title: t['searchTable.columns.source'],
       dataIndex: 'source',
       align: 'center' as 'center',
+    },
+    {
+      title: t['searchTable.columns.type'],
+      dataIndex: 'type',
+      align: 'center' as 'center',
+      render: (x) => Type[x],
     },
     {
       title: t['searchTable.columns.status'],

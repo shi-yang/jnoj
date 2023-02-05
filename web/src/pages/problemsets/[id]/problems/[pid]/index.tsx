@@ -31,6 +31,7 @@ function Index() {
   const [data, setData] = useState({
     id: 0,
     name: '',
+    type: 'DEFAULT',
     statements: [],
     sampleTests: []
   });

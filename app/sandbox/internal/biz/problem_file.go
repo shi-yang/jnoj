@@ -6,6 +6,7 @@ import "time"
 type ProblemFile struct {
 	ID          int
 	Name        string
+	Language    int
 	Content     string
 	FileType    string
 	ProblemID   int

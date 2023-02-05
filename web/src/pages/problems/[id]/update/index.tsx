@@ -15,18 +15,20 @@ import Checker from './checker';
 import SolutionFiles from './solution-files';
 import Files from './files';
 import Package from './package';
+import LanguageFiles from './language-files';
 import { getProblem, Problem } from '@/api/problem';
 import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
+import problem from '@/pages/contests/[id]/problem';
 
 const TabPane = Tabs.TabPane;
 
 function Index(props) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<Problem>({id: 0, statements: [], name: '', sampleTests:[]});
+  const [data, setData] = useState<Problem>({id: 0, statements: [], name: '', type: '', sampleTests:[]});
   const router = useRouter();
   const settings = useAppSelector<SettingState>(setting);
   function fetchData() {
@@ -77,6 +79,11 @@ function Index(props) {
             {/* <TabPane key='files' title={t['tab.files']}>
               <Files problem={data} />
             </TabPane> */}
+            { data.type === 'FUNCTION' &&
+              <TabPane key='languageFiles' title={t['tab.languageFiles']}>
+                <LanguageFiles problem={data} />
+              </TabPane>
+            }
             <TabPane key='package' title={t['tab.package']}>
               <Package problem={data} />
             </TabPane>

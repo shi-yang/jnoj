@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Message, Modal, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile } from '@/api/problem-file';
+import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile, listProblemLanguages, getProblemLanguage } from '@/api/problem-file';
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { FormatTime } from '@/utils/format';
 import Submission from '@/components/Submission/Submission';
 const FormItem = Form.Item;
+import CodeMirror from '@uiw/react-codemirror';
+import { LanguageMap } from '@/api/submission';
 
-const App = (props) => {
+const App = ({problem}) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [form] = Form.useForm();
+  const [languageOptions, setLanguageOptions] = useState([]);
   const columns: TableColumnProps[] = [
     {
       title: '#',
@@ -25,6 +28,12 @@ const App = (props) => {
       title: t['name'],
       dataIndex: 'name',
       align: 'center',
+    },
+    {
+      title: t['language'],
+      dataIndex: 'language',
+      align: 'center',
+      render: col => LanguageMap[col]
     },
     {
       title: t['type'],
@@ -63,11 +72,13 @@ const App = (props) => {
                 <Input />
               </FormItem>
               <FormItem field='content' label='源码' required>
-                <Input.TextArea />
+                <CodeMirror
+                  height="100%"
+                />
               </FormItem>
               <FormItem field='type' label='类型' required>
-                <Select defaultValue='model_file'>
-                  <Select.Option key='main' value='model_file'>
+                <Select defaultValue='model_solution'>
+                  <Select.Option key='main' value='model_solution'>
                     标准解答
                   </Select.Option>
                 </Select>
@@ -91,7 +102,12 @@ const App = (props) => {
   ];
   function fetchData() {
     setLoading(true);
-    listProblemFiles(props.problem.id, { fileType: 'solution' })
+    listProblemLanguages(problem.id)
+      .then(res => {
+        const langs = res.data.data
+        setLanguageOptions(langs);
+      })
+    listProblemFiles(problem.id, { fileType: 'solution' })
       .then((res) => {
         setData(res.data.data || []);
       })
@@ -100,7 +116,7 @@ const App = (props) => {
       });
   }
   function edit(record) {
-    getProblemFile(props.problem.id, record.id)
+    getProblemFile(problem.id, record.id)
       .then(res => {
         const data = res.data;
         form.setFieldsValue({
@@ -112,8 +128,19 @@ const App = (props) => {
         setEditVisible(true)
       })
   }
+  function onLanguageChange(e) {
+    if (problem.type === 'FUNCTION') {
+      const lang = languageOptions.find(item => {
+        return item.languageCode === Number(e)
+      })
+      getProblemLanguage(problem.id, lang.id)
+        .then(res => {
+          form.setFieldValue('content', res.data.userContent);
+        })
+    }
+  }
   function deleteFile(id) {
-    deleteProblemFile(props.problem.id, id)
+    deleteProblemFile(problem.id, id)
       .then(res => {
         Message.success('删除成功');
         fetchData()
@@ -127,7 +154,7 @@ const App = (props) => {
         type: res.type,
         fileType: 'solution'
       };
-      createProblemFile(props.problem.id, values)
+      createProblemFile(problem.id, values)
         .then(res => {
           Message.success('已保存')
           setVisible(false)
@@ -142,7 +169,7 @@ const App = (props) => {
         content: res.content,
         type: res.type,
       };
-      updateProblemFile(props.problem.id, res.id, values)
+      updateProblemFile(problem.id, res.id, values)
         .then(res => {
           Message.success('已保存');
           setEditVisible(false);
@@ -164,9 +191,10 @@ const App = (props) => {
       <Card title='解答文件'>
         <div className={styles['button-group']}>
           <Space>
-            <Button type='primary' onClick={() => {setVisible(true); form.clearFields}}>添加</Button>
+            <Button type='primary' onClick={() => {form.resetFields(); setVisible(true);}}>添加</Button>
             <Modal
               title='添加'
+              style={{width: '800px'}}
               visible={visible}
               onOk={onOk}
               onCancel={() => setVisible(false)}
@@ -179,8 +207,21 @@ const App = (props) => {
                 <FormItem field='name' label='名称' required>
                   <Input />
                 </FormItem>
+                <FormItem field='language' label='语言' required>
+                  <Select onChange={onLanguageChange}>
+                    {languageOptions.map((item, index) => {
+                      return (
+                        <Select.Option key={index} value={`${item.languageCode}`}>
+                          {item.languageName}
+                        </Select.Option>
+                      )
+                    })}
+                  </Select>
+                </FormItem>
                 <FormItem field='content' label='源码' required>
-                  <Input.TextArea rows={10} />
+                  <CodeMirror
+                    height="400px"
+                  />
                 </FormItem>
                 <FormItem field='type' label='类型' required>
                   <Select defaultValue='model_solution'>
@@ -196,7 +237,7 @@ const App = (props) => {
         <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
       </Card>
       <Card title={'运行信息'}>
-        <Submission pid={props.problem.id} entityType={2} />
+        <Submission pid={problem.id} entityType={2} />
       </Card>
     </>
   );

@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Modal, Button, Form, Input } from '@arco-design/web-react';
+import { Modal, Button, Form, Input, Radio, Space, Typography } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { createProblem } from '@/api/problem';
 import { useRouter } from 'next/router';
 const FormItem = Form.Item;
+import styles from './style/index.module.less';
 
 function App() {
   const t = useLocale(locale);
@@ -44,6 +45,35 @@ function App() {
         >
           <FormItem label='题目名称' required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
+          </FormItem>
+          <FormItem label='题目类型' required field='type' defaultValue={0} help='题目类型创建后不可修改' rules={[{ required: true }]}>
+            <Radio.Group className={styles['card-radio-group']}>
+              {[
+                { name: '标准输入输出题', value: 0, help: '用户需要完成标准输入输出'},
+                { name: '函数题', value: 1, help: '用户只需要补全函数'}
+              ].map((item) => {
+                return (
+                  <Radio key={item.value} value={item.value}>
+                    {({ checked }) => {
+                      return (
+                        <Space
+                          align='start'
+                          className={`${styles['custom-radio-card']} ${checked ? styles['custom-radio-card-checked'] : ''}`}
+                        >
+                          <div className={styles['custom-radio-card-mask']}>
+                            <div className={styles['custom-radio-card-mask-dot']}></div>
+                          </div>
+                          <div>
+                            <div className={styles['custom-radio-card-title']}>{item.name}</div>
+                            <Typography.Text type='secondary'>{item.help}</Typography.Text>
+                          </div>
+                        </Space>
+                      );
+                    }}
+                  </Radio>
+                );
+              })}
+            </Radio.Group>
           </FormItem>
         </Form>
       </Modal>

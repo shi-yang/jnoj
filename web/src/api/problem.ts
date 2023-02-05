@@ -3,6 +3,7 @@ import axios from '@/utils/request';
 export interface Problem {
   id: number;
   name: string;
+  type: string;
   statements: Array<{
     id: number;
     name: string;

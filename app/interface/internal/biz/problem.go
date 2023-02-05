@@ -19,6 +19,7 @@ type Problem struct {
 	ID            int
 	Name          string
 	UserID        int
+	Type          int // 题目类型：标准输入输出、函数题
 	TimeLimit     int64
 	MemoryLimit   int64
 	AcceptedCount int
@@ -36,6 +37,11 @@ type Problem struct {
 const (
 	ProblemStatusPrivate = iota + 1 // 私有
 	ProblemStatusPublic             // 公开
+)
+
+const (
+	ProblemTypeDefault = iota
+	ProblemTypeFunction
 )
 
 // 题目权限

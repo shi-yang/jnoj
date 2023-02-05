@@ -84,7 +84,7 @@ func TestCompile(t *testing.T) {
 			source := readSourceFile(filepath.Join("./testdata/compile", test.name))
 			u, _ := uuid.NewUUID()
 			compilePath := filepath.Join(workDir, u.String())
-			err := Compile(compilePath, source, &Languages[LANG_C])
+			err := Compile(compilePath, source, &Languages[LangC])
 			msg, ok := test.expected(err)
 			if ok {
 				t.Log(msg)

@@ -26,22 +26,26 @@ const _ = http.SupportPackageIsVersion1
 const OperationProblemServiceAddProblemToProblemset = "/jnoj.interface.v1.ProblemService/AddProblemToProblemset"
 const OperationProblemServiceCreateProblem = "/jnoj.interface.v1.ProblemService/CreateProblem"
 const OperationProblemServiceCreateProblemFile = "/jnoj.interface.v1.ProblemService/CreateProblemFile"
+const OperationProblemServiceCreateProblemLanguage = "/jnoj.interface.v1.ProblemService/CreateProblemLanguage"
 const OperationProblemServiceCreateProblemStatement = "/jnoj.interface.v1.ProblemService/CreateProblemStatement"
 const OperationProblemServiceCreateProblemTest = "/jnoj.interface.v1.ProblemService/CreateProblemTest"
 const OperationProblemServiceCreateProblemset = "/jnoj.interface.v1.ProblemService/CreateProblemset"
 const OperationProblemServiceDeleteProblemFile = "/jnoj.interface.v1.ProblemService/DeleteProblemFile"
 const OperationProblemServiceDeleteProblemFromProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset"
+const OperationProblemServiceDeleteProblemLanguage = "/jnoj.interface.v1.ProblemService/DeleteProblemLanguage"
 const OperationProblemServiceDeleteProblemStatement = "/jnoj.interface.v1.ProblemService/DeleteProblemStatement"
 const OperationProblemServiceDeleteProblemTest = "/jnoj.interface.v1.ProblemService/DeleteProblemTest"
 const OperationProblemServiceDeleteProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemset"
 const OperationProblemServiceGetProblem = "/jnoj.interface.v1.ProblemService/GetProblem"
 const OperationProblemServiceGetProblemFile = "/jnoj.interface.v1.ProblemService/GetProblemFile"
+const OperationProblemServiceGetProblemLanguage = "/jnoj.interface.v1.ProblemService/GetProblemLanguage"
 const OperationProblemServiceGetProblemStatement = "/jnoj.interface.v1.ProblemService/GetProblemStatement"
 const OperationProblemServiceGetProblemTest = "/jnoj.interface.v1.ProblemService/GetProblemTest"
 const OperationProblemServiceGetProblemVerification = "/jnoj.interface.v1.ProblemService/GetProblemVerification"
 const OperationProblemServiceGetProblemset = "/jnoj.interface.v1.ProblemService/GetProblemset"
 const OperationProblemServiceGetProblemsetProblem = "/jnoj.interface.v1.ProblemService/GetProblemsetProblem"
 const OperationProblemServiceListProblemFiles = "/jnoj.interface.v1.ProblemService/ListProblemFiles"
+const OperationProblemServiceListProblemLanguages = "/jnoj.interface.v1.ProblemService/ListProblemLanguages"
 const OperationProblemServiceListProblemStatements = "/jnoj.interface.v1.ProblemService/ListProblemStatements"
 const OperationProblemServiceListProblemStdCheckers = "/jnoj.interface.v1.ProblemService/ListProblemStdCheckers"
 const OperationProblemServiceListProblemTests = "/jnoj.interface.v1.ProblemService/ListProblemTests"
@@ -55,6 +59,7 @@ const OperationProblemServiceSortProblemsetProblems = "/jnoj.interface.v1.Proble
 const OperationProblemServiceUpdateProblem = "/jnoj.interface.v1.ProblemService/UpdateProblem"
 const OperationProblemServiceUpdateProblemChecker = "/jnoj.interface.v1.ProblemService/UpdateProblemChecker"
 const OperationProblemServiceUpdateProblemFile = "/jnoj.interface.v1.ProblemService/UpdateProblemFile"
+const OperationProblemServiceUpdateProblemLanguage = "/jnoj.interface.v1.ProblemService/UpdateProblemLanguage"
 const OperationProblemServiceUpdateProblemStatement = "/jnoj.interface.v1.ProblemService/UpdateProblemStatement"
 const OperationProblemServiceUpdateProblemTest = "/jnoj.interface.v1.ProblemService/UpdateProblemTest"
 const OperationProblemServiceUpdateProblemset = "/jnoj.interface.v1.ProblemService/UpdateProblemset"
@@ -64,22 +69,26 @@ type ProblemServiceHTTPServer interface {
 	AddProblemToProblemset(context.Context, *AddProblemToProblemsetRequest) (*emptypb.Empty, error)
 	CreateProblem(context.Context, *CreateProblemRequest) (*CreateProblemResponse, error)
 	CreateProblemFile(context.Context, *CreateProblemFileRequest) (*ProblemFile, error)
+	CreateProblemLanguage(context.Context, *CreateProblemLanguageRequest) (*ProblemLanguage, error)
 	CreateProblemStatement(context.Context, *CreateProblemStatementRequest) (*ProblemStatement, error)
 	CreateProblemTest(context.Context, *CreateProblemTestRequest) (*ProblemTest, error)
 	CreateProblemset(context.Context, *CreateProblemsetRequest) (*Problemset, error)
 	DeleteProblemFile(context.Context, *DeleteProblemFileRequest) (*emptypb.Empty, error)
 	DeleteProblemFromProblemset(context.Context, *DeleteProblemFromProblemsetRequest) (*emptypb.Empty, error)
+	DeleteProblemLanguage(context.Context, *DeleteProblemLanguageRequest) (*emptypb.Empty, error)
 	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*emptypb.Empty, error)
 	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*emptypb.Empty, error)
 	DeleteProblemset(context.Context, *DeleteProblemsetRequest) (*emptypb.Empty, error)
 	GetProblem(context.Context, *GetProblemRequest) (*Problem, error)
 	GetProblemFile(context.Context, *GetProblemFileRequest) (*ProblemFile, error)
+	GetProblemLanguage(context.Context, *GetProblemLanguageRequest) (*ProblemLanguage, error)
 	GetProblemStatement(context.Context, *GetProblemStatementRequest) (*ProblemStatement, error)
 	GetProblemTest(context.Context, *GetProblemTestRequest) (*ProblemTest, error)
 	GetProblemVerification(context.Context, *GetProblemVerificationRequest) (*ProblemVerification, error)
 	GetProblemset(context.Context, *GetProblemsetRequest) (*Problemset, error)
 	GetProblemsetProblem(context.Context, *GetProblemsetProblemRequest) (*Problem, error)
 	ListProblemFiles(context.Context, *ListProblemFilesRequest) (*ListProblemFilesResponse, error)
+	ListProblemLanguages(context.Context, *ListProblemLanguagesRequest) (*ListProblemLanguagesResponse, error)
 	ListProblemStatements(context.Context, *ListProblemStatementsRequest) (*ListProblemStatementsResponse, error)
 	ListProblemStdCheckers(context.Context, *ListProblemStdCheckersRequest) (*ListProblemStdCheckersResponse, error)
 	ListProblemTests(context.Context, *ListProblemTestsRequest) (*ListProblemTestsResponse, error)
@@ -93,6 +102,7 @@ type ProblemServiceHTTPServer interface {
 	UpdateProblem(context.Context, *UpdateProblemRequest) (*Problem, error)
 	UpdateProblemChecker(context.Context, *UpdateProblemCheckerRequest) (*emptypb.Empty, error)
 	UpdateProblemFile(context.Context, *UpdateProblemFileRequest) (*ProblemFile, error)
+	UpdateProblemLanguage(context.Context, *UpdateProblemLanguageRequest) (*ProblemLanguage, error)
 	UpdateProblemStatement(context.Context, *UpdateProblemStatementRequest) (*ProblemStatement, error)
 	UpdateProblemTest(context.Context, *UpdateProblemTestRequest) (*ProblemTest, error)
 	UpdateProblemset(context.Context, *UpdateProblemsetRequest) (*Problemset, error)
@@ -105,6 +115,11 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblem*", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblem*", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblem*", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemLanguage", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemLanguage", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/GetProblemLanguage*", auth.Guest())
+	s.Use("/jnoj.interface.v1.ProblemService/ListProblemLanguages*", auth.Guest())
+	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemLanguage*", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemFiles", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemStdCheckers", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemTests", auth.User())
@@ -143,6 +158,11 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.PUT("/problems/{id}/files/{sid}", _ProblemService_UpdateProblemFile0_HTTP_Handler(srv))
 	r.DELETE("/problems/{id}/files/{sid}", _ProblemService_DeleteProblemFile0_HTTP_Handler(srv))
 	r.POST("/problem_files/{sid}/run", _ProblemService_RunProblemFile0_HTTP_Handler(srv))
+	r.GET("/problems/{problem_id}/languages", _ProblemService_ListProblemLanguages0_HTTP_Handler(srv))
+	r.GET("/problems/{problem_id}/languages/{id}", _ProblemService_GetProblemLanguage0_HTTP_Handler(srv))
+	r.POST("/problems/{problem_id}/languages", _ProblemService_CreateProblemLanguage0_HTTP_Handler(srv))
+	r.PUT("/problems/{problem_id}/languages/{id}", _ProblemService_UpdateProblemLanguage0_HTTP_Handler(srv))
+	r.DELETE("/problems/{problem_id}/languages/{id}", _ProblemService_DeleteProblemLanguage0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/std_checkers", _ProblemService_ListProblemStdCheckers0_HTTP_Handler(srv))
 	r.PUT("/problems/{id}/checkers", _ProblemService_UpdateProblemChecker0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/verify", _ProblemService_VerifyProblem0_HTTP_Handler(srv))
@@ -616,6 +636,116 @@ func _ProblemService_RunProblemFile0_HTTP_Handler(srv ProblemServiceHTTPServer) 
 	}
 }
 
+func _ProblemService_ListProblemLanguages0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListProblemLanguagesRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceListProblemLanguages)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListProblemLanguages(ctx, req.(*ListProblemLanguagesRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListProblemLanguagesResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_GetProblemLanguage0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetProblemLanguageRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceGetProblemLanguage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetProblemLanguage(ctx, req.(*GetProblemLanguageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ProblemLanguage)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_CreateProblemLanguage0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateProblemLanguageRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceCreateProblemLanguage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateProblemLanguage(ctx, req.(*CreateProblemLanguageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ProblemLanguage)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_UpdateProblemLanguage0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateProblemLanguageRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceUpdateProblemLanguage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateProblemLanguage(ctx, req.(*UpdateProblemLanguageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ProblemLanguage)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_DeleteProblemLanguage0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteProblemLanguageRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceDeleteProblemLanguage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteProblemLanguage(ctx, req.(*DeleteProblemLanguageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_ListProblemStdCheckers0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListProblemStdCheckersRequest
@@ -944,22 +1074,26 @@ type ProblemServiceHTTPClient interface {
 	AddProblemToProblemset(ctx context.Context, req *AddProblemToProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	CreateProblem(ctx context.Context, req *CreateProblemRequest, opts ...http.CallOption) (rsp *CreateProblemResponse, err error)
 	CreateProblemFile(ctx context.Context, req *CreateProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
+	CreateProblemLanguage(ctx context.Context, req *CreateProblemLanguageRequest, opts ...http.CallOption) (rsp *ProblemLanguage, err error)
 	CreateProblemStatement(ctx context.Context, req *CreateProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
 	CreateProblemTest(ctx context.Context, req *CreateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	CreateProblemset(ctx context.Context, req *CreateProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
 	DeleteProblemFile(ctx context.Context, req *DeleteProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemFromProblemset(ctx context.Context, req *DeleteProblemFromProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteProblemLanguage(ctx context.Context, req *DeleteProblemLanguageRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemset(ctx context.Context, req *DeleteProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetProblem(ctx context.Context, req *GetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	GetProblemFile(ctx context.Context, req *GetProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
+	GetProblemLanguage(ctx context.Context, req *GetProblemLanguageRequest, opts ...http.CallOption) (rsp *ProblemLanguage, err error)
 	GetProblemStatement(ctx context.Context, req *GetProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
 	GetProblemTest(ctx context.Context, req *GetProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	GetProblemVerification(ctx context.Context, req *GetProblemVerificationRequest, opts ...http.CallOption) (rsp *ProblemVerification, err error)
 	GetProblemset(ctx context.Context, req *GetProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
 	GetProblemsetProblem(ctx context.Context, req *GetProblemsetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	ListProblemFiles(ctx context.Context, req *ListProblemFilesRequest, opts ...http.CallOption) (rsp *ListProblemFilesResponse, err error)
+	ListProblemLanguages(ctx context.Context, req *ListProblemLanguagesRequest, opts ...http.CallOption) (rsp *ListProblemLanguagesResponse, err error)
 	ListProblemStatements(ctx context.Context, req *ListProblemStatementsRequest, opts ...http.CallOption) (rsp *ListProblemStatementsResponse, err error)
 	ListProblemStdCheckers(ctx context.Context, req *ListProblemStdCheckersRequest, opts ...http.CallOption) (rsp *ListProblemStdCheckersResponse, err error)
 	ListProblemTests(ctx context.Context, req *ListProblemTestsRequest, opts ...http.CallOption) (rsp *ListProblemTestsResponse, err error)
@@ -973,6 +1107,7 @@ type ProblemServiceHTTPClient interface {
 	UpdateProblem(ctx context.Context, req *UpdateProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	UpdateProblemChecker(ctx context.Context, req *UpdateProblemCheckerRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateProblemFile(ctx context.Context, req *UpdateProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
+	UpdateProblemLanguage(ctx context.Context, req *UpdateProblemLanguageRequest, opts ...http.CallOption) (rsp *ProblemLanguage, err error)
 	UpdateProblemStatement(ctx context.Context, req *UpdateProblemStatementRequest, opts ...http.CallOption) (rsp *ProblemStatement, err error)
 	UpdateProblemTest(ctx context.Context, req *UpdateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	UpdateProblemset(ctx context.Context, req *UpdateProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
@@ -1018,6 +1153,19 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemFile(ctx context.Context, in
 	pattern := "/problems/{id}/files"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceCreateProblemFile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) CreateProblemLanguage(ctx context.Context, in *CreateProblemLanguageRequest, opts ...http.CallOption) (*ProblemLanguage, error) {
+	var out ProblemLanguage
+	pattern := "/problems/{problem_id}/languages"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceCreateProblemLanguage))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
@@ -1091,6 +1239,19 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemFromProblemset(ctx context.C
 	return &out, err
 }
 
+func (c *ProblemServiceHTTPClientImpl) DeleteProblemLanguage(ctx context.Context, in *DeleteProblemLanguageRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problems/{problem_id}/languages/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemLanguage))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *ProblemServiceHTTPClientImpl) DeleteProblemStatement(ctx context.Context, in *DeleteProblemStatementRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/problems/{id}/statements/{sid}"
@@ -1148,6 +1309,19 @@ func (c *ProblemServiceHTTPClientImpl) GetProblemFile(ctx context.Context, in *G
 	pattern := "/problems/{id}/files/{sid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceGetProblemFile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) GetProblemLanguage(ctx context.Context, in *GetProblemLanguageRequest, opts ...http.CallOption) (*ProblemLanguage, error) {
+	var out ProblemLanguage
+	pattern := "/problems/{problem_id}/languages/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceGetProblemLanguage))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -1226,6 +1400,19 @@ func (c *ProblemServiceHTTPClientImpl) ListProblemFiles(ctx context.Context, in 
 	pattern := "/problems/{id}/files"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceListProblemFiles))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) ListProblemLanguages(ctx context.Context, in *ListProblemLanguagesRequest, opts ...http.CallOption) (*ListProblemLanguagesResponse, error) {
+	var out ListProblemLanguagesResponse
+	pattern := "/problems/{problem_id}/languages"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceListProblemLanguages))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -1395,6 +1582,19 @@ func (c *ProblemServiceHTTPClientImpl) UpdateProblemFile(ctx context.Context, in
 	pattern := "/problems/{id}/files/{sid}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemFile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) UpdateProblemLanguage(ctx context.Context, in *UpdateProblemLanguageRequest, opts ...http.CallOption) (*ProblemLanguage, error) {
+	var out ProblemLanguage
+	pattern := "/problems/{problem_id}/languages/{id}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemLanguage))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

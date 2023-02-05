@@ -98,7 +98,7 @@ export default ({problem}) => {
   return (
     <Card>
       <Row gutter={64}>
-        <Col xs={24} sm={8} md={6} lg={4}>
+        <Col flex='400px'>
           <List
             className={styles['list-actions']}
             bordered
@@ -124,7 +124,7 @@ export default ({problem}) => {
             ))}
           </List>
         </Col>
-        <Col xs={24} sm={16} md={18} lg={20}>
+        <Col flex='auto'>
           { statements.length > 0 &&
           <Form form={form} layout='vertical' autoComplete='off' onSubmit={onSubmit}>
             <FormItem field='name' label={t['name']}>

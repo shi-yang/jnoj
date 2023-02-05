@@ -33,3 +33,23 @@ export function runProblemFile(id: number) {
 export function listProblemStdCheckers(id: number) {
   return axios.get(`/problems/${id}/std_checkers`)
 }
+
+export function createProblemLanguage(id:number, data) {
+  return axios.post(`/problems/${id}/languages`, data)
+}
+
+export function getProblemLanguage(problemId:number, id:number) {
+  return axios.get(`/problems/${problemId}/languages/${id}`)
+}
+
+export function listProblemLanguages(problemId:number, params=undefined) {
+  return axios.get(`/problems/${problemId}/languages`, {params})
+}
+
+export function deleteProblemLanguage(problemId:number, id:number) {
+  return axios.delete(`/problems/${problemId}/languages/${id}`)
+}
+
+export function updateProblemLanguage(problemId:number, id:number, data) {
+  return axios.put(`/problems/${problemId}/languages/${id}`, data)
+}

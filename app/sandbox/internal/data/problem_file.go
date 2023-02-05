@@ -11,6 +11,7 @@ import (
 type ProblemFile struct {
 	ID        int
 	Name      string
+	Language  int
 	Content   string
 	Type      string
 	ProblemID int
@@ -21,10 +22,10 @@ type ProblemFile struct {
 	DeletedAt gorm.DeletedAt
 }
 
-func (r *submissionRepo) GetProblemFile(ctx context.Context, id int) (*biz.ProblemFile, error) {
+func (r *submissionRepo) GetProblemFile(ctx context.Context, problem *biz.ProblemFile) (*biz.ProblemFile, error) {
 	var res ProblemFile
 	err := r.data.db.Model(ProblemFile{}).
-		First(&res, "id = ?", id).Error
+		First(&res, problem).Error
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +33,7 @@ func (r *submissionRepo) GetProblemFile(ctx context.Context, id int) (*biz.Probl
 		ID:        res.ID,
 		ProblemID: res.ProblemID,
 		Name:      res.Name,
+		Language:  res.Language,
 		Content:   res.Content,
 		Type:      res.Type,
 		FileType:  res.FileType,

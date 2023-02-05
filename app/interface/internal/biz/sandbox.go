@@ -2,6 +2,8 @@ package biz
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 	"time"
 
 	"jnoj/app/interface/internal/conf"
@@ -20,28 +22,48 @@ import (
 // SandboxUsecase is a Sandbox usecase.
 type SandboxUsecase struct {
 	sandboxClient sandboxV1.SandboxServiceClient
+	problemRepo   ProblemRepo
 	log           *log.Helper
 }
 
 // NewSandboxUsecase new a Submission usecase.
 func NewSandboxUsecase(
 	sandboxClient sandboxV1.SandboxServiceClient,
+	problemRepo ProblemRepo,
 	logger log.Logger,
 ) *SandboxUsecase {
 	return &SandboxUsecase{
 		sandboxClient: sandboxClient,
+		problemRepo:   problemRepo,
 		log:           log.NewHelper(logger),
 	}
 }
 
 func (uc *SandboxUsecase) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunResponse, error) {
-	resp, err := uc.sandboxClient.Run(ctx, &sandboxV1.RunRequest{
+	runRequest := &sandboxV1.RunRequest{
 		Stdin:       req.Stdin,
 		Source:      req.Source,
 		Language:    int32(req.Language),
 		TimeLimit:   req.TimeLimit,
 		MemoryLimit: req.MemoryLimit,
-	})
+	}
+	// 处理函数题的提交
+	if req.LanguageId != nil {
+		file, err := uc.problemRepo.GetProblemFile(ctx, &ProblemFile{
+			ID:       int(*req.LanguageId),
+			Language: int(req.Language),
+		})
+		if err != nil {
+			return nil, v1.ErrorNotFound(err.Error())
+		}
+		var lang ProblemLanguage
+		if err := json.Unmarshal([]byte(file.Content), &lang); err != nil {
+			return nil, v1.ErrorBadRequest(err.Error())
+		}
+		// 替换 @@@
+		runRequest.Source = strings.ReplaceAll(lang.MainContent, "@@@", req.Source)
+	}
+	resp, err := uc.sandboxClient.Run(ctx, runRequest)
 	if err != nil {
 		return nil, err
 	}

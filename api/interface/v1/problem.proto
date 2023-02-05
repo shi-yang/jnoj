@@ -29,7 +29,7 @@ service ProblemService {
             body: "*"
         };
     };
-    // 创建题目
+    // 修改题目
     rpc UpdateProblem (UpdateProblemRequest) returns (Problem) {
         option (google.api.http) = {
             put: "/problems/{id}"
@@ -146,6 +146,38 @@ service ProblemService {
             body: "*"
         };
     }
+    // 语言文件列表
+    rpc ListProblemLanguages (ListProblemLanguagesRequest) returns (ListProblemLanguagesResponse) {
+        option (google.api.http) = {
+            get: "/problems/{problem_id}/languages"
+        };
+    }
+    // 语言文件详情
+    rpc GetProblemLanguage (GetProblemLanguageRequest) returns (ProblemLanguage) {
+        option (google.api.http) = {
+            get: "/problems/{problem_id}/languages/{id}"
+        };
+    }
+    // 创建语言文件
+    rpc CreateProblemLanguage (CreateProblemLanguageRequest) returns (ProblemLanguage) {
+        option (google.api.http) = {
+            post: "/problems/{problem_id}/languages"
+            body: "*"
+        };
+    }
+    // 修改语言文件
+    rpc UpdateProblemLanguage (UpdateProblemLanguageRequest) returns (ProblemLanguage) {
+        option (google.api.http) = {
+            put: "/problems/{problem_id}/languages/{id}"
+            body: "*"
+        };
+    }
+    // 删除语言文件
+    rpc DeleteProblemLanguage (DeleteProblemLanguageRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/problems/{problem_id}/languages/{id}"
+        };
+    }
     // 获取std裁判程序
     rpc ListProblemStdCheckers (ListProblemStdCheckersRequest) returns (ListProblemStdCheckersResponse) {
         option (google.api.http) = {
@@ -245,33 +277,41 @@ service ProblemService {
     };
 }
 
+
+// 题目类型：标准输入输出、函数题
+enum ProblemType {
+    DEFAULT = 0; // 标准输入输出
+    FUNCTION = 1; // 函数题
+}
+
 // 题目
 message Problem {
     // 题目ID
     int32 id = 1;
     // 名称
     string name = 2;
+    ProblemType type = 3;
     // 时间限制
-    int32 time_limit = 3;
+    int32 time_limit = 4;
     // 内存限制
-    int32 memory_limit = 4;
+    int32 memory_limit = 5;
     // 题目描述
-    repeated ProblemStatement statements = 5;
-    int32 accepted_count = 6;
-    int32 submit_count = 7;
-    int32 status = 8;
-    int32 checker_id = 9;
+    repeated ProblemStatement statements = 6;
+    int32 accepted_count = 7;
+    int32 submit_count = 8;
+    int32 status = 9;
+    int32 checker_id = 10;
     // 题目来源
-    string source = 10;
-    int32 user_id = 11;
+    string source = 11;
+    int32 user_id = 12;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 12;
-    google.protobuf.Timestamp created_at = 13;
-    google.protobuf.Timestamp updated_at = 14;
+    repeated SampleTest sample_tests = 13;
+    google.protobuf.Timestamp created_at = 14;
+    google.protobuf.Timestamp updated_at = 15;
 }
 
 // 题目描述
@@ -309,7 +349,7 @@ message CreateProblemRequest {
     // 题目名称
     string name = 1;
     // 题目类型
-    int32 type = 2;
+    ProblemType type = 2;
 }
 
 message CreateProblemResponse {
@@ -418,8 +458,10 @@ message SortProblemTestsRequest {
 message ListProblemFilesRequest {
     int32 id = 1;
     string file_type = 2;
-    int32 page = 3;
-    int32 per_page = 4;
+    string type = 3;
+    string name = 4;
+    int32 page = 5;
+    int32 per_page = 6;
 }
 
 message ListProblemFilesResponse {
@@ -435,23 +477,25 @@ message GetProblemFileRequest {
 message ProblemFile {
     int32 id = 1;
     string name = 2;
-    string content = 3;
-    string type = 4;
-    int32 user_id = 5;
-    string file_type = 6;
-    int64 file_size = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    int32 language = 3;
+    string content = 4;
+    string type = 5;
+    int32 user_id = 6;
+    string file_type = 7;
+    int64 file_size = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
 }
 
 message CreateProblemFileRequest {
     int32 id = 1;
     string name = 2;
-    string content = 3;
-    string type = 4;
-    string file_type = 5;
-    string filename = 6;
-    bytes file_content = 7;
+    int32 language = 3;
+    string content = 4;
+    string type = 5;
+    string file_type = 6;
+    string filename = 7;
+    bytes file_content = 8;
 }
 
 message UpdateProblemFileRequest {
@@ -599,4 +643,45 @@ message SortProblemsetProblemsRequest {
         int32 id = 2;
     }
     repeated ProblemsetProblems ids = 2;
+}
+
+message ProblemLanguage {
+    int32 id = 1;
+    int32 language_code = 2;
+    string language_name = 3;
+    string user_content = 4;
+    string main_content = 5;
+}
+
+message ListProblemLanguagesRequest {
+    int32 problem_id = 1;
+}
+
+message ListProblemLanguagesResponse {
+    repeated ProblemLanguage data = 1;
+    int64 total = 2;
+}
+
+message GetProblemLanguageRequest {
+    int32 problem_id = 1;
+    int32 id =2;
+}
+
+message CreateProblemLanguageRequest {
+    int32 problem_id = 1;
+    string user_content = 2;
+    string main_content = 3;
+    int32 language = 4;
+}
+
+message UpdateProblemLanguageRequest {
+    int32 problem_id = 1;
+    int32 id = 2;
+    string user_content = 3;
+    string main_content = 4;
+}
+
+message DeleteProblemLanguageRequest {
+    int32 problem_id = 1;
+    int32 id = 2;
 }

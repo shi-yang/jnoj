@@ -19,20 +19,17 @@ import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
 import { isLogged } from '@/utils/auth';
 import ProblemContext from './context';
-
-const LANG_C = 'C';
-const LANG_CPP = 'C++';
-const LANG_JAVA = 'Java';
-const LANG_PYTHON = 'Python';
+import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 
 export default function App() {
   const t = useLocale(locale);
   const { problem } = useContext(ProblemContext);
-  const languageOptions = [LANG_C, LANG_CPP, LANG_JAVA, LANG_PYTHON];
   const codemirrorLangs = [cpp, cpp, java, python];
   const [value, setValue] = useState('')
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
+  const [languageId, setLanguageId] = useState(0);
   const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
+  const [languageList, setLanguageList] = useState([]);
   const [extensions, setExtensions] = useState(codemirrorLangs[language]);
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
@@ -49,6 +46,33 @@ export default function App() {
   const onChangeLanguage = (e) => {
     setLanguage(e);
     setExtensions(codemirrorLangs[e]);
+    // 函数题需要查询对应的语言模板
+    if (problem.type === 'FUNCTION') {
+      const lang = languageList.find(item => {
+        return item.languageCode === Number(e)
+      })
+      getProblemLanguage(problem.id, lang.id)
+        .then(res => {
+          setLanguageId(lang.id);
+          setValue(res.data.userContent);
+        })
+    }
+  }
+  const getLanguages = () => {
+    listProblemLanguages(problem.id)
+      .then(res => {
+        const langs = res.data.data
+        setLanguageList(langs);
+        const userLang = langs.find(item => {
+          return item.languageCode === Number(language)
+        })
+        if (problem.type === 'FUNCTION' && userLang) {
+          getProblemLanguage(problem.id, userLang.id)
+            .then(res => {
+              setValue(res.data.userContent);
+            })
+        }
+      })
   }
   const onSubmit = () => {
     const data = {
@@ -58,12 +82,13 @@ export default function App() {
     };
     createSubmission(data).then(res => {
       Message.success('已提交');
-      setLatestSubmissionID(res.data.id)
+      setLatestSubmissionID(res.data.id);
     });
   }
   useEffect(() => {
-    setCases(problem.sampleTests.map(item => item.input))
+    setCases(problem.sampleTests.map(item => item.input));
     setIsMounted(true);
+    getLanguages();
   }, [])
   return (
     <div className={styles['container']}>
@@ -73,12 +98,12 @@ export default function App() {
           defaultValue={language}
           placeholder='请选择语言'
           style={{ width: 154 }}
-          onChange={(e) => onChangeLanguage(e)}
+          onChange={onChangeLanguage}
         >
-          {languageOptions.map((item, index) => {
+          {languageList.map((item, index) => {
             return (
-              <Select.Option key={item} value={`${index}`}>
-                {item}
+              <Select.Option key={index} value={`${item.languageCode}`}>
+                {item.languageName}
               </Select.Option>
             )
           })}
@@ -104,12 +129,13 @@ export default function App() {
         className={styles['code-editor']}
         extensions={extensions}
         theme={themes[theme]}
+        value={value}
         onChange={onChange}
       />
       {
         isMounted &&
         <div style={{display: consoleVisible ? 'block' : 'none'}}>
-          <Console ref={consoleRef} problem={problem} defaultCases={cases} language={language} source={value} />
+          <Console ref={consoleRef} problem={problem} defaultCases={cases} language={language} languageId={languageId} source={value} />
         </div>
       }
       <div className={styles.footer}>
@@ -226,7 +252,7 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
   )
 }
 
-function ConsoleComponent({ problem, defaultCases, language, source }, ref) {
+function ConsoleComponent({ problem, defaultCases, language, languageId, source }, ref) {
   const t = useLocale(locale);
   const [casesResult, setCasesResult] = useState([]);
   const [activeTab, setActiveTab] = useState('cases');
@@ -252,6 +278,9 @@ function ConsoleComponent({ problem, defaultCases, language, source }, ref) {
           timeLimit: problem.timeLimit,
           memoryLimit: problem.memoryLimit,
         };
+        if (languageId !== 0) {
+          data.languageId = languageId          
+        }
         p.push(runSandbox(data))
       })
       setCompileMsg('');

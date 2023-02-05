@@ -123,6 +123,7 @@ CREATE TABLE `problem_file` (
   `id` int NOT NULL,
   `problem_id` int UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
+  `language` TINYINT NOT NULL DEFAULT '0',
   `content` text NOT NULL,
   `file_type` varchar(16) NOT NULL,
   `file_size` BIGINT NOT NULL DEFAULT '0',
