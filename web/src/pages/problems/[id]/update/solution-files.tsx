@@ -152,7 +152,8 @@ const App = ({problem}) => {
         name: res.name,
         content: res.content,
         type: res.type,
-        fileType: 'solution'
+        fileType: 'solution',
+        language: res.language
       };
       createProblemFile(problem.id, values)
         .then(res => {

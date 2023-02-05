@@ -51,7 +51,8 @@ const App = (props) => {
         name: res.name,
         content: res.content,
         type: res.type,
-        fileType: 'checker'
+        fileType: 'checker',
+        language: 1,
       };
       createProblemFile(props.problem.id, values)
         .then(res => {
