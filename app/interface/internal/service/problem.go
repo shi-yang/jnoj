@@ -834,6 +834,7 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 		SubmitCount:   int32(data.SubmitCount),
 		AcceptedCount: int32(data.AcceptedCount),
 		CheckerId:     int32(data.CheckerID),
+		Source:        data.Source,
 	}
 	resp.Statements = make([]*v1.ProblemStatement, 0)
 	resp.SampleTests = make([]*v1.Problem_SampleTest, 0)

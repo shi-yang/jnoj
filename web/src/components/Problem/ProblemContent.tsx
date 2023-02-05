@@ -84,6 +84,19 @@ export default ({problem, language}) => {
           </Paragraph>
         </>
       }
+      { problem.source != '' &&
+        <>
+          <Title heading={5}>{t['source']}</Title>
+          <Paragraph>
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              {problem.source}
+            </ReactMarkdown>
+          </Paragraph>
+        </>
+      }
     </Typography>
   )
 }
