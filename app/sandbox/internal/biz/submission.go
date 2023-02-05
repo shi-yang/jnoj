@@ -184,6 +184,7 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 		lang, err := uc.repo.GetProblemFile(ctx, &ProblemFile{
 			ProblemID: problem.ID,
 			Language:  s.Language,
+			FileType:  string(ProblemFileFileTypeLanguage),
 		})
 		if err != nil {
 			s.Verdict = SubmissionVerdictSysemError

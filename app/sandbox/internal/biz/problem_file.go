@@ -16,3 +16,15 @@ type ProblemFile struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
+
+type ProblemFileFileType string
+
+const (
+	ProblemFileFileTypeChecker    ProblemFileFileType = "checker"
+	ProblemFileFileTypeValidator  ProblemFileFileType = "validator"
+	ProblemFileFileTypeSolution   ProblemFileFileType = "solution"
+	ProblemFileFileTypeAttachment ProblemFileFileType = "attachment"
+	ProblemFileFileTypeStatement  ProblemFileFileType = "statement"
+	ProblemFileFileTypePackage    ProblemFileFileType = "package"
+	ProblemFileFileTypeLanguage   ProblemFileFileType = "language"
+)
