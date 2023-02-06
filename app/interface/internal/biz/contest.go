@@ -28,9 +28,9 @@ type Contest struct {
 }
 
 const (
-	ContestRoleGuest  = "guest"
-	ContestRolePlayer = "player"
-	ContestRoleAdmin  = "admin"
+	ContestRoleGuest = iota
+	ContestRolePlayer
+	ContestRoleAdmin
 )
 
 type ContestSubmission struct {
@@ -58,10 +58,10 @@ const (
 )
 
 const (
-	ContestRunningStatusNotStarted      = iota + 1 // 尚未开始
-	ContestRunningStatusInProgress                 // 进行中
-	ContestRunningStatusFrozenStandings            // 封榜
-	ContestRunningStatusFinished                   // 已结束
+	ContestRunningStatusNotStarted      = iota // 尚未开始
+	ContestRunningStatusInProgress             // 进行中
+	ContestRunningStatusFrozenStandings        // 封榜
+	ContestRunningStatusFinished               // 已结束
 )
 
 // GetRunningStatus 获取比赛的状态，是否开始、进行中、封榜、已结束
@@ -97,21 +97,29 @@ func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bo
 	if t == ContestPermissionUpdate {
 		return c.UserID == userID
 	}
+	// 比赛创建人
 	if c.UserID == userID {
 		return true
 	}
+	// 隐藏情况下除了比赛创建人都不准看
 	if c.Status == ContestStatusHidden {
 		return false
 	}
 	runningStatus := c.GetRunningStatus()
+	// 公开赛比赛结束
 	if c.Status == ContestStatusPublic && runningStatus == ContestRunningStatusFinished {
 		return true
 	}
-	return c.GetRole(ctx) == ContestRolePlayer
+	role := c.GetRole(ctx)
+	// 是选手且比赛开始后
+	if role == ContestRolePlayer && runningStatus != ContestRunningStatusNotStarted {
+		return true
+	}
+	return false
 }
 
 // GetRole 获取当前用户的角色
-func (c *Contest) GetRole(ctx context.Context) string {
+func (c *Contest) GetRole(ctx context.Context) int {
 	userID, ok := auth.GetUserID(ctx)
 	if ok && c.UserID == userID {
 		return ContestRoleAdmin

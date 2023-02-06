@@ -9,19 +9,18 @@ import (
 
 // ContestProblem is a ContestProblem model.
 type ContestProblem struct {
-	ID                int
-	Name              string
-	Number            int // 题目次序、A、B、C、D
-	ContestID         int
-	ProblemID         int
-	SubmitCount       int
-	AcceptedCount     int
-	TimeLimit         int64
-	Memory            int64
-	LoginUserIsSolved bool
-	Statements        []*ProblemStatement
-	SampleTest        []*Test
-	CreatedAt         time.Time
+	ID            int
+	Name          string
+	Number        int // 题目次序、A、B、C、D
+	ContestID     int
+	ProblemID     int
+	SubmitCount   int
+	AcceptedCount int
+	TimeLimit     int64
+	Memory        int64
+	Statements    []*ProblemStatement
+	SampleTest    []*Test
+	CreatedAt     time.Time
 }
 
 // ContestProblemRepo is a ContestProblem repo.
@@ -50,10 +49,10 @@ func (uc *ContestUsecase) CreateContestProblem(ctx context.Context, c *ContestPr
 	// 检查题目是否存在
 	problem, err := uc.problemRepo.GetProblem(ctx, c.ProblemID)
 	if err != nil {
-		return nil, errors.New("题目不存在")
+		return nil, errors.New("problem not found")
 	}
 	if !problem.HasPermission(ctx, ProblemPermissionView) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
+		return nil, v1.ErrorPermissionDenied("problem permission denied")
 	}
 	verification, err := uc.problemRepo.GetProblemVerification(ctx, c.ProblemID)
 	if err != nil || verification.VerificationStatus != VerificationStatusSuccess {
@@ -62,13 +61,13 @@ func (uc *ContestUsecase) CreateContestProblem(ctx context.Context, c *ContestPr
 	// 检查题目是否已经在比赛里
 	_, err = uc.repo.GetContestProblemByProblemID(ctx, c.ContestID, c.ProblemID)
 	if err == nil {
-		return nil, errors.New("题目已经存在")
+		return nil, errors.New("problem already exists")
 	}
 	// 统计现有题目数量，以增加题目序号
 	count := uc.repo.CountContestProblem(ctx, c.ContestID)
 	uc.log.Info(count)
 	if count > 25 {
-		return nil, errors.New("已达单场比赛最大题目数量")
+		return nil, errors.New("reached the maximum number(25) of problems in a single contest")
 	}
 	c.Number = count
 	return uc.repo.CreateContestProblem(ctx, c)

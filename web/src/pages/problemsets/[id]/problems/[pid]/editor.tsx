@@ -110,17 +110,23 @@ export default function App() {
         </Select>
         <Select
           size='large'
-          addBefore={<IconSkin />}
           defaultValue={theme}
-          style={{ width: 200 }}
+          style={{ width: 70 }}
           onChange={(e) => setTheme(e)}
+          triggerProps={{
+            autoAlignPopupWidth: false,
+            autoAlignPopupMinWidth: true,
+          }}
+          renderFormat={(option, value) => <IconSkin />}
         >
           {Object.keys(themes).map((item, index) => {
-            return (
-              <Select.Option key={index} value={item}>
-                {item}
-              </Select.Option>
-            )
+            if (item.indexOf('Init') === -1) {
+              return (
+                <Select.Option key={index} value={item}>
+                  {item}
+                </Select.Option>
+              )
+            }
           })}
         </Select>
       </div>

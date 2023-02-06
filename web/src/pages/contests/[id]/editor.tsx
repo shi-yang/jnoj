@@ -49,7 +49,6 @@ export default function App(props) {
         <Select
           size='large'
           defaultValue={language}
-          placeholder='请选择语言'
           style={{ width: 154 }}
           onChange={(e) => onChangeLanguage(e)}
         >
@@ -63,18 +62,23 @@ export default function App(props) {
         </Select>
         <Select
           size='large'
-          addBefore={<IconSkin />}
           defaultValue={theme}
-          placeholder='编辑器主题'
-          style={{ width: 200 }}
+          style={{ width: 70 }}
           onChange={(e) => setTheme(e)}
+          triggerProps={{
+            autoAlignPopupWidth: false,
+            autoAlignPopupMinWidth: true,
+          }}
+          renderFormat={(option, value) => <IconSkin />}
         >
           {Object.keys(themes).map((item, index) => {
-            return (
-              <Select.Option key={index} value={item}>
-                {item}
-              </Select.Option>
-            )
+            if (item.indexOf('Init') === -1) {
+              return (
+                <Select.Option key={index} value={item}>
+                  {item}
+                </Select.Option>
+              )
+            }
           })}
         </Select>
       </div>

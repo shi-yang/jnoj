@@ -53,7 +53,7 @@ type ContestServiceHTTPServer interface {
 
 func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.ContestService/CreateContest", auth.User())
-	s.Use("/jnoj.interface.v1.ContestService/*Update*", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/UpdateContest", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/*Delete*", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContests", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/GetContest", auth.Guest())

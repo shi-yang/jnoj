@@ -35,16 +35,7 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			StartTime:        timestamppb.New(v.StartTime),
 			EndTime:          timestamppb.New(v.EndTime),
 			Type:             int32(v.Type),
-		}
-		switch runningStatus {
-		case biz.ContestRunningStatusNotStarted:
-			c.RunningStatus = v1.Contest_NOT_STARTED
-		case biz.ContestRunningStatusFrozenStandings:
-			c.RunningStatus = v1.Contest_FROZEN_STANDINGS
-		case biz.ContestRunningStatusInProgress:
-			c.RunningStatus = v1.Contest_IN_PROGRESS
-		case biz.ContestRunningStatusFinished:
-			c.RunningStatus = v1.Contest_FINISHED
+			RunningStatus:    v1.Contest_RunningStatus(runningStatus),
 		}
 		resp.Data = append(resp.Data, c)
 	}
@@ -62,20 +53,13 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		Name:             res.Name,
 		Type:             int32(res.Type),
 		Description:      res.Description,
-		Status:           v1.Contest_Status(res.Status),
+		Status:           v1.ContestStatus(res.Status),
 		ParticipantCount: int32(res.ParticipantCount),
 		StartTime:        timestamppb.New(res.StartTime),
 		EndTime:          timestamppb.New(res.EndTime),
 		IsRegistered:     res.IsRegistered,
-	}
-	role := res.GetRole(ctx)
-	switch role {
-	case biz.ContestRoleAdmin:
-		resp.Role = v1.Contest_ADMIN
-	case biz.ContestRolePlayer:
-		resp.Role = v1.Contest_PLAYER
-	default:
-		resp.Role = v1.Contest_GUEST
+		RunningStatus:    v1.Contest_RunningStatus(res.GetRunningStatus()),
+		Role:             v1.Contest_Role(res.GetRole(ctx)),
 	}
 	return resp, nil
 }
@@ -86,7 +70,7 @@ func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContes
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.UpdateContest(ctx, &biz.Contest{

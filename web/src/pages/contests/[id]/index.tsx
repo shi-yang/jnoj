@@ -31,7 +31,7 @@ const normalWidth = 220;
 
 function Index() {
   const t = useLocale(locale);
-  const [contest, setContest] = useState({name: '', startTime: new Date(), endTime: new Date(), status: 0, role: ''});
+  const [contest, setContest] = useState({name: '', startTime: new Date(), endTime: new Date(), status: 0, role: '', runningStatus: ''});
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [siderWidth, setSiderWidth] = useState(normalWidth);
@@ -43,8 +43,6 @@ function Index() {
   const settings = useAppSelector<SettingState>(setting);
   const router = useRouter();
 
-  let timer = null;
-  let contestDuration = 0;
   const fetchData = () => {
     setLoading(true);
     getContest(router.query.id)
@@ -52,7 +50,7 @@ function Index() {
         const { data } = res;
         setContest(data);
         updateTime(data.startTime, data.endTime);
-        if (data.role !== 'GUEST') {
+        if (data.role !== 'GUEST' && data.runningStatus !== 'NOT_STARTED') {
           setMenuSelected('info');
           listContestProblems(router.query.id).then(res => {
             setProblems(res.data.data);
@@ -64,6 +62,8 @@ function Index() {
       });
   }
 
+  let timer = null;
+  let contestDuration = 0;
   const updateTime = (startTime, endTime) => {
     contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime()
     timer = setInterval(() => {
@@ -122,7 +122,9 @@ function Index() {
                 </div>
               </Col>
               <Col md={8}>
-                <div style={{textAlign: 'center'}}><strong>{t['header.now']}</strong>{FormatTime(currentTime)}</div>
+                <div style={{textAlign: 'center'}}>
+                  <strong>{t['header.now']}</strong> {FormatTime(currentTime)}
+                </div>
               </Col>
               <Col md={8} style={{textAlign: 'right'}}>
                 <div>
@@ -130,9 +132,9 @@ function Index() {
                 </div>
               </Col>
             </Row>
-            <Slider defaultValue={sliderValue} />
+            <Slider value={sliderValue} />
           </Header>
-          {contest.role === 'GUEST' ? <Forbidden contest={contest} /> :
+          {contest.role === 'GUEST' || (contest.role !== 'ADMIN' && contest.runningStatus === 'NOT_STARTED') ? <Forbidden contest={contest} /> :
             <Layout style={{height: '100%'}}>
               <Sider
                 collapsible

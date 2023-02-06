@@ -11,6 +11,22 @@ body {
   background-color: var(--color-bg-1);
 }
 
+::-webkit-scrollbar {
+  width: 13px;
+  height: 1px;
+}
+
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  background: var(--color-neutral-3);
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: var(--color-neutral-1);
+}
+
 #__next {
   height: 100%;
   width: 100%;
@@ -36,27 +52,51 @@ img {
 }
 
 @media (min-width: 576px) {
-  .container-sm, .container {
+
+  .container-sm,
+  .container {
     max-width: 540px;
   }
 }
+
 @media (min-width: 768px) {
-  .container-md, .container-sm, .container {
+
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 720px;
   }
 }
+
 @media (min-width: 992px) {
-  .container-lg, .container-md, .container-sm, .container {
+
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 960px;
   }
 }
+
 @media (min-width: 1200px) {
-  .container-xl, .container-lg, .container-md, .container-sm, .container {
+
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 1140px;
   }
 }
+
 @media (min-width: 1400px) {
-  .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+
+  .container-xxl,
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 1320px;
   }
 }
@@ -64,11 +104,9 @@ img {
 body[arco-theme='dark'] {
   .chart-wrapper {
     .bizcharts-tooltip {
-      background: linear-gradient(
-        304.17deg,
-        rgba(90, 92, 95, 60%) -6.04%,
-        rgba(87, 87, 87, 60%) 85.2%
-      ) !important;
+      background: linear-gradient(304.17deg,
+          rgba(90, 92, 95, 60%) -6.04%,
+          rgba(87, 87, 87, 60%) 85.2%) !important;
       backdrop-filter: blur(10px);
       border-radius: 6px;
       box-shadow: none !important;
@@ -79,8 +117,10 @@ body[arco-theme='dark'] {
 .arco-tabs-content {
   padding: 0;
   height: 100%;
+
   .arco-tabs-content-inner {
     height: 100%;
+
     .arco-tabs-content-item {
       height: 100%;
     }
@@ -91,6 +131,7 @@ body[arco-theme='dark'] {
   height: 100%;
 }
 
-.arco-menu-horizontal .arco-menu-item .arco-icon {
-  margin-right: 8px;
+.cm-editor {
+  font-size: 16px;
+  line-height: 1.5;
 }

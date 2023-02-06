@@ -1346,6 +1346,8 @@ func (m *ContestProblem) validate(all bool) error {
 
 	// no validation rules for MemoryLimit
 
+	// no validation rules for Source
+
 	for idx, item := range m.GetStatements() {
 		_, _ = idx, item
 

@@ -59,6 +59,12 @@ const ContestType = [
   { name: 'OI', description: 'Olympiad in Informatics', value: 3 },
 ]
 
+const ContestStatus = [
+  { name: '隐藏', description: '仅邀请用户可参加', value: 'HIDDEN', id: 0 },
+  { name: '公开', description: '任何人均可参加', value: 'PUBLIC', id: 1 },
+  { name: '私有', description: '仅邀请用户可参加', value: 'PRIVATE', id: 2 },
+]
+
 const SettingInfo = ({contest}) => {
   const t = useLocale(locale);
   const [form] = Form.useForm();
@@ -66,11 +72,13 @@ const SettingInfo = ({contest}) => {
   const [problems, setProblems] = useState([]);
   function onSubmit() {
     form.validate().then((values) => {
+      const status = ContestStatus.find(item => item.value === values.status);
       const data = {
         name: values.name,
         startTime: new Date(values.time[0]).toISOString(),
         endTime: new Date(values.time[1]).toISOString(),
         type: values.type,
+        status: status.id,
       };
       setConfirmLoading(true)
       updateContest(contest.id, data)
@@ -100,6 +108,7 @@ const SettingInfo = ({contest}) => {
       name: contest.name,
       time: [contest.startTime, contest.endTime],
       type: contest.type,
+      status: contest.status,
     });
     listProblems();
   }, [])
@@ -117,6 +126,32 @@ const SettingInfo = ({contest}) => {
               }}
               format='YYYY-MM-DD HH:mm:ss'
             />
+          </Form.Item>
+          <Form.Item label={t['setting.info.contestStatus']} required field='status' rules={[{ required: true }]}>
+            <Radio.Group className={styles['card-radio-group']}>
+              {ContestStatus.map((item, index) => {
+                return (
+                  <Radio key={index} value={item.value}>
+                    {({ checked }) => {
+                      return (
+                        <Space
+                          align='start'
+                          className={styles[`custom-radio-card`] + (checked ?  ' ' + styles['custom-radio-card-checked']: '')}
+                        >
+                          <div className={styles['custom-radio-card-mask']}>
+                            <div className={styles['custom-radio-card-mask-dot']}></div>
+                          </div>
+                          <div>
+                            <div className={styles['custom-radio-card-title']}>{item.name}</div>
+                            <Typography.Text type='secondary'>{item.description}</Typography.Text>
+                          </div>
+                        </Space>
+                      );
+                    }}
+                  </Radio>
+                );
+              })}
+            </Radio.Group>
           </Form.Item>
           <Form.Item label={t['setting.info.contestType']} required field='type' rules={[{ required: true }]}>
             <Radio.Group className={styles['card-radio-group']}>

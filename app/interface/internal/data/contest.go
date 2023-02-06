@@ -134,9 +134,11 @@ func (r *contestRepo) UpdateContest(ctx context.Context, c *biz.Contest) (*biz.C
 		FrozenTime:  c.FrozenTime,
 		Type:        c.Type,
 		Description: c.Description,
+		Status:      c.Status,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
+		Select("Name", "StartTime", "EndTime", "FrozenTime", "Type", "Description", "Status").
 		Updates(&res).Error
 	return &biz.Contest{
 		ID: res.ID,
