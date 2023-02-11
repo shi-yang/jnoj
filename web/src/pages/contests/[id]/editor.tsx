@@ -14,7 +14,7 @@ export default function App(props) {
   const [value, setValue] = useState('')
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageList, setLanguageList] = useState([]);
-  const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
+  const [theme, setTheme] = useStorage('CODE_THEME', 'light');
   const themes = [
     'light', 'vs-dark'
   ];
@@ -88,15 +88,11 @@ export default function App(props) {
           }}
           renderFormat={(option, value) => <IconSkin />}
         >
-          {Object.keys(themes).map((item, index) => {
-            if (item.indexOf('Init') === -1) {
-              return (
-                <Select.Option key={index} value={item}>
-                  {item}
-                </Select.Option>
-              )
-            }
-          })}
+          {themes.map((item, index) => 
+            <Select.Option key={index} value={item}>
+              {item}
+            </Select.Option>
+          )}
         </Select>
       </div>
       <div className={styles.container}>
