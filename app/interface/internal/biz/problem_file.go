@@ -30,13 +30,14 @@ type ProblemFile struct {
 type ProblemFileFileType string
 
 const (
-	ProblemFileFileTypeChecker    ProblemFileFileType = "checker"
+	ProblemFileFileTypeChecker    ProblemFileFileType = "checker" // 检查器
 	ProblemFileFileTypeValidator  ProblemFileFileType = "validator"
-	ProblemFileFileTypeSolution   ProblemFileFileType = "solution"
-	ProblemFileFileTypeAttachment ProblemFileFileType = "attachment"
-	ProblemFileFileTypeStatement  ProblemFileFileType = "statement"
-	ProblemFileFileTypePackage    ProblemFileFileType = "package"
-	ProblemFileFileTypeLanguage   ProblemFileFileType = "language"
+	ProblemFileFileTypeSolution   ProblemFileFileType = "solution"   // 解答方案
+	ProblemFileFileTypeAttachment ProblemFileFileType = "attachment" // 附件
+	ProblemFileFileTypeStatement  ProblemFileFileType = "statement"  // 描述图片
+	ProblemFileFileTypePackage    ProblemFileFileType = "package"    // 打包文件
+	ProblemFileFileTypeLanguage   ProblemFileFileType = "language"   // 语言
+	ProblemFileFileTypeSubtask    ProblemFileFileType = "subtask"    // 子任务定义
 )
 
 const (
@@ -74,11 +75,21 @@ func (uc *ProblemUsecase) GetProblemFile(ctx context.Context, id int) (*ProblemF
 // CreateProblemFile creates a ProblemFile, and returns the new ProblemFile.
 func (uc *ProblemUsecase) CreateProblemFile(ctx context.Context, p *ProblemFile) (*ProblemFile, error) {
 	p.UserID, _ = auth.GetUserID(ctx)
+	if p.FileType == string(ProblemFileFileTypeSubtask) {
+		if _, err := uc.GetProblemSubtaskContent(p.Content); err != nil {
+			return nil, v1.ErrorBadRequest(err.Error())
+		}
+	}
 	return uc.repo.CreateProblemFile(ctx, p)
 }
 
 // UpdateProblemFile update a ProblemFile
 func (uc *ProblemUsecase) UpdateProblemFile(ctx context.Context, p *ProblemFile) (*ProblemFile, error) {
+	if p.FileType == string(ProblemFileFileTypeSubtask) {
+		if _, err := uc.GetProblemSubtaskContent(p.Content); err != nil {
+			return nil, v1.ErrorBadRequest(err.Error())
+		}
+	}
 	return uc.repo.UpdateProblemFile(ctx, p)
 }
 

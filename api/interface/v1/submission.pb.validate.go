@@ -775,6 +775,8 @@ func (m *SubmissionInfo) validate(all bool) error {
 
 	// no validation rules for CompileMsg
 
+	// no validation rules for Score
+
 	// no validation rules for Memory
 
 	// no validation rules for Time
@@ -783,7 +785,9 @@ func (m *SubmissionInfo) validate(all bool) error {
 
 	// no validation rules for AcceptedTestCount
 
-	for idx, item := range m.GetTests() {
+	// no validation rules for HasSubtask
+
+	for idx, item := range m.GetSubtasks() {
 		_, _ = idx, item
 
 		if all {
@@ -791,7 +795,7 @@ func (m *SubmissionInfo) validate(all bool) error {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, SubmissionInfoValidationError{
-						field:  fmt.Sprintf("Tests[%v]", idx),
+						field:  fmt.Sprintf("Subtasks[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -799,7 +803,7 @@ func (m *SubmissionInfo) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, SubmissionInfoValidationError{
-						field:  fmt.Sprintf("Tests[%v]", idx),
+						field:  fmt.Sprintf("Subtasks[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -808,7 +812,7 @@ func (m *SubmissionInfo) validate(all bool) error {
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return SubmissionInfoValidationError{
-					field:  fmt.Sprintf("Tests[%v]", idx),
+					field:  fmt.Sprintf("Subtasks[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -1019,3 +1023,151 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SubmissionInfo_SubmissionTestValidationError{}
+
+// Validate checks the field values on SubmissionInfo_SubmissionSubtaskResult
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *SubmissionInfo_SubmissionSubtaskResult) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// SubmissionInfo_SubmissionSubtaskResult with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// SubmissionInfo_SubmissionSubtaskResultMultiError, or nil if none found.
+func (m *SubmissionInfo_SubmissionSubtaskResult) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmissionInfo_SubmissionSubtaskResult) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Score
+
+	// no validation rules for Time
+
+	// no validation rules for Memory
+
+	// no validation rules for Verdict
+
+	for idx, item := range m.GetTests() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, SubmissionInfo_SubmissionSubtaskResultValidationError{
+						field:  fmt.Sprintf("Tests[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, SubmissionInfo_SubmissionSubtaskResultValidationError{
+						field:  fmt.Sprintf("Tests[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return SubmissionInfo_SubmissionSubtaskResultValidationError{
+					field:  fmt.Sprintf("Tests[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return SubmissionInfo_SubmissionSubtaskResultMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmissionInfo_SubmissionSubtaskResultMultiError is an error wrapping
+// multiple validation errors returned by
+// SubmissionInfo_SubmissionSubtaskResult.ValidateAll() if the designated
+// constraints aren't met.
+type SubmissionInfo_SubmissionSubtaskResultMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmissionInfo_SubmissionSubtaskResultMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmissionInfo_SubmissionSubtaskResultMultiError) AllErrors() []error { return m }
+
+// SubmissionInfo_SubmissionSubtaskResultValidationError is the validation
+// error returned by SubmissionInfo_SubmissionSubtaskResult.Validate if the
+// designated constraints aren't met.
+type SubmissionInfo_SubmissionSubtaskResultValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmissionInfo_SubmissionSubtaskResultValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmissionInfo_SubmissionSubtaskResultValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmissionInfo_SubmissionSubtaskResultValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmissionInfo_SubmissionSubtaskResultValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmissionInfo_SubmissionSubtaskResultValidationError) ErrorName() string {
+	return "SubmissionInfo_SubmissionSubtaskResultValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmissionInfo_SubmissionSubtaskResultValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmissionInfo_SubmissionSubtaskResult.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmissionInfo_SubmissionSubtaskResultValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmissionInfo_SubmissionSubtaskResultValidationError{}

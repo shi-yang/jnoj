@@ -84,6 +84,11 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => 
       render: (col) => <SubmissionVerdict verdict={col} />
     },
     {
+      title: t['score'],
+      dataIndex: 'score',
+      align: 'center',
+    },
+    {
       title: t['time'],
       dataIndex: 'time',
       align: 'center',

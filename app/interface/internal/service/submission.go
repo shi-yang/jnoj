@@ -87,27 +87,38 @@ func (s *SubmissionService) GetSubmissionInfo(ctx context.Context, req *v1.GetSu
 		return nil, err
 	}
 	resp := &v1.SubmissionInfo{
+		Score:             float32(res.Score),
 		CompileMsg:        res.CompileMsg,
 		Memory:            res.Memory,
 		Time:              res.Time,
+		HasSubtask:        res.HasSubtask,
 		TotalTestCount:    int32(res.TotalTestCount),
 		AcceptedTestCount: int32(res.AcceptedTestCount),
 	}
-	resp.Tests = make([]*v1.SubmissionInfo_SubmissionTest, 0)
-	for _, v := range res.Tests {
-		resp.Tests = append(resp.Tests, &v1.SubmissionInfo_SubmissionTest{
-			Memory:          v.Memory,
-			Time:            v.Time,
-			Stdin:           v.Stdin,
-			Stdout:          v.Stdout,
-			Answer:          v.Answer,
-			Stderr:          v.Stderr,
-			Verdict:         int32(v.Verdict),
-			ExitCode:        int32(v.ExitCode),
-			Score:           int32(v.Score),
-			CheckerExitCode: int32(v.CheckerExitCode),
-			CheckerStdout:   v.CheckerStdout,
-		})
+	resp.Subtasks = make([]*v1.SubmissionInfo_SubmissionSubtaskResult, 0)
+	for _, subtask := range res.Subtasks {
+		subtaskResult := &v1.SubmissionInfo_SubmissionSubtaskResult{
+			Verdict: int32(subtask.Verdict),
+			Memory:  subtask.Memory,
+			Time:    subtask.Time,
+			Score:   float32(subtask.Score),
+		}
+		for _, v := range subtask.Tests {
+			subtaskResult.Tests = append(subtaskResult.Tests, &v1.SubmissionInfo_SubmissionTest{
+				Memory:          v.Memory,
+				Time:            v.Time,
+				Stdin:           v.Stdin,
+				Stdout:          v.Stdout,
+				Answer:          v.Answer,
+				Stderr:          v.Stderr,
+				Verdict:         int32(v.Verdict),
+				ExitCode:        int32(v.ExitCode),
+				Score:           int32(v.Score),
+				CheckerExitCode: int32(v.CheckerExitCode),
+				CheckerStdout:   v.CheckerStdout,
+			})
+		}
+		resp.Subtasks = append(resp.Subtasks, subtaskResult)
 	}
 	return resp, nil
 }

@@ -30,14 +30,23 @@ type Submission struct {
 }
 
 type SubmissionResult struct {
-	Score             int
+	Score             float64
 	Verdict           int
 	CompileMsg        string
 	Memory            int64
 	Time              int64
 	TotalTestCount    int
+	HasSubtask        bool
 	AcceptedTestCount int
-	Tests             []*SubmissionTest
+	Subtasks          []*SubmissionSubtaskResult // 子任务
+}
+
+type SubmissionSubtaskResult struct {
+	Score   float64           // 分数
+	Time    int64             // 时间
+	Memory  int64             // 内存
+	Verdict int               // 结果
+	Tests   []*SubmissionTest // 测试点
 }
 
 type SubmissionTest struct {

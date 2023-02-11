@@ -76,6 +76,11 @@ const Submission = (props) => {
       render: (col) => <SubmissionVerdict verdict={col} />
     },
     {
+      title: t['score'],
+      dataIndex: 'score',
+      align: 'center',
+    },
+    {
       title: t['time'],
       dataIndex: 'time',
       align: 'center',

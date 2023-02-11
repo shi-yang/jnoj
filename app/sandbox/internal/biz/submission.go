@@ -38,14 +38,23 @@ type Submission struct {
 }
 
 type SubmissionResult struct {
-	Score             int
+	Score             float64
 	Verdict           int
 	CompileMsg        string
 	Memory            int64
 	Time              int64
 	TotalTestCount    int
+	HasSubtask        bool
 	AcceptedTestCount int
-	Tests             []*SubmissionTest
+	Subtasks          []*SubmissionSubtaskResult // 子任务
+}
+
+type SubmissionSubtaskResult struct {
+	Score   float64           // 分数
+	Time    int64             // 时间
+	Memory  int64             // 内存
+	Verdict int               // 结果
+	Tests   []*SubmissionTest // 测试点
 }
 
 type SubmissionTest struct {
@@ -70,7 +79,6 @@ type Problem struct {
 	MemoryLimit   int64
 	Checker       string
 	AcceptedCount int
-	Tests         []*Test
 }
 
 const (
@@ -80,6 +88,7 @@ const (
 
 type Test struct {
 	ID     int
+	Order  int
 	Input  []byte
 	Output []byte
 }
@@ -170,11 +179,11 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 	var source string
 	s, _ := uc.repo.GetSubmission(ctx, id)
 	problem, _ := uc.repo.GetProblem(ctx, s.ProblemID)
-	needUpdateAnswer := false
+	isGenerateOutput := false
 	if s.EntityType == SubmissionEntityTypeProblemFile {
 		problemFile, err := uc.repo.GetProblemFile(ctx, &ProblemFile{ID: s.EntityID})
 		if err == nil && problemFile.Type == "model_solution" {
-			needUpdateAnswer = true
+			isGenerateOutput = true
 		}
 	}
 	source = s.Source
@@ -200,39 +209,44 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 		// @@@替换
 		source = strings.ReplaceAll(problemLang.MainContent, "@@@", s.Source)
 	}
-	uc.log.Infof("RunSubmission = [%+v] needUpdateAnswer=[%+v]\n", s.ID, needUpdateAnswer)
+	problemTest, _ := uc.prepareProblemTest(ctx, problem.ID)
+	uc.log.Infof("RunSubmission = [%+v] isGenerateOutput=[%+v]\n", s.ID, isGenerateOutput)
 	go func(s *Submission) {
-		res := uc.runTests(context.TODO(), s.ID, source, s.Language, s.UserID, problem, needUpdateAnswer)
-		for index, v := range res.Tests {
-			if needUpdateAnswer {
-				var outputPreview string
-				if len(v.Stdout) > 32 {
-					outputPreview = string([]byte(v.Stdout)[:32])
-				} else {
-					outputPreview = string(v.Stdout)
+		ctx := context.TODO()
+		res := uc.runTests(ctx, s.ID, source, s.Language, s.UserID, problem, problemTest, isGenerateOutput)
+		for i, subtask := range res.Subtasks {
+			for j, v := range subtask.Tests {
+				if isGenerateOutput {
+					var outputPreview string
+					if len(v.Stdout) > 32 {
+						outputPreview = string([]byte(v.Stdout)[:32])
+					} else {
+						outputPreview = string(v.Stdout)
+					}
+					// 保存输出
+					uc.repo.UpdateProblemTestStdOutput(ctx, problemTest.Subtasks[i].TestData[j].ID, []byte(v.Stdout), outputPreview)
 				}
-				uc.repo.UpdateProblemTestStdOutput(context.TODO(), problem.Tests[index].ID, []byte(v.Stdout), outputPreview)
+				res.Subtasks[i].Tests[j].Stdin = substrLength([]byte(v.Stdin), 99)
+				res.Subtasks[i].Tests[j].Stdout = substrLength([]byte(v.Stdout), 99)
+				res.Subtasks[i].Tests[j].Stderr = substrLength([]byte(v.Stderr), 99)
+				res.Subtasks[i].Tests[j].Answer = substrLength([]byte(v.Answer), 99)
 			}
-			res.Tests[index].Stdin = substrLength([]byte(v.Stdin), 99)
-			res.Tests[index].Stdout = substrLength([]byte(v.Stdout), 99)
-			res.Tests[index].Stderr = substrLength([]byte(v.Stderr), 99)
-			res.Tests[index].Answer = substrLength([]byte(v.Answer), 99)
 		}
 		r, _ := json.Marshal(*res)
-		err := uc.repo.CreateSubmissionInfo(context.TODO(), s.ID, string(r))
+		err := uc.repo.CreateSubmissionInfo(ctx, s.ID, string(r))
 		if err != nil {
 			uc.log.Info("CreateSubmissionInfo err:", err)
 		}
 		s.Verdict = res.Verdict
 		s.Memory = int(res.Memory)
 		s.Time = int(res.Time)
-		uc.repo.UpdateSubmission(context.TODO(), s)
+		s.Score = int(res.Score)
+		uc.repo.UpdateSubmission(ctx, s)
 		// 通过时计数
 		if s.Verdict == SubmissionVerdictAccepted {
-			ctx := context.TODO()
 			if s.EntityType == SubmissionEntityTypeCommon {
 				problem.AcceptedCount += 1
-				uc.repo.UpdateProblem(context.TODO(), problem)
+				uc.repo.UpdateProblem(ctx, problem)
 			} else if s.EntityType == SubmissionEntityTypeContest {
 				contestProblem, err := uc.repo.GetContestProblemByProblemID(ctx, s.EntityID, s.ProblemID)
 				if err != nil {
@@ -261,6 +275,46 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 	return nil, nil
 }
 
+func (uc *SubmissionUsecase) prepareProblemTest(ctx context.Context, problemId int) (*ProblemSubtask, error) {
+	var (
+		subtaskContent string
+	)
+	tests := uc.repo.ListProblemTests(ctx, problemId)
+	subtaskFile, err := uc.repo.GetProblemFile(ctx, &ProblemFile{
+		ProblemID: problemId,
+		FileType:  string(ProblemFileFileTypeSubtask),
+	})
+	if err == nil {
+		subtaskContent = subtaskFile.Content
+	}
+	problemSubtask := &ProblemSubtask{}
+	subtasks, err := uc.GetProblemSubtaskContent(subtaskContent)
+	// 子任务配置文件不存在，则平分每个测试点作为子任务
+	if err != nil {
+		task := Subtask{
+			Score: 100,
+		}
+		task.TestData = append(task.TestData, tests...)
+		problemSubtask.Subtasks = append(problemSubtask.Subtasks, task)
+		problemSubtask.TotalTest = len(tests)
+	} else {
+		// 子任务存在
+		problemSubtask.HasSubtask = true
+		problemSubtask.Subtasks = append(problemSubtask.Subtasks, subtasks...)
+		for i, task := range problemSubtask.Subtasks {
+			for _, order := range task.Tests {
+				for _, test := range tests {
+					if test.Order == order {
+						problemSubtask.Subtasks[i].TestData = append(problemSubtask.Subtasks[i].TestData, test)
+					}
+				}
+			}
+			problemSubtask.TotalTest += len(problemSubtask.Subtasks[i].TestData)
+		}
+	}
+	return problemSubtask, nil
+}
+
 func (uc *SubmissionUsecase) runTests(
 	ctx context.Context,
 	submissionId int,
@@ -268,12 +322,15 @@ func (uc *SubmissionUsecase) runTests(
 	langCode int,
 	userId int,
 	problem *Problem,
-	needUpdateAnswer bool,
+	problemTest *ProblemSubtask,
+	isGenerateOutput bool,
 ) *SubmissionResult {
 	uc.log.Info(source)
 	result := new(SubmissionResult)
 	result.Verdict = SubmissionVerdictAccepted
-	result.Tests = make([]*SubmissionTest, 0)
+	result.Subtasks = make([]*SubmissionSubtaskResult, 0)
+	result.TotalTestCount = problemTest.TotalTest
+	result.HasSubtask = problemTest.HasSubtask
 
 	// 编译源码
 	u, _ := uuid.NewUUID()
@@ -288,97 +345,128 @@ func (uc *SubmissionUsecase) runTests(
 
 	// 编译 checker
 	// TODO checker 可能被用户进程修改？
-	if !needUpdateAnswer {
+	if !isGenerateOutput {
 		err = sandbox.Compile(workDir, problem.Checker, checkerLanguage)
 		if err != nil {
 			uc.log.Info("sandbox.Compile err:", err)
+			result.Verdict = SubmissionVerdictSysemError
 			return result
 		}
 	}
-	result.TotalTestCount = len(problem.Tests)
-	for index, test := range problem.Tests {
-		uc.log.Infof("Submission[%d] runing test [%d/%d] start...", submissionId, index+1, len(problem.Tests))
-		// 向客户端发送测评进度
-		go func() {
-			m := queueV1.Message{
-				Type:    queueV1.Message_SUBMISSION_RESULT,
-				UserId:  int32(userId),
-				Message: make(map[string]string),
-			}
-			m.Message["sid"] = strconv.Itoa(submissionId)
-			m.Message["status"] = "running"
-			m.Message["message"] = fmt.Sprintf("testing on %d/%d", index+1, result.TotalTestCount)
-			jsonCodec := encoding.GetCodec("json")
-			res, _ := jsonCodec.Marshal(&m)
-			uc.queueClient.Push(context.TODO(), res)
-		}()
-		runRes := sandbox.Run(workDir, &sandbox.Languages[langCode], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
-		var checkerRes *sandbox.Result
-		if runRes.RuntimeErr == "" && !needUpdateAnswer {
+	// 子任务
+	currentTest := 0
+	for _, subtask := range problemTest.Subtasks {
+		// 子任务的测试点
+		var subtaskResult SubmissionSubtaskResult
+		subtaskResult.Verdict = SubmissionVerdictAccepted
+		for _, test := range subtask.TestData {
+			currentTest++
+			uc.log.Infof("Submission[%d] runing test [%d/%d] start...", submissionId, currentTest, problemTest.TotalTest)
+			// 向客户端发送测评进度
+			go func() {
+				m := queueV1.Message{
+					Type:    queueV1.Message_SUBMISSION_RESULT,
+					UserId:  int32(userId),
+					Message: make(map[string]string),
+				}
+				m.Message["sid"] = strconv.Itoa(submissionId)
+				m.Message["status"] = "running"
+				m.Message["message"] = fmt.Sprintf("testing on %d/%d", currentTest, problemTest.TotalTest)
+				jsonCodec := encoding.GetCodec("json")
+				res, _ := jsonCodec.Marshal(&m)
+				uc.queueClient.Push(context.TODO(), res)
+			}()
+			// 开始运行
+			runRes := sandbox.Run(workDir, &sandbox.Languages[langCode], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
+			var checkerRes *sandbox.Result
 			// 准备运行 checker 所需文件
-			_ = os.WriteFile(filepath.Join(workDir, "user.stdout"), []byte(runRes.Stdout), 0444)
-			_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(test.Input), 0444)
-			_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(test.Output), 0444)
-			// 执行 checker
-			uc.log.Info("Run checker:", workDir)
-			checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 10000)
-		}
-		uc.log.Infof("Submission[%d] runing test [%d/%d] done...", submissionId, index+1, len(problem.Tests))
-		// 记录 Memory 最大值
-		if runRes.Memory > result.Memory {
-			result.Memory = runRes.Memory
-		}
-		// 记录 Time 最大值
-		if runRes.Time > result.Time {
-			result.Time = runRes.Time
-		}
-		// 记录结果
-		t := SubmissionTest{
-			Stdin:      string(test.Input),
-			Stdout:     runRes.Stdout,
-			Stderr:     runRes.Stderr,
-			Answer:     string(test.Output),
-			RuntimeErr: runRes.RuntimeErr,
-			Memory:     runRes.Memory,
-			Time:       runRes.Time,
-			ExitCode:   int(runRes.ExitCode),
-			Verdict:    SubmissionVerdictAccepted,
-		}
-		if checkerRes != nil {
-			t.CheckerStdout = substrLength([]byte(checkerRes.Stderr), 99)
-			t.CheckerExitCode = int(checkerRes.ExitCode)
-		}
-		// 判断结果
-		if runRes.Time/1e3 > problem.TimeLimit {
-			t.Time = problem.TimeLimit * 1e3
-			t.Verdict = SubmissionVerdictTimeLimit
-			result.Time = problem.TimeLimit * 1e3
-		} else if runRes.Memory >= problem.MemoryLimit*1024 {
-			t.Memory = problem.MemoryLimit * 1024
-			t.Verdict = SubmissionVerdictMemoryLimit
-			result.Time = problem.MemoryLimit * 1024
-		} else if runRes.RuntimeErr != "" {
-			t.Verdict = SubmissionVerdictRuntimeError
-		}
-		if t.Verdict == SubmissionVerdictAccepted {
-			// 根据 checker 运行结果来判断
-			if t.CheckerExitCode == CheckerVerdictOK {
-				t.Verdict = SubmissionVerdictAccepted
-			} else if t.CheckerExitCode == CheckerVerdictPresentationError {
-				t.Verdict = SubmissionVerdictPresentationError
-			} else if t.CheckerExitCode == CheckerVerdictFail {
-				t.Verdict = SubmissionVerdictSysemError
+			if runRes.RuntimeErr == "" && !isGenerateOutput {
+				_ = os.WriteFile(filepath.Join(workDir, "user.stdout"), []byte(runRes.Stdout), 0444)
+				_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(test.Input), 0444)
+				_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(test.Output), 0444)
+				// 执行 checker
+				uc.log.Info("Run checker:", workDir)
+				checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 10000)
+			}
+			uc.log.Infof("Submission[%d] runing test [%d/%d] done...", submissionId, currentTest, problemTest.TotalTest)
+			// 记录 Memory 最大值
+			if runRes.Memory > subtaskResult.Memory {
+				subtaskResult.Memory = runRes.Memory
+			}
+			// 记录 Time 最大值
+			if runRes.Time > subtaskResult.Time {
+				subtaskResult.Time = runRes.Time
+			}
+			// 记录结果
+			t := SubmissionTest{
+				Stdin:      string(test.Input),
+				Stdout:     runRes.Stdout,
+				Stderr:     runRes.Stderr,
+				Answer:     string(test.Output),
+				RuntimeErr: runRes.RuntimeErr,
+				Memory:     runRes.Memory,
+				Time:       runRes.Time,
+				ExitCode:   int(runRes.ExitCode),
+				Verdict:    SubmissionVerdictAccepted,
+			}
+			if checkerRes != nil {
+				t.CheckerStdout = substrLength([]byte(checkerRes.Stderr), 99)
+				t.CheckerExitCode = int(checkerRes.ExitCode)
+			}
+			// 判断结果
+			if runRes.Time/1e3 > problem.TimeLimit {
+				t.Time = problem.TimeLimit * 1e3
+				t.Verdict = SubmissionVerdictTimeLimit
+				subtaskResult.Time = problem.TimeLimit * 1e3
+			} else if runRes.Memory >= problem.MemoryLimit*1024 {
+				t.Memory = problem.MemoryLimit * 1024
+				t.Verdict = SubmissionVerdictMemoryLimit
+				subtaskResult.Memory = problem.MemoryLimit * 1024
+			} else if runRes.RuntimeErr != "" {
+				t.Verdict = SubmissionVerdictRuntimeError
+			}
+			if t.Verdict == SubmissionVerdictAccepted {
+				// 根据 checker 运行结果来判断
+				if t.CheckerExitCode == CheckerVerdictOK {
+					t.Verdict = SubmissionVerdictAccepted
+				} else if t.CheckerExitCode == CheckerVerdictPresentationError {
+					t.Verdict = SubmissionVerdictPresentationError
+				} else if t.CheckerExitCode == CheckerVerdictFail {
+					t.Verdict = SubmissionVerdictSysemError
+				} else {
+					t.Verdict = SubmissionVerdictWrongAnswer
+				}
+			}
+			subtaskResult.Tests = append(subtaskResult.Tests, &t)
+			// 记录结果
+			if t.Verdict != SubmissionVerdictAccepted {
+				result.Verdict = t.Verdict
+				subtaskResult.Verdict = t.Verdict
+				// 有子任务的情况下，一旦遇到不是 Accepted，剩下的可以跳过
+				if problemTest.HasSubtask {
+					break
+				}
 			} else {
-				t.Verdict = SubmissionVerdictWrongAnswer
+				result.AcceptedTestCount++
+				if !problemTest.HasSubtask {
+					subtaskResult.Score = 100 / float64(problemTest.TotalTest)
+				}
 			}
 		}
-		result.Tests = append(result.Tests, &t)
-		if t.Verdict != SubmissionVerdictAccepted {
-			result.Verdict = t.Verdict
-			break
-		} else {
-			result.AcceptedTestCount++
+		if subtaskResult.Verdict == SubmissionVerdictAccepted {
+			result.Score += float64(subtask.Score)
+			subtaskResult.Score = float64(subtask.Score)
 		}
+		if result.Time < subtaskResult.Time {
+			result.Time = subtaskResult.Time
+		}
+		if result.Memory < subtaskResult.Memory {
+			result.Memory = subtaskResult.Memory
+		}
+		if !problemTest.HasSubtask && problemTest.TotalTest != 0 {
+			result.Score = 100 * float64(result.AcceptedTestCount) / float64(problemTest.TotalTest)
+		}
+		result.Subtasks = append(result.Subtasks, &subtaskResult)
 	}
 	return result
 }

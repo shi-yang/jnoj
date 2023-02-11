@@ -95,6 +95,7 @@ func (r *problemRepo) GetProblemFile(ctx context.Context, p *biz.ProblemFile) (*
 	return &biz.ProblemFile{
 		ID:        res.ID,
 		ProblemID: res.ProblemID,
+		FileType:  res.FileType,
 		Name:      res.Name,
 		Language:  res.Language,
 		Content:   res.Content,

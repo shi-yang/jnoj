@@ -10,17 +10,23 @@ import SubmissionVerdict from "./SubmissionVerdict";
 
 export default ({id, visible, onCancel}) => {
   const t = useLocale(locale);
-  const [submissionInfo, setSubmissionInfo] = useState({tests: [], compileMsg: '', acceptedTestCount: 0, totalTestCount: 0});
-  const [submission, setSubmission] = useState({source: ''})
+  const [submissionInfo, setSubmissionInfo] = useState({
+    subtasks: [],
+    compileMsg: '',
+    hasSubtask: false,
+    acceptedTestCount: 0,
+    totalTestCount: 0,
+  });
+  const [submission, setSubmission] = useState({source: ''});
 
   function fetchData() {
     getSubmissionInfo(id)
       .then(res => {
-        setSubmissionInfo(res.data)
+        setSubmissionInfo(res.data);
       })
     getSubmission(id)
       .then(res => {
-        setSubmission(res.data)
+        setSubmission(res.data);
       })
   }
   useEffect(() => {
@@ -52,39 +58,93 @@ export default ({id, visible, onCancel}) => {
         style={{ maxWidth: 1180 }}
       >
         {
-          submissionInfo.tests.map((item, index) => (
-            <Collapse.Item
-              header={(
-                <Space split={<Divider type='vertical' />}>
-                  <span>#{index + 1}</span>
-                  <SubmissionVerdict verdict={item.verdict} />
-                  <span>{t['time']}: {(item.time / 1000)} ms</span>
-                  <span>{t['memory']}: {FormatMemorySize(item.memory)}</span>
-                </Space>
-              )}
-              name={`${index}`}
-              key={index}
-            >
-              <div className={styles['sample-test']} key={index}>
-                <div className={styles.input}>
-                  <h4>{t['input']}</h4>
-                  <pre>{item.stdin}</pre>
+          submissionInfo.subtasks.map((item, index) => 
+            submissionInfo.hasSubtask 
+            ? <Collapse.Item
+                header={(
+                  <Space split={<Divider type='vertical' />}>
+                    <span>#{index + 1}</span>
+                    <SubmissionVerdict verdict={item.verdict} />
+                    <span>{t['score']}: {item.score.toFixed(1)}</span>
+                    <span>{t['time']}: {(item.time / 1000)} ms</span>
+                    <span>{t['memory']}: {FormatMemorySize(item.memory)}</span>
+                  </Space>
+                )}
+                name={`${index}`}
+                key={index}
+              >
+                <Collapse>
+                  {
+                    item.tests.map((test, testIndex) => 
+                      <Collapse.Item
+                        header={(
+                          <Space split={<Divider type='vertical' />}>
+                            <span>#{testIndex + 1}</span>
+                            <SubmissionVerdict verdict={test.verdict} />
+                            <span>{t['time']}: {(test.time / 1000)} ms</span>
+                            <span>{t['memory']}: {FormatMemorySize(test.memory)}</span>
+                          </Space>
+                        )}
+                        name={`${index}-${testIndex}`}
+                      >
+                        <div className={styles['sample-test']}>
+                          <div className={styles.input}>
+                            <h4>{t['input']}</h4>
+                            <pre>{test.stdin}</pre>
+                          </div>
+                          <div className={styles.output}>
+                            <h4>{t['output']}</h4>
+                            <pre>{ test.stdout }</pre>
+                          </div>
+                          <div className={styles.output}>
+                            <h4>{t['answer']}</h4>
+                            <pre>{ test.answer }</pre>
+                          </div>
+                          <div className={styles.output}>
+                            <h4>Checker out</h4>
+                            <pre>{ test.checkerStdout }</pre>
+                          </div>
+                        </div>
+                      </Collapse.Item>
+                    )
+                  }
+                </Collapse>
+              </Collapse.Item>
+            : item.tests.map((test, testIndex) =>
+              <Collapse.Item
+                header={(
+                  <Space split={<Divider type='vertical' />}>
+                    <span>#{testIndex + 1}</span>
+                    <SubmissionVerdict verdict={test.verdict} />
+                    <span>{t['score']}: {item.score.toFixed(1)}</span>
+                    <span>{t['time']}: {(test.time / 1000)} ms</span>
+                    <span>{t['memory']}: {FormatMemorySize(test.memory)}</span>
+                  </Space>
+                )}
+                name={`${testIndex}`}
+                key={testIndex}
+              >
+                <div className={styles['sample-test']}>
+                  <div className={styles.input}>
+                    <h4>{t['input']}</h4>
+                    <pre>{test.stdin}</pre>
+                  </div>
+                  <div className={styles.output}>
+                    <h4>{t['output']}</h4>
+                    <pre>{ test.stdout }</pre>
+                  </div>
+                  <div className={styles.output}>
+                    <h4>{t['answer']}</h4>
+                    <pre>{ test.answer }</pre>
+                  </div>
+                  <div className={styles.output}>
+                    <h4>Checker out</h4>
+                    <pre>{ test.checkerStdout }</pre>
+                  </div>
                 </div>
-                <div className={styles.output}>
-                  <h4>{t['output']}</h4>
-                  <pre>{ item.stdout }</pre>
-                </div>
-                <div className={styles.output}>
-                  <h4>{t['answer']}</h4>
-                  <pre>{ item.answer }</pre>
-                </div>
-                <div className={styles.output}>
-                  <h4>Checker out</h4>
-                  <pre>{ item.checkerStdout }</pre>
-                </div>
-              </div>
-            </Collapse.Item>
-          ))
+              </Collapse.Item>
+            )
+          )
         }
       </Collapse>
     </Drawer>

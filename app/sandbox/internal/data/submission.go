@@ -111,7 +111,6 @@ func (r *submissionRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, 
 		MemoryLimit:   p.MemoryLimit,
 		AcceptedCount: p.AcceptedCount,
 	}
-	res.Tests = r.ListProblemTests(ctx, id)
 	res.Checker, err = r.getProblemChecker(ctx, id)
 	if err != nil {
 		return res, err
@@ -179,15 +178,17 @@ func (r *submissionRepo) ListProblemTests(ctx context.Context, id int) []*biz.Te
 	r.data.db.WithContext(ctx).
 		Model(&ProblemTest{}).
 		Where("problem_id = ?", id).
+		Order("`order`").
 		Find(&tests)
 
 	res := make([]*biz.Test, 0)
-	for _, v := range tests {
+	for index, v := range tests {
 		store := objectstorage.NewSeaweed()
 		in, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, id, v.ID))
 		out, _ := store.GetObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, id, v.ID))
 		res = append(res, &biz.Test{
 			ID:     v.ID,
+			Order:  index + 1,
 			Input:  in,
 			Output: out,
 		})
@@ -241,6 +242,7 @@ func (r *submissionRepo) UpdateSubmission(ctx context.Context, s *biz.Submission
 		Memory:  s.Memory,
 		Time:    s.Time,
 		Verdict: s.Verdict,
+		Score:   s.Score,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

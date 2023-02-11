@@ -182,6 +182,6 @@ func (r *problemRepo) SortProblemTests(ctx context.Context, ids []int32) {
 	for index, id := range ids {
 		r.data.db.WithContext(ctx).
 			Model(&ProblemTest{ID: int(id)}).
-			Update("order", index)
+			Update("order", index+1)
 	}
 }

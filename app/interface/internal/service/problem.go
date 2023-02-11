@@ -492,13 +492,20 @@ func (s *ProblemService) UpdateProblemFile(ctx context.Context, req *v1.UpdatePr
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	s.uc.UpdateProblemFile(ctx, &biz.ProblemFile{
-		ID:      int(req.Sid),
-		Name:    req.Name,
-		Content: req.Content,
-		Type:    req.Type,
+	pf, err := s.uc.GetProblemFile(ctx, int(req.Sid))
+	if err != nil || pf.ProblemID != p.ID {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	_, err = s.uc.UpdateProblemFile(ctx, &biz.ProblemFile{
+		ID:       int(req.Sid),
+		Name:     req.Name,
+		Content:  req.Content,
+		Type:     req.Type,
+		FileType: pf.FileType,
 	})
-	return nil, nil
+	return &v1.ProblemFile{
+		Id: int32(pf.ID),
+	}, err
 }
 
 // DeleteProblemFile 删除题目文件

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Message, Modal, PaginationProps, Popover, Radio, Space, Switch, Table, TableColumnProps, Upload } from '@arco-design/web-react';
+import { Button, Card, Form, Grid, Input, Message, Modal, PaginationProps, Popover, Radio, Space, Switch, Table, TableColumnProps, Upload } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
@@ -7,6 +7,7 @@ import { deleteProblemTests, listProblemTests, sortProblemTests, updateProblemTe
 import { FormatStorageSize, FormatTime } from '@/utils/format';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { IconDragDotVertical } from '@arco-design/web-react/icon';
+import { createProblemFile, listProblemFiles, updateProblemFile } from '@/api/problem-file';
 const FormItem = Form.Item;
 
 const arrayMoveMutate = (array, from, to) => {
@@ -39,12 +40,66 @@ const SortableItem = SortableElement((props) => {
   return <tr {...props} />;
 });
 
+interface SubtaskNode {
+  timeLimit?: number,
+  memoryLimit?: number,
+  score: number,
+  tests: number[]
+}
+
+const makeSubtaskVisualization = (content:string) => {
+  const subtasks:SubtaskNode[] = JSON.parse(content)
+  let res = '';
+  subtasks.forEach(item => {
+    if (item.tests.length === 1) {
+      res += '[' + item.tests[0] + '] ';
+    } else if (item.tests.length > 1) {
+      res += '[' + item.tests[0] + '-' + item.tests[item.tests.length - 1] + '] ';
+    }
+    res += item.score + (item.timeLimit ? ' ' + item.timeLimit : '') + (item.memoryLimit ? ' ' + item.memoryLimit : '');
+    res += '\n';
+  })
+  return res;
+}
+
+const makeVisualizationSubtask = (content:string) => {
+  const subtasks:SubtaskNode[] = [];
+  const lines = content.split('\n');
+  lines.forEach(item => {
+    if (item === '') {
+      return
+    }
+    const node:SubtaskNode = {
+      score: 0,
+      tests: [],
+    };
+    const nums = item.match(/\d{1,}/g);
+    if (item.indexOf('-') === -1) {
+      node.tests.push(Number(nums[0]));
+      node.score = Number(nums[1]);
+      node.timeLimit = Number(nums[2]) ?? 0;
+      node.memoryLimit = Number(nums[3]) ?? 0;
+    } else {
+      for (let i = Number(nums[0]); i <= Number(nums[1]); i++) {
+        node.tests.push(i);
+      }
+      node.score = Number(nums[2]);
+      node.timeLimit = Number(nums[3]) ?? 0;
+      node.memoryLimit = Number(nums[4]) ?? 0;
+    }
+    subtasks.push(node);
+  })
+  return subtasks;
+}
+
 const App = (props) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
+  const [subtask, setSubtask] = useState({id: 0, content: ''});
+  const [subtaskVisible, setSubtaskVisible] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -288,20 +343,108 @@ const App = (props) => {
     },
   ];
 
+  function onSaveSubtask() {
+    form.validate().then((res) => {
+      const content = makeVisualizationSubtask(res.content);
+      const values = {
+        content: JSON.stringify(content),
+        fileType: 'subtask'
+      }
+      if (subtask.id !== 0) {
+        updateProblemFile(props.problem.id, subtask.id, values)
+          .then(res => {
+            Message.success('已保存')
+            setVisible(false)
+            fetchData()
+          })
+          .catch(err => {
+            Message.error(err.response.data.message)
+          })
+      } else {
+        createProblemFile(props.problem.id, values)
+          .then(res => {
+            Message.success('已保存')
+            setVisible(false)
+            fetchData()
+          })
+          .catch(err => {
+            Message.error(err.response.data.message)
+          })
+      }
+    });
+  }
+  useEffect(() => {
+    listProblemFiles(props.problem.id, {
+      fileType: 'subtask'
+    }).then(res => {
+      const { data } = res;
+      if (data.data.length > 0) {
+        const subtask = res.data.data[0];
+        subtask.content = makeSubtaskVisualization(subtask.content);
+        setSubtask(subtask);
+      }
+    });
+  }, [])
   useEffect(() => {
     fetchData();
   }, [pagination.current, pagination.pageSize]);
   return (
     <Card>
-      <div className={styles['button-group']}>
-        <Upload
-          style={{width: '100%'}}
-          drag
-          multiple
-          showUploadList={false}
-          customRequest={customRequest}
-        >
-        </Upload>
+      <div className={styles['header']}>
+        <Grid.Row gutter={24}>
+          <Grid.Col span={12}>
+            <Upload
+              style={{width: '100%'}}
+              drag
+              multiple
+              showUploadList={false}
+              customRequest={customRequest}
+            >
+            </Upload>
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <Button
+              onClick={(e) => {
+                setSubtaskVisible(true);
+                form.setFieldValue('content', subtask.content)
+              }}
+            >
+              配置子任务
+            </Button>
+            <Modal
+              title='配置子任务'
+              visible={subtaskVisible}
+              style={{width: '1100px'}}
+              onOk={onSaveSubtask}
+              onCancel={() => setSubtaskVisible(false)}
+              autoFocus={false}
+              focusLock={true}
+            >
+              <Grid.Row gutter={24}>
+                <Grid.Col span={12}>
+                  <Form
+                    form={form}
+                  >
+                    <FormItem field='content' label='配置文件' required>
+                      <Input.TextArea rows={8} />
+                    </FormItem>
+                  </Form>
+                </Grid.Col>
+                <Grid.Col span={12}>
+                  <p>子任务说明，以下为示例代码：</p>
+                  <div>
+                    <pre>
+                      [1-50] 60 1000 254 <br />
+                      [50-99] 30 <br />
+                      [100] 10 <br />
+                    </pre>
+                  </div>
+                  <p>如以上示例，每一行表示一个子任务。其中，<code>[]</code> 内的数字为测试点的范围，接下来第一个数字为分数（必填），第二个数字为时间限制（非必填，ms），第三个数字为内存限制（非必填，MB）</p>
+                </Grid.Col>
+              </Grid.Row>
+            </Modal>
+          </Grid.Col>
+        </Grid.Row>
       </div>
       <Table
         className='drag-table-container'

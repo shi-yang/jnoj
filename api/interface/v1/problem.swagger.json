@@ -254,7 +254,7 @@
         ]
       },
       "put": {
-        "summary": "创建题目",
+        "summary": "修改题目",
         "operationId": "ProblemService_UpdateProblem",
         "responses": {
           "200": {
@@ -296,6 +296,9 @@
                 "status": {
                   "type": "integer",
                   "format": "int32"
+                },
+                "source": {
+                  "type": "string"
                 }
               }
             }
@@ -385,6 +388,18 @@
             "type": "string"
           },
           {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -437,6 +452,10 @@
               "properties": {
                 "name": {
                   "type": "string"
+                },
+                "language": {
+                  "type": "integer",
+                  "format": "int32"
                 },
                 "content": {
                   "type": "string"
@@ -587,6 +606,46 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problems/{id}/pack": {
+      "post": {
+        "summary": "打包题目",
+        "operationId": "ProblemService_PackProblem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
             }
           }
         ],
@@ -1125,6 +1184,623 @@
           "ProblemService"
         ]
       }
+    },
+    "/problems/{problemId}/languages": {
+      "get": {
+        "summary": "语言文件列表",
+        "operationId": "ProblemService_ListProblemLanguages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProblemLanguagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "post": {
+        "summary": "创建语言文件",
+        "operationId": "ProblemService_CreateProblemLanguage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProblemLanguage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userContent": {
+                  "type": "string"
+                },
+                "mainContent": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problems/{problemId}/languages/{id}": {
+      "get": {
+        "summary": "语言文件详情",
+        "operationId": "ProblemService_GetProblemLanguage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProblemLanguage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "delete": {
+        "summary": "删除语言文件",
+        "operationId": "ProblemService_DeleteProblemLanguage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "put": {
+        "summary": "修改语言文件",
+        "operationId": "ProblemService_UpdateProblemLanguage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ProblemLanguage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userContent": {
+                  "type": "string"
+                },
+                "mainContent": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problemsets": {
+      "get": {
+        "summary": "题单列表",
+        "operationId": "ProblemService_ListProblemsets",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProblemsetsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "post": {
+        "summary": "创建题单",
+        "operationId": "ProblemService_CreateProblemset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Problemset"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateProblemsetRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problemsets/{id}": {
+      "get": {
+        "summary": "获取题单",
+        "operationId": "ProblemService_GetProblemset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Problemset"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "delete": {
+        "summary": "删除题单",
+        "operationId": "ProblemService_DeleteProblemset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "put": {
+        "summary": "修改题单",
+        "operationId": "ProblemService_UpdateProblemset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Problemset"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problemsets/{id}/problem/sort": {
+      "post": {
+        "summary": "对题单的题目进行排序",
+        "operationId": "ProblemService_SortProblemsetProblems",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SortProblemsetProblemsRequestProblemsetProblems"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problemsets/{id}/problems": {
+      "get": {
+        "summary": "获取题单的题目",
+        "operationId": "ProblemService_ListProblemsetProblems",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProblemsetProblemsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      },
+      "post": {
+        "summary": "添加题目到题单",
+        "operationId": "ProblemService_AddProblemToProblemset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "problemId": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problemsets/{id}/problems/{pid}": {
+      "get": {
+        "summary": "获取题单的题目",
+        "operationId": "ProblemService_GetProblemsetProblem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Problem"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
+    "/problemsets/{id}/problems/{problemId}": {
+      "delete": {
+        "summary": "从题单中删除题目",
+        "operationId": "ProblemService_DeleteProblemFromProblemset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "problemId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -1136,6 +1812,19 @@
         },
         "errorMessage": {
           "type": "string"
+        }
+      }
+    },
+    "SortProblemsetProblemsRequestProblemsetProblems": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1174,8 +1863,7 @@
           "title": "题目名称"
         },
         "type": {
-          "type": "integer",
-          "format": "int32",
+          "$ref": "#/definitions/v1ProblemType",
           "title": "题目类型"
         }
       }
@@ -1190,6 +1878,17 @@
         }
       }
     },
+    "v1CreateProblemsetRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
     "v1ListProblemFilesResponse": {
       "type": "object",
       "properties": {
@@ -1197,6 +1896,21 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1ProblemFile"
+          }
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ListProblemLanguagesResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ProblemLanguage"
           }
         },
         "total": {
@@ -1240,7 +1954,7 @@
             "$ref": "#/definitions/v1ProblemTest"
           }
         },
-        "count": {
+        "total": {
           "type": "string",
           "format": "int64"
         }
@@ -1261,6 +1975,36 @@
         }
       }
     },
+    "v1ListProblemsetProblemsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ProblemsetProblem"
+          }
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ListProblemsetsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Problemset"
+          }
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "v1Problem": {
       "type": "object",
       "properties": {
@@ -1272,6 +2016,9 @@
         "name": {
           "type": "string",
           "title": "名称"
+        },
+        "type": {
+          "$ref": "#/definitions/v1ProblemType"
         },
         "timeLimit": {
           "type": "integer",
@@ -1306,6 +2053,14 @@
           "type": "integer",
           "format": "int32"
         },
+        "source": {
+          "type": "string",
+          "title": "题目来源"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
         "sampleTests": {
           "type": "array",
           "items": {
@@ -1333,6 +2088,10 @@
         "name": {
           "type": "string"
         },
+        "language": {
+          "type": "integer",
+          "format": "int32"
+        },
         "content": {
           "type": "string"
         },
@@ -1346,6 +2105,10 @@
         "fileType": {
           "type": "string"
         },
+        "fileSize": {
+          "type": "string",
+          "format": "int64"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -1353,6 +2116,28 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1ProblemLanguage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "languageCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "languageName": {
+          "type": "string"
+        },
+        "userContent": {
+          "type": "string"
+        },
+        "mainContent": {
+          "type": "string"
         }
       }
     },
@@ -1452,6 +2237,15 @@
         }
       }
     },
+    "v1ProblemType": {
+      "type": "string",
+      "enum": [
+        "DEFAULT",
+        "FUNCTION"
+      ],
+      "default": "DEFAULT",
+      "title": "题目类型：标准输入输出、函数题"
+    },
     "v1ProblemVerification": {
       "type": "object",
       "properties": {
@@ -1472,6 +2266,86 @@
           "items": {
             "$ref": "#/definitions/ProblemVerificationVerificaitionInfo"
           }
+        }
+      }
+    },
+    "v1Problemset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        },
+        "problemCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1ProblemsetProblem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "题目ID"
+        },
+        "name": {
+          "type": "string",
+          "title": "名称"
+        },
+        "order": {
+          "type": "integer",
+          "format": "int32",
+          "title": "次序"
+        },
+        "timeLimit": {
+          "type": "integer",
+          "format": "int32",
+          "title": "时间限制"
+        },
+        "memoryLimit": {
+          "type": "integer",
+          "format": "int32",
+          "title": "内存限制"
+        },
+        "acceptedCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "submitCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "problemsetId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "problemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "source": {
+          "type": "string",
+          "title": "题目来源"
         }
       }
     }
