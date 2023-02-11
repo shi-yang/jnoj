@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Table, TableColumnProps, PaginationProps, Drawer, Collapse, Divider, Typography, Space } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { getSubmission, getSubmissionInfo, LanguageMap, listSubmissions } from '@/api/submission';
+import { getSubmission, LanguageMap, listSubmissions } from '@/api/submission';
 import styles from './style/submission.module.less'
 import { FormatMemorySize, FormatTime } from '@/utils/format';
 import Highlight from '@/components/Highlight';
@@ -13,8 +13,7 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => 
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [submissionInfo, setSubmissionInfo] = useState({tests: [], compileMsg: '', acceptedTestCount: 0, totalTestCount: 0});
-  const [submission, setSubmission] = useState({source: ''})
+  const [submission, setSubmission] = useState({source: '', info: {tests: [], compileMsg: '', acceptedTestCount: 0, totalTestCount: 0}})
   const [visible, setVisible] = useState(false);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
@@ -48,11 +47,7 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => 
       });
   }
   function onView(id) {
-    setVisible(true)
-    getSubmissionInfo(id)
-      .then(res => {
-        setSubmissionInfo(res.data)
-      })
+    setVisible(true);
     getSubmission(id)
       .then(res => {
         setSubmission(res.data)
@@ -133,23 +128,23 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => 
       >
         <Typography.Title heading={4}>源码</Typography.Title>
         <Highlight content={submission.source} />
-        {submissionInfo.compileMsg != '' && (
+        {submission.info.compileMsg != '' && (
           <>
             <Divider />
             <Typography.Title heading={4}>编译信息</Typography.Title>
-            <Highlight content={submissionInfo.compileMsg} />
+            <Highlight content={submission.info.compileMsg} />
           </>
         )}
         <Divider />
         <Typography.Title heading={4}>测试点</Typography.Title>
         <div>
-          {submissionInfo.acceptedTestCount} / {submissionInfo.totalTestCount}
+          {submission.info.acceptedTestCount} / {submission.info.totalTestCount}
         </div>
         <Collapse
           style={{ maxWidth: 1180 }}
         >
           {
-            submissionInfo.tests.map((item, index) => (
+            submission.info.tests.map((item, index) => (
               <CollapseItem
                 header={(
                   <Space split={<Divider type='vertical' />}>

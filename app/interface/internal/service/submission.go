@@ -45,6 +45,47 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 	if err != nil {
 		return nil, err
 	}
+	if err != nil {
+		return nil, err
+	}
+	var infoResp *v1.SubmissionInfo
+	if res.SubmissionInfo != nil {
+		info := res.SubmissionInfo
+		infoResp = &v1.SubmissionInfo{
+			Score:             float32(res.Score),
+			CompileMsg:        info.CompileMsg,
+			Memory:            info.Memory,
+			Time:              info.Time,
+			HasSubtask:        info.HasSubtask,
+			TotalTestCount:    int32(info.TotalTestCount),
+			AcceptedTestCount: int32(info.AcceptedTestCount),
+		}
+		infoResp.Subtasks = make([]*v1.SubmissionInfo_SubmissionSubtaskResult, 0)
+		for _, subtask := range info.Subtasks {
+			subtaskResult := &v1.SubmissionInfo_SubmissionSubtaskResult{
+				Verdict: int32(subtask.Verdict),
+				Memory:  subtask.Memory,
+				Time:    subtask.Time,
+				Score:   float32(subtask.Score),
+			}
+			for _, v := range subtask.Tests {
+				subtaskResult.Tests = append(subtaskResult.Tests, &v1.SubmissionInfo_SubmissionTest{
+					Memory:          v.Memory,
+					Time:            v.Time,
+					Stdin:           v.Stdin,
+					Stdout:          v.Stdout,
+					Answer:          v.Answer,
+					Stderr:          v.Stderr,
+					Verdict:         int32(v.Verdict),
+					ExitCode:        int32(v.ExitCode),
+					Score:           int32(v.Score),
+					CheckerExitCode: int32(v.CheckerExitCode),
+					CheckerStdout:   v.CheckerStdout,
+				})
+			}
+			infoResp.Subtasks = append(infoResp.Subtasks, subtaskResult)
+		}
+	}
 	return &v1.Submission{
 		Id:        int64(res.ID),
 		Source:    res.Source,
@@ -53,6 +94,7 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 		Verdict:   int32(res.Verdict),
 		Language:  int32(res.Language),
 		CreatedAt: timestamppb.New(res.CreatedAt),
+		Info:      infoResp,
 	}, nil
 }
 
@@ -75,50 +117,4 @@ func (s *SubmissionService) CreateSubmission(ctx context.Context, req *v1.Create
 	return &v1.Submission{
 		Id: int64(res.ID),
 	}, nil
-}
-
-// GetSubmissionInfo .
-func (s *SubmissionService) GetSubmissionInfo(ctx context.Context, req *v1.GetSubmissionInfoRequest) (*v1.SubmissionInfo, error) {
-	if _, err := s.uc.GetSubmission(ctx, int(req.Id)); err != nil {
-		return nil, err
-	}
-	res, err := s.uc.GetSubmissionInfo(ctx, int(req.Id))
-	if err != nil {
-		return nil, err
-	}
-	resp := &v1.SubmissionInfo{
-		Score:             float32(res.Score),
-		CompileMsg:        res.CompileMsg,
-		Memory:            res.Memory,
-		Time:              res.Time,
-		HasSubtask:        res.HasSubtask,
-		TotalTestCount:    int32(res.TotalTestCount),
-		AcceptedTestCount: int32(res.AcceptedTestCount),
-	}
-	resp.Subtasks = make([]*v1.SubmissionInfo_SubmissionSubtaskResult, 0)
-	for _, subtask := range res.Subtasks {
-		subtaskResult := &v1.SubmissionInfo_SubmissionSubtaskResult{
-			Verdict: int32(subtask.Verdict),
-			Memory:  subtask.Memory,
-			Time:    subtask.Time,
-			Score:   float32(subtask.Score),
-		}
-		for _, v := range subtask.Tests {
-			subtaskResult.Tests = append(subtaskResult.Tests, &v1.SubmissionInfo_SubmissionTest{
-				Memory:          v.Memory,
-				Time:            v.Time,
-				Stdin:           v.Stdin,
-				Stdout:          v.Stdout,
-				Answer:          v.Answer,
-				Stderr:          v.Stderr,
-				Verdict:         int32(v.Verdict),
-				ExitCode:        int32(v.ExitCode),
-				Score:           int32(v.Score),
-				CheckerExitCode: int32(v.CheckerExitCode),
-				CheckerStdout:   v.CheckerStdout,
-			})
-		}
-		resp.Subtasks = append(resp.Subtasks, subtaskResult)
-	}
-	return resp, nil
 }

@@ -294,31 +294,31 @@ func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateCo
 	}, nil
 }
 
-// ListContestStandings 用户比赛提交榜单
-func (s *ContestService) ListContestStandings(ctx context.Context, req *v1.ListContestStandingsRequest) (*v1.ListContestStandingsResponse, error) {
-	submissions := s.uc.ListContestStandings(ctx, int(req.Id))
-	resp := new(v1.ListContestStandingsResponse)
+// ListContestAllSubmissions 用户比赛提交榜单
+func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.ListContestAllSubmissionsRequest) (*v1.ListContestAllSubmissionsResponse, error) {
+	submissions := s.uc.ListContestAllSubmissions(ctx, int(req.Id), int(req.UserId))
+	resp := new(v1.ListContestAllSubmissionsResponse)
 	for _, v := range submissions {
-		s := &v1.ListContestStandingsResponse_Submission{
-			Id:            int32(v.ID),
-			Score:         int32(v.Score),
-			UserId:        int32(v.UserID),
-			ProblemNumber: int32(v.ProblemNumber),
+		s := &v1.ListContestAllSubmissionsResponse_Submission{
+			Id:      int32(v.ID),
+			Score:   int32(v.Score),
+			UserId:  int32(v.UserID),
+			Problem: int32(v.ProblemNumber),
 		}
 		switch v.Verdict {
 		case biz.SubmissionVerdictPending:
-			s.Status = v1.ListContestStandingsResponse_Submission_PENDING
+			s.Status = v1.ListContestAllSubmissionsResponse_Submission_PENDING
 		case biz.SubmissionVerdictAccepted:
-			s.Status = v1.ListContestStandingsResponse_Submission_CORRECT
+			s.Status = v1.ListContestAllSubmissionsResponse_Submission_CORRECT
 		default:
-			s.Status = v1.ListContestStandingsResponse_Submission_INCORRECT
+			s.Status = v1.ListContestAllSubmissionsResponse_Submission_INCORRECT
 		}
 		resp.Data = append(resp.Data, s)
 	}
 	return resp, nil
 }
 
-// ListContestStandings 用户比赛提交列表
+// ListContestSubmissions 用户比赛提交列表
 func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) (*v1.ListContestSubmissionsResponse, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.Id))
 	if err != nil {
@@ -327,13 +327,15 @@ func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.Lis
 	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	submissions, count := s.uc.ListContestSubmissions(ctx, req)
+	submissions, count := s.uc.ListContestSubmissions(ctx, req, contest)
 	resp := new(v1.ListContestSubmissionsResponse)
 	resp.Total = count
 	for _, v := range submissions {
 		resp.Data = append(resp.Data, &v1.ListContestSubmissionsResponse_Submission{
 			Id:            int32(v.ID),
 			Verdict:       int32(v.Verdict),
+			Time:          int32(v.Time),
+			Memory:        int32(v.Memory),
 			Score:         int32(v.Score),
 			UserId:        int32(v.UserID),
 			ProblemNumber: int32(v.ProblemNumber),

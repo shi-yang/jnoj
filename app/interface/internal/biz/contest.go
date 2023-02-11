@@ -40,6 +40,8 @@ type ContestSubmission struct {
 	Verdict       int
 	UserID        int
 	Score         int
+	Time          int
+	Memory        int
 	Language      int
 	User          ContestUser
 	CreatedAt     time.Time
@@ -137,7 +139,7 @@ type ContestRepo interface {
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
 	AddContestParticipantCount(context.Context, int, int) error
-	ListContestStandings(context.Context, int) []*ContestSubmission
+	ListContestAllSubmissions(ctx context.Context, contesId int, userId int) []*ContestSubmission
 	ContestProblemRepo
 	ContestUserRepo
 }
@@ -191,12 +193,32 @@ func (uc *ContestUsecase) DeleteContest(ctx context.Context, id int) error {
 }
 
 // ListContestSubmissions .
-func (uc *ContestUsecase) ListContestStandings(ctx context.Context, id int) []*ContestSubmission {
-	return uc.repo.ListContestStandings(ctx, id)
+func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int, uid int) []*ContestSubmission {
+	contest, err := uc.repo.GetContest(ctx, id)
+	if err != nil {
+		return nil
+	}
+	if !contest.HasPermission(ctx, ContestPermissionView) {
+		return nil
+	}
+	res := uc.repo.ListContestAllSubmissions(ctx, id, uid)
+
+	for i := 0; i < len(res); i++ {
+		if contest.Type == ContestTypeICPC {
+			res[i].Score = int(res[i].CreatedAt.Sub(contest.StartTime).Minutes())
+		}
+		if contest.Type == ContestTypeOI && contest.GetRunningStatus() != ContestRunningStatusFinished {
+			res[i].Verdict = SubmissionVerdictPending
+			res[i].Time = 0
+			res[i].Memory = 0
+			res[i].Score = 0
+		}
+	}
+	return res
 }
 
 // ListContestSubmissions .
-func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) ([]*ContestSubmission, int64) {
+func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest, contest *Contest) ([]*ContestSubmission, int64) {
 	res := make([]*ContestSubmission, 0)
 	submissions, count := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
 		EntityId:   req.Id,
@@ -204,20 +226,37 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 		Page:       req.Page,
 		PerPage:    req.PerPage,
 	})
+	problems, _ := uc.repo.ListContestProblems(ctx, int(req.Id))
+	problemMap := make(map[int]int)
+	for _, v := range problems {
+		problemMap[v.ProblemID] = v.Number
+	}
+	uc.log.Infof("%+v\n", problemMap)
+	runningStatus := contest.GetRunningStatus()
 	for _, v := range submissions {
-		res = append(res, &ContestSubmission{
+		cs := &ContestSubmission{
 			ID:            v.ID,
 			Verdict:       v.Verdict,
-			ProblemNumber: v.ProblemNumber,
+			ProblemNumber: problemMap[v.ProblemID],
 			ProblemName:   v.ProblemName,
 			CreatedAt:     v.CreatedAt,
 			Language:      v.Language,
 			Score:         v.Score,
+			Time:          v.Time,
+			Memory:        v.Memory,
 			User: ContestUser{
 				ID:       v.User.ID,
 				Nickname: v.User.Nickname,
 			},
-		})
+		}
+		// OI 提交之后无反馈
+		if runningStatus == ContestRunningStatusInProgress && contest.Type == ContestTypeOI {
+			cs.Verdict = SubmissionVerdictPending
+			cs.Time = 0
+			cs.Memory = 0
+			cs.Score = 0
+		}
+		res = append(res, cs)
 	}
 	return res, count
 }

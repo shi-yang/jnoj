@@ -22,8 +22,10 @@ export function updateContest(id, data) {
   return axios.put(`/contests/${id}`, data)
 }
 
-export function listContestStandings(id) {
-  return axios.get(`/contests/${id}/standings`)
+export function listContestAllSubmissions(id, params = undefined) {
+  return axios.get(`/contests/${id}/all_submissions`, {
+    params
+  })
 }
 
 export function listContestProblems(id) {

@@ -18,7 +18,3 @@ export function createSubmission(data) {
 export function getSubmission(id) {
   return axios.get(`/submissions/${id}`)
 }
-
-export function getSubmissionInfo(id) {
-  return axios.get(`/submissions/${id}/info`)
-}

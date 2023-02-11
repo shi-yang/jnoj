@@ -12,21 +12,22 @@ import (
 
 // Submission is a Submission model.
 type Submission struct {
-	ID            int
-	ProblemID     int
-	Time          int
-	Memory        int
-	Verdict       int
-	Language      int
-	Score         int
-	UserID        int
-	Source        string
-	EntityID      int
-	EntityType    int
-	ProblemNumber int
-	ProblemName   string
-	User          User
-	CreatedAt     time.Time
+	ID             int
+	ProblemID      int
+	Time           int
+	Memory         int
+	Verdict        int
+	Language       int
+	Score          int
+	UserID         int
+	Source         string
+	EntityID       int
+	EntityType     int
+	ProblemNumber  int
+	ProblemName    string
+	User           User
+	CreatedAt      time.Time
+	SubmissionInfo *SubmissionResult
 }
 
 type SubmissionResult struct {
@@ -138,6 +139,7 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
+	info, _ := uc.repo.GetSubmissionInfo(ctx, id)
 	uid, _ := auth.GetUserID(ctx)
 	// 检查访问权限
 	// 处理比赛的提交
@@ -153,6 +155,14 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 			if role != ContestRoleAdmin && s.UserID != uid {
 				return nil, v1.ErrorForbidden("contest is running...")
 			}
+			// OI 提交之后无反馈
+			if contest.Type == ContestTypeOI {
+				s.Verdict = SubmissionVerdictPending
+				s.Time = 0
+				s.Memory = 0
+				s.Score = 0
+				info = nil
+			}
 		}
 	} else if s.EntityType == SubmissionEntityTypeProblemFile {
 		// 处理提交至出题时的文件
@@ -161,6 +171,7 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 			return nil, v1.ErrorPermissionDenied("cannot update problem...")
 		}
 	}
+	s.SubmissionInfo = info
 	return s, nil
 }
 
@@ -213,8 +224,4 @@ func (uc *SubmissionUsecase) UpdateSubmission(ctx context.Context, s *Submission
 // DeleteSubmission delete a Submission
 func (uc *SubmissionUsecase) DeleteSubmission(ctx context.Context, id int) error {
 	return uc.repo.DeleteSubmission(ctx, id)
-}
-
-func (uc *SubmissionUsecase) GetSubmissionInfo(ctx context.Context, id int) (*SubmissionResult, error) {
-	return uc.repo.GetSubmissionInfo(ctx, id)
 }

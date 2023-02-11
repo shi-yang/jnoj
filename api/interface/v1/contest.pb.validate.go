@@ -2163,22 +2163,23 @@ var _ interface {
 	ErrorName() string
 } = CreateContestUserRequestValidationError{}
 
-// Validate checks the field values on ListContestStandingsRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListContestStandingsRequest) Validate() error {
+// Validate checks the field values on ListContestAllSubmissionsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListContestAllSubmissionsRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListContestStandingsRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListContestStandingsRequestMultiError, or nil if none found.
-func (m *ListContestStandingsRequest) ValidateAll() error {
+// ValidateAll checks the field values on ListContestAllSubmissionsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListContestAllSubmissionsRequestMultiError, or nil if none found.
+func (m *ListContestAllSubmissionsRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListContestStandingsRequest) validate(all bool) error {
+func (m *ListContestAllSubmissionsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2187,20 +2188,23 @@ func (m *ListContestStandingsRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for UserId
+
 	if len(errors) > 0 {
-		return ListContestStandingsRequestMultiError(errors)
+		return ListContestAllSubmissionsRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListContestStandingsRequestMultiError is an error wrapping multiple
-// validation errors returned by ListContestStandingsRequest.ValidateAll() if
-// the designated constraints aren't met.
-type ListContestStandingsRequestMultiError []error
+// ListContestAllSubmissionsRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// ListContestAllSubmissionsRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ListContestAllSubmissionsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListContestStandingsRequestMultiError) Error() string {
+func (m ListContestAllSubmissionsRequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2209,12 +2213,12 @@ func (m ListContestStandingsRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListContestStandingsRequestMultiError) AllErrors() []error { return m }
+func (m ListContestAllSubmissionsRequestMultiError) AllErrors() []error { return m }
 
-// ListContestStandingsRequestValidationError is the validation error returned
-// by ListContestStandingsRequest.Validate if the designated constraints
-// aren't met.
-type ListContestStandingsRequestValidationError struct {
+// ListContestAllSubmissionsRequestValidationError is the validation error
+// returned by ListContestAllSubmissionsRequest.Validate if the designated
+// constraints aren't met.
+type ListContestAllSubmissionsRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2222,24 +2226,24 @@ type ListContestStandingsRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListContestStandingsRequestValidationError) Field() string { return e.field }
+func (e ListContestAllSubmissionsRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListContestStandingsRequestValidationError) Reason() string { return e.reason }
+func (e ListContestAllSubmissionsRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListContestStandingsRequestValidationError) Cause() error { return e.cause }
+func (e ListContestAllSubmissionsRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListContestStandingsRequestValidationError) Key() bool { return e.key }
+func (e ListContestAllSubmissionsRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListContestStandingsRequestValidationError) ErrorName() string {
-	return "ListContestStandingsRequestValidationError"
+func (e ListContestAllSubmissionsRequestValidationError) ErrorName() string {
+	return "ListContestAllSubmissionsRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListContestStandingsRequestValidationError) Error() string {
+func (e ListContestAllSubmissionsRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2251,14 +2255,14 @@ func (e ListContestStandingsRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListContestStandingsRequest.%s: %s%s",
+		"invalid %sListContestAllSubmissionsRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListContestStandingsRequestValidationError{}
+var _ error = ListContestAllSubmissionsRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -2266,24 +2270,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListContestStandingsRequestValidationError{}
+} = ListContestAllSubmissionsRequestValidationError{}
 
-// Validate checks the field values on ListContestStandingsResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListContestStandingsResponse) Validate() error {
+// Validate checks the field values on ListContestAllSubmissionsResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListContestAllSubmissionsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListContestStandingsResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListContestStandingsResponseMultiError, or nil if none found.
-func (m *ListContestStandingsResponse) ValidateAll() error {
+// ValidateAll checks the field values on ListContestAllSubmissionsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// ListContestAllSubmissionsResponseMultiError, or nil if none found.
+func (m *ListContestAllSubmissionsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListContestStandingsResponse) validate(all bool) error {
+func (m *ListContestAllSubmissionsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2297,7 +2302,7 @@ func (m *ListContestStandingsResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ListContestStandingsResponseValidationError{
+					errors = append(errors, ListContestAllSubmissionsResponseValidationError{
 						field:  fmt.Sprintf("Data[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -2305,7 +2310,7 @@ func (m *ListContestStandingsResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ListContestStandingsResponseValidationError{
+					errors = append(errors, ListContestAllSubmissionsResponseValidationError{
 						field:  fmt.Sprintf("Data[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -2314,7 +2319,7 @@ func (m *ListContestStandingsResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListContestStandingsResponseValidationError{
+				return ListContestAllSubmissionsResponseValidationError{
 					field:  fmt.Sprintf("Data[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -2325,19 +2330,20 @@ func (m *ListContestStandingsResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ListContestStandingsResponseMultiError(errors)
+		return ListContestAllSubmissionsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListContestStandingsResponseMultiError is an error wrapping multiple
-// validation errors returned by ListContestStandingsResponse.ValidateAll() if
-// the designated constraints aren't met.
-type ListContestStandingsResponseMultiError []error
+// ListContestAllSubmissionsResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// ListContestAllSubmissionsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListContestAllSubmissionsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListContestStandingsResponseMultiError) Error() string {
+func (m ListContestAllSubmissionsResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2346,12 +2352,12 @@ func (m ListContestStandingsResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListContestStandingsResponseMultiError) AllErrors() []error { return m }
+func (m ListContestAllSubmissionsResponseMultiError) AllErrors() []error { return m }
 
-// ListContestStandingsResponseValidationError is the validation error returned
-// by ListContestStandingsResponse.Validate if the designated constraints
-// aren't met.
-type ListContestStandingsResponseValidationError struct {
+// ListContestAllSubmissionsResponseValidationError is the validation error
+// returned by ListContestAllSubmissionsResponse.Validate if the designated
+// constraints aren't met.
+type ListContestAllSubmissionsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2359,24 +2365,24 @@ type ListContestStandingsResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListContestStandingsResponseValidationError) Field() string { return e.field }
+func (e ListContestAllSubmissionsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListContestStandingsResponseValidationError) Reason() string { return e.reason }
+func (e ListContestAllSubmissionsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListContestStandingsResponseValidationError) Cause() error { return e.cause }
+func (e ListContestAllSubmissionsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListContestStandingsResponseValidationError) Key() bool { return e.key }
+func (e ListContestAllSubmissionsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListContestStandingsResponseValidationError) ErrorName() string {
-	return "ListContestStandingsResponseValidationError"
+func (e ListContestAllSubmissionsResponseValidationError) ErrorName() string {
+	return "ListContestAllSubmissionsResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListContestStandingsResponseValidationError) Error() string {
+func (e ListContestAllSubmissionsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2388,14 +2394,14 @@ func (e ListContestStandingsResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListContestStandingsResponse.%s: %s%s",
+		"invalid %sListContestAllSubmissionsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListContestStandingsResponseValidationError{}
+var _ error = ListContestAllSubmissionsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -2403,7 +2409,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListContestStandingsResponseValidationError{}
+} = ListContestAllSubmissionsResponseValidationError{}
 
 // Validate checks the field values on ListContestSubmissionsRequest with the
 // rules defined in the proto definition for this message. If any rules are
@@ -3350,24 +3356,24 @@ var _ interface {
 	ErrorName() string
 } = ContestProblem_SampleTestValidationError{}
 
-// Validate checks the field values on ListContestStandingsResponse_Submission
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *ListContestStandingsResponse_Submission) Validate() error {
+// Validate checks the field values on
+// ListContestAllSubmissionsResponse_Submission with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListContestAllSubmissionsResponse_Submission) Validate() error {
 	return m.validate(false)
 }
 
 // ValidateAll checks the field values on
-// ListContestStandingsResponse_Submission with the rules defined in the proto
-// definition for this message. If any rules are violated, the result is a
-// list of violation errors wrapped in
-// ListContestStandingsResponse_SubmissionMultiError, or nil if none found.
-func (m *ListContestStandingsResponse_Submission) ValidateAll() error {
+// ListContestAllSubmissionsResponse_Submission with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// ListContestAllSubmissionsResponse_SubmissionMultiError, or nil if none found.
+func (m *ListContestAllSubmissionsResponse_Submission) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListContestStandingsResponse_Submission) validate(all bool) error {
+func (m *ListContestAllSubmissionsResponse_Submission) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3376,7 +3382,7 @@ func (m *ListContestStandingsResponse_Submission) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for ProblemNumber
+	// no validation rules for Problem
 
 	// no validation rules for Status
 
@@ -3385,20 +3391,20 @@ func (m *ListContestStandingsResponse_Submission) validate(all bool) error {
 	// no validation rules for Score
 
 	if len(errors) > 0 {
-		return ListContestStandingsResponse_SubmissionMultiError(errors)
+		return ListContestAllSubmissionsResponse_SubmissionMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListContestStandingsResponse_SubmissionMultiError is an error wrapping
+// ListContestAllSubmissionsResponse_SubmissionMultiError is an error wrapping
 // multiple validation errors returned by
-// ListContestStandingsResponse_Submission.ValidateAll() if the designated
-// constraints aren't met.
-type ListContestStandingsResponse_SubmissionMultiError []error
+// ListContestAllSubmissionsResponse_Submission.ValidateAll() if the
+// designated constraints aren't met.
+type ListContestAllSubmissionsResponse_SubmissionMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListContestStandingsResponse_SubmissionMultiError) Error() string {
+func (m ListContestAllSubmissionsResponse_SubmissionMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3407,12 +3413,13 @@ func (m ListContestStandingsResponse_SubmissionMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListContestStandingsResponse_SubmissionMultiError) AllErrors() []error { return m }
+func (m ListContestAllSubmissionsResponse_SubmissionMultiError) AllErrors() []error { return m }
 
-// ListContestStandingsResponse_SubmissionValidationError is the validation
-// error returned by ListContestStandingsResponse_Submission.Validate if the
-// designated constraints aren't met.
-type ListContestStandingsResponse_SubmissionValidationError struct {
+// ListContestAllSubmissionsResponse_SubmissionValidationError is the
+// validation error returned by
+// ListContestAllSubmissionsResponse_Submission.Validate if the designated
+// constraints aren't met.
+type ListContestAllSubmissionsResponse_SubmissionValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3420,24 +3427,24 @@ type ListContestStandingsResponse_SubmissionValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListContestStandingsResponse_SubmissionValidationError) Field() string { return e.field }
+func (e ListContestAllSubmissionsResponse_SubmissionValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListContestStandingsResponse_SubmissionValidationError) Reason() string { return e.reason }
+func (e ListContestAllSubmissionsResponse_SubmissionValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListContestStandingsResponse_SubmissionValidationError) Cause() error { return e.cause }
+func (e ListContestAllSubmissionsResponse_SubmissionValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListContestStandingsResponse_SubmissionValidationError) Key() bool { return e.key }
+func (e ListContestAllSubmissionsResponse_SubmissionValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListContestStandingsResponse_SubmissionValidationError) ErrorName() string {
-	return "ListContestStandingsResponse_SubmissionValidationError"
+func (e ListContestAllSubmissionsResponse_SubmissionValidationError) ErrorName() string {
+	return "ListContestAllSubmissionsResponse_SubmissionValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListContestStandingsResponse_SubmissionValidationError) Error() string {
+func (e ListContestAllSubmissionsResponse_SubmissionValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3449,14 +3456,14 @@ func (e ListContestStandingsResponse_SubmissionValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListContestStandingsResponse_Submission.%s: %s%s",
+		"invalid %sListContestAllSubmissionsResponse_Submission.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListContestStandingsResponse_SubmissionValidationError{}
+var _ error = ListContestAllSubmissionsResponse_SubmissionValidationError{}
 
 var _ interface {
 	Field() string
@@ -3464,7 +3471,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListContestStandingsResponse_SubmissionValidationError{}
+} = ListContestAllSubmissionsResponse_SubmissionValidationError{}
 
 // Validate checks the field values on ListContestSubmissionsResponse_User with
 // the rules defined in the proto definition for this message. If any rules
@@ -3606,6 +3613,10 @@ func (m *ListContestSubmissionsResponse_Submission) validate(all bool) error {
 	// no validation rules for ProblemName
 
 	// no validation rules for Verdict
+
+	// no validation rules for Time
+
+	// no validation rules for Memory
 
 	// no validation rules for UserId
 

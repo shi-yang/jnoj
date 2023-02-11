@@ -52,6 +52,7 @@ func (r *contestRepo) ListContestProblems(ctx context.Context, cid int) ([]*biz.
 		rv = append(rv, &biz.ContestProblem{
 			ID:            v.ID,
 			Number:        v.Number,
+			ProblemID:     v.ProblemID,
 			ContestID:     v.ContestID,
 			SubmitCount:   v.SubmitCount,
 			AcceptedCount: v.AcceptedCount,

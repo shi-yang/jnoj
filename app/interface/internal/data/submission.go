@@ -85,6 +85,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	for _, v := range res {
 		s := &biz.Submission{
 			ID:        v.ID,
+			ProblemID: v.ProblemID,
 			Verdict:   v.Verdict,
 			Memory:    v.Memory,
 			Time:      v.Time,

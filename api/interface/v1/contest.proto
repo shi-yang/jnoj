@@ -86,9 +86,9 @@ service ContestService {
         };
     }
     // 获取比赛榜单
-    rpc ListContestStandings (ListContestStandingsRequest) returns (ListContestStandingsResponse) {
+    rpc ListContestAllSubmissions (ListContestAllSubmissionsRequest) returns (ListContestAllSubmissionsResponse) {
         option (google.api.http) = {
-            get: "/contests/{id}/standings"
+            get: "/contests/{id}/all_submissions"
         };
     }
     // 获取提交列表
@@ -248,14 +248,15 @@ message CreateContestUserRequest {
     int32 id = 1;
 }
 
-message ListContestStandingsRequest {
+message ListContestAllSubmissionsRequest {
     int32 id = 1;
+    int32 user_id = 2;
 }
 
-message ListContestStandingsResponse {
+message ListContestAllSubmissionsResponse {
     message Submission {
         int32 id = 1;
-        int32 problem_number = 2;
+        int32 problem = 2;
         enum Status {
             PENDING = 0;
             INCORRECT = 1;
@@ -284,11 +285,13 @@ message ListContestSubmissionsResponse {
         int32 problem_number = 2;
         string problem_name = 3;
         int32 verdict = 4;
-        int32 user_id = 5;
-        int32 score = 6;
-        int32 language = 7;
-        User user = 8;
-        google.protobuf.Timestamp created_at = 9;
+        int32 time = 5;
+        int32 memory = 6;
+        int32 user_id = 7;
+        int32 score = 8;
+        int32 language = 9;
+        User user = 10;
+        google.protobuf.Timestamp created_at = 11;
     }
     repeated Submission data = 1;
     int64 total = 2;

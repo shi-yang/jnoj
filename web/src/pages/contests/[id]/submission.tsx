@@ -4,7 +4,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { LanguageMap } from '@/api/submission';
 import { listContestSubmissions } from '@/api/contest';
-import { FormatTime } from '@/utils/format';
+import { FormatMemorySize, FormatTime } from '@/utils/format';
 import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
 import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
 
@@ -70,13 +70,30 @@ const Submission = ({contest}) => {
       title: t['problem'],
       dataIndex: 'problemName',
       align: 'center',
-      render: (col, record) => <span> {String.fromCharCode(65 + record.problemNumber)}.{col}</span>
+      render: (col, record) => <span> {String.fromCharCode(65 + record.problemNumber)}. {col}</span>
     },
     {
       title: t['verdict'],
       dataIndex: 'verdict',
       align: 'center',
       render: (col) => <SubmissionVerdict verdict={col} />
+    },
+    {
+      title: t['score'],
+      dataIndex: 'score',
+      align: 'center',
+    },
+    {
+      title: t['time'],
+      dataIndex: 'time',
+      align: 'center',
+      render: (col) => `${col / 1000} ms`
+    },
+    {
+      title: t['memory'],
+      dataIndex: 'memory',
+      align: 'center',
+      render: (col) => FormatMemorySize(col)
     },
     {
       title: t['language'],

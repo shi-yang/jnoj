@@ -27,12 +27,6 @@ service SubmissionService {
             body: "*"
         };
     };
-    // 提交的运行信息
-    rpc GetSubmissionInfo (GetSubmissionInfoRequest) returns (SubmissionInfo) {
-        option (google.api.http) = {
-            get: "/submissions/{id}/info"
-        };
-    };
 }
 
 // 提交
@@ -48,7 +42,8 @@ message Submission {
     int64 time = 6;
     int32 verdict = 7;
     int32 score = 8;
-    google.protobuf.Timestamp created_at = 9;
+    SubmissionInfo info = 9;
+    google.protobuf.Timestamp created_at = 10;
 }
 
 message ListSubmissionsRequest {
