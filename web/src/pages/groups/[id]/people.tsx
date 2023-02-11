@@ -49,7 +49,7 @@ export default ({group}) => {
       align: 'center' as 'center',
       render: (_, record) => (
         <>
-          { record.role !== 'ADMIN' && 
+          { record.role !== 'ADMIN' && (group.role === 'ADMIN' || group.role === 'MANAGER') &&
             <Popconfirm
               focusLock
               title={t['people.column.action.remove?']}

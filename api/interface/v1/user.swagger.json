@@ -105,7 +105,7 @@
         ]
       }
     },
-    "/user/{id}": {
+    "/users/{id}": {
       "get": {
         "summary": "获取用户主页信息",
         "operationId": "UserService_GetUser",
@@ -136,9 +136,60 @@
           "UserService"
         ]
       }
+    },
+    "/users/{id}/profile_calendar": {
+      "get": {
+        "summary": "用户主页提交统计",
+        "operationId": "UserService_GetUserProfileCalendar",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserProfileCalendarResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
     }
   },
   "definitions": {
+    "GetUserProfileCalendarResponseProfileCalendar": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "googlerpcStatus": {
       "type": "object",
       "properties": {
@@ -158,7 +209,19 @@
       }
     },
     "interfacev1User": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",
@@ -177,6 +240,42 @@
           "format": "int32"
         },
         "nickname": {
+          "type": "string"
+        }
+      }
+    },
+    "v1GetUserProfileCalendarResponse": {
+      "type": "object",
+      "properties": {
+        "activeYears": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "submissionCalendar": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetUserProfileCalendarResponseProfileCalendar"
+          }
+        },
+        "totalActiveDays": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalSubmission": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalProblemSolved": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start": {
+          "type": "string"
+        },
+        "end": {
           "type": "string"
         }
       }

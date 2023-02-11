@@ -21,12 +21,15 @@ type groupRepo struct {
 }
 
 type Group struct {
-	ID          int
-	Name        string
-	Description string
-	UserID      int
-	MemberCount int
-	CreatedAt   time.Time
+	ID             int
+	Name           string
+	Description    string
+	Privacy        int    // 隐私设置
+	Membership     int    // 加入资格
+	InvitationCode string // 邀请码
+	MemberCount    int
+	UserID         int
+	CreatedAt      time.Time
 }
 
 // GroupUser .
@@ -59,7 +62,7 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 	}
 	uid, ok := auth.GetUserID(ctx)
 	if req.Mygroup != nil && *req.Mygroup && ok {
-		db.Joins("RIGHT JOIN GroupUser on GroupUser.GroupID=Group.ID AND GroupUser.UserID=?", uid)
+		db.Joins("INNER JOIN group_user on group_user.group_id=group.ID AND group_user.user_id=?", uid)
 	}
 	db.Count(&count)
 	db.Offset(page.GetOffset()).
@@ -70,6 +73,8 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 		rv = append(rv, &biz.Group{
 			ID:          v.ID,
 			Name:        v.Name,
+			Membership:  v.Membership,
+			Privacy:     v.Privacy,
 			Description: v.Description,
 			MemberCount: v.MemberCount,
 		})
@@ -86,12 +91,15 @@ func (r *groupRepo) GetGroup(ctx context.Context, id int) (*biz.Group, error) {
 		return nil, err
 	}
 	return &biz.Group{
-		ID:          res.ID,
-		Name:        res.Name,
-		Description: res.Description,
-		UserID:      res.UserID,
-		MemberCount: res.MemberCount,
-		CreatedAt:   res.CreatedAt,
+		ID:             res.ID,
+		Name:           res.Name,
+		Description:    res.Description,
+		Membership:     res.Membership,
+		Privacy:        res.Privacy,
+		InvitationCode: res.InvitationCode,
+		MemberCount:    res.MemberCount,
+		UserID:         res.UserID,
+		CreatedAt:      res.CreatedAt,
 	}, err
 }
 
@@ -113,11 +121,15 @@ func (r *groupRepo) CreateGroup(ctx context.Context, g *biz.Group) (*biz.Group, 
 // UpdateGroup .
 func (r *groupRepo) UpdateGroup(ctx context.Context, g *biz.Group) (*biz.Group, error) {
 	res := Group{
-		ID:          g.ID,
-		Name:        g.Name,
-		Description: g.Description,
+		ID:             g.ID,
+		Name:           g.Name,
+		Privacy:        g.Privacy,
+		Membership:     g.Membership,
+		Description:    g.Description,
+		InvitationCode: g.InvitationCode,
 	}
 	err := r.data.db.WithContext(ctx).
+		Select("ID", "Name", "Privacy", "Membership", "Description", "InvitationCode").
 		Omit(clause.Associations).
 		Updates(&res).Error
 	return &biz.Group{
@@ -189,6 +201,7 @@ func (r *groupRepo) CreateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz
 		FirstOrCreate(&res, map[string]interface{}{
 			"user_id":  g.UserID,
 			"group_id": g.GroupID,
+			"role":     g.Role,
 		}).
 		Error
 	if err != nil {

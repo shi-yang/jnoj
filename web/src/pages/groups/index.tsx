@@ -5,15 +5,16 @@ import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
 import {
   Button, Card, Descriptions, Form, Grid, Input, Message,
-  Modal, Typography, Link, Pagination, PaginationProps, Tabs
+  Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty
 } from '@arco-design/web-react'
 import { IconPlus, IconUser } from '@arco-design/web-react/icon';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
 import './mock';
+import { isLogged } from '@/utils/auth';
 
 export default () => {
   const t = useLocale(locale);
@@ -25,14 +26,23 @@ export default () => {
     pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
+    hideOnSinglePage: true,
     sizeOptions: [25, 50, 100]
   });
   const [formParams, setFormParams] = useState({});
   const [activeTab, setActiveTab] = useState('all');
   const user = useAppSelector(userInfo);
+  const didMountRef = useRef(true);
   useEffect(() => {
-    if (user.isLogged) {
+    if (isLogged) {
       setActiveTab('mygroup');
+      setFormParams({...formParams, mygroup: true });
+    }
+  }, []);
+  useEffect(() => {
+    if (didMountRef.current) {
+      didMountRef.current = false;
+      return;
     }
     fetchData();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
@@ -97,11 +107,11 @@ export default () => {
             }
             onChange={onTabsChange}
           >
-            {user.isLogged && <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />}
+            {isLogged && <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />}
             <Tabs.TabPane key="all" title={t['index.tab.allgroup']} />
           </Tabs>
           <Grid.Row gutter={24} className={styles['card-content']}>
-            {groups.map((item, index) => (
+            {groups.length > 0 && groups.map((item, index) => (
               <Grid.Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6} key={index}>
                 <Link className={styles['card-block']} href={`/groups/${item.id}`}>
                   <Card
@@ -129,6 +139,9 @@ export default () => {
                 </Link>
               </Grid.Col>
             ))}
+            {groups.length === 0 && (
+              <Empty />
+            )}
           </Grid.Row>
           <Pagination
             style={{ width: 800, marginBottom: 20 }}

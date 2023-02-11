@@ -42,6 +42,13 @@
             "type": "string"
           },
           {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -178,8 +185,7 @@
                   "format": "int32"
                 },
                 "status": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/definitions/v1ContestStatus"
                 },
                 "participantCount": {
                   "type": "integer",
@@ -551,6 +557,17 @@
       "default": "GUEST",
       "title": "登录用户的角色"
     },
+    "ContestRunningStatus": {
+      "type": "string",
+      "enum": [
+        "NOT_STARTED",
+        "IN_PROGRESS",
+        "FROZEN_STANDINGS",
+        "FINISHED"
+      ],
+      "default": "NOT_STARTED",
+      "title": "- NOT_STARTED: 尚未开始\n - IN_PROGRESS: 进行中\n - FROZEN_STANDINGS: 进行中（封榜）\n - FINISHED: 已结束"
+    },
     "ListContestStandingsResponseSubmissionStatus": {
       "type": "string",
       "enum": [
@@ -633,6 +650,10 @@
         },
         "role": {
           "$ref": "#/definitions/ContestRole"
+        },
+        "runningStatus": {
+          "$ref": "#/definitions/ContestRunningStatus",
+          "title": "运行状态"
         }
       }
     },
@@ -673,6 +694,9 @@
         "memoryLimit": {
           "type": "string",
           "format": "int64"
+        },
+        "source": {
+          "type": "string"
         },
         "statements": {
           "type": "array",
@@ -730,6 +754,10 @@
       "properties": {
         "name": {
           "type": "string"
+        },
+        "groupId": {
+          "type": "integer",
+          "format": "int32"
         },
         "startTime": {
           "type": "string",

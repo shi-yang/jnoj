@@ -11,13 +11,16 @@ import (
 
 // Group is a Group model.
 type Group struct {
-	ID          int
-	Name        string
-	Description string
-	UserID      int
-	MemberCount int
-	Role        int // 当前登录用户的角色
-	CreatedAt   time.Time
+	ID             int
+	Name           string
+	Description    string
+	Privacy        int    // 隐私设置
+	Membership     int    // 加入资格
+	InvitationCode string // 邀请码
+	MemberCount    int
+	Role           int // 当前登录用户的角色
+	UserID         int
+	CreatedAt      time.Time
 }
 
 // GroupUser .
@@ -29,6 +32,16 @@ type GroupUser struct {
 	Nickname  string
 	CreatedAt time.Time
 }
+
+const (
+	GroupPrivacyPrivate = iota
+	GroupPrivatePublic
+)
+
+const (
+	GroupMembershipAllowAnyone = iota
+	GroupMembershipInvitationCode
+)
 
 const (
 	GroupUserRoleAdmin = iota
@@ -74,18 +87,11 @@ func (uc *GroupUsecase) GetGroup(ctx context.Context, id int) (*Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 设置登录用户角色
-	g.Role = GroupUserRoleGuest
-	uid, ok := auth.GetUserID(ctx)
-	if ok {
-		if g.UserID == uid {
-			g.Role = GroupUserRoleAdmin
-		} else {
-			gu, err := uc.repo.GetGroupUser(ctx, g.ID, uid)
-			if err == nil {
-				g.Role = gu.Role
-			}
-		}
+	// 登录用户角色
+	role := uc.GetGroupRole(ctx, g)
+	// 邀请码仅对管理员可见
+	if role == GroupUserRoleMember || role == GroupUserRoleGuest {
+		g.InvitationCode = ""
 	}
 	return g, nil
 }
@@ -126,11 +132,23 @@ func (uc *GroupUsecase) GetGroupUser(ctx context.Context, gid, uid int) (*GroupU
 }
 
 // CreateGroupUser .
-func (uc *GroupUsecase) CreateGroupUser(ctx context.Context, g *GroupUser) (*GroupUser, error) {
-	if _, err := uc.userRepo.FindByID(ctx, g.UserID); err != nil {
-		return nil, v1.ErrorBadRequest("没有该用户")
+func (uc *GroupUsecase) CreateGroupUser(ctx context.Context, req *v1.CreateGroupUserRequest) (*GroupUser, error) {
+	if _, err := uc.userRepo.FindByID(ctx, int(req.Uid)); err != nil {
+		return nil, v1.ErrorBadRequest("user not found")
 	}
-	return uc.repo.CreateGroupUser(ctx, g)
+	group, err := uc.repo.GetGroup(ctx, int(req.Gid))
+	if err != nil {
+		return nil, v1.ErrorBadRequest("group not found")
+	}
+	// 邀请码的方式，需要验证邀请码
+	if group.Membership == GroupMembershipInvitationCode && group.InvitationCode != req.InvitationCode {
+		return nil, v1.ErrorBadRequest("invalid invitation code")
+	}
+	return uc.repo.CreateGroupUser(ctx, &GroupUser{
+		UserID:  int(req.Uid),
+		GroupID: int(req.Gid),
+		Role:    GroupUserRoleMember,
+	})
 }
 
 func (uc *GroupUsecase) UpdateGroupUser(ctx context.Context, g *GroupUser) (*GroupUser, error) {
@@ -140,4 +158,21 @@ func (uc *GroupUsecase) UpdateGroupUser(ctx context.Context, g *GroupUser) (*Gro
 // DeleteGroupUser .
 func (uc *GroupUsecase) DeleteGroupUser(ctx context.Context, gid, uid int) error {
 	return uc.repo.DeleteGroupUser(ctx, gid, uid)
+}
+
+// GetGroupRole 获取登录用户角色
+func (uc *GroupUsecase) GetGroupRole(ctx context.Context, group *Group) int {
+	group.Role = GroupUserRoleGuest
+	uid, ok := auth.GetUserID(ctx)
+	if ok {
+		if group.UserID == uid {
+			group.Role = GroupUserRoleAdmin
+		} else {
+			gu, err := uc.repo.GetGroupUser(ctx, group.ID, uid)
+			if err == nil {
+				group.Role = gu.Role
+			}
+		}
+	}
+	return group.Role
 }

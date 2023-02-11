@@ -31,6 +31,8 @@ func (s *GroupService) ListGroups(ctx context.Context, req *v1.ListGroupsRequest
 		resp.Data = append(resp.Data, &v1.Group{
 			Id:          int32(v.ID),
 			Name:        v.Name,
+			Privacy:     int32(v.Privacy),
+			Membership:  int32(v.Membership),
 			Description: v.Description,
 			MemberCount: int32(v.MemberCount),
 		})
@@ -45,21 +47,15 @@ func (s *GroupService) GetGroup(ctx context.Context, req *v1.GetGroupRequest) (*
 		return nil, err
 	}
 	g := &v1.Group{
-		Id:          int32(res.ID),
-		Name:        res.Name,
-		Description: res.Description,
-		MemberCount: int32(res.MemberCount),
-		CreatedAt:   timestamppb.New(res.CreatedAt),
-	}
-	switch res.Role {
-	case biz.GroupUserRoleAdmin:
-		g.Role = v1.GroupUserRole_ADMIN
-	case biz.GroupUserRoleManager:
-		g.Role = v1.GroupUserRole_MANAGER
-	case biz.GroupUserRoleMember:
-		g.Role = v1.GroupUserRole_MEMBER
-	default:
-		g.Role = v1.GroupUserRole_GUEST
+		Id:             int32(res.ID),
+		Name:           res.Name,
+		Description:    res.Description,
+		Privacy:        int32(res.Privacy),
+		Membership:     int32(res.Membership),
+		MemberCount:    int32(res.MemberCount),
+		InvitationCode: res.InvitationCode,
+		Role:           v1.GroupUserRole(res.Role),
+		CreatedAt:      timestamppb.New(res.CreatedAt),
 	}
 	return g, nil
 }
@@ -84,11 +80,19 @@ func (s *GroupService) CreateGroup(ctx context.Context, req *v1.CreateGroupReque
 
 // UpdateGroup .
 func (s *GroupService) UpdateGroup(ctx context.Context, req *v1.UpdateGroupRequest) (*v1.Group, error) {
-	group := &biz.Group{
-		ID:          int(req.Id),
-		Name:        req.Name,
-		Description: req.Description,
+	group, err := s.uc.GetGroup(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
 	}
+	role := s.uc.GetGroupRole(ctx, group)
+	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	group.Name = req.Name
+	group.Membership = int(req.Membership)
+	group.Privacy = int(req.Privacy)
+	group.InvitationCode = req.InvitationCode
+	group.Description = req.Description
 	res, err := s.uc.UpdateGroup(ctx, group)
 	if err != nil {
 		return nil, err
@@ -110,16 +114,7 @@ func (s *GroupService) ListGroupUsers(ctx context.Context, req *v1.ListGroupUser
 			UserId:    int32(v.UserID),
 			Nickname:  v.Nickname,
 			CreatedAt: timestamppb.New(v.CreatedAt),
-		}
-		switch v.Role {
-		case biz.GroupUserRoleAdmin:
-			u.Role = v1.GroupUserRole_ADMIN
-		case biz.GroupUserRoleManager:
-			u.Role = v1.GroupUserRole_MANAGER
-		case biz.GroupUserRoleMember:
-			u.Role = v1.GroupUserRole_MEMBER
-		default:
-			u.Role = v1.GroupUserRole_GUEST
+			Role:      v1.GroupUserRole(v.Role),
 		}
 		resp.Data = append(resp.Data, u)
 	}
@@ -137,28 +132,14 @@ func (s *GroupService) GetGroupUser(ctx context.Context, req *v1.GetGroupUserReq
 		Nickname:  u.Nickname,
 		GroupId:   int32(u.GroupID),
 		UserId:    int32(u.UserID),
+		Role:      v1.GroupUserRole(u.Role),
 		CreatedAt: timestamppb.New(u.CreatedAt),
-	}
-
-	switch resp.Role {
-	case biz.GroupUserRoleAdmin:
-		resp.Role = v1.GroupUserRole_ADMIN
-	case biz.GroupUserRoleManager:
-		resp.Role = v1.GroupUserRole_MANAGER
-	case biz.GroupUserRoleMember:
-		resp.Role = v1.GroupUserRole_MEMBER
-	default:
-		resp.Role = v1.GroupUserRole_GUEST
 	}
 	return resp, nil
 }
 
 func (s *GroupService) CreateGroupUser(ctx context.Context, req *v1.CreateGroupUserRequest) (*v1.GroupUser, error) {
-	res, err := s.uc.CreateGroupUser(ctx, &biz.GroupUser{
-		GroupID: int(req.Gid),
-		UserID:  int(req.Uid),
-		Role:    biz.GroupUserRoleMember,
-	})
+	res, err := s.uc.CreateGroupUser(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -168,6 +149,14 @@ func (s *GroupService) CreateGroupUser(ctx context.Context, req *v1.CreateGroupU
 }
 
 func (s *GroupService) UpdateGroupUser(ctx context.Context, req *v1.UpdateGroupUserRequest) (*v1.GroupUser, error) {
+	group, err := s.uc.GetGroup(ctx, int(req.Gid))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	role := s.uc.GetGroupRole(ctx, group)
+	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	update := &biz.GroupUser{
 		UserID:  int(req.Uid),
 		GroupID: int(req.Gid),
@@ -188,6 +177,14 @@ func (s *GroupService) UpdateGroupUser(ctx context.Context, req *v1.UpdateGroupU
 
 // DeleteGroupUser .
 func (s *GroupService) DeleteGroupUser(ctx context.Context, req *v1.DeleteGroupUserRequest) (*emptypb.Empty, error) {
-	err := s.uc.DeleteGroupUser(ctx, int(req.Gid), int(req.Uid))
+	group, err := s.uc.GetGroup(ctx, int(req.Gid))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	role := s.uc.GetGroupRole(ctx, group)
+	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.uc.DeleteGroupUser(ctx, int(req.Gid), int(req.Uid))
 	return &emptypb.Empty{}, err
 }

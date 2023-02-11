@@ -66,6 +66,12 @@ func (m *Group) validate(all bool) error {
 
 	// no validation rules for MemberCount
 
+	// no validation rules for Privacy
+
+	// no validation rules for Membership
+
+	// no validation rules for InvitationCode
+
 	// no validation rules for Role
 
 	if all {
@@ -657,6 +663,12 @@ func (m *UpdateGroupRequest) validate(all bool) error {
 	// no validation rules for Id
 
 	// no validation rules for Name
+
+	// no validation rules for Privacy
+
+	// no validation rules for Membership
+
+	// no validation rules for InvitationCode
 
 	// no validation rules for Description
 
@@ -1357,6 +1369,8 @@ func (m *CreateGroupUserRequest) validate(all bool) error {
 	// no validation rules for Gid
 
 	// no validation rules for Uid
+
+	// no validation rules for InvitationCode
 
 	if len(errors) > 0 {
 		return CreateGroupUserRequestMultiError(errors)

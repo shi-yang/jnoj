@@ -58,7 +58,9 @@ export default () => {
             >
               <Tabs.TabPane key='overview' title={<span><IconHome /> {t['header.tab.overview']}</span>} />
               <Tabs.TabPane key='people' title={<span><IconUser /> {t['header.tab.people']}</span>} />
-              <Tabs.TabPane key='settings' title={<span><IconSettings /> {t['header.tab.settings']}</span>} />
+              {(group.role === 'ADMIN' || group.role === 'MANAGER') && 
+                <Tabs.TabPane key='settings' title={<span><IconSettings /> {t['header.tab.settings']}</span>} />
+              }
             </Tabs>
           </div>
         </div>
