@@ -13,12 +13,13 @@ import (
 
 // ContestService is a contest service.
 type ContestService struct {
-	uc *biz.ContestUsecase
+	uc        *biz.ContestUsecase
+	problemUc *biz.ProblemUsecase
 }
 
 // NewContestService new a contest service.
-func NewContestService(uc *biz.ContestUsecase) *ContestService {
-	return &ContestService{uc: uc}
+func NewContestService(uc *biz.ContestUsecase, problemUc *biz.ProblemUsecase) *ContestService {
+	return &ContestService{uc: uc, problemUc: problemUc}
 }
 
 // ListContests 比赛列表
@@ -209,6 +210,61 @@ func (s *ContestService) DeleteContestProblem(ctx context.Context, req *v1.Delet
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
+}
+
+// ListContestProblemLanguages 语言列表
+func (s *ContestService) ListContestProblemLanguages(ctx context.Context, req *v1.ListContestProblemLanguagesRequest) (*v1.ListContestProblemLanguagesResponse, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	cp, err := s.uc.GetContestProblem(ctx, int(req.Id), int(req.Number))
+	if err != nil {
+		return nil, err
+	}
+	res, count := s.problemUc.ListProblemLanguages(ctx, &biz.Problem{
+		ID:   cp.ProblemID,
+		Type: cp.Type,
+	})
+	resp := new(v1.ListContestProblemLanguagesResponse)
+	resp.Total = count
+	for _, v := range res {
+		resp.Data = append(resp.Data, &v1.ContestProblemLanguage{
+			Id:           v.Id,
+			LanguageCode: v.LanguageCode,
+			LanguageName: v.LanguageName,
+		})
+	}
+	return resp, nil
+}
+
+// GetContestProblemLanguage 语言
+func (s *ContestService) GetContestProblemLanguage(ctx context.Context, req *v1.GetContestProblemLanguageRequest) (*v1.ContestProblemLanguage, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	cp, err := s.uc.GetContestProblem(ctx, int(req.Id), int(req.Number))
+	if err != nil {
+		return nil, err
+	}
+	res, err := s.problemUc.GetProblemLanguage(ctx, int(cp.ProblemID), int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	resp := &v1.ContestProblemLanguage{
+		Id:           res.Id,
+		LanguageCode: res.LanguageCode,
+		LanguageName: res.LanguageName,
+		UserContent:  res.UserContent,
+	}
+	return resp, nil
 }
 
 // ListContestUsers 获取比赛用户

@@ -146,7 +146,7 @@ service ProblemService {
             body: "*"
         };
     }
-    // 语言文件列表
+    // 语言列表
     rpc ListProblemLanguages (ListProblemLanguagesRequest) returns (ListProblemLanguagesResponse) {
         option (google.api.http) = {
             get: "/problems/{problem_id}/languages"

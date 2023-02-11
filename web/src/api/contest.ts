@@ -38,6 +38,14 @@ export function deleteContestProblem(id, problemNumber) {
   return axios.delete(`/contests/${id}/problems/${problemNumber}`)
 }
 
+export function listContestProblemLanguages(id, problemNumber) {
+  return axios.get(`/contests/${id}/problems/${problemNumber}/languages`)
+}
+
+export function getContestProblemLanguage(id, problemNumber, lang) {
+  return axios.get(`/contests/${id}/problems/${problemNumber}/languages/${lang}`)
+}
+
 export function listContestStatuses(id) {
   return axios.get(`/contests/${id}/statuses`)
 }

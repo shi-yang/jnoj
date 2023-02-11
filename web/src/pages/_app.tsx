@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app'
 import { wrapper } from '@/store';
-import Layout from '@/components/Layouts/MainLayout'
+import MainLayout from '@/components/Layouts/MainLayout';
 import useStorage from '@/utils/useStorage';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo } from 'react';
@@ -23,7 +23,12 @@ const PageLayout = ({ Component, pageProps }) => {
   if (Component.getLayout) {
     return Component.getLayout(<Component {...pageProps} />);
   } else {
-    return <Component {...pageProps} />;
+    // default layout
+    return (
+      <MainLayout>
+        <Component {...pageProps} />
+      </MainLayout>
+    );
   }
 };
 
@@ -90,9 +95,7 @@ function MyApp({ renderConfig, Component, ...rest }: { renderConfig: RenderConfi
     >
       <Provider store={store}>
         <GlobalContext.Provider value={contextValue}>
-          <Layout >
-            <PageLayout Component={Component} pageProps={pageProps} />
-          </Layout>
+          <PageLayout Component={Component} pageProps={pageProps} />
         </GlobalContext.Provider>
       </Provider>
     </ConfigProvider>

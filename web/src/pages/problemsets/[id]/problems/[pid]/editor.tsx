@@ -1,15 +1,10 @@
 import React, { forwardRef, useContext, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { cpp } from '@codemirror/lang-cpp';
-import { java } from '@codemirror/lang-java';
-import { python } from '@codemirror/lang-python';
 import styles from './style/editor.module.less';
 import { Button, Card, Form, Grid, Input, Message, Popover, ResizeBox, Select, Space, Spin, Tabs, Typography } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { createSubmission, getSubmission, listSubmissions } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
-import * as themes from '@uiw/codemirror-themes-all';
 import { IconCheckCircle, IconCloseCircle, IconDelete, IconDown, IconPlayArrow, IconPlus, IconShareExternal, IconSkin, IconUp } from '@arco-design/web-react/icon';
 import { runRequest, runSandbox } from '@/api/sandbox';
 import Highlight from '@/components/Highlight';
@@ -20,17 +15,16 @@ import { userInfo } from '@/store/reducers/user';
 import { isLogged } from '@/utils/auth';
 import ProblemContext from './context';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
+import Editor from "@monaco-editor/react";
 
 export default function App() {
   const t = useLocale(locale);
   const { problem } = useContext(ProblemContext);
-  const codemirrorLangs = [cpp, cpp, java, python];
   const [value, setValue] = useState('')
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageId, setLanguageId] = useState(0);
-  const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
+  const [theme, setTheme] = useStorage('CODE_THEME', 'light');
   const [languageList, setLanguageList] = useState([]);
-  const [extensions, setExtensions] = useState(codemirrorLangs[language]);
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
   const [latestSubmissionID, setLatestSubmissionID] = useState('0');
@@ -43,9 +37,18 @@ export default function App() {
   const onChange = React.useCallback((value, viewUpdate) => {
     setValue(value)
   }, []);
+  const themes = [
+    'light', 'vs-dark'
+  ];
+  const languageNameToMonacoLanguage = {
+    0: 'c',
+    1: 'cpp',
+    2: 'java',
+    3: 'python'
+  };
+  
   const onChangeLanguage = (e) => {
     setLanguage(e);
-    setExtensions(codemirrorLangs[e]);
     // 函数题需要查询对应的语言模板
     if (problem.type === 'FUNCTION') {
       const lang = languageList.find(item => {
@@ -96,7 +99,6 @@ export default function App() {
         <Select
           size='large'
           defaultValue={language}
-          placeholder='请选择语言'
           style={{ width: 154 }}
           onChange={onChangeLanguage}
         >
@@ -119,25 +121,25 @@ export default function App() {
           }}
           renderFormat={(option, value) => <IconSkin />}
         >
-          {Object.keys(themes).map((item, index) => {
-            if (item.indexOf('Init') === -1) {
-              return (
-                <Select.Option key={index} value={item}>
-                  {item}
-                </Select.Option>
-              )
-            }
-          })}
+          {themes.map((item, index) => 
+            <Select.Option key={index} value={item}>
+              {item}
+            </Select.Option>
+          )}
         </Select>
       </div>
-      <CodeMirror
-        height="100%"
-        className={styles['code-editor']}
-        extensions={extensions}
-        theme={themes[theme]}
-        value={value}
-        onChange={onChange}
-      />
+      <div className={styles['code-editor']}>
+        <Editor
+          language={languageNameToMonacoLanguage[language]}
+          options={{
+            automaticLayout: true,
+            fontSize: 16
+          }}
+          value={value}
+          theme={theme}
+          onChange={onChange}
+        />
+      </div>
       {
         isMounted &&
         <div style={{display: consoleVisible ? 'block' : 'none'}}>

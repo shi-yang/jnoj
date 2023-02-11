@@ -12,6 +12,7 @@ type ContestProblem struct {
 	ID            int
 	Name          string
 	Number        int // 题目次序、A、B、C、D
+	Type          int
 	ContestID     int
 	ProblemID     int
 	SubmitCount   int

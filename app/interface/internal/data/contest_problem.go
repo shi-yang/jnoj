@@ -92,6 +92,7 @@ func (r *contestRepo) GetContestProblemByNumber(ctx context.Context, cid int, nu
 		AcceptedCount: o.AcceptedCount,
 		TimeLimit:     problem.TimeLimit,
 		Memory:        problem.MemoryLimit,
+		Type:          problem.Type,
 	}
 	if len(statements) > 0 {
 		res.Name = statements[0].Name

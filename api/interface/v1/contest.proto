@@ -59,6 +59,18 @@ service ContestService {
         option (google.api.http) = {
             delete: "/contests/{id}/problems/{number}"
         };
+    };
+    // 语言列表
+    rpc ListContestProblemLanguages (ListContestProblemLanguagesRequest) returns (ListContestProblemLanguagesResponse) {
+        option (google.api.http) = {
+            get: "/contests/{id}/problems/{number}/languages"
+        };
+    }
+    // 语言详情
+    rpc GetContestProblemLanguage (GetContestProblemLanguageRequest) returns (ContestProblemLanguage) {
+        option (google.api.http) = {
+            get: "/contests/{id}/problems/{number}/languages/{language}"
+        };
     }
     // 获取比赛用户
     rpc ListContestUsers (ListContestUsersRequest) returns (ListContestUsersResponse) {
@@ -280,4 +292,28 @@ message ListContestSubmissionsResponse {
     }
     repeated Submission data = 1;
     int64 total = 2;
+}
+
+message ContestProblemLanguage {
+    int32 id = 1;
+    int32 language_code = 2;
+    string language_name = 3;
+    string user_content = 4;
+    string main_content = 5;
+}
+
+message ListContestProblemLanguagesRequest {
+    int32 id = 1;
+    int32 number = 2;
+}
+
+message ListContestProblemLanguagesResponse {
+    repeated ContestProblemLanguage data = 1;
+    int64 total = 2;
+}
+
+message GetContestProblemLanguageRequest {
+    int32 id = 1;
+    int32 number = 2;
+    int32 language = 3;
 }

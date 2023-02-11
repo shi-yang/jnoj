@@ -1,36 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { cpp } from '@codemirror/lang-cpp';
-import { java } from '@codemirror/lang-java';
-import { python } from '@codemirror/lang-python';
 import styles from './style/editor.module.less';
 import { Button, Message, Select } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { createSubmission } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
-import * as themes from '@uiw/codemirror-themes-all';
 import { IconSkin } from '@arco-design/web-react/icon';
-
-const LANG_C = 'C';
-const LANG_CPP = 'C++';
-const LANG_JAVA = 'Java';
-const LANG_PYTHON = 'Python';
+import Editor from "@monaco-editor/react";
+import { getContestProblemLanguage, listContestProblemLanguages } from '@/api/contest';
 
 export default function App(props) {
   const t = useLocale(locale);
   const [value, setValue] = useState('')
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
+  const [languageList, setLanguageList] = useState([]);
   const [theme, setTheme] = useStorage('CODE_THEME', 'githubLight');
-  const languageOptions = [LANG_C, LANG_CPP, LANG_JAVA, LANG_PYTHON];
-  const codemirrorLangs = [cpp, cpp, java, python];
-  const [extensions, setExtensions] = useState(codemirrorLangs[language]);
+  const themes = [
+    'light', 'vs-dark'
+  ];
+  const languageNameToMonacoLanguage = {
+    0: 'c',
+    1: 'cpp',
+    2: 'java',
+    3: 'python'
+  };
+  useEffect(() => {
+    getLanguages();
+  }, []);
   const onChange = React.useCallback((value, viewUpdate) => {
     setValue(value)
   }, []);
   const onChangeLanguage = (e) => {
     setLanguage(e);
-    setExtensions(codemirrorLangs[e]);
+  }
+  const getLanguages = () => {
+    listContestProblemLanguages(props.contest.id, props.problem.number)
+      .then(res => {
+        const langs = res.data.data
+        setLanguageList(langs);
+        const userLang = langs.find(item => {
+          return item.languageCode === Number(language)
+        })
+        if (userLang.id !== 0 && userLang) {
+          getContestProblemLanguage(props.contest.id, props.problem.number, userLang.id)
+            .then(res => {
+              setValue(res.data.userContent);
+            })
+        }
+      })
   }
   const onSubmit = () => {
     const data = {
@@ -52,10 +69,10 @@ export default function App(props) {
           style={{ width: 154 }}
           onChange={(e) => onChangeLanguage(e)}
         >
-          {languageOptions.map((item, index) => {
+          {languageList.map((item, index) => {
             return (
-              <Select.Option key={item} value={`${index}`}>
-                {item}
+              <Select.Option key={index} value={`${item.languageCode}`}>
+                {item.languageName}
               </Select.Option>
             )
           })}
@@ -83,13 +100,14 @@ export default function App(props) {
         </Select>
       </div>
       <div className={styles.container}>
-        <CodeMirror
-          height="100%"
-          style={{
-            height: '100%'
+        <Editor
+          language={languageNameToMonacoLanguage[language]}
+          options={{
+            automaticLayout: true,
+            fontSize: 16
           }}
-          extensions={extensions}
-          theme={themes[theme]}
+          value={value}
+          theme={theme}
           onChange={onChange}
         />
       </div>
