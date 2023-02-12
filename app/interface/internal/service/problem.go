@@ -922,3 +922,17 @@ func (s *ProblemService) SortProblemsetProblems(ctx context.Context, req *v1.Sor
 	err = s.problemsetUc.SortProblemsetProblems(ctx, req)
 	return &emptypb.Empty{}, err
 }
+
+// DownloadProblems 下载题目
+func (s *ProblemService) DownloadProblems(ctx context.Context, req *v1.DownloadProblemsRequest) (*v1.DownloadProblemsResponse, error) {
+	url, err := s.uc.DownloadProblems(ctx, req.Ids)
+	if err != nil {
+		return nil, err
+	}
+	if url == "" {
+		return nil, v1.ErrorProblemPackageNotFound("题目尚未打包，暂不支持下载")
+	}
+	return &v1.DownloadProblemsResponse{
+		Url: url,
+	}, nil
+}

@@ -36,6 +36,7 @@ const OperationProblemServiceDeleteProblemLanguage = "/jnoj.interface.v1.Problem
 const OperationProblemServiceDeleteProblemStatement = "/jnoj.interface.v1.ProblemService/DeleteProblemStatement"
 const OperationProblemServiceDeleteProblemTest = "/jnoj.interface.v1.ProblemService/DeleteProblemTest"
 const OperationProblemServiceDeleteProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemset"
+const OperationProblemServiceDownloadProblems = "/jnoj.interface.v1.ProblemService/DownloadProblems"
 const OperationProblemServiceGetProblem = "/jnoj.interface.v1.ProblemService/GetProblem"
 const OperationProblemServiceGetProblemFile = "/jnoj.interface.v1.ProblemService/GetProblemFile"
 const OperationProblemServiceGetProblemLanguage = "/jnoj.interface.v1.ProblemService/GetProblemLanguage"
@@ -79,6 +80,7 @@ type ProblemServiceHTTPServer interface {
 	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*emptypb.Empty, error)
 	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*emptypb.Empty, error)
 	DeleteProblemset(context.Context, *DeleteProblemsetRequest) (*emptypb.Empty, error)
+	DownloadProblems(context.Context, *DownloadProblemsRequest) (*DownloadProblemsResponse, error)
 	GetProblem(context.Context, *GetProblemRequest) (*Problem, error)
 	GetProblemFile(context.Context, *GetProblemFileRequest) (*ProblemFile, error)
 	GetProblemLanguage(context.Context, *GetProblemLanguageRequest) (*ProblemLanguage, error)
@@ -178,6 +180,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.POST("/problemsets/{id}/problems", _ProblemService_AddProblemToProblemset0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}/problems/{problem_id}", _ProblemService_DeleteProblemFromProblemset0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/problem/sort", _ProblemService_SortProblemsetProblems0_HTTP_Handler(srv))
+	r.POST("/download_problems", _ProblemService_DownloadProblems0_HTTP_Handler(srv))
 }
 
 func _ProblemService_ListProblems0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
@@ -1070,6 +1073,25 @@ func _ProblemService_SortProblemsetProblems0_HTTP_Handler(srv ProblemServiceHTTP
 	}
 }
 
+func _ProblemService_DownloadProblems0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DownloadProblemsRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceDownloadProblems)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DownloadProblems(ctx, req.(*DownloadProblemsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*DownloadProblemsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ProblemServiceHTTPClient interface {
 	AddProblemToProblemset(ctx context.Context, req *AddProblemToProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	CreateProblem(ctx context.Context, req *CreateProblemRequest, opts ...http.CallOption) (rsp *CreateProblemResponse, err error)
@@ -1084,6 +1106,7 @@ type ProblemServiceHTTPClient interface {
 	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemset(ctx context.Context, req *DeleteProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DownloadProblems(ctx context.Context, req *DownloadProblemsRequest, opts ...http.CallOption) (rsp *DownloadProblemsResponse, err error)
 	GetProblem(ctx context.Context, req *GetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	GetProblemFile(ctx context.Context, req *GetProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
 	GetProblemLanguage(ctx context.Context, req *GetProblemLanguageRequest, opts ...http.CallOption) (rsp *ProblemLanguage, err error)
@@ -1285,6 +1308,19 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemset(ctx context.Context, in 
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemset))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) DownloadProblems(ctx context.Context, in *DownloadProblemsRequest, opts ...http.CallOption) (*DownloadProblemsResponse, error) {
+	var out DownloadProblemsResponse
+	pattern := "/download_problems"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceDownloadProblems))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

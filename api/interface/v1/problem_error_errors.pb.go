@@ -70,3 +70,15 @@ func IsProblemTestSampleNotAllowed(err error) bool {
 func ErrorProblemTestSampleNotAllowed(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ProblemErrorReason_PROBLEM_TEST_SAMPLE_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
 }
+
+func IsProblemPackageNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ProblemErrorReason_PROBLEM_PACKAGE_NOT_FOUND.String() && e.Code == 400
+}
+
+func ErrorProblemPackageNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ProblemErrorReason_PROBLEM_PACKAGE_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}

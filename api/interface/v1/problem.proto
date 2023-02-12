@@ -275,6 +275,13 @@ service ProblemService {
             body: "*"
         };
     };
+    // 下载题目
+    rpc DownloadProblems (DownloadProblemsRequest) returns (DownloadProblemsResponse) {
+        option (google.api.http) = {
+            post: "/download_problems"
+            body: "*"
+        };
+    };
 }
 
 
@@ -684,4 +691,12 @@ message UpdateProblemLanguageRequest {
 message DeleteProblemLanguageRequest {
     int32 problem_id = 1;
     int32 id = 2;
+}
+
+message DownloadProblemsRequest {
+    repeated int32 ids = 1;
+}
+
+message DownloadProblemsResponse {
+    string url = 1;
 }

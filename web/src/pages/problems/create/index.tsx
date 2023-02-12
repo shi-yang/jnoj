@@ -18,10 +18,9 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import CreateModal from './create';
-import { getProblem, listProblems } from '@/api/problem';
+import { downloadProblems, getProblem, listProblems } from '@/api/problem';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
-import { FormatTime } from '@/utils/format';
 import ProblemContent from '@/components/Problem/ProblemContent';
 const { Title } = Typography;
 
@@ -39,6 +38,7 @@ export default function() {
   const [formParams, setFormParams] = useState({});
   const [id, setId] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const Status = ['', '私有', '公开'];
   const Type = {
     'DEFAULT': '标准输入输出',
@@ -135,6 +135,19 @@ export default function() {
     setFormParams(params);
   }
 
+  function downloadProblem() {
+    downloadProblems(selectedRowKeys)
+      .then(res => {
+        const a = document.createElement('a');
+        a.href = res.data.url;
+        a.click();
+        document.body.removeChild(a);
+      })
+      .catch(err => {
+        Message.error(err.response.data.message);
+      })
+  }
+
   return (
     <Card className='container'>
       <Title heading={6}>{t['menu.list.createProblem']}</Title>
@@ -144,7 +157,11 @@ export default function() {
           <CreateModal />
         </Space>
         <Space>
-          <Button icon={<IconDownload />} onClick={() => {Message.info('开发中，尽情期待')}}>
+          <Button
+            icon={<IconDownload />}
+            disabled={selectedRowKeys.length === 0}
+            onClick={downloadProblem}
+          >
             {t['searchTable.operation.download']}
           </Button>
         </Space>
@@ -156,6 +173,15 @@ export default function() {
         pagination={pagination}
         columns={columns}
         data={data}
+        rowSelection={{
+          type: 'radio',
+          selectedRowKeys,
+          onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+          onSelect: (selected, record, selectedRows) => {
+          },
+        }}
       />
       <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
     </Card>

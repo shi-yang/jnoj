@@ -13,4 +13,5 @@ enum ProblemErrorReason {
     PROBLEM_NOT_FOUND = 2 [(errors.code) = 404];
     PROBLEM_NOT_VERIFICATION = 3[(errors.code) = 400];
     PROBLEM_TEST_SAMPLE_NOT_ALLOWED = 4[(errors.code) = 400];
+    PROBLEM_PACKAGE_NOT_FOUND = 5[(errors.code) = 400];
 }

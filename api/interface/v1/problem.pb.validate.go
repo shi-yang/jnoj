@@ -6970,6 +6970,212 @@ var _ interface {
 	ErrorName() string
 } = DeleteProblemLanguageRequestValidationError{}
 
+// Validate checks the field values on DownloadProblemsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DownloadProblemsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DownloadProblemsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DownloadProblemsRequestMultiError, or nil if none found.
+func (m *DownloadProblemsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DownloadProblemsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return DownloadProblemsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DownloadProblemsRequestMultiError is an error wrapping multiple validation
+// errors returned by DownloadProblemsRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DownloadProblemsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DownloadProblemsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DownloadProblemsRequestMultiError) AllErrors() []error { return m }
+
+// DownloadProblemsRequestValidationError is the validation error returned by
+// DownloadProblemsRequest.Validate if the designated constraints aren't met.
+type DownloadProblemsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DownloadProblemsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DownloadProblemsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DownloadProblemsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DownloadProblemsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DownloadProblemsRequestValidationError) ErrorName() string {
+	return "DownloadProblemsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DownloadProblemsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDownloadProblemsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DownloadProblemsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DownloadProblemsRequestValidationError{}
+
+// Validate checks the field values on DownloadProblemsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DownloadProblemsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DownloadProblemsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DownloadProblemsResponseMultiError, or nil if none found.
+func (m *DownloadProblemsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DownloadProblemsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Url
+
+	if len(errors) > 0 {
+		return DownloadProblemsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DownloadProblemsResponseMultiError is an error wrapping multiple validation
+// errors returned by DownloadProblemsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DownloadProblemsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DownloadProblemsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DownloadProblemsResponseMultiError) AllErrors() []error { return m }
+
+// DownloadProblemsResponseValidationError is the validation error returned by
+// DownloadProblemsResponse.Validate if the designated constraints aren't met.
+type DownloadProblemsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DownloadProblemsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DownloadProblemsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DownloadProblemsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DownloadProblemsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DownloadProblemsResponseValidationError) ErrorName() string {
+	return "DownloadProblemsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DownloadProblemsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDownloadProblemsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DownloadProblemsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DownloadProblemsResponseValidationError{}
+
 // Validate checks the field values on Problem_SampleTest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

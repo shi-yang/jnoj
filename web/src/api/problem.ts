@@ -52,3 +52,7 @@ export function getProblemVerification(id) {
 export function packProblem(id) {
   return axios.post(`/problems/${id}/pack`, {})
 }
+
+export function downloadProblems(ids:number[]) {
+  return axios.post(`/download_problems`, { ids: ids })
+}

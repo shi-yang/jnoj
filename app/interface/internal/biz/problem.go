@@ -247,3 +247,21 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 	})
 	return nil
 }
+
+// DownloadProblems 下载题目
+// 暂时不支持多个题目一起打包下载，后续再考虑支持
+func (uc *ProblemUsecase) DownloadProblems(ctx context.Context, ids []int32) (res string, err error) {
+	// 查询对应的打包文件
+	for _, id := range ids {
+		file, c := uc.repo.ListProblemFiles(ctx, &v1.ListProblemFilesRequest{
+			Id:       id,
+			FileType: string(ProblemFileFileTypePackage),
+			Page:     1,
+			PerPage:  1,
+		})
+		if c > 0 {
+			res = file[0].Content
+		}
+	}
+	return
+}
