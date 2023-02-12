@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Layout } from '@arco-design/web-react';
 import LayoutHeader from './LayoutHeader';
-import styles from './style/main-layouts.module.less'
+import styles from './style/main-layouts.module.less';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 

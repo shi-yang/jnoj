@@ -1,5 +1,9 @@
 const i18n = {
   'en-US': {
+    'header.startTheTimer': 'Start the timer',
+    'header.reset': 'Reset',
+    'header.hide': 'Hide',
+    'header.show': 'Show',
     'tab.description': 'Description',
     'tab.submissions': 'Submissions',
     'console.testCase': 'Test Case',
@@ -22,6 +26,7 @@ const i18n = {
     'time': 'Time',
     'memory': 'Memory',
     'answer': 'Answer',
+    'source': 'Source',
     'submission': 'Submission',
     'console.runCode': 'Run Code',
     'console.addCase': 'Add Case',
@@ -32,6 +37,10 @@ const i18n = {
     'editor.footer.verdict': 'Verdict',
   },
   'zh-CN': {
+    'header.startTheTimer': '开始计时',
+    'header.reset': '重置',
+    'header.hide': '隐藏',
+    'header.show': '显示',
     'tab.description': '题目描述',
     'tab.submissions': '提交记录',
     'console.testCase': '测试样例',
@@ -54,6 +63,7 @@ const i18n = {
     'time': '时间',
     'memory': '内存',
     'answer': '答案',
+    'source': '来源',
     'submission': '提交',
     'console.runCode': '运行',
     'console.addCase': '添加',

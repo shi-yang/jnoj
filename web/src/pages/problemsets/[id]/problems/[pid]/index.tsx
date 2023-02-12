@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Tabs,
   Typography,
@@ -7,6 +7,9 @@ import {
   Select,
   Divider,
   Link,
+  Tooltip,
+  Button,
+  Space,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -15,7 +18,7 @@ import './mock';
 import Editor from './editor';
 import Description from './description';
 import Submission from './submission';
-import { IconLanguage } from '@arco-design/web-react/icon';
+import { IconClockCircle, IconInfoCircle, IconLanguage, IconRefresh } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useAppSelector } from '@/hooks';
@@ -23,15 +26,23 @@ import { setting, SettingState } from '@/store/reducers/setting';
 import { getProblemset, getProblemsetProblem } from '@/api/problemset';
 const TabPane = Tabs.TabPane;
 import ProblemContext from './context';
+import ProblemLayout from '../ProblemLayout';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 
 function Index() {
   const t = useLocale(locale);
-  const settings = useAppSelector<SettingState>(setting)
+  const settings = useAppSelector<SettingState>(setting);
   const [loading, setLoading] = useState(true);
+  const timer = useRef(null);
+  const [timeCount, setTimeCount] = useState(0);
+  const [timeCountHidden, setTimeCountHidden] = useState(false);
   const [data, setData] = useState({
     id: 0,
     name: '',
     type: 'DEFAULT',
+    source: '',
     statements: [],
     sampleTests: []
   });
@@ -60,6 +71,26 @@ function Index() {
         setLoading(false);
       });
   }
+  function startTimer() {
+    setTimeCount(0);
+    timer.current = setInterval(() => {
+      setTimeCount(v => v + 1);
+    }, 1000)
+  }
+  function endTimer() {
+    if (timer.current !== null) {
+      clearTimeout(timer.current);
+    }
+    setTimeCount(0);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timer.current !== null) {
+        clearTimeout(timer.current);
+      }
+    }
+  }, [timer])
 
   useEffect(() => {
     fetchData(pid);
@@ -81,12 +112,47 @@ function Index() {
           </Head>
           <div className={styles.container}>
             <Grid.Row className={styles.header} justify="space-between" align="center">
-              <Grid.Col span={24}>
+              <Grid.Col flex='auto'>
                 <Typography.Title className={styles.title} heading={5}>
                   <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
                   <Divider type='vertical' />
                   {`${pid}. ${data.statements[language].name}`}
                 </Typography.Title>
+              </Grid.Col>
+              <Grid.Col flex='100px'>
+                <Space>
+                  { timeCountHidden ? 
+                    <Tooltip position='bottom' trigger='hover' content={t['header.show']}>
+                      <Button style={{color: 'rgb(var(--arcoblue-4))'}} onClick={(e) => setTimeCountHidden(false)}><IconClockCircle fontSize={20} /></Button>
+                    </Tooltip>
+                  :
+                   (timeCount === 0 
+                    ? <Tooltip position='bottom' trigger='hover' content={t['header.startTheTimer']}>
+                      <Button onClick={(e) => startTimer()}><IconClockCircle fontSize={20} /></Button>
+                    </Tooltip>
+                    :
+                    <Space size={0}>
+                      <Tooltip position='bottom' trigger='hover' content={t['header.hide']}>
+                        <Button onClick={(e) => setTimeCountHidden(true)}>
+                          {dayjs.duration(timeCount, "seconds").format('HH:mm:ss')}
+                        </Button>
+                      </Tooltip>
+                      <Tooltip position='bottom' trigger='hover' content={t['header.reset']}>
+                        <Button onClick={(e) => endTimer()}>
+                          <IconRefresh fontSize={20} />
+                        </Button>
+                      </Tooltip>
+                    </Space>
+                  )}
+                  <Tooltip position='bottom' trigger='hover' content={
+                    <Space direction='vertical'>
+                      <span>Problem ID: {data.id}</span>
+                      {data.source !== '' && <span>{t['source']}: {data.source}</span>}
+                    </Space>
+                  }>
+                    <Button><IconInfoCircle fontSize={20} /></Button>
+                  </Tooltip>
+                </Space>
               </Grid.Col>
             </Grid.Row>
             <ResizeBox.Split
@@ -147,5 +213,5 @@ function Index() {
     </>
   );
 }
-
+Index.getLayout = ProblemLayout;
 export default Index;
