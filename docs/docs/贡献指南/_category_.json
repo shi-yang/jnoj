@@ -1,0 +1,14 @@
+{
+  "position": 46,
+  "label": "贡献指南&二次开发",
+  "collapsible": true,
+  "collapsed": false,
+  "className": "red",
+  "link": {
+    "type": "generated-index",
+    "title": "贡献指南"
+  },
+  "customProps": {
+    "description": ""
+  }
+}
