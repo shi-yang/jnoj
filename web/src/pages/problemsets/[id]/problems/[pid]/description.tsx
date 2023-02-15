@@ -1,5 +1,4 @@
-import { Button, Divider, Drawer, Link, List, PaginationProps, Typography } from '@arco-design/web-react';
-const { Title, Paragraph } = Typography;
+import { Button, Drawer, Link, List, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/description.module.less'
@@ -8,40 +7,36 @@ import { useContext, useEffect, useState } from 'react';
 import { IconLeft, IconRight } from '@arco-design/web-react/icon';
 import { listProblemsetProblems } from '@/api/problemset';
 import ProblemContext from './context';
-import router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
-const Description = ({ language, problemset }) => {
-  const {problem, updateProblem} = useContext(ProblemContext);
+const Description = ({ problemset }) => {
+  const {language, problem, fetchProblem} = useContext(ProblemContext);
   const t = useLocale(locale);
-  const { pid } = router.query
-  function getNextProblem() {
-    const next = Number(pid)+1;
-    router.push({
-      pathname: router.pathname,
-      query: { id: problemset.id, pid: next }
-    }, undefined, {shallow: true});
-    updateProblem(next);
-  }
-  function getPreviousProblem() {
-    const previous = Number(pid)-1;
-    router.push({
-      pathname: router.pathname,
-      query: { id: problemset.id, pid: previous }
-    }, undefined, {shallow: true});
-    updateProblem(previous);
+  const router = useRouter();
+  const problemId = router.query.pid;
+  function changeProblem(problemId) {
+    router.query.pid = problemId;
+    const newURL = `/problemsets/${problemset.id}/problems/${problemId}`;
+    window.history.replaceState({ ...window.history.state, as: newURL, url: newURL }, '', newURL);
+    fetchProblem(problemId);
   }
   return (
     <div className={styles.descriptionContent}>
       <div className={styles.description}>
-        <ProblemContent problem={problem} language={language} />
+        { problem.statements.length > 0 && <ProblemContent problem={problem} language={language} />}
       </div>
       <div className={styles.footer}>
         <div className={styles.left}>
           <Problemset problemset={problemset} />
         </div>
         <div className={styles.right}>
-          <Button disabled={Number(pid) === 1} onClick={getPreviousProblem}><IconLeft />{t['description.footer.previous']}</Button>
-          <Button disabled={Number(pid) === problemset.problemCount} onClick={getNextProblem}>{t['description.footer.next']}<IconRight /></Button>
+          <Button disabled={Number(problemId) === 1} onClick={(e) => changeProblem(Number(problemId)-1)}>
+            <IconLeft />
+            {t['description.footer.previous']}
+          </Button>
+          <Button disabled={Number(problemId) === problemset.problemCount} onClick={(e) => changeProblem(Number(problemId)+1)}>
+            {t['description.footer.next']}<IconRight />
+          </Button>
         </div>
       </div>
     </div>
@@ -51,19 +46,24 @@ const Description = ({ language, problemset }) => {
 function Problemset({problemset}) {
   const [visible, setVisible] = useState(false);
   const [problems, setProblems] = useState([]);
-  const { updateProblem } = useContext(ProblemContext);
+  const { fetchProblem } = useContext(ProblemContext);
   const [loading, setLoading] = useState(true);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
-    showTotal: true,
+    showTotal: false,
     pageSize: 25,
     current: 1,
+    sizeOptions: [25, 50, 100],
+    hideOnSinglePage: true, 
     pageSizeChangeResetCurrent: true,
   });
   const router = useRouter();
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
     fetchData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [visible, pagination.current, pagination.pageSize]);
 
   function fetchData() {
     const { current, pageSize } = pagination;
@@ -89,7 +89,7 @@ function Problemset({problemset}) {
       pathname: router.pathname,
       query: { id: problemset.id, pid: order }
     }, undefined, {shallow: true});
-    updateProblem(order);
+    fetchProblem(order);
   }
   return (
     <div>
@@ -101,7 +101,6 @@ function Problemset({problemset}) {
       </Button>
       <Drawer
         width={332}
-        height={332}
         title={
           <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
         }
@@ -116,6 +115,7 @@ function Problemset({problemset}) {
           style={{ width: 622 }}
           size='small'
           dataSource={problems}
+          loading={loading}
           render={(item, index) =>
             <List.Item key={index}>
               <Button type='text' onClick={() => changeProblem(item.order)}>
@@ -123,6 +123,7 @@ function Problemset({problemset}) {
               </Button>
             </List.Item>
           }
+          pagination={pagination}
         />
       </Drawer>
     </div>

@@ -4,9 +4,11 @@ const ProblemContext = createContext({
   problem: {
     id: 0,
     type: 'DEFAULT',
-    sampleTests: []
+    sampleTests: [],
+    statements: [],
   },
-  updateProblem: (any) => {}
+  language: 0,
+  fetchProblem: (any) => {}
 });
 
 export default ProblemContext;

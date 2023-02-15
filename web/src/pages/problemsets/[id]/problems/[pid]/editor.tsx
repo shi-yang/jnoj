@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import styles from './style/editor.module.less';
 import { Button, Card, Form, Grid, Input, Message, Popover, ResizeBox, Select, Space, Spin, Tabs, Typography } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
@@ -17,6 +17,17 @@ import ProblemContext from './context';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 import Editor from "@monaco-editor/react";
 
+
+const themes = [
+  'light', 'vs-dark'
+];
+const languageNameToMonacoLanguage = {
+  0: 'c',
+  1: 'cpp',
+  2: 'java',
+  3: 'python'
+};
+
 export default function App() {
   const t = useLocale(locale);
   const { problem } = useContext(ProblemContext);
@@ -27,7 +38,7 @@ export default function App() {
   const [languageList, setLanguageList] = useState([]);
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
-  const [latestSubmissionID, setLatestSubmissionID] = useState('0');
+  const [latestSubmissionID, setLatestSubmissionID] = useState(0);
   const [isMounted, setIsMounted] = useState(false); 
   const consoleRef = useRef(null);
   const runCode = () => {
@@ -37,23 +48,12 @@ export default function App() {
   const onChange = React.useCallback((value, viewUpdate) => {
     setValue(value)
   }, []);
-  const themes = [
-    'light', 'vs-dark'
-  ];
-  const languageNameToMonacoLanguage = {
-    0: 'c',
-    1: 'cpp',
-    2: 'java',
-    3: 'python'
-  };
   
   const onChangeLanguage = (e) => {
     setLanguage(e);
     // 函数题需要查询对应的语言模板
     if (problem.type === 'FUNCTION') {
-      const lang = languageList.find(item => {
-        return item.languageCode === Number(e)
-      })
+      const lang = languageList.find(item => item.languageCode === Number(e))
       getProblemLanguage(problem.id, lang.id)
         .then(res => {
           setLanguageId(lang.id);
@@ -66,14 +66,14 @@ export default function App() {
       .then(res => {
         const langs = res.data.data
         setLanguageList(langs);
-        const userLang = langs.find(item => {
-          return item.languageCode === Number(language)
-        })
+        const userLang = langs.find(item => item.languageCode === Number(language))
         if (problem.type === 'FUNCTION' && userLang) {
           getProblemLanguage(problem.id, userLang.id)
             .then(res => {
               setValue(res.data.userContent);
             })
+        } else {
+          setValue('');
         }
       })
   }
@@ -89,10 +89,13 @@ export default function App() {
     });
   }
   useEffect(() => {
+    if (problem.id === 0) {
+      return;
+    }
     setCases(problem.sampleTests.map(item => item.input));
     setIsMounted(true);
     getLanguages();
-  }, [])
+  }, [problem.id])
   return (
     <div className={styles['container']}>
       <div className={styles['code-header']}>
@@ -174,7 +177,14 @@ export default function App() {
   );
 }
 
-function RecentlySubmitted({ entityId = undefined, entityType = undefined, latestSubmissionID = undefined, problemId }) {
+interface RecentlySubmittedProps {
+  problemId: number,
+  entityId?: number,
+  entityType?: number,
+  latestSubmissionID?: number,
+}
+
+const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const t = useLocale(locale);
   const ws = useRef<WebSocket | null>(null);
   const [submission, setSubmission] = useState({ id: 0, verdict: 0 });
@@ -217,9 +227,9 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
     return <IconCloseCircle />;
   }
   useEffect(() => {
-    if (latestSubmissionID && latestSubmissionID !== '0') {
+    if (props.latestSubmissionID && props.latestSubmissionID !== 0) {
       setIsRunning(true);
-      getSubmission(latestSubmissionID)
+      getSubmission(props.latestSubmissionID)
         .then(res => {
           if (res.data.verdict !== 0) {
             setIsRunning(false);
@@ -227,14 +237,20 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
           setSubmission(res.data);
         })
     } else {
-      listSubmissions({ entityId, entityType, problemId, userId: user.id })
+      listSubmissions({
+        entityId: props.entityId,
+        entityType:
+        props.entityType,
+        problemId: props.problemId,
+        userId: user.id
+      })
         .then(res => {
           if (res.data.data.length > 0) {
             setSubmission(res.data.data[0]);
           }
         })
     }
-  }, [entityId, entityType, problemId, latestSubmissionID]);
+  }, [props.entityId, props.entityType, props.problemId, props.latestSubmissionID]);
 
   function onCancel() {
     setVisible(false);
@@ -258,7 +274,7 @@ function RecentlySubmitted({ entityId = undefined, entityType = undefined, lates
       {visible && <SubmissionDrawer id={submission.id} visible={visible} onCancel={onCancel} />}
     </Popover>
   )
-}
+})
 
 function ConsoleComponent({ problem, defaultCases, language, languageId, source }, ref) {
   const t = useLocale(locale);
