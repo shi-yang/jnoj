@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import RegisterForm from './register-form';
-import LoginBanner from './login-banner';
 import styles from './style/login.module.less';
 
 function Register() {
@@ -10,11 +9,6 @@ function Register() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.banner}>
-        <div className={styles['banner-inner']}>
-          <LoginBanner />
-        </div>
-      </div>
       <div className={styles.content}>
         <div className={styles['content-inner']}>
           <RegisterForm />

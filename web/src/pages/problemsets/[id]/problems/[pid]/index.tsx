@@ -60,10 +60,10 @@ const Timer = React.memo(() => {
       return;
     }
     idRef.current = setInterval(() => dispatch({type: 'tick'}), 1000);
-      return () => {
-        clearInterval(idRef.current);
-        idRef.current = null;
-      };
+    return () => {
+      clearInterval(idRef.current);
+      idRef.current = null;
+    };
     }, [state.isRunning]);
   return (
     <>

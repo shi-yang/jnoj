@@ -27,6 +27,11 @@ data:
 service:
   message_queue:
     address: "amqp://admin:admin@rabbitmq:5672/"
+  smtp:
+    identity: smtp.qq.com:25
+    username: no-reply@jnoj.dev
+    password: jnojkey
+    host: smtp.qq.com
 
 consul:
   address: consul:8500

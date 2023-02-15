@@ -35,12 +35,26 @@ func (s *UserService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Logi
 func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterResponse, error) {
 	id, token, err := s.uc.Register(ctx, &biz.User{
 		Username: req.Username,
+		Nickname: req.Username,
+		Email:    req.GetEmail(),
+		Phone:    req.GetPhone(),
 		Password: req.Password,
-	})
+	}, req.Captcha)
+	if err != nil {
+		return nil, err
+	}
 	return &v1.RegisterResponse{
 		Id:    int32(id),
 		Token: token,
 	}, err
+}
+
+// GetCaptcha 获取验证码
+func (s *UserService) GetCaptcha(ctx context.Context, req *v1.GetCaptchaRequest) (*emptypb.Empty, error) {
+	if err := s.uc.GetCaptcha(ctx, req.GetEmail(), req.GetPhone()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 
 // GetUserInfo 获取登录用户信息

@@ -22,3 +22,15 @@ func IsUserExist(err error) bool {
 func ErrorUserExist(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, UserErrorReason_USER_EXIST.String(), fmt.Sprintf(format, args...))
 }
+
+func IsCaptchaError(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_CAPTCHA_ERROR.String() && e.Code == 400
+}
+
+func ErrorCaptchaError(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, UserErrorReason_CAPTCHA_ERROR.String(), fmt.Sprintf(format, args...))
+}

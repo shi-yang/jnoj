@@ -22,6 +22,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+const OperationUserServiceGetCaptcha = "/jnoj.interface.v1.UserService/GetCaptcha"
 const OperationUserServiceGetUser = "/jnoj.interface.v1.UserService/GetUser"
 const OperationUserServiceGetUserInfo = "/jnoj.interface.v1.UserService/GetUserInfo"
 const OperationUserServiceGetUserProfileCalendar = "/jnoj.interface.v1.UserService/GetUserProfileCalendar"
@@ -29,6 +30,7 @@ const OperationUserServiceLogin = "/jnoj.interface.v1.UserService/Login"
 const OperationUserServiceRegister = "/jnoj.interface.v1.UserService/Register"
 
 type UserServiceHTTPServer interface {
+	GetCaptcha(context.Context, *GetCaptchaRequest) (*emptypb.Empty, error)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetUserInfo(context.Context, *emptypb.Empty) (*GetUserInfoResponse, error)
 	GetUserProfileCalendar(context.Context, *GetUserProfileCalendarRequest) (*GetUserProfileCalendarResponse, error)
@@ -41,6 +43,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r := s.Route("/")
 	r.POST("/login", _UserService_Login0_HTTP_Handler(srv))
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
+	r.GET("/captcha", _UserService_GetCaptcha0_HTTP_Handler(srv))
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_calendar", _UserService_GetUserProfileCalendar0_HTTP_Handler(srv))
@@ -80,6 +83,25 @@ func _UserService_Register0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx htt
 			return err
 		}
 		reply := out.(*RegisterResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_GetCaptcha0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetCaptchaRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceGetCaptcha)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetCaptcha(ctx, req.(*GetCaptchaRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -148,6 +170,7 @@ func _UserService_GetUserProfileCalendar0_HTTP_Handler(srv UserServiceHTTPServer
 }
 
 type UserServiceHTTPClient interface {
+	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	GetUserInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetUserInfoResponse, err error)
 	GetUserProfileCalendar(ctx context.Context, req *GetUserProfileCalendarRequest, opts ...http.CallOption) (rsp *GetUserProfileCalendarResponse, err error)
@@ -161,6 +184,19 @@ type UserServiceHTTPClientImpl struct {
 
 func NewUserServiceHTTPClient(client *http.Client) UserServiceHTTPClient {
 	return &UserServiceHTTPClientImpl{client}
+}
+
+func (c *UserServiceHTTPClientImpl) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/captcha"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceGetCaptcha))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *UserServiceHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequest, opts ...http.CallOption) (*User, error) {

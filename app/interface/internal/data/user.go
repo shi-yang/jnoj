@@ -42,6 +42,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 	err := r.data.db.WithContext(ctx).
 		Where(&User{
 			Username: u.Username,
+			Email:    u.Email,
 			Phone:    u.Phone,
 		}).
 		First(&res).
@@ -52,6 +53,8 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 	return &biz.User{
 		ID:       res.ID,
 		Username: res.Username,
+		Nickname: res.Nickname,
+		Email:    res.Email,
 		Phone:    res.Phone,
 		Password: res.Password,
 	}, nil
@@ -61,6 +64,8 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	res := User{
 		Username: u.Username,
 		Password: u.Password,
+		Email:    u.Email,
+		Nickname: u.Nickname,
 		Phone:    u.Phone,
 	}
 	err := r.data.db.WithContext(ctx).
@@ -132,4 +137,18 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 		Where("created_at >= ? and created_at < ?", start, end).
 		Scan(&res.TotalProblemSolved)
 	return res, nil
+}
+
+// GetCaptcha 获取验证码
+func (r *userRepo) GetCaptcha(ctx context.Context, key string) (string, error) {
+	val, err := r.data.redisdb.Get(ctx, key).Result()
+	if err != nil {
+		return "", err
+	}
+	return val, nil
+}
+
+// SaveCaptcha 保存验证码，5分钟
+func (r *userRepo) SaveCaptcha(ctx context.Context, key string, value string) error {
+	return r.data.redisdb.Set(ctx, key, value, time.Minute*5).Err()
 }

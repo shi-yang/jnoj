@@ -20,7 +20,9 @@ require (
 
 require (
 	github.com/armon/go-metrics v0.3.10 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
@@ -35,6 +37,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -62,6 +65,7 @@ require (
 	github.com/hashicorp/consul/api v1.15.3
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/rabbitmq/amqp091-go v1.5.0
+	github.com/redis/go-redis/v9 v9.0.2
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.40
 	go.opentelemetry.io/otel v1.7.0 // indirect
 	go.opentelemetry.io/otel/trace v1.7.0 // indirect

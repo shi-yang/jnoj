@@ -9,4 +9,5 @@ enum UserErrorReason {
     option (errors.default_code) = 500;
 
     USER_EXIST = 0 [(errors.code) = 400];
+    CAPTCHA_ERROR = 1 [(errors.code) = 400];
 }

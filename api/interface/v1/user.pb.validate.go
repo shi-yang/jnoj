@@ -262,19 +262,160 @@ func (m *RegisterRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Phone
+	if !_RegisterRequest_Username_Pattern.MatchString(m.GetUsername()) {
+		err := RegisterRequestValidationError{
+			field:  "Username",
+			reason: "value does not match regex pattern \"^[a-zA-Z][a-zA-Z0-9_-]{4,15}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Username
+	if utf8.RuneCountInString(m.GetCaptcha()) != 6 {
+		err := RegisterRequestValidationError{
+			field:  "Captcha",
+			reason: "value length must be 6 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
-	// no validation rules for Captcha
+	}
 
-	// no validation rules for Password
+	if l := utf8.RuneCountInString(m.GetPassword()); l < 6 || l > 16 {
+		err := RegisterRequestValidationError{
+			field:  "Password",
+			reason: "value length must be between 6 and 16 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	oneofIdPresent := false
+	switch v := m.Id.(type) {
+	case *RegisterRequest_Phone:
+		if v == nil {
+			err := RegisterRequestValidationError{
+				field:  "Id",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdPresent = true
+
+		if !_RegisterRequest_Phone_Pattern.MatchString(m.GetPhone()) {
+			err := RegisterRequestValidationError{
+				field:  "Phone",
+				reason: "value does not match regex pattern \"^1[3456789][0-9]{9}$\"",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	case *RegisterRequest_Email:
+		if v == nil {
+			err := RegisterRequestValidationError{
+				field:  "Id",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdPresent = true
+
+		if err := m._validateEmail(m.GetEmail()); err != nil {
+			err = RegisterRequestValidationError{
+				field:  "Email",
+				reason: "value must be a valid email address",
+				cause:  err,
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	default:
+		_ = v // ensures v is used
+	}
+	if !oneofIdPresent {
+		err := RegisterRequestValidationError{
+			field:  "Id",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return RegisterRequestMultiError(errors)
 	}
 
 	return nil
+}
+
+func (m *RegisterRequest) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *RegisterRequest) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
 }
 
 // RegisterRequestMultiError is an error wrapping multiple validation errors
@@ -347,6 +488,10 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RegisterRequestValidationError{}
+
+var _RegisterRequest_Phone_Pattern = regexp.MustCompile("^1[3456789][0-9]{9}$")
+
+var _RegisterRequest_Username_Pattern = regexp.MustCompile("^[a-zA-Z][a-zA-Z0-9_-]{4,15}$")
 
 // Validate checks the field values on RegisterResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
@@ -451,6 +596,225 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RegisterResponseValidationError{}
+
+// Validate checks the field values on GetCaptchaRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetCaptchaRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetCaptchaRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetCaptchaRequestMultiError, or nil if none found.
+func (m *GetCaptchaRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetCaptchaRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	oneofKeyPresent := false
+	switch v := m.Key.(type) {
+	case *GetCaptchaRequest_Phone:
+		if v == nil {
+			err := GetCaptchaRequestValidationError{
+				field:  "Key",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofKeyPresent = true
+
+		if !_GetCaptchaRequest_Phone_Pattern.MatchString(m.GetPhone()) {
+			err := GetCaptchaRequestValidationError{
+				field:  "Phone",
+				reason: "value does not match regex pattern \"^1[3456789][0-9]{9}$\"",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	case *GetCaptchaRequest_Email:
+		if v == nil {
+			err := GetCaptchaRequestValidationError{
+				field:  "Key",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofKeyPresent = true
+
+		if err := m._validateEmail(m.GetEmail()); err != nil {
+			err = GetCaptchaRequestValidationError{
+				field:  "Email",
+				reason: "value must be a valid email address",
+				cause:  err,
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	default:
+		_ = v // ensures v is used
+	}
+	if !oneofKeyPresent {
+		err := GetCaptchaRequestValidationError{
+			field:  "Key",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return GetCaptchaRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *GetCaptchaRequest) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *GetCaptchaRequest) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// GetCaptchaRequestMultiError is an error wrapping multiple validation errors
+// returned by GetCaptchaRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetCaptchaRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetCaptchaRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetCaptchaRequestMultiError) AllErrors() []error { return m }
+
+// GetCaptchaRequestValidationError is the validation error returned by
+// GetCaptchaRequest.Validate if the designated constraints aren't met.
+type GetCaptchaRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetCaptchaRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetCaptchaRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetCaptchaRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetCaptchaRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetCaptchaRequestValidationError) ErrorName() string {
+	return "GetCaptchaRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetCaptchaRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetCaptchaRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetCaptchaRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetCaptchaRequestValidationError{}
+
+var _GetCaptchaRequest_Phone_Pattern = regexp.MustCompile("^1[3456789][0-9]{9}$")
 
 // Validate checks the field values on GetUserInfoResponse with the rules
 // defined in the proto definition for this message. If any rules are

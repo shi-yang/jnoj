@@ -33,6 +33,14 @@ export function getUsers(id) {
   return axios.get(`/users/${id}`)
 }
 
+interface getCaptchaRequest {
+  phone?: string;
+  email?: string;
+}
+export function getCaptcha(params:getCaptchaRequest) {
+  return axios.get(`/captcha`, { params })
+}
+
 export function getUserProfileCalendar(id, params = undefined) {
   return axios.get(`/users/${id}/profile_calendar`, { params })
 }

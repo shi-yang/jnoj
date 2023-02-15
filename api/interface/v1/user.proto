@@ -4,6 +4,7 @@ package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -20,6 +21,12 @@ service UserService {
         option (google.api.http) = {
             post: "/register"
             body: "*"
+        };
+    };
+    // 获取验证码
+    rpc GetCaptcha (GetCaptchaRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            get: "/captcha"
         };
     };
     // 获取登录用户信息
@@ -52,14 +59,24 @@ message LoginResponse {
 }
 
 message RegisterRequest {
-    // 手机号
-    string phone = 1;
+    oneof id {
+        // either phone or email must be set.
+        option (validate.required) = true;
+
+        // 手机号
+        string phone = 1 [(validate.rules).string = { pattern: "^1[3456789][0-9]{9}$" }];
+        // 邮箱
+        string email = 2 [(validate.rules).string.email = true];
+    }
     // 用户名
-    string username = 2;
+    string username = 3 [(validate.rules).string = {
+        // 以字母、数字、下划线，且非纯数字，长度在 5 - 16 位之间
+        pattern:   "^[a-zA-Z][a-zA-Z0-9_-]{4,15}$",
+    }];
     // 验证码
-    string captcha = 3;
+    string captcha = 4 [(validate.rules).string.len = 6];
     // 密码
-    string password = 4;
+    string password = 5 [(validate.rules).string = {min_len: 6, max_len: 16}];
 }
 
 message RegisterResponse {
@@ -67,6 +84,18 @@ message RegisterResponse {
     int32 id = 1;
     // 登录 token
     string token = 2;
+}
+
+message GetCaptchaRequest {
+    oneof key {
+        // either phone or email must be set.
+        option (validate.required) = true;
+
+        // 手机号
+        string phone = 1 [(validate.rules).string = { pattern: "^1[3456789][0-9]{9}$" }];
+        // 邮箱
+        string email = 2 [(validate.rules).string.email = true];
+    }
 }
 
 message GetUserInfoResponse {
