@@ -32,9 +32,9 @@ export default ({problem, language}) => {
   return (
     <Typography className={styles.content}>
       <Paragraph type='secondary' spacing='close'>
-        {t['timeLimit']}：{problem.timeLimit / 1000}s
+        {t['timeLimit']}：{problem.timeLimit / 1000} s
         <Divider type='vertical' />
-        {t['memoryLimit']}：{problem.memoryLimit}MB
+        {t['memoryLimit']}：{problem.memoryLimit} MB
       </Paragraph>
       <Paragraph>
         <ReactMarkdown
@@ -44,24 +44,32 @@ export default ({problem, language}) => {
           {problem.statements[language].legend}
         </ReactMarkdown>
       </Paragraph>
-      <Title className={styles['subtitle']} heading={5}>{t['input']}</Title>
-      <Paragraph>
-        <ReactMarkdown
-          remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex]}
-        >
-          {problem.statements[language].input}
-        </ReactMarkdown>
-      </Paragraph>
-      <Title className={styles['subtitle']} heading={5}>{t['output']}</Title>
-      <Paragraph>
-        <ReactMarkdown
-          remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex]}
-        >
-          {problem.statements[language].output}
-        </ReactMarkdown>
-      </Paragraph>
+      { problem.statements[language].input != '' &&
+        <>
+          <Title className={styles['subtitle']} heading={5}>{t['input']}</Title>
+          <Paragraph>
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              {problem.statements[language].input}
+            </ReactMarkdown>
+          </Paragraph>
+        </>
+      }
+      { problem.statements[language].output != '' &&
+        <>
+          <Title className={styles['subtitle']} heading={5}>{t['output']}</Title>
+          <Paragraph>
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              {problem.statements[language].output}
+            </ReactMarkdown>
+          </Paragraph>
+        </>
+      }
       <Title className={styles['subtitle']} heading={5}>{t['sample']}</Title>
       {
         problem.sampleTests.map((item, index) => {

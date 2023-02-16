@@ -36,6 +36,7 @@ type SubmissionServiceHTTPServer interface {
 
 func RegisterSubmissionServiceHTTPServer(s *http.Server, srv SubmissionServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.SubmissionService/GetSubmission*", auth.Guest())
+	s.Use("/jnoj.interface.v1.SubmissionService/ListSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.SubmissionService/CreateSubmission", auth.User())
 	s.Use("/jnoj.interface.v1.SubmissionService/GetLastSubmission", auth.User())
 	r := s.Route("/")
