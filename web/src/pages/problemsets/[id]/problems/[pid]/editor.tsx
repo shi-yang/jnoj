@@ -66,6 +66,7 @@ export default function App() {
         if (problem.type === 'FUNCTION' && userLang) {
           getProblemLanguage(problem.id, userLang.id)
             .then(res => {
+              setLanguageId(userLang.id);
               setValue(res.data.userContent);
             })
         } else {
