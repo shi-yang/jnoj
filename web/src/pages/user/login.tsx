@@ -18,7 +18,7 @@ function Login() {
   return (
     <>
       <Head>
-          <title>{t['login'] + ' - ' + settings.name}</title>
+          <title>{`${t['login']} - ${settings.name}`}</title>
       </Head>
       <div className={styles.container}>
         <div className={styles.content}>

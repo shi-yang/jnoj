@@ -102,7 +102,7 @@ const LayoutHeader = () => {
               <UserAvatar />
             </li>
             : <li>
-              <Link href='/user/login'>{ t['navbar.login'] }</Link>
+              <Link href='/user/login'>{ t['login'] }</Link>
             </li>)
         }
       </ul>

@@ -5,6 +5,7 @@ import {
   Button,
   Link,
   Space,
+  Message,
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
@@ -45,6 +46,9 @@ export default function LoginForm() {
         setAccessToken(res.data.token)
         afterLoginSuccess(params);
       })
+      .catch(err => {
+        Message.error(t['login.form.login.errMsg'])
+      })
       .finally(() => {
         setLoading(false);
       });
@@ -74,25 +78,24 @@ export default function LoginForm() {
         className={styles['login-form']}
         layout="vertical"
         ref={formRef}
-        initialValues={{ userName: 'admin', password: 'admin' }}
       >
         <Form.Item
           field="username"
-          rules={[{ required: true, message: t['login.form.userName.errMsg'] }]}
+          rules={[{ required: true, message: t['form.userName.errMsg'] }]}
         >
           <Input
             prefix={<IconUser />}
-            placeholder={t['login.form.userName.placeholder']}
+            placeholder={t['form.userName.placeholder']}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
         <Form.Item
           field="password"
-          rules={[{ required: true, message: t['login.form.password.errMsg'] }]}
+          rules={[{ required: true, message: t['form.password.errMsg'] }]}
         >
           <Input.Password
             prefix={<IconLock />}
-            placeholder={t['login.form.password.placeholder']}
+            placeholder={t['form.password.placeholder']}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>

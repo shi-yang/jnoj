@@ -60,12 +60,12 @@ func NewUserUsecase(repo UserRepo, c *conf.Service, logger log.Logger) *UserUsec
 func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string, error) {
 	user, err := uc.repo.GetUser(ctx, &User{Username: req.Username})
 	if err != nil {
-		return "", v1.ErrorUserExist("username not exist.")
+		return "", v1.ErrorInvalidUsernameOrPassword(err.Error())
 	}
-	if validatePassword(req.Password, user.Password) {
-		return auth.GenerateToken(user.ID)
+	if !validatePassword(req.Password, user.Password) {
+		return "", v1.ErrorInvalidUsernameOrPassword("")
 	}
-	return "", fmt.Errorf("login faild")
+	return auth.GenerateToken(user.ID)
 }
 
 // Register creates a User, and returns the new User.

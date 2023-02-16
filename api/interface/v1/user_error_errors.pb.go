@@ -34,3 +34,15 @@ func IsCaptchaError(err error) bool {
 func ErrorCaptchaError(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, UserErrorReason_CAPTCHA_ERROR.String(), fmt.Sprintf(format, args...))
 }
+
+func IsInvalidUsernameOrPassword(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_INVALID_USERNAME_OR_PASSWORD.String() && e.Code == 400
+}
+
+func ErrorInvalidUsernameOrPassword(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, UserErrorReason_INVALID_USERNAME_OR_PASSWORD.String(), fmt.Sprintf(format, args...))
+}

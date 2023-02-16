@@ -10,4 +10,5 @@ enum UserErrorReason {
 
     USER_EXIST = 0 [(errors.code) = 400];
     CAPTCHA_ERROR = 1 [(errors.code) = 400];
+    INVALID_USERNAME_OR_PASSWORD = 2 [(errors.code) = 400];
 }

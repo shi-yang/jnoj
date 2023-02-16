@@ -8,8 +8,9 @@ const i18n = {
     'menu.user.info': 'User Info',
     'menu.user.setting': 'User Setting',
     'menu.user.home': 'Homepage',
-    'navbar.login': 'Login',
-    'navbar.logout': 'Logout',
+    'login': 'Login',
+    'logout': 'Logout',
+    'register': 'Register',
     'message.lang.tips': 'Language switch to ',
   },
   'zh-CN': {
@@ -21,8 +22,9 @@ const i18n = {
     'menu.user.home': '用户主页',
     'menu.user.info': '用户信息',
     'menu.user.setting': '用户设置',
-    'navbar.login': '登录',
-    'navbar.logout': '退出',
+    'login': '登录',
+    'logout': '退出',
+    'register': '注册',
     'message.lang.tips': '语言切换至 ',
   },
 };
