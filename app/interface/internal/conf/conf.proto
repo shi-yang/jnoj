@@ -31,10 +31,11 @@ message Service {
       string address = 1;
   }
   message Smtp {
-    string identity = 1;
+    string address = 1;
     string username = 2;
     string password = 3;
     string host = 4;
+    bool ssl = 5;
   }
   MessageQueue message_queue = 2;
   Smtp smtp = 3;

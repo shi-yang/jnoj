@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	v1 "jnoj/api/interface/v1"
@@ -97,29 +98,42 @@ func (uc *UserUsecase) Register(ctx context.Context, u *User, captcha string) (i
 }
 
 // GetCaptcha 获取验证码
-func (uc *UserUsecase) GetCaptcha(ctx context.Context, email, phone string) error {
+func (uc *UserUsecase) GetCaptcha(ctx context.Context, email, phone string) (err error) {
 	var key string
 	rnd := rand.New(rand.NewSource(time.Now().Unix()))
 	code := fmt.Sprintf("%06v", rnd.Int31n(1000000))
 	uc.log.Info("captcha:", code)
 	if email != "" {
 		key = fmt.Sprintf("captcha:email:%s", email)
-		uc.sendEmailCaptcha(ctx, email, code)
+		err = uc.sendEmailCaptcha(ctx, email, code)
 	} else {
 		key = fmt.Sprintf("captcha:phone:%s", phone)
-		uc.sendPhoneCaptcha(ctx, phone, code)
+		err = uc.sendPhoneCaptcha(ctx, phone, code)
 	}
 	uc.repo.SaveCaptcha(ctx, key, code)
-	return nil
+	return err
 }
 
 func (uc *UserUsecase) sendEmailCaptcha(ctx context.Context, emailAddress, code string) error {
 	em := email.NewEmail()
-	em.From = uc.c.Smtp.Username
+	em.From = fmt.Sprintf("No reply <%s>", uc.c.Smtp.Username)
 	em.To = []string{emailAddress}
 	em.Subject = "Captcha Code"
 	em.Text = []byte(fmt.Sprintf("Your captcha: %s", code))
-	return em.Send(uc.c.Smtp.Identity, smtp.PlainAuth(uc.c.Smtp.Identity, uc.c.Smtp.Username, uc.c.Smtp.Password, uc.c.Smtp.Host))
+	if uc.c.Smtp.Ssl {
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true,
+			ServerName:         uc.c.Smtp.Host,
+		}
+		return em.SendWithTLS(
+			uc.c.Smtp.Address,
+			smtp.PlainAuth("", uc.c.Smtp.Username, uc.c.Smtp.Password, uc.c.Smtp.Host), tlsConfig,
+		)
+	}
+	return em.Send(
+		uc.c.Smtp.Address,
+		smtp.PlainAuth("", uc.c.Smtp.Username, uc.c.Smtp.Password, uc.c.Smtp.Host),
+	)
 }
 
 func (uc *UserUsecase) sendPhoneCaptcha(ctx context.Context, phone, code string) error {
