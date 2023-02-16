@@ -195,3 +195,39 @@ func (r *submissionRepo) GetSubmissionInfo(ctx context.Context, id int) (*biz.Su
 	}
 	return res, nil
 }
+
+// GetLastSubmission 获取最后提交
+func (r *submissionRepo) GetLastSubmission(ctx context.Context, entityType, entityID, userId, problemId int) (*biz.Submission, error) {
+	var res Submission
+	db := r.data.db.WithContext(ctx).
+		Where("user_id = ?", userId)
+	if entityType == biz.SubmissionEntityTypeContest {
+		subQuery := r.data.db.WithContext(ctx).Select("problem_id").
+			Model(&ContestProblem{}).
+			Where("contest_id = ? and number = ?", entityID, problemId)
+		db.Where("problem_id in (?)", subQuery)
+	} else {
+		db.Where("problem_id = ?", problemId)
+	}
+
+	err := db.Where("entity_type = ?", entityType).
+		Where("entity_id = ?", entityID).
+		Last(&res).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &biz.Submission{
+		ID:         res.ID,
+		Source:     res.Source,
+		Memory:     res.Memory,
+		Time:       res.Time,
+		Verdict:    res.Verdict,
+		Language:   res.Language,
+		ProblemID:  res.ProblemID,
+		EntityID:   res.EntityID,
+		EntityType: res.EntityType,
+		UserID:     res.UserID,
+		CreatedAt:  res.CreatedAt,
+	}, err
+}

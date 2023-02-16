@@ -1,22 +1,18 @@
-import React, { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import React, { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styles from './style/editor.module.less';
-import { Button, Card, Form, Grid, Input, Message, Popover, ResizeBox, Select, Space, Spin, Tabs, Typography } from '@arco-design/web-react';
+import { Button, Card, Form, Grid, Input, Message, ResizeBox, Select, Space, Spin, Tabs, Typography } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { createSubmission, getSubmission, listSubmissions } from '@/api/submission';
+import { createSubmission } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
-import { IconCheckCircle, IconCloseCircle, IconDelete, IconDown, IconPlayArrow, IconPlus, IconShareExternal, IconSkin, IconUp } from '@arco-design/web-react/icon';
+import { IconDelete, IconDown, IconPlayArrow, IconPlus, IconShareExternal, IconSkin, IconUp } from '@arco-design/web-react/icon';
 import { runRequest, runSandbox } from '@/api/sandbox';
 import Highlight from '@/components/Highlight';
-import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
-import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
-import { useAppSelector } from '@/hooks';
-import { userInfo } from '@/store/reducers/user';
+import RecentlySubmitted from '@/modules/submission/RecentlySubmitted';
 import { isLogged } from '@/utils/auth';
 import ProblemContext from './context';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 import Editor from "@monaco-editor/react";
-
 
 const themes = [
   'light', 'vs-dark'
@@ -38,7 +34,7 @@ export default function App() {
   const [languageList, setLanguageList] = useState([]);
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [cases, setCases] = useState([]);
-  const [latestSubmissionID, setLatestSubmissionID] = useState(0);
+  const [lastSubmissionID, setLastSubmissionID] = useState(0);
   const [isMounted, setIsMounted] = useState(false); 
   const consoleRef = useRef(null);
   const runCode = () => {
@@ -85,7 +81,7 @@ export default function App() {
     };
     createSubmission(data).then(res => {
       Message.success('已提交');
-      setLatestSubmissionID(res.data.id);
+      setLastSubmissionID(res.data.id);
     });
   }
   useEffect(() => {
@@ -167,7 +163,7 @@ export default function App() {
           </Button>
         </div>
         <div className={styles.right}>
-          { isLogged() && <RecentlySubmitted problemId={problem.id} latestSubmissionID={latestSubmissionID} /> }
+          { isLogged() && <RecentlySubmitted problemId={problem.id} lastSubmissionID={lastSubmissionID} /> }
           <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>
             {t['submit']}
           </Button>
@@ -176,105 +172,6 @@ export default function App() {
     </div>
   );
 }
-
-interface RecentlySubmittedProps {
-  problemId: number,
-  entityId?: number,
-  entityType?: number,
-  latestSubmissionID?: number,
-}
-
-const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
-  const t = useLocale(locale);
-  const ws = useRef<WebSocket | null>(null);
-  const [submission, setSubmission] = useState({ id: 0, verdict: 0 });
-  const [visible, setVisible] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
-  const user = useAppSelector(userInfo);
-  const [btnContent, setBtnContent] = useState('');
-  // websocket 即时向用户反馈测评进度
-  useLayoutEffect(() => {
-    ws.current = new WebSocket(process.env.NEXT_PUBLIC_API_WS_URL + '?uid=' + user.id);
-    ws.current.onmessage = (e) => {
-      if (e.data === '') {
-        return;
-      }
-      const msg = JSON.parse(e.data)
-      if (msg.type === 'SUBMISSION_RESULT') {
-        if (msg.message.status === 'running') {
-          setBtnContent(msg.message.message);
-          setIsRunning(true);
-        } else {
-          getSubmission(msg.message.sid)
-            .then(res => {
-              setIsRunning(false);
-              setSubmission(res.data)
-              setBtnContent('');
-            })
-        }
-      }
-    };
-    return () => {
-      ws.current?.close();
-    };
-  }, [ws]);
-  function icon() {
-    if (isRunning) {
-      return <Spin />;
-    } else if (submission.verdict === 4) {
-      return <IconCheckCircle />;
-    }
-    return <IconCloseCircle />;
-  }
-  useEffect(() => {
-    if (props.latestSubmissionID && props.latestSubmissionID !== 0) {
-      setIsRunning(true);
-      getSubmission(props.latestSubmissionID)
-        .then(res => {
-          if (res.data.verdict !== 0) {
-            setIsRunning(false);
-          }
-          setSubmission(res.data);
-        })
-    } else {
-      listSubmissions({
-        entityId: props.entityId,
-        entityType:
-        props.entityType,
-        problemId: props.problemId,
-        userId: user.id
-      })
-        .then(res => {
-          if (res.data.data.length > 0) {
-            setSubmission(res.data.data[0]);
-          }
-        })
-    }
-  }, [props.entityId, props.entityType, props.problemId, props.latestSubmissionID]);
-
-  function onCancel() {
-    setVisible(false);
-  }
-  return (
-    submission.id !== 0 &&
-    <Popover
-      trigger='hover'
-      title={t['editor.footer.recentlySubmitted']}
-      content={
-        <span>
-          <p>{t['editor.footer.submissionID']}: {submission.id}</p>
-          <p>{t['editor.footer.verdict']}: <SubmissionVerdict verdict={submission.verdict} /></p>
-        </span>
-      }
-    >
-      <Button type='dashed' icon={icon()} onClick={() => { setVisible(true) }}>
-        {btnContent === '' && <SubmissionVerdict verdict={submission.verdict} />}
-        {btnContent !== '' && <span>{btnContent}</span>}
-      </Button>
-      {visible && <SubmissionDrawer id={submission.id} visible={visible} onCancel={onCancel} />}
-    </Popover>
-  )
-})
 
 function ConsoleComponent({ problem, defaultCases, language, languageId, source }, ref) {
   const t = useLocale(locale);

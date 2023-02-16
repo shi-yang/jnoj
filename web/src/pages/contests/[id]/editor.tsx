@@ -8,6 +8,8 @@ import useStorage from '@/utils/useStorage';
 import { IconSkin } from '@arco-design/web-react/icon';
 import Editor from "@monaco-editor/react";
 import { getContestProblemLanguage, listContestProblemLanguages } from '@/api/contest';
+import RecentlySubmitted from '@/modules/submission/RecentlySubmitted';
+import { isLogged } from '@/utils/auth';
 
 export default function App(props) {
   const t = useLocale(locale);
@@ -15,6 +17,7 @@ export default function App(props) {
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageList, setLanguageList] = useState([]);
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
+  const [lastSubmissionID, setLastSubmissionID] = useState(0);
   const themes = [
     'light', 'vs-dark'
   ];
@@ -57,6 +60,7 @@ export default function App(props) {
       language: language,
     };
     createSubmission(data).then(res => {
+      setLastSubmissionID(res.data.id);
       Message.success('已提交');
     });
   }
@@ -111,6 +115,15 @@ export default function App(props) {
         <div className={styles.left}>
         </div>
         <div className={styles.right}>
+          { isLogged()
+            &&
+            <RecentlySubmitted
+              entityId={props.contest.id}
+              entityType={1}
+              problemId={props.problem.number}
+              lastSubmissionID={lastSubmissionID}
+            />
+          }
           <Button type='primary' onClick={(e) => onSubmit()}>{t['submit']}</Button>
         </div>
       </div>

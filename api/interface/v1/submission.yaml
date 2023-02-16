@@ -3,3 +3,5 @@ rules:
   middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector: "/jnoj.interface.v1.SubmissionService/CreateSubmission"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.SubmissionService/GetLastSubmission"
+  middleware: "jnoj/internal/middleware/auth.User()"

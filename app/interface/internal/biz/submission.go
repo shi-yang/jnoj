@@ -100,6 +100,7 @@ type SubmissionRepo interface {
 	DeleteSubmission(context.Context, int) error
 	CreateSubmissionInfo(context.Context, int, string) error
 	GetSubmissionInfo(context.Context, int) (*SubmissionResult, error)
+	GetLastSubmission(ctx context.Context, entityType, entityID, userId, problemId int) (*Submission, error)
 }
 
 // SubmissionUsecase is a Submission usecase.
@@ -130,7 +131,58 @@ func NewSubmissionUsecase(
 
 // ListSubmissions list Submission
 func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSubmissionsRequest) ([]*Submission, int64) {
-	return uc.repo.ListSubmissions(ctx, req)
+	// 检查访问权限
+	isOIModeRunning, hasPermission := uc.checkerPermission(
+		ctx, int(req.EntityType),
+		int(req.EntityId),
+		int(req.ProblemId),
+		0,
+	)
+	if !hasPermission {
+		return nil, 0
+	}
+	submissions, count := uc.repo.ListSubmissions(ctx, req)
+	if isOIModeRunning {
+		for i := 0; i < len(submissions); i++ {
+			submissions[i].Time = 0
+			submissions[i].Memory = 0
+			submissions[i].Verdict = 0
+			submissions[i].Score = 0
+			submissions[i].SubmissionInfo = nil
+		}
+	}
+	return submissions, count
+}
+
+// checkerPermission 检查访问权限
+func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, entityId, problemId, submissionUserId int) (isOIModeRunning, ok bool) {
+	isOIModeRunning = false
+	uid, _ := auth.GetUserID(ctx)
+	if entityType == SubmissionEntityTypeContest {
+		contest, err := uc.contestRepo.GetContest(ctx, int(entityId))
+		if err != nil {
+			return isOIModeRunning, false
+		}
+		runningStatus := contest.GetRunningStatus()
+		role := contest.GetRole(ctx)
+		// 比赛未结束时，仅 比赛管理员 admin 或者当前选手可查看
+		if runningStatus != ContestRunningStatusFinished {
+			// OI 提交之后无反馈
+			if contest.Type == ContestTypeOI {
+				isOIModeRunning = true
+			}
+			if role != ContestRoleAdmin && int(submissionUserId) != uid {
+				return isOIModeRunning, false
+			}
+		}
+	} else if entityType == SubmissionEntityTypeProblemFile {
+		// 处理提交至出题时的文件
+		problem, _ := uc.problemRepo.GetProblem(ctx, problemId)
+		if !problem.HasPermission(ctx, ProblemPermissionUpdate) {
+			return false, false
+		}
+	}
+	return false, true
 }
 
 // GetSubmission get a Submission
@@ -140,36 +192,18 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 		return nil, v1.ErrorNotFound(err.Error())
 	}
 	info, _ := uc.repo.GetSubmissionInfo(ctx, id)
-	uid, _ := auth.GetUserID(ctx)
 	// 检查访问权限
-	// 处理比赛的提交
-	if s.EntityType == SubmissionEntityTypeContest {
-		contest, err := uc.contestRepo.GetContest(ctx, s.EntityID)
-		if err != nil {
-			return nil, v1.ErrorContestNotFound(err.Error())
-		}
-		runningStatus := contest.GetRunningStatus()
-		role := contest.GetRole(ctx)
-		// 比赛未结束时，仅 比赛管理员 admin 或者当前选手可查看
-		if runningStatus != ContestRunningStatusFinished {
-			if role != ContestRoleAdmin && s.UserID != uid {
-				return nil, v1.ErrorForbidden("contest is running...")
-			}
-			// OI 提交之后无反馈
-			if contest.Type == ContestTypeOI {
-				s.Verdict = SubmissionVerdictPending
-				s.Time = 0
-				s.Memory = 0
-				s.Score = 0
-				info = nil
-			}
-		}
-	} else if s.EntityType == SubmissionEntityTypeProblemFile {
-		// 处理提交至出题时的文件
-		problem, _ := uc.problemRepo.GetProblem(ctx, s.ProblemID)
-		if !problem.HasPermission(ctx, ProblemPermissionUpdate) {
-			return nil, v1.ErrorPermissionDenied("cannot update problem...")
-		}
+	isOIModeRunning, hasPermission := uc.checkerPermission(ctx, s.EntityType, s.EntityID, s.ProblemID, s.UserID)
+	if !hasPermission {
+		return nil, v1.ErrorForbidden("forbidden")
+	}
+	// OI 提交之后无反馈
+	if isOIModeRunning {
+		s.Verdict = SubmissionVerdictPending
+		s.Time = 0
+		s.Memory = 0
+		s.Score = 0
+		info = nil
 	}
 	s.SubmissionInfo = info
 	return s, nil
@@ -224,4 +258,22 @@ func (uc *SubmissionUsecase) UpdateSubmission(ctx context.Context, s *Submission
 // DeleteSubmission delete a Submission
 func (uc *SubmissionUsecase) DeleteSubmission(ctx context.Context, id int) error {
 	return uc.repo.DeleteSubmission(ctx, id)
+}
+
+// GetLastSubmission 获取最后提交
+func (uc *SubmissionUsecase) GetLastSubmission(ctx context.Context, entityType, entityID, problemId int) (*Submission, error) {
+	uid, _ := auth.GetUserID(ctx)
+	s, err := uc.repo.GetLastSubmission(ctx, entityType, entityID, uid, problemId)
+	if err != nil {
+		return nil, err
+	}
+	// 检查访问权限
+	isOIModeRunning, _ := uc.checkerPermission(ctx, s.EntityType, s.EntityID, s.ProblemID, s.UserID)
+	if isOIModeRunning {
+		s.Verdict = SubmissionVerdictPending
+		s.Time = 0
+		s.Memory = 0
+		s.Score = 0
+	}
+	return s, nil
 }

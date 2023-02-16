@@ -231,7 +231,6 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 	for _, v := range problems {
 		problemMap[v.ProblemID] = v.Number
 	}
-	uc.log.Infof("%+v\n", problemMap)
 	runningStatus := contest.GetRunningStatus()
 	for _, v := range submissions {
 		cs := &ContestSubmission{

@@ -18,3 +18,12 @@ export function createSubmission(data) {
 export function getSubmission(id) {
   return axios.get(`/submissions/${id}`)
 }
+
+interface getLastSubmissionProps {
+  problemId: number,
+  entityId?: number,
+  entityType?: number,
+}
+export function getLastSubmission(params:getLastSubmissionProps) {
+  return axios.get(`/last_submission`, {params})
+}

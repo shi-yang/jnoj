@@ -527,9 +527,6 @@ func (s *ProblemService) ListProblemLanguages(ctx context.Context, req *v1.ListP
 	if err != nil {
 		return nil, v1.ErrorProblemNotFound(err.Error())
 	}
-	if !p.HasPermission(ctx, biz.ProblemPermissionView) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
-	}
 	res, count := s.uc.ListProblemLanguages(ctx, p)
 	resp := new(v1.ListProblemLanguagesResponse)
 	resp.Total = count
@@ -548,9 +545,6 @@ func (s *ProblemService) GetProblemLanguage(ctx context.Context, req *v1.GetProb
 	p, err := s.uc.GetProblem(ctx, int(req.ProblemId))
 	if err != nil {
 		return nil, v1.ErrorProblemNotFound(err.Error())
-	}
-	if !p.HasPermission(ctx, biz.ProblemPermissionView) {
-		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.GetProblemLanguage(ctx, int(req.ProblemId), int(req.Id))
 	if err != nil {

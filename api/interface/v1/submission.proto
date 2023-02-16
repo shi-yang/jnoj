@@ -27,6 +27,12 @@ service SubmissionService {
             body: "*"
         };
     };
+    // 最后提交
+    rpc GetLastSubmission (GetLastSubmissionRequest) returns (Submission) {
+        option (google.api.http) = {
+            get: "/last_submission"
+        };
+    };
 }
 
 // 提交
@@ -110,4 +116,11 @@ message SubmissionInfo {
         int32 verdict = 4;
         repeated SubmissionTest tests = 5;
     }
+}
+
+message GetLastSubmissionRequest {
+    int32 problem_id = 1;
+    int32 entity_id = 2;
+    int32 entity_type = 3;
+    int32 user_id = 4;
 }

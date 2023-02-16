@@ -23,11 +23,13 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 // auth.
 const OperationSubmissionServiceCreateSubmission = "/jnoj.interface.v1.SubmissionService/CreateSubmission"
+const OperationSubmissionServiceGetLastSubmission = "/jnoj.interface.v1.SubmissionService/GetLastSubmission"
 const OperationSubmissionServiceGetSubmission = "/jnoj.interface.v1.SubmissionService/GetSubmission"
 const OperationSubmissionServiceListSubmissions = "/jnoj.interface.v1.SubmissionService/ListSubmissions"
 
 type SubmissionServiceHTTPServer interface {
 	CreateSubmission(context.Context, *CreateSubmissionRequest) (*Submission, error)
+	GetLastSubmission(context.Context, *GetLastSubmissionRequest) (*Submission, error)
 	GetSubmission(context.Context, *GetSubmissionRequest) (*Submission, error)
 	ListSubmissions(context.Context, *ListSubmissionsRequest) (*ListSubmissionsResponse, error)
 }
@@ -35,10 +37,12 @@ type SubmissionServiceHTTPServer interface {
 func RegisterSubmissionServiceHTTPServer(s *http.Server, srv SubmissionServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.SubmissionService/GetSubmission*", auth.Guest())
 	s.Use("/jnoj.interface.v1.SubmissionService/CreateSubmission", auth.User())
+	s.Use("/jnoj.interface.v1.SubmissionService/GetLastSubmission", auth.User())
 	r := s.Route("/")
 	r.GET("/submissions", _SubmissionService_ListSubmissions0_HTTP_Handler(srv))
 	r.GET("/submissions/{id}", _SubmissionService_GetSubmission0_HTTP_Handler(srv))
 	r.POST("/submissions", _SubmissionService_CreateSubmission0_HTTP_Handler(srv))
+	r.GET("/last_submission", _SubmissionService_GetLastSubmission0_HTTP_Handler(srv))
 }
 
 func _SubmissionService_ListSubmissions0_HTTP_Handler(srv SubmissionServiceHTTPServer) func(ctx http.Context) error {
@@ -101,8 +105,28 @@ func _SubmissionService_CreateSubmission0_HTTP_Handler(srv SubmissionServiceHTTP
 	}
 }
 
+func _SubmissionService_GetLastSubmission0_HTTP_Handler(srv SubmissionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetLastSubmissionRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSubmissionServiceGetLastSubmission)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetLastSubmission(ctx, req.(*GetLastSubmissionRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Submission)
+		return ctx.Result(200, reply)
+	}
+}
+
 type SubmissionServiceHTTPClient interface {
 	CreateSubmission(ctx context.Context, req *CreateSubmissionRequest, opts ...http.CallOption) (rsp *Submission, err error)
+	GetLastSubmission(ctx context.Context, req *GetLastSubmissionRequest, opts ...http.CallOption) (rsp *Submission, err error)
 	GetSubmission(ctx context.Context, req *GetSubmissionRequest, opts ...http.CallOption) (rsp *Submission, err error)
 	ListSubmissions(ctx context.Context, req *ListSubmissionsRequest, opts ...http.CallOption) (rsp *ListSubmissionsResponse, err error)
 }
@@ -122,6 +146,19 @@ func (c *SubmissionServiceHTTPClientImpl) CreateSubmission(ctx context.Context, 
 	opts = append(opts, http.Operation(OperationSubmissionServiceCreateSubmission))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *SubmissionServiceHTTPClientImpl) GetLastSubmission(ctx context.Context, in *GetLastSubmissionRequest, opts ...http.CallOption) (*Submission, error) {
+	var out Submission
+	pattern := "/last_submission"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSubmissionServiceGetLastSubmission))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

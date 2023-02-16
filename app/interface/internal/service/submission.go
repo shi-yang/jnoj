@@ -118,3 +118,20 @@ func (s *SubmissionService) CreateSubmission(ctx context.Context, req *v1.Create
 		Id: int64(res.ID),
 	}, nil
 }
+
+// GetLastSubmission 获取最后提交
+func (s *SubmissionService) GetLastSubmission(ctx context.Context, req *v1.GetLastSubmissionRequest) (*v1.Submission, error) {
+	res, err := s.uc.GetLastSubmission(ctx, int(req.EntityType), int(req.EntityId), int(req.ProblemId))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	return &v1.Submission{
+		Id:        int64(res.ID),
+		Source:    res.Source,
+		Memory:    int64(res.Memory),
+		Time:      int64(res.Time),
+		Verdict:   int32(res.Verdict),
+		Language:  int32(res.Language),
+		CreatedAt: timestamppb.New(res.CreatedAt),
+	}, nil
+}
