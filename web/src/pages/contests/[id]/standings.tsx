@@ -172,14 +172,16 @@ const App = ({contest}) => {
         res[uid].solved++
       }
       // 分数
-      if (submission.status === 'CORRECT' && contest.type === ContestType.ContestTypeICPC) {
+      if (contest.type === ContestType.ContestTypeICPC) {
         // ICPC 尝试次数会有20分罚时，加上本题通过时间，即为分数
-        res[uid].problem[problemNumber].score += (res[uid].problem[problemNumber].attempted - 1) * 20 + submission.score;
+        if (submission.status === 'CORRECT') {
+          res[uid].problem[problemNumber].score = (res[uid].problem[problemNumber].attempted - 1) * 20 + submission.score;
+        }
       } else if (contest.type === ContestType.ContestTypeIOI) {
         // IOI 取最大
         res[uid].problem[problemNumber].score =
           Math.max(res[uid].problem[problemNumber].score, submission.score);
-      } else {
+      } else if (contest.type === ContestType.ContestTypeOI) {
         // OI 取最后一次
         res[uid].problem[problemNumber].score = submission.score;
         res[uid].problem[problemNumber].maxScore =
