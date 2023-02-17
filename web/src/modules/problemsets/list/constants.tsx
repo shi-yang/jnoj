@@ -59,5 +59,3 @@ export function getColumns(
     },
   ];
 }
-
-export default () => ContentIcon;
