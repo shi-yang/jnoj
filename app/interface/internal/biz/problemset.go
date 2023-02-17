@@ -110,7 +110,6 @@ func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, req *v1
 		for k, v := range problems {
 			problems[k].Status = statusMap[v.ProblemID]
 		}
-		uc.log.Info(statusMap)
 	}
 	return problems, count
 }

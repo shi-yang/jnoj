@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Grid, Slider } from '@arco-design/web-react';
-import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconCheck, IconClose, IconQuestion } from '@arco-design/web-react/icon';
+import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
-import { getContest, listContestAllSubmissions, listContestProblems } from '@/api/contest';
+import { getContest, listContestProblems } from '@/api/contest';
 import './mock';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -12,8 +12,7 @@ import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
 import Forbidden from './forbidden';
-import { userInfo, UserInfoState } from '@/store/reducers/user';
-import { isLogged } from '@/utils/auth';
+import { ProblemStatus } from '@/modules/problemsets/list/constants';
 
 const Info = lazy(() => import('./info'));
 const Problem = lazy(() => import('./problem'));
@@ -42,9 +41,7 @@ function Index() {
   const [sliderValue, setSliderValue] = useState(0);
   const [menuSelected, setMenuSelected] = useState('');
   const [problemNumber, setProblemNumber] = useState('A');
-  const [problemSolved, setProblemSolved] = useState({});
   const settings = useAppSelector<SettingState>(setting);
-  const user = useAppSelector(userInfo);
   const router = useRouter();
 
   const fetchData = () => {
@@ -59,7 +56,6 @@ function Index() {
           listContestProblems(router.query.id).then(res => {
             setProblems(res.data.data);
           });
-          getSolved();
         }
       })
       .finally(() => {
@@ -77,34 +73,6 @@ function Index() {
       setSliderValue(diff / contestDuration * 100);
       setCurrentTime(new Date());
     }, 1000);
-  }
-
-  const getSolved = () => {
-    if (user.id) {
-      listContestAllSubmissions(router.query.id, { userId: user.id })
-        .then(res => {
-          const data = res.data.data;
-          const solved = {};
-          data.forEach(item => {
-            if (solved[item.problem] === 'CORRECT') {
-              return;
-            }
-            solved[item.problem] = item.status;
-          });
-          setProblemSolved(solved);
-        })
-    }
-  }
-
-  const SolveIcon = (status) => {
-    if (status === 'PENDING') {
-      return <IconQuestion />;
-    } else if (status === 'INCORRECT') {
-      return <IconClose />;
-    } else if (status === 'CORRECT') {
-      return <IconCheck />;
-    }
-    return '';
   }
 
   useEffect(() => {
@@ -196,7 +164,7 @@ function Index() {
                         
                         {String.fromCharCode(65 + value.number)}. {value.name}
                         <span className='arco-menu-icon-suffix'>
-                          {SolveIcon(problemSolved[value.number])}
+                          {ProblemStatus[value.status]}
                         </span>
                       </MenuItem>
                     )}

@@ -119,7 +119,7 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	res, count := s.uc.ListContestProblems(ctx, int(req.Id))
+	res, count := s.uc.ListContestProblems(ctx, contest)
 	resp := new(v1.ListContestProblemsResponse)
 	resp.Total = count
 	for _, v := range res {
@@ -129,6 +129,7 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 			Name:          v.Name,
 			SubmitCount:   int32(v.SubmitCount),
 			AcceptedCount: int32(v.AcceptedCount),
+			Status:        v1.ContestProblem_Status(v.Status),
 		})
 	}
 	return resp, nil

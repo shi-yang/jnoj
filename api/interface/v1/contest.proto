@@ -215,6 +215,13 @@ message ContestProblem {
         string output = 2;
     }
     repeated SampleTest sample_tests = 12;
+    // 解答情况
+    enum Status {
+        NOT_START = 0;
+        ATTEMPTED = 1;
+        SOLVED = 2;
+    }
+    Status status = 13;
 }
 
 message CreateContestProblemRequest {

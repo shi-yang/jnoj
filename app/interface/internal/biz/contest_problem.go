@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	v1 "jnoj/api/interface/v1"
+	"jnoj/internal/middleware/auth"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type ContestProblem struct {
 	AcceptedCount int
 	TimeLimit     int64
 	Memory        int64
+	Status        int // 解答情况
 	Statements    []*ProblemStatement
 	SampleTest    []*Test
 	CreatedAt     time.Time
@@ -36,8 +38,26 @@ type ContestProblemRepo interface {
 }
 
 // ListContestProblems list ContestProblem
-func (uc *ContestUsecase) ListContestProblems(ctx context.Context, cid int) ([]*ContestProblem, int64) {
-	return uc.repo.ListContestProblems(ctx, cid)
+func (uc *ContestUsecase) ListContestProblems(ctx context.Context, contest *Contest) ([]*ContestProblem, int64) {
+	problems, count := uc.repo.ListContestProblems(ctx, contest.ID)
+	// 登录用户查询解答情况
+	uid, ok := auth.GetUserID(ctx)
+	if ok {
+		ids := make([]int, 0)
+		for _, v := range problems {
+			ids = append(ids, v.ProblemID)
+		}
+		statusMap := uc.problemRepo.GetProblemsStatus(ctx, SubmissionEntityTypeContest, contest.ID, uid, ids)
+		isOIMode := contest.Type == ContestTypeOI && contest.GetRunningStatus() != ContestRunningStatusFinished
+		for k, v := range problems {
+			if isOIMode && statusMap[v.ProblemID] != ProblemStatusNotStart {
+				problems[k].Status = ProblemStatusNotStart
+			} else {
+				problems[k].Status = statusMap[v.ProblemID]
+			}
+		}
+	}
+	return problems, count
 }
 
 // GetContestProblem get a ContestProblem

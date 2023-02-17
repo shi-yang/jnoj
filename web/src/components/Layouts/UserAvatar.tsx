@@ -37,7 +37,7 @@ export default () => {
       <Divider style={{ margin: '4px 0' }} />
       <Menu.Item key="logout">
         <IconPoweroff className={styles['dropdown-icon']} />
-        {t['navbar.logout']}
+        {t['logout']}
       </Menu.Item>
     </Menu>
   );

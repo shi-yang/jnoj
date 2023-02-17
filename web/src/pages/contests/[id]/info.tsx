@@ -1,4 +1,5 @@
 import { listContestProblems } from '@/api/contest';
+import { ProblemStatus } from '@/modules/problemsets/list/constants';
 import useLocale from '@/utils/useLocale';
 import {
   Grid,
@@ -65,13 +66,9 @@ function Info({contest}) {
     },
     {
       title: t['info.table.column.isSolved'],
-      dataIndex: 'solved',
+      dataIndex: 'status',
       align: 'center',
-      render: (col, record, index) => (
-        <>
-          {record.is_solved && (<IconCheckCircle />)}
-        </>
-      ),
+      render: (col) => ProblemStatus[col],
     },
   ];
   function fetchData() {
