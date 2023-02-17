@@ -19,6 +19,9 @@ export default ({id, visible, onCancel}) => {
   }});
 
   function fetchData() {
+    if (!visible) {
+      return;
+    }
     getSubmission(id)
       .then(res => {
         setSubmission(res.data);
