@@ -8,6 +8,7 @@ import { IconLeft, IconRight } from '@arco-design/web-react/icon';
 import { listProblemsetProblems } from '@/api/problemset';
 import ProblemContext from './context';
 import { useRouter } from 'next/router';
+import { ProblemStatus } from '@/modules/problemsets/list/constants';
 
 const Description = ({ problemset }) => {
   const {language, problem, fetchProblem} = useContext(ProblemContext);
@@ -51,11 +52,18 @@ function Problemset({problemset}) {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: false,
-    pageSize: 25,
+    pageSize: 20,
     current: 1,
-    sizeOptions: [25, 50, 100],
+    sizeOptions: [20, 50, 100],
     hideOnSinglePage: true, 
     pageSizeChangeResetCurrent: true,
+    onChange: (current, pageSize) => {
+      setPatination({
+        ...pagination,
+        current,
+        pageSize,
+      })
+    }
   });
   const router = useRouter();
   useEffect(() => {
@@ -112,12 +120,11 @@ function Problemset({problemset}) {
         }}
       >
         <List
-          style={{ width: 622 }}
           size='small'
           dataSource={problems}
           loading={loading}
           render={(item, index) =>
-            <List.Item key={index}>
+            <List.Item key={index} extra={ProblemStatus[item.status]}>
               <Button type='text' onClick={() => changeProblem(item.order)}>
                 {item.order}. {item.name}
               </Button>

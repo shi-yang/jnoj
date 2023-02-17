@@ -621,6 +621,12 @@ message ProblemsetProblem {
     int32 problem_id = 9;
     // 题目来源
     string source = 10;
+    enum Status {
+        NOT_START = 0;
+        ATTEMPTED = 1;
+        SOLVED = 2;
+    }
+    Status status = 11;
 }
 
 message ListProblemsetProblemsResponse {

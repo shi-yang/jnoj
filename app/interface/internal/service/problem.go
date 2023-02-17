@@ -809,6 +809,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			ProblemsetId:  req.Id,
 			ProblemId:     int32(v.ProblemID),
 			Source:        v.Source,
+			Status:        v1.ProblemsetProblem_Status(v.Status),
 		}
 		resp.Data = append(resp.Data, p)
 	}

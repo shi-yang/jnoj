@@ -38,6 +38,7 @@ type ProblemsetProblem struct {
 	SubmitCount   int
 	AcceptedCount int
 	Source        string
+	Status        int
 	CreatedAt     time.Time
 }
 
@@ -97,7 +98,21 @@ func (uc *ProblemsetUsecase) DeleteProblemset(ctx context.Context, id int) error
 }
 
 func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) ([]*ProblemsetProblem, int64) {
-	return uc.repo.ListProblemsetProblems(ctx, req)
+	problems, count := uc.repo.ListProblemsetProblems(ctx, req)
+	// 登录用户查询解答情况
+	uid, ok := auth.GetUserID(ctx)
+	if ok {
+		ids := make([]int, 0)
+		for _, v := range problems {
+			ids = append(ids, v.ProblemID)
+		}
+		statusMap := uc.problemRepo.GetProblemsStatus(ctx, SubmissionEntityTypeCommon, 0, uid, ids)
+		for k, v := range problems {
+			problems[k].Status = statusMap[v.ProblemID]
+		}
+		uc.log.Info(statusMap)
+	}
+	return problems, count
 }
 
 func (uc *ProblemsetUsecase) GetProblemsetProblem(ctx context.Context, sid int, order int) (*ProblemsetProblem, error) {

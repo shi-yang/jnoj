@@ -1,19 +1,13 @@
 import React from 'react';
 import { Button } from '@arco-design/web-react';
-import IconText from './icons/text.svg';
-import IconHorizontalVideo from './icons/horizontal.svg';
-import IconVerticalVideo from './icons/vertical.svg';
 import Link from 'next/link';
+import { IconCheckCircle, IconExclamationCircle } from '@arco-design/web-react/icon';
 
-export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
-export const Status = ['未上线', '已上线'];
-
-const ContentIcon = [
-  <IconText key={0} />,
-  <IconHorizontalVideo key={1} />,
-  <IconVerticalVideo key={2} />,
-];
+export const ProblemStatus = {
+  'NOT_START': '',
+  'ATTEMPTED': <IconExclamationCircle />,
+  'SOLVED': <IconCheckCircle />,
+};
 
 export function getColumns(
   t: any,
@@ -21,17 +15,16 @@ export function getColumns(
 ) {
   return [
     {
-      title: t['problem.columns.id'],
-      dataIndex: 'order',
+      title: t['problem.columns.status'],
+      dataIndex: 'status',
       align: 'center' as 'center',
-      width: 150,
+      width: 80,
+      render: col => ProblemStatus[col]
     },
     {
       title: t['problem.columns.name'],
       dataIndex: 'name',
-      render: (col) => {
-        return col
-      }
+      render: (col, record) => <>{record.order}. {record.name}</>
     },
     {
       title: t['problem.columns.submitAndPass'],

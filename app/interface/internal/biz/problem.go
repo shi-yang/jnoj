@@ -52,6 +52,12 @@ const (
 	ProblemPermissionUpdate ProblemPermissionType = 1 // 修改权限
 )
 
+const (
+	ProblemStatusNotStart  = iota // 未开始
+	ProblemStatusAttempted        // 尝试中
+	ProblemStatusSolved           // 已解决
+)
+
 // HasPermission 是否有权限
 // 查看权限，需要题目出于公开或者是创建人才能查看
 // 修改权限，仅题目创建人可以看
@@ -70,6 +76,7 @@ type ProblemRepo interface {
 	CreateProblem(context.Context, *Problem) (*Problem, error)
 	UpdateProblem(context.Context, *Problem) (*Problem, error)
 	DeleteProblem(context.Context, int) error
+	GetProblemsStatus(ctx context.Context, entityType, entityID, userId int, problemId []int) map[int]int
 
 	UpdateProblemChecker(context.Context, int, int) error
 	ProblemTestRepo

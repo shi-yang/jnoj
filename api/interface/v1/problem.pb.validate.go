@@ -5500,6 +5500,8 @@ func (m *ProblemsetProblem) validate(all bool) error {
 
 	// no validation rules for Source
 
+	// no validation rules for Status
+
 	if len(errors) > 0 {
 		return ProblemsetProblemMultiError(errors)
 	}

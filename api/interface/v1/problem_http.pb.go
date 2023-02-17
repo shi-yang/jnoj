@@ -138,6 +138,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/AddProblemToProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/SortProblemsetProblems", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetProblems", auth.Guest())
 	r := s.Route("/")
 	r.GET("/problems", _ProblemService_ListProblems0_HTTP_Handler(srv))
 	r.GET("/problems/{id}", _ProblemService_GetProblem0_HTTP_Handler(srv))
