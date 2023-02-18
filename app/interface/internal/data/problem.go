@@ -35,6 +35,7 @@ type Problem struct {
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt
 	ProblemStatements []*ProblemStatement `gorm:"ForeignKey:ProblemID"`
+	ProblemTags       []*ProblemTag       `gorm:"many2many:problem_tag_problem"`
 }
 
 // NewProblemRepo .
@@ -55,7 +56,8 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 		Model(&Problem{}).
 		Preload("ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("name, language, problem_id")
-		})
+		}).
+		Preload("ProblemTags")
 	db.Where("user_id = ? or status = ?", req.UserId, biz.ProblemStatusPublic)
 	if req.Name != "" {
 		db.Where("name like ? or id in (?)", fmt.Sprintf("%%%s%%", req.Name),
@@ -79,6 +81,9 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			UserID:        v.UserID,
 			Status:        v.Status,
 			Source:        v.Source,
+		}
+		for _, t := range v.ProblemTags {
+			p.Tags = append(p.Tags, t.Name)
 		}
 		for _, s := range v.ProblemStatements {
 			p.Statements = append(p.Statements, &biz.ProblemStatement{

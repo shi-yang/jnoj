@@ -29,6 +29,7 @@ type Problem struct {
 	Source        string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
+	Tags          []string
 
 	Statements  []*ProblemStatement
 	SampleTests []*Test
@@ -83,6 +84,7 @@ type ProblemRepo interface {
 	ProblemStatementRepo
 	ProblemFileRepo
 	ProblemVerificationRepo
+	ProblemTagRepo
 }
 
 // ProblemUsecase is a Problem usecase.
@@ -122,6 +124,7 @@ func (uc *ProblemUsecase) GetProblem(ctx context.Context, id int) (*Problem, err
 		Id: int32(id),
 	})
 	tests, _ := uc.repo.ListProblemTestContent(ctx, id, true)
+	p.Tags = uc.repo.GetProblemTags(ctx, id)
 	for _, v := range statements {
 		p.Statements = append(p.Statements, &ProblemStatement{
 			ID:       v.ID,
@@ -161,6 +164,7 @@ func (uc *ProblemUsecase) UpdateProblem(ctx context.Context, p *Problem) (*Probl
 			return nil, v1.ErrorProblemNotVerification("题目未通过验证")
 		}
 	}
+	uc.repo.UpdateProblemTag(ctx, p.ID, p.Tags)
 	return uc.repo.UpdateProblem(ctx, p)
 }
 

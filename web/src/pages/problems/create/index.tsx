@@ -10,6 +10,7 @@ import {
   Link,
   Drawer,
   Select,
+  Tag,
 } from '@arco-design/web-react';
 import { IconDownload, IconLanguage } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
@@ -49,11 +50,17 @@ export default function() {
       title: t['searchTable.columns.id'],
       dataIndex: 'id',
       align: 'center' as 'center',
+      width: 120,
       render: (value) => <Typography.Text copyable>{value}</Typography.Text>,
     },
     {
       title: t['searchTable.columns.name'],
       dataIndex: 'name',
+      render: (col, record) =>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          {col}
+          <Space>{record.tags.map(item => <Tag>{item}</Tag>)}</Space>
+        </div>
     },
     {
       title: t['searchTable.columns.source'],
@@ -65,17 +72,20 @@ export default function() {
       dataIndex: 'type',
       align: 'center' as 'center',
       render: (x) => Type[x],
+      width: 150,
     },
     {
       title: t['searchTable.columns.status'],
       dataIndex: 'status',
       align: 'center' as 'center',
       render: (x) => Status[x],
+      width: 80,
     },
     {
       title: t['searchTable.columns.operations'],
       dataIndex: 'operations',
       align: 'center' as 'center',
+      width: 200,
       headerCellStyle: { paddingLeft: '15px' },
       render: (_, record) => (
         <>

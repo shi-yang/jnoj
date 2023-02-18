@@ -136,7 +136,8 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 		}).
 		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("name, language, problem_id")
-		})
+		}).
+		Preload("Problem.ProblemTags")
 	db.Where("problemset_id = ?", req.Id).
 		Order("`order`").
 		Count(&count)
@@ -154,6 +155,9 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			Source:        v.Problem.Source,
 			ProblemsetID:  v.ProblemsetID,
 			ProblemID:     v.ProblemID,
+		}
+		for _, v := range v.Problem.ProblemTags {
+			p.Tags = append(p.Tags, v.Name)
 		}
 		if len(v.Problem.ProblemStatements) > 0 {
 			p.Name = v.Problem.ProblemStatements[0].Name

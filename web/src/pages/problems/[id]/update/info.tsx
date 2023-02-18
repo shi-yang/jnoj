@@ -1,6 +1,6 @@
 import { getProblemVerification, updateProblem, verifyProblem } from '@/api/problem';
 import useLocale from '@/utils/useLocale';
-import { Form, Input, Button, Card, Message, List, Radio } from '@arco-design/web-react';
+import { Form, Input, Button, Card, Message, List, Radio, InputTag } from '@arco-design/web-react';
 import { useEffect, useState } from 'react';
 import locale from './locale';
 const FormItem = Form.Item;
@@ -36,6 +36,7 @@ const App = (props) => {
       timeLimit: props.problem.timeLimit,
       memoryLimit: props.problem.memoryLimit,
       source: props.problem.source,
+      tags: props.problem.tags
     })
   }, [])
   return (
@@ -53,6 +54,9 @@ const App = (props) => {
               <Radio value={1}>{t['private']}</Radio>
               <Radio value={2}>{t['public']}</Radio>
             </Radio.Group>
+          </FormItem>
+          <FormItem field='tags' label={t['tags']}>
+            <InputTag saveOnBlur />
           </FormItem>
           <FormItem field='source' label={t['source']}>
             <Input.TextArea rows={2} />

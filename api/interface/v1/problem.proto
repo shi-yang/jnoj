@@ -310,15 +310,16 @@ message Problem {
     int32 checker_id = 10;
     // 题目来源
     string source = 11;
-    int32 user_id = 12;
+    repeated string tags = 12;
+    int32 user_id = 13;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 13;
-    google.protobuf.Timestamp created_at = 14;
-    google.protobuf.Timestamp updated_at = 15;
+    repeated SampleTest sample_tests = 14;
+    google.protobuf.Timestamp created_at = 15;
+    google.protobuf.Timestamp updated_at = 16;
 }
 
 // 题目描述
@@ -370,6 +371,7 @@ message UpdateProblemRequest {
     int64 memory_limit = 3 [(validate.rules).int64 = {gte:4, lte: 1024}];
     int32 status = 4;
     string source = 5;
+    repeated string tags = 6;
 }
 
 message ListProblemStatementsRequest {
@@ -627,6 +629,7 @@ message ProblemsetProblem {
         SOLVED = 2;
     }
     Status status = 11;
+    repeated string tags = 12;
 }
 
 message ListProblemsetProblemsResponse {

@@ -6,6 +6,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -48,6 +49,7 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 			Status:        int32(v.Status),
 			Source:        v.Source,
 			Type:          v1.ProblemType(v.Type),
+			Tags:          v.Tags,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
 			UserId:        int32(v.UserID),
@@ -83,6 +85,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 		AcceptedCount: int32(data.AcceptedCount),
 		CheckerId:     int32(data.CheckerID),
 		Source:        data.Source,
+		Tags:          data.Tags,
 	}
 	resp.Statements = make([]*v1.ProblemStatement, 0)
 	resp.SampleTests = make([]*v1.Problem_SampleTest, 0)
@@ -129,12 +132,19 @@ func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProble
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
+	// 过滤首尾空格
+	if len(req.Tags) != 0 {
+		for k, v := range req.Tags {
+			req.Tags[k] = strings.TrimSpace(v)
+		}
+	}
 	_, err = s.uc.UpdateProblem(ctx, &biz.Problem{
 		ID:          int(req.Id),
 		TimeLimit:   req.TimeLimit,
 		MemoryLimit: req.MemoryLimit,
 		Status:      int(req.Status),
 		Source:      req.Source,
+		Tags:        req.Tags,
 	})
 	return nil, err
 }
@@ -809,6 +819,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			ProblemsetId:  req.Id,
 			ProblemId:     int32(v.ProblemID),
 			Source:        v.Source,
+			Tags:          v.Tags,
 			Status:        v1.ProblemsetProblem_Status(v.Status),
 		}
 		resp.Data = append(resp.Data, p)

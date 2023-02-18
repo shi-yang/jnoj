@@ -38,6 +38,7 @@ type ProblemsetProblem struct {
 	SubmitCount   int
 	AcceptedCount int
 	Source        string
+	Tags          []string
 	Status        int
 	CreatedAt     time.Time
 }
