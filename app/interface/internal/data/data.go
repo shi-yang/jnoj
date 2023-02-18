@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
+	"github.com/wagslane/go-rabbitmq"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	logger2 "gorm.io/gorm/logger"
@@ -24,6 +25,7 @@ var ProviderSet = wire.NewSet(
 	NewSubmissionRepo,
 	NewProblemsetRepo,
 	NewGroupRepo,
+	NewWebSocketRepo,
 )
 
 // Data .
@@ -31,6 +33,7 @@ type Data struct {
 	db      *gorm.DB
 	redisdb *redis.Client
 	conf    *conf.Data
+	mqConn  *rabbitmq.Conn
 }
 
 // NewData .
@@ -50,6 +53,15 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		return nil, nil, err
 	}
 
+	mqConn, err := rabbitmq.NewConn(
+		c.MessageQueue.Address,
+		rabbitmq.WithConnectionOptionsLogging,
+	)
+	if err != nil {
+		log.Errorf("failed connect to message queue: %v", err)
+		return nil, nil, err
+	}
+
 	redisdb := redis.NewClient(&redis.Options{
 		Addr: c.Redis.Addr,
 	})
@@ -57,10 +69,12 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		redisdb.Close()
+		mqConn.Close()
 	}
 	return &Data{
 		db:      db,
 		redisdb: redisdb,
 		conf:    c,
+		mqConn:  mqConn,
 	}, cleanup, nil
 }

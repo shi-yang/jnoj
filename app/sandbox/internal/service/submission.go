@@ -6,6 +6,5 @@ import (
 )
 
 func (s *SandboxService) RunSubmission(ctx context.Context, req *v1.RunSubmissionRequest) (*v1.RunSubmissionResponse, error) {
-	s.suc.RunSubmission(ctx, int(req.SubmissionId))
-	return nil, nil
+	return &v1.RunSubmissionResponse{}, s.suc.CreateSubmission(ctx, int(req.SubmissionId))
 }

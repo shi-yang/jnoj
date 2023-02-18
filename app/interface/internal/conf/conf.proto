@@ -27,9 +27,6 @@ message Server {
 }
 
 message Service {
-  message MessageQueue {
-      string address = 1;
-  }
   message Smtp {
     string address = 1;
     string username = 2;
@@ -37,7 +34,6 @@ message Service {
     string host = 4;
     bool ssl = 5;
   }
-  MessageQueue message_queue = 2;
   Smtp smtp = 3;
 }
 
@@ -62,9 +58,13 @@ message Data {
     Bucket private_bucket = 1;
     Bucket public_bucket = 2;
   }
+  message MessageQueue {
+      string address = 1;
+  }
   Database database = 1;
   Redis redis = 2;
   ObjectStorage object_storage = 3;
+  MessageQueue message_queue = 4;
 }
 
 message Registry {

@@ -4,20 +4,56 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"runtime"
+	"strconv"
 	"time"
 
 	"jnoj/app/sandbox/internal/biz"
 
+	queueV1 "jnoj/api/queue/v1"
 	objectstorage "jnoj/pkg/object_storage"
 
+	"github.com/go-kratos/kratos/v2/encoding"
+	_ "github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/wagslane/go-rabbitmq"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type submissionRepo struct {
-	data *Data
-	log  *log.Helper
+	data                *Data
+	log                 *log.Helper
+	websocketPublisher  *rabbitmq.Publisher
+	submissionPublisher *rabbitmq.Publisher
+}
+
+// NewSubmissionRepo .
+func NewSubmissionRepo(data *Data, logger log.Logger) biz.SubmissionRepo {
+	websocketPublisher, err := rabbitmq.NewPublisher(
+		data.mqConn,
+		rabbitmq.WithPublisherOptionsLogging,
+		rabbitmq.WithPublisherOptionsExchangeName("events"),
+		rabbitmq.WithPublisherOptionsExchangeDeclare,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	submissionPublisher, err := rabbitmq.NewPublisher(
+		data.mqConn,
+		rabbitmq.WithPublisherOptionsLogging,
+		rabbitmq.WithPublisherOptionsExchangeName("events"),
+		rabbitmq.WithPublisherOptionsExchangeDeclare,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &submissionRepo{
+		data:                data,
+		log:                 log.NewHelper(logger),
+		websocketPublisher:  websocketPublisher,
+		submissionPublisher: submissionPublisher,
+	}
 }
 
 type Submission struct {
@@ -38,14 +74,6 @@ type Submission struct {
 type SubmissionInfo struct {
 	SubmissionID int
 	RunInfo      string
-}
-
-// NewSubmissionRepo .
-func NewSubmissionRepo(data *Data, logger log.Logger) biz.SubmissionRepo {
-	return &submissionRepo{
-		data: data,
-		log:  log.NewHelper(logger),
-	}
 }
 
 type Problem struct {
@@ -219,22 +247,6 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 	}, err
 }
 
-// CreateSubmission .
-func (r *submissionRepo) CreateSubmission(ctx context.Context, s *biz.Submission) (*biz.Submission, error) {
-	res := Submission{
-		Source:    s.Source,
-		UserID:    s.UserID,
-		Language:  s.Language,
-		ProblemID: s.ProblemID,
-	}
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Create(&res).Error
-	return &biz.Submission{
-		ID: res.ID,
-	}, err
-}
-
 // UpdateSubmission .
 func (r *submissionRepo) UpdateSubmission(ctx context.Context, s *biz.Submission) (*biz.Submission, error) {
 	res := Submission{
@@ -288,5 +300,57 @@ func (r *submissionRepo) UpdateProblemTestStdOutput(ctx context.Context, id int,
 		storeName := fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID)
 		store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(outputContent))
 	}
+	return nil
+}
+
+// SendSubmissionToQueue 将提交加入到测评队列
+func (r *submissionRepo) SendSubmissionToQueue(ctx context.Context, id int) error {
+	idStr := strconv.Itoa(id)
+	err := r.submissionPublisher.PublishWithContext(
+		context.Background(),
+		[]byte(idStr),
+		[]string{"submission_key"},
+		rabbitmq.WithPublishOptionsMandatory,
+		rabbitmq.WithPublishOptionsPersistentDelivery,
+		rabbitmq.WithPublishOptionsExchange("submission"),
+	)
+	return err
+}
+
+// RunSubmissionFromQueue 从测评队列中取出队列来进行测评
+func (r *submissionRepo) RunSubmissionFromQueue(ctx context.Context, handler func(context.Context, int) error) error {
+	concurrency := runtime.NumCPU()
+	// TODO: 这里可以优化下，以充分利用CPU
+	if concurrency > 4 {
+		concurrency /= 2
+	}
+	_, err := rabbitmq.NewConsumer(
+		r.data.mqConn,
+		func(d rabbitmq.Delivery) rabbitmq.Action {
+			submissionId, _ := strconv.Atoi(string(d.Body))
+			handler(context.TODO(), submissionId)
+			// rabbitmq.Ack, rabbitmq.NackDiscard, rabbitmq.NackRequeue
+			return rabbitmq.Ack
+		},
+		"submission",
+		rabbitmq.WithConsumerOptionsRoutingKey("submission_key"),
+		rabbitmq.WithConsumerOptionsExchangeName("submission"),
+		rabbitmq.WithConsumerOptionsExchangeDeclare,
+		rabbitmq.WithConsumerOptionsExchangeDurable,
+		rabbitmq.WithConsumerOptionsConcurrency(concurrency), // 并发执行数量
+	)
+	return err
+}
+
+// SendWebscoketMessage 发送 websocket 消息
+func (r *submissionRepo) SendWebsocketMessage(ctx context.Context, message *queueV1.Message) error {
+	jsonCodec := encoding.GetCodec("json")
+	res, _ := jsonCodec.Marshal(message)
+	r.websocketPublisher.PublishWithContext(
+		context.Background(),
+		res,
+		[]string{"websocket"},
+		rabbitmq.WithPublishOptionsExchange("websocket"),
+	)
 	return nil
 }

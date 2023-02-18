@@ -120,7 +120,7 @@ export default ({id, visible, onCancel}) => {
                       <Space split={<Divider type='vertical' />}>
                         <span>#{testIndex + 1}</span>
                         <SubmissionVerdict verdict={test.verdict} />
-                        <span>{t['score']}: {item.score.toFixed(1)}</span>
+                        <span>{t['score']}: {test.score.toFixed(1)}</span>
                         <span>{t['time']}: {(test.time / 1000)} ms</span>
                         <span>{t['memory']}: {FormatMemorySize(test.memory)}</span>
                       </Space>

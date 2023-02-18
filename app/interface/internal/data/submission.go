@@ -133,6 +133,7 @@ func (r *submissionRepo) CreateSubmission(ctx context.Context, s *biz.Submission
 	res := Submission{
 		Source:     s.Source,
 		UserID:     s.UserID,
+		Verdict:    s.Verdict,
 		Language:   s.Language,
 		ProblemID:  s.ProblemID,
 		EntityID:   s.EntityID,
@@ -142,7 +143,8 @@ func (r *submissionRepo) CreateSubmission(ctx context.Context, s *biz.Submission
 		Omit(clause.Associations).
 		Create(&res).Error
 	return &biz.Submission{
-		ID: res.ID,
+		ID:        res.ID,
+		CreatedAt: res.CreatedAt,
 	}, err
 }
 

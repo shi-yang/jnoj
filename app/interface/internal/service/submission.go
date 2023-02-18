@@ -66,7 +66,7 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 				Verdict: int32(subtask.Verdict),
 				Memory:  subtask.Memory,
 				Time:    subtask.Time,
-				Score:   float32(subtask.Score),
+				Score:   subtask.Score,
 			}
 			for _, v := range subtask.Tests {
 				subtaskResult.Tests = append(subtaskResult.Tests, &v1.SubmissionInfo_SubmissionTest{
@@ -78,7 +78,7 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 					Stderr:          v.Stderr,
 					Verdict:         int32(v.Verdict),
 					ExitCode:        int32(v.ExitCode),
-					Score:           int32(v.Score),
+					Score:           v.Score,
 					CheckerExitCode: int32(v.CheckerExitCode),
 					CheckerStdout:   v.CheckerStdout,
 				})
@@ -115,7 +115,8 @@ func (s *SubmissionService) CreateSubmission(ctx context.Context, req *v1.Create
 		return nil, err
 	}
 	return &v1.Submission{
-		Id: int64(res.ID),
+		Id:        int64(res.ID),
+		CreatedAt: timestamppb.New(res.CreatedAt),
 	}, nil
 }
 

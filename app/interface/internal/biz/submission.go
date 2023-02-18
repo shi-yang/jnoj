@@ -31,7 +31,7 @@ type Submission struct {
 }
 
 type SubmissionResult struct {
-	Score             float64
+	Score             float32
 	Verdict           int
 	CompileMsg        string
 	Memory            int64
@@ -43,7 +43,7 @@ type SubmissionResult struct {
 }
 
 type SubmissionSubtaskResult struct {
-	Score   float64           // 分数
+	Score   float32           // 分数
 	Time    int64             // 时间
 	Memory  int64             // 内存
 	Verdict int               // 结果
@@ -59,7 +59,7 @@ type SubmissionTest struct {
 	Time            int64
 	Memory          int64
 	ExitCode        int
-	Score           int
+	Score           float32
 	CheckerStdout   string
 	CheckerExitCode int
 }

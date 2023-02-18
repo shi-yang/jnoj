@@ -31,7 +31,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, confService *conf.Ser
 	sandboxRepo := data.NewSandboxRepo(dataData, logger)
 	sandboxUsecase := biz.NewSandboxUsecase(sandbox, sandboxRepo, logger)
 	submissionRepo := data.NewSubmissionRepo(dataData, logger)
-	submissionUsecase := biz.NewSubmissionUsecase(sandbox, confService, submissionRepo, sandboxRepo, logger)
+	submissionUsecase := biz.NewSubmissionUsecase(sandbox, submissionRepo, sandboxRepo, logger)
 	sandboxService := service.NewSandboxService(sandboxUsecase, submissionUsecase)
 	grpcServer := server.NewGRPCServer(confServer, sandboxService, logger)
 	registrar := server.NewRegistrar(registry)

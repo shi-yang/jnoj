@@ -651,17 +651,17 @@ type SubmissionInfo_SubmissionTest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Verdict         int32  `protobuf:"varint,1,opt,name=verdict,proto3" json:"verdict,omitempty"`
-	Stdin           string `protobuf:"bytes,2,opt,name=stdin,proto3" json:"stdin,omitempty"`
-	Stdout          string `protobuf:"bytes,3,opt,name=stdout,proto3" json:"stdout,omitempty"`
-	Stderr          string `protobuf:"bytes,4,opt,name=stderr,proto3" json:"stderr,omitempty"`
-	Answer          string `protobuf:"bytes,5,opt,name=answer,proto3" json:"answer,omitempty"`
-	Time            int64  `protobuf:"varint,6,opt,name=time,proto3" json:"time,omitempty"`
-	Memory          int64  `protobuf:"varint,7,opt,name=memory,proto3" json:"memory,omitempty"`
-	ExitCode        int32  `protobuf:"varint,8,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
-	Score           int32  `protobuf:"varint,9,opt,name=score,proto3" json:"score,omitempty"`
-	CheckerStdout   string `protobuf:"bytes,10,opt,name=checker_stdout,json=checkerStdout,proto3" json:"checker_stdout,omitempty"`
-	CheckerExitCode int32  `protobuf:"varint,11,opt,name=checker_exit_code,json=checkerExitCode,proto3" json:"checker_exit_code,omitempty"`
+	Verdict         int32   `protobuf:"varint,1,opt,name=verdict,proto3" json:"verdict,omitempty"`
+	Stdin           string  `protobuf:"bytes,2,opt,name=stdin,proto3" json:"stdin,omitempty"`
+	Stdout          string  `protobuf:"bytes,3,opt,name=stdout,proto3" json:"stdout,omitempty"`
+	Stderr          string  `protobuf:"bytes,4,opt,name=stderr,proto3" json:"stderr,omitempty"`
+	Answer          string  `protobuf:"bytes,5,opt,name=answer,proto3" json:"answer,omitempty"`
+	Time            int64   `protobuf:"varint,6,opt,name=time,proto3" json:"time,omitempty"`
+	Memory          int64   `protobuf:"varint,7,opt,name=memory,proto3" json:"memory,omitempty"`
+	ExitCode        int32   `protobuf:"varint,8,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
+	Score           float32 `protobuf:"fixed32,9,opt,name=score,proto3" json:"score,omitempty"`
+	CheckerStdout   string  `protobuf:"bytes,10,opt,name=checker_stdout,json=checkerStdout,proto3" json:"checker_stdout,omitempty"`
+	CheckerExitCode int32   `protobuf:"varint,11,opt,name=checker_exit_code,json=checkerExitCode,proto3" json:"checker_exit_code,omitempty"`
 }
 
 func (x *SubmissionInfo_SubmissionTest) Reset() {
@@ -752,7 +752,7 @@ func (x *SubmissionInfo_SubmissionTest) GetExitCode() int32 {
 	return 0
 }
 
-func (x *SubmissionInfo_SubmissionTest) GetScore() int32 {
+func (x *SubmissionInfo_SubmissionTest) GetScore() float32 {
 	if x != nil {
 		return x.Score
 	}
@@ -952,7 +952,7 @@ var file_v1_submission_proto_rawDesc = []byte{
 	0x79, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x6d, 0x65, 0x6d, 0x6f, 0x72, 0x79, 0x12,
 	0x1b, 0x0a, 0x09, 0x65, 0x78, 0x69, 0x74, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x08, 0x20, 0x01,
 	0x28, 0x05, 0x52, 0x08, 0x65, 0x78, 0x69, 0x74, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a, 0x05,
-	0x73, 0x63, 0x6f, 0x72, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x73, 0x63, 0x6f,
+	0x73, 0x63, 0x6f, 0x72, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x02, 0x52, 0x05, 0x73, 0x63, 0x6f,
 	0x72, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x65, 0x72, 0x5f, 0x73, 0x74,
 	0x64, 0x6f, 0x75, 0x74, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x68, 0x65, 0x63,
 	0x6b, 0x65, 0x72, 0x53, 0x74, 0x64, 0x6f, 0x75, 0x74, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x68, 0x65,

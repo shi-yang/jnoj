@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"jnoj/app/sandbox/internal/conf"
-	"jnoj/pkg/message_queue/rabbitmq"
 	"jnoj/pkg/sandbox"
 	"os"
 	"path/filepath"
@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/encoding"
 	_ "github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
@@ -38,7 +37,7 @@ type Submission struct {
 }
 
 type SubmissionResult struct {
-	Score             float64
+	Score             float32
 	Verdict           int
 	CompileMsg        string
 	Memory            int64
@@ -50,7 +49,7 @@ type SubmissionResult struct {
 }
 
 type SubmissionSubtaskResult struct {
-	Score   float64           // 分数
+	Score   float32           // 分数
 	Time    int64             // 时间
 	Memory  int64             // 内存
 	Verdict int               // 结果
@@ -67,7 +66,7 @@ type SubmissionTest struct {
 	Memory          int64
 	RuntimeErr      string
 	ExitCode        int
-	Score           int
+	Score           float32
 	CheckerStdout   string
 	CheckerExitCode int
 }
@@ -129,7 +128,6 @@ type ProblemLanguage struct {
 // SubmissionRepo is a Submission repo.
 type SubmissionRepo interface {
 	GetSubmission(context.Context, int) (*Submission, error)
-	CreateSubmission(context.Context, *Submission) (*Submission, error)
 	UpdateSubmission(context.Context, *Submission) (*Submission, error)
 	CreateSubmissionInfo(context.Context, int, string) error
 
@@ -141,6 +139,10 @@ type SubmissionRepo interface {
 	GetContestProblemByProblemID(context.Context, int, int) (*ContestProblem, error)
 	UpdateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)
 	UpdateProblemTestStdOutput(context.Context, int, []byte, string) error
+
+	RunSubmissionFromQueue(context.Context, func(ctx context.Context, id int) error) error
+	SendSubmissionToQueue(context.Context, int) error
+	SendWebsocketMessage(context.Context, *queueV1.Message) error
 }
 
 // SubmissionUsecase is a Submission usecase.
@@ -149,13 +151,12 @@ type SubmissionUsecase struct {
 	repo        SubmissionRepo
 	sandboxRepo SandboxRepo
 	log         *log.Helper
-	queueClient *rabbitmq.Client
 }
 
 var checkerLanguage *sandbox.Language
 
 // NewSubmissionUsecase new a Submission usecase.
-func NewSubmissionUsecase(c *conf.Sandbox, cf *conf.Service, repo SubmissionRepo, sandboxRepo SandboxRepo, logger log.Logger) *SubmissionUsecase {
+func NewSubmissionUsecase(c *conf.Sandbox, repo SubmissionRepo, sandboxRepo SandboxRepo, logger log.Logger) *SubmissionUsecase {
 	checkerLanguage = &sandbox.Language{
 		Name: "checker",
 		CompileCommand: []string{"g++", "checker.cpp", "-o", "checker.exe", "-I" + c.TestlibPath, "-Wall",
@@ -170,12 +171,20 @@ func NewSubmissionUsecase(c *conf.Sandbox, cf *conf.Service, repo SubmissionRepo
 		sandboxRepo: sandboxRepo,
 		log:         log.NewHelper(logger),
 	}
-	s.queueClient = rabbitmq.NewClient(cf.MessageQueue.Address, "websocket")
+	err := s.repo.RunSubmissionFromQueue(context.Background(), s.RunSubmission)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return s
 }
 
+// CreateSubmission .
+func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, id int) error {
+	return uc.repo.SendSubmissionToQueue(ctx, id)
+}
+
 // RunSubmission run a Submission
-func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submission, error) {
+func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	var source string
 	s, _ := uc.repo.GetSubmission(ctx, id)
 	problem, _ := uc.repo.GetProblem(ctx, s.ProblemID)
@@ -198,81 +207,74 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) (*Submis
 		if err != nil {
 			s.Verdict = SubmissionVerdictSysemError
 			uc.repo.UpdateSubmission(context.TODO(), s)
-			return nil, err
+			return err
 		}
 		var problemLang ProblemLanguage
 		if err := json.Unmarshal([]byte(lang.Content), &problemLang); err != nil {
 			s.Verdict = SubmissionVerdictSysemError
 			uc.repo.UpdateSubmission(context.TODO(), s)
-			return nil, err
+			return err
 		}
 		// @@@替换
 		source = strings.ReplaceAll(problemLang.MainContent, "@@@", s.Source)
 	}
 	problemTest, _ := uc.prepareProblemTest(ctx, problem.ID)
 	uc.log.Infof("RunSubmission = [%+v] isGenerateOutput=[%+v]\n", s.ID, isGenerateOutput)
-	go func(s *Submission) {
-		ctx := context.TODO()
-		res := uc.runTests(ctx, s.ID, source, s.Language, s.UserID, problem, problemTest, isGenerateOutput)
-		for i, subtask := range res.Subtasks {
-			for j, v := range subtask.Tests {
-				if isGenerateOutput {
-					var outputPreview string
-					if len(v.Stdout) > 32 {
-						outputPreview = string([]byte(v.Stdout)[:32])
-					} else {
-						outputPreview = string(v.Stdout)
-					}
-					// 保存输出
-					uc.repo.UpdateProblemTestStdOutput(ctx, problemTest.Subtasks[i].TestData[j].ID, []byte(v.Stdout), outputPreview)
+	res := uc.runTests(ctx, s.ID, source, s.Language, s.UserID, problem, problemTest, isGenerateOutput)
+	for i, subtask := range res.Subtasks {
+		for j, v := range subtask.Tests {
+			if isGenerateOutput {
+				var outputPreview string
+				if len(v.Stdout) > 32 {
+					outputPreview = string([]byte(v.Stdout)[:32])
+				} else {
+					outputPreview = string(v.Stdout)
 				}
-				res.Subtasks[i].Tests[j].Stdin = substrLength([]byte(v.Stdin), 99)
-				res.Subtasks[i].Tests[j].Stdout = substrLength([]byte(v.Stdout), 99)
-				res.Subtasks[i].Tests[j].Stderr = substrLength([]byte(v.Stderr), 99)
-				res.Subtasks[i].Tests[j].Answer = substrLength([]byte(v.Answer), 99)
+				// 保存输出
+				uc.repo.UpdateProblemTestStdOutput(ctx, problemTest.Subtasks[i].TestData[j].ID, []byte(v.Stdout), outputPreview)
 			}
+			res.Subtasks[i].Tests[j].Stdin = substrLength([]byte(v.Stdin), 99)
+			res.Subtasks[i].Tests[j].Stdout = substrLength([]byte(v.Stdout), 99)
+			res.Subtasks[i].Tests[j].Stderr = substrLength([]byte(v.Stderr), 99)
+			res.Subtasks[i].Tests[j].Answer = substrLength([]byte(v.Answer), 99)
 		}
-		r, _ := json.Marshal(*res)
-		err := uc.repo.CreateSubmissionInfo(ctx, s.ID, string(r))
-		if err != nil {
-			uc.log.Info("CreateSubmissionInfo err:", err)
-		}
-		s.Verdict = res.Verdict
-		s.Memory = int(res.Memory)
-		s.Time = int(res.Time)
-		s.Score = int(res.Score)
-		uc.repo.UpdateSubmission(ctx, s)
-		// 通过时计数
-		if s.Verdict == SubmissionVerdictAccepted {
-			if s.EntityType == SubmissionEntityTypeCommon {
-				problem.AcceptedCount += 1
-				uc.repo.UpdateProblem(ctx, problem)
-			} else if s.EntityType == SubmissionEntityTypeContest {
-				contestProblem, err := uc.repo.GetContestProblemByProblemID(ctx, s.EntityID, s.ProblemID)
-				if err != nil {
-					return
-				}
-				contestProblem.AcceptedCount += 1
-				uc.repo.UpdateContestProblem(ctx, contestProblem)
+	}
+	r, _ := json.Marshal(*res)
+	err := uc.repo.CreateSubmissionInfo(ctx, s.ID, string(r))
+	if err != nil {
+		uc.log.Info("CreateSubmissionInfo err:", err)
+	}
+	s.Verdict = res.Verdict
+	s.Memory = int(res.Memory)
+	s.Time = int(res.Time)
+	s.Score = int(res.Score)
+	uc.repo.UpdateSubmission(ctx, s)
+	// 通过时计数
+	if s.Verdict == SubmissionVerdictAccepted {
+		if s.EntityType == SubmissionEntityTypeCommon {
+			problem.AcceptedCount += 1
+			uc.repo.UpdateProblem(ctx, problem)
+		} else if s.EntityType == SubmissionEntityTypeContest {
+			contestProblem, err := uc.repo.GetContestProblemByProblemID(ctx, s.EntityID, s.ProblemID)
+			if err != nil {
+				uc.log.Error(err)
 			}
+			contestProblem.AcceptedCount += 1
+			uc.repo.UpdateContestProblem(ctx, contestProblem)
 		}
+	}
 
-		// 向客户端发送测评进度
-		go func() {
-			m := queueV1.Message{
-				Type:    queueV1.Message_SUBMISSION_RESULT,
-				UserId:  int32(s.UserID),
-				Message: make(map[string]string),
-			}
-			m.Message["sid"] = strconv.Itoa(s.ID)
-			m.Message["status"] = "done"
-			m.Message["message"] = fmt.Sprintf("testing on %d/%d", res.AcceptedTestCount, res.TotalTestCount)
-			jsonCodec := encoding.GetCodec("json")
-			res, _ := jsonCodec.Marshal(&m)
-			uc.queueClient.Push(context.TODO(), res)
-		}()
-	}(s)
-	return nil, nil
+	// 向客户端发送测评进度
+	uc.repo.SendWebsocketMessage(ctx, &queueV1.Message{
+		Type:   queueV1.Message_SUBMISSION_RESULT,
+		UserId: int32(s.UserID),
+		Message: map[string]string{
+			"sid":     strconv.Itoa(s.ID),
+			"status":  "done",
+			"message": fmt.Sprintf("testing on %d/%d", res.AcceptedTestCount, res.TotalTestCount),
+		},
+	})
+	return nil
 }
 
 func (uc *SubmissionUsecase) prepareProblemTest(ctx context.Context, problemId int) (*ProblemSubtask, error) {
@@ -343,10 +345,9 @@ func (uc *SubmissionUsecase) runTests(
 		return result
 	}
 
-	// 编译 checker
-	// TODO checker 可能被用户进程修改？
+	// 准备 checker
 	if !isGenerateOutput {
-		err = sandbox.Compile(workDir, problem.Checker, checkerLanguage)
+		err = uc.prepareChecker(workDir, problem)
 		if err != nil {
 			uc.log.Info("sandbox.Compile err:", err)
 			result.Verdict = SubmissionVerdictSysemError
@@ -364,17 +365,15 @@ func (uc *SubmissionUsecase) runTests(
 			uc.log.Infof("Submission[%d] runing test [%d/%d] start...", submissionId, currentTest, problemTest.TotalTest)
 			// 向客户端发送测评进度
 			go func() {
-				m := queueV1.Message{
-					Type:    queueV1.Message_SUBMISSION_RESULT,
-					UserId:  int32(userId),
-					Message: make(map[string]string),
-				}
-				m.Message["sid"] = strconv.Itoa(submissionId)
-				m.Message["status"] = "running"
-				m.Message["message"] = fmt.Sprintf("testing on %d/%d", currentTest, problemTest.TotalTest)
-				jsonCodec := encoding.GetCodec("json")
-				res, _ := jsonCodec.Marshal(&m)
-				uc.queueClient.Push(context.TODO(), res)
+				uc.repo.SendWebsocketMessage(ctx, &queueV1.Message{
+					Type:   queueV1.Message_SUBMISSION_RESULT,
+					UserId: int32(userId),
+					Message: map[string]string{
+						"sid":     strconv.Itoa(submissionId),
+						"status":  "running",
+						"message": fmt.Sprintf("testing on %d/%d", currentTest, problemTest.TotalTest),
+					},
+				})
 			}()
 			// 开始运行
 			runRes := sandbox.Run(workDir, &sandbox.Languages[langCode], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
@@ -436,6 +435,9 @@ func (uc *SubmissionUsecase) runTests(
 				} else {
 					t.Verdict = SubmissionVerdictWrongAnswer
 				}
+				if !problemTest.HasSubtask {
+					t.Score = 100 / float32(problemTest.TotalTest)
+				}
 			}
 			subtaskResult.Tests = append(subtaskResult.Tests, &t)
 			// 记录结果
@@ -449,13 +451,13 @@ func (uc *SubmissionUsecase) runTests(
 			} else {
 				result.AcceptedTestCount++
 				if !problemTest.HasSubtask {
-					subtaskResult.Score = 100 / float64(problemTest.TotalTest)
+					subtaskResult.Score = 100 / float32(problemTest.TotalTest)
 				}
 			}
 		}
 		if subtaskResult.Verdict == SubmissionVerdictAccepted {
-			result.Score += float64(subtask.Score)
-			subtaskResult.Score = float64(subtask.Score)
+			result.Score += float32(subtask.Score)
+			subtaskResult.Score = float32(subtask.Score)
 		}
 		if result.Time < subtaskResult.Time {
 			result.Time = subtaskResult.Time
@@ -464,11 +466,67 @@ func (uc *SubmissionUsecase) runTests(
 			result.Memory = subtaskResult.Memory
 		}
 		if !problemTest.HasSubtask && problemTest.TotalTest != 0 {
-			result.Score = 100 * float64(result.AcceptedTestCount) / float64(problemTest.TotalTest)
+			result.Score = 100 * float32(result.AcceptedTestCount) / float32(problemTest.TotalTest)
 		}
 		result.Subtasks = append(result.Subtasks, &subtaskResult)
 	}
 	return result
+}
+
+func (uc *SubmissionUsecase) prepareChecker(workDir string, problem *Problem) error {
+	// 放到 checker 目录下存在
+	checkerPath := filepath.Join("/tmp/sandbox/checker", fmt.Sprintf("%d", problem.ID))
+	_, err := os.Stat(filepath.Join(checkerPath, "checker.exe"))
+	if err != nil {
+		// 编译一个checker
+		if err = sandbox.Compile(checkerPath, problem.Checker, checkerLanguage); err != nil {
+			return err
+		}
+		// 复制到 workDir
+		return copy(filepath.Join(checkerPath, "checker.exe"), filepath.Join(workDir, "checker.exe"))
+	}
+	return copy(filepath.Join(checkerPath, "checker.exe"), filepath.Join(workDir, "checker.exe"))
+}
+
+// copy 复制文件
+func copy(src, dst string) error {
+	_, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	source, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	_, err = os.Stat(dst)
+	if err == nil {
+		return fmt.Errorf("file %s already exists", dst)
+	}
+	destination, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+
+	if err != nil {
+		panic(err)
+	}
+	buf := make([]byte, 2048)
+	for {
+		n, err := source.Read(buf)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if n == 0 {
+			break
+		}
+		if _, err := destination.Write(buf[:n]); err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 // substrLength 截取指定长度字符串，超过指定长度在末尾添加 "..."

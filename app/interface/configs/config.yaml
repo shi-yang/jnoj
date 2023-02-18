@@ -24,9 +24,9 @@ data:
       secret_id: "jnoj_access_key1"
       secret_key: "jnoj_secret_key1"
       endpoint: "${USER_CONTENT_DOMAIN}"
-service:
   message_queue:
     address: "amqp://admin:admin@rabbitmq:5672/"
+service:
   smtp:
     ssl: true
     address: smtp.exmail.qq.com:465

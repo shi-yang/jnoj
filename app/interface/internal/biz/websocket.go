@@ -3,7 +3,6 @@ package biz
 import (
 	"context"
 	"jnoj/app/interface/internal/conf"
-	"jnoj/pkg/message_queue/rabbitmq"
 	"strconv"
 	"sync"
 	"time"
@@ -16,9 +15,14 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type WebSocketRepo interface {
+	HandlerMessageFromQueue(context.Context, func(context.Context, []byte) error)
+}
+
 type WebSocketUsecase struct {
 	log  *log.Helper
 	conn Conn
+	repo WebSocketRepo
 }
 
 const (
@@ -32,27 +36,21 @@ const (
 )
 
 // NewWebSocketUsecase new a WebSocket usecase.
-func NewWebSocketUsecase(c *conf.Service, logger log.Logger) *WebSocketUsecase {
+func NewWebSocketUsecase(c *conf.Service, repo WebSocketRepo, logger log.Logger) *WebSocketUsecase {
 	ws := &WebSocketUsecase{
 		log:  log.NewHelper(logger),
 		conn: Conn{},
+		repo: repo,
 	}
 	ws.conn.Data = make(map[string]*Connection)
 	// 从 message queue 读取消息发到客户端
-	go func() {
-		queue := rabbitmq.NewClient(c.MessageQueue.Address, "websocket")
-		err := queue.Consume(context.TODO(), func(ctx context.Context, b []byte) error {
-			var m queueV1.Message
-			ws.log.Info(string(b))
-			jsonCodec := encoding.GetCodec("json")
-			_ = jsonCodec.Unmarshal(b, &m)
-			ws.WriteMessage(strconv.Itoa(int(m.UserId)), b)
-			return nil
-		})
-		if err != nil {
-			ws.log.Error("err", err)
-		}
-	}()
+	ws.repo.HandlerMessageFromQueue(context.TODO(), func(ctx context.Context, b []byte) error {
+		var m queueV1.Message
+		jsonCodec := encoding.GetCodec("json")
+		_ = jsonCodec.Unmarshal(b, &m)
+		ws.WriteMessage(strconv.Itoa(int(m.UserId)), b)
+		return nil
+	})
 	return ws
 }
 

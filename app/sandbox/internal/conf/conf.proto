@@ -48,16 +48,16 @@ message Data {
     Bucket private_bucket = 1;
     Bucket public_bucket = 2;
   }
-  Database database = 1;
-  Redis redis = 2;
-  ObjectStorage object_storage = 3;
-}
-
-message Service {
   message MessageQueue {
       string address = 1;
   }
-  MessageQueue message_queue = 1;
+  Database database = 1;
+  Redis redis = 2;
+  ObjectStorage object_storage = 3;
+  MessageQueue message_queue = 4;
+}
+
+message Service {
 }
 
 message Registry {

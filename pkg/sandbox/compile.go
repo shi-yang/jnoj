@@ -14,13 +14,13 @@ import (
 )
 
 // CompileTimeLimit 设置编译超时时间，单位秒
-const CompileTimeLimit = 8
+const CompileTimeLimit = 20
 
 // Compile 编译源码
 // basedir 工作目录
-// compileCommand 编译命令
-// codeFilename 保存的文件名
 // code 代码
+// lang 语言
+// TODO: 并发编译会编译超时出错
 func Compile(basedir string, code string, lang *Language) error {
 	var stdout, stderr bytes.Buffer
 	codeFilename := lang.CodeFileName
