@@ -11,6 +11,8 @@ import {
   Drawer,
   Select,
   Tag,
+  Tooltip,
+  Divider,
 } from '@arco-design/web-react';
 import { IconDownload, IconLanguage } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
@@ -40,18 +42,22 @@ export default function() {
   const [id, setId] = useState(0);
   const [visible, setVisible] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const Status = ['', '私有', '公开'];
-  const Type = {
-    'DEFAULT': '标准输入输出',
-    'FUNCTION': '函数题',
-  };
+
   const columns = [
     {
       title: t['searchTable.columns.id'],
       dataIndex: 'id',
+      sorter: true,
       align: 'center' as 'center',
       width: 120,
-      render: (value) => <Typography.Text copyable>{value}</Typography.Text>,
+      render: (value, record) => (
+      <>
+        <Typography.Text copyable>{value}</Typography.Text>
+        {record.allowDownload && <Tooltip mini content={t['allowDownload']}>
+          <IconDownload />
+        </Tooltip>}
+      </>
+      ),
     },
     {
       title: t['searchTable.columns.name'],
@@ -71,15 +77,43 @@ export default function() {
       title: t['searchTable.columns.type'],
       dataIndex: 'type',
       align: 'center' as 'center',
-      render: (x) => Type[x],
+      render: (x) => x === 'DEFAULT' ? t['searchTable.columns.type.default'] : t['searchTable.columns.type.function'],
       width: 150,
+      filters: [
+        {
+          text: t['searchTable.columns.type.default'],
+          value: 0,
+        },
+        {
+          text: t['searchTable.columns.type.function'],
+          value: 1,
+        },
+      ],
+      filterMultiple: true,
     },
     {
       title: t['searchTable.columns.status'],
       dataIndex: 'status',
       align: 'center' as 'center',
-      render: (x) => Status[x],
+      render: (x) => x === 1 ? t['searchTable.columns.status.private'] : t['searchTable.columns.status.public'],
       width: 80,
+      filters: [
+        {
+          text: t['searchTable.columns.status.private'],
+          value: 1,
+        },
+        {
+          text: t['searchTable.columns.status.public'],
+          value: 2,
+        },
+      ],
+      filterMultiple: true,
+    },
+    {
+      title: t['searchTable.columns.createdBy'],
+      dataIndex: 'nickname',
+      align: 'center' as 'center',
+      render: (_, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>
     },
     {
       title: t['searchTable.columns.operations'],
@@ -117,7 +151,6 @@ export default function() {
     listProblems({
       page: current,
       perPage: pageSize,
-      userId: user.id,
       ...formParams,
     })
       .then((res) => {
@@ -132,7 +165,17 @@ export default function() {
       });
   }
 
-  function onChangeTable({ current, pageSize }) {
+  function onChangeTable({ current, pageSize }, sorter, filters) {
+    const params = {}
+    if (sorter.direction) {
+      if (sorter.direction == 'descend') {
+        Object.assign(params, {orderBy: 'id desc'})
+      } else {
+        Object.assign(params, {orderBy: 'id'})
+      }
+    }
+    Object.assign(params, filters)
+    setFormParams({...formParams, ...params});
     setPagination({
       ...pagination,
       current,
@@ -159,42 +202,49 @@ export default function() {
   }
 
   return (
-    <Card className='container'>
-      <Title heading={6}>{t['menu.list.createProblem']}</Title>
-      <SearchForm onSearch={handleSearch} />
-      <div className={styles['button-group']}>
-        <Space>
-          <CreateModal />
-        </Space>
-        <Space>
-          <Button
-            icon={<IconDownload />}
-            disabled={selectedRowKeys.length === 0}
-            onClick={downloadProblem}
-          >
-            {t['searchTable.operation.download']}
-          </Button>
-        </Space>
-      </div>
-      <Table
-        rowKey="id"
-        loading={loading}
-        onChange={onChangeTable}
-        pagination={pagination}
-        columns={columns}
-        data={data}
-        rowSelection={{
-          type: 'radio',
-          selectedRowKeys,
-          onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedRowKeys(selectedRowKeys);
-          },
-          onSelect: (selected, record, selectedRows) => {
-          },
-        }}
-      />
-      <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
-    </Card>
+    <div className={styles['list-container']}>
+      <Card className='container'>
+        <Title heading={3}>{t['page.title']}</Title>
+        <Typography.Paragraph>
+          {t['page.desc']}
+        </Typography.Paragraph>
+        <Typography.Text type='secondary'>{t['page.desc2']}</Typography.Text>
+        <Divider />
+        <SearchForm onSearch={handleSearch} />
+        <div className={styles['button-group']}>
+          <Space>
+            <CreateModal />
+          </Space>
+          <Space>
+            <Button
+              icon={<IconDownload />}
+              disabled={selectedRowKeys.length === 0}
+              onClick={downloadProblem}
+            >
+              {t['searchTable.operation.download']}
+            </Button>
+          </Space>
+        </div>
+        <Table
+          rowKey="id"
+          loading={loading}
+          onChange={onChangeTable}
+          pagination={pagination}
+          columns={columns}
+          data={data}
+          rowSelection={{
+            type: 'radio',
+            selectedRowKeys,
+            onChange: (selectedRowKeys, selectedRows) => {
+              setSelectedRowKeys(selectedRowKeys);
+            },
+            onSelect: (selected, record, selectedRows) => {
+            },
+          }}
+        />
+        <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
+      </Card>
+    </div>
   );
 }
 

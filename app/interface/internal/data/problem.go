@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -34,6 +35,7 @@ type Problem struct {
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt
+	User              *User               `gorm:"ForeignKey:UserID"`
 	ProblemStatements []*ProblemStatement `gorm:"ForeignKey:ProblemID"`
 	ProblemTags       []*ProblemTag       `gorm:"many2many:problem_tag_problem"`
 }
@@ -54,22 +56,50 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 
 	db := r.data.db.WithContext(ctx).
 		Model(&Problem{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname, username")
+		}).
 		Preload("ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("name, language, problem_id")
 		}).
 		Preload("ProblemTags")
-	db.Where("user_id = ? or status = ?", req.UserId, biz.ProblemStatusPublic)
-	if req.Name != "" {
-		db.Where("name like ? or id in (?)", fmt.Sprintf("%%%s%%", req.Name),
+	if len(req.Status) > 0 {
+		db.Where("status in (?)", req.Status)
+	}
+	if len(req.Type) > 0 {
+		db.Where("type in (?)", req.Type)
+	}
+	if req.UserId != 0 {
+		db.Where("user_id = ?", req.UserId)
+	} else {
+		// 不查自己的，只能查公开的
+		db.Where("status = ?", biz.ProblemStatusPublic)
+	}
+	if req.Id != 0 {
+		db.Where("problem.id = ?", req.Id)
+	}
+	if req.Keyword != "" {
+		db.Where("name like ? or id in (?)", fmt.Sprintf("%%%s%%", req.Keyword),
 			r.data.db.WithContext(ctx).Select("problem_id").
-				Model(&ProblemStatement{}).Where("name like ?", fmt.Sprintf("%%%s%%", req.Name)))
+				Model(&ProblemStatement{}).Where("name like ?", fmt.Sprintf("%%%s%%", req.Keyword))).
+			Or("source like ?", fmt.Sprintf("%%%s%%", req.Keyword))
+	}
+	if req.OrderBy != nil {
+		if strings.Contains(*req.OrderBy, "desc") {
+			db.Order("id desc")
+		} else {
+			db.Order("id")
+		}
 	}
 	db.Count(&count)
 	db.Offset(pager.GetOffset()).
 		Limit(pager.GetPageSize()).
 		Find(&res)
+
+	var ids []int
 	rv := make([]*biz.Problem, 0)
 	for _, v := range res {
+		ids = append(ids, v.ID)
 		p := &biz.Problem{
 			ID:            v.ID,
 			Name:          v.Name,
@@ -82,6 +112,9 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			Status:        v.Status,
 			Source:        v.Source,
 		}
+		if v.User != nil {
+			p.Nickname = v.User.Nickname
+		}
 		for _, t := range v.ProblemTags {
 			p.Tags = append(p.Tags, t.Name)
 		}
@@ -92,6 +125,22 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			})
 		}
 		rv = append(rv, p)
+	}
+	// 查询是否允许下载
+	var allowdownloadIds []int
+	r.data.db.WithContext(ctx).
+		Select("problem_id").
+		Model(&ProblemFile{}).
+		Where("problem_id in (?)", ids).
+		Where("file_type = ?", biz.ProblemFileFileTypePackage).
+		Scan(&allowdownloadIds)
+	r.log.Info(allowdownloadIds)
+	for _, v := range allowdownloadIds {
+		for k, p := range rv {
+			if p.ID == v && p.Status == biz.ProblemStatusPublic {
+				rv[k].AllowDownload = true
+			}
+		}
 	}
 	return rv, count
 }

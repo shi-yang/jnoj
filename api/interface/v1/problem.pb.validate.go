@@ -112,6 +112,10 @@ func (m *Problem) validate(all bool) error {
 
 	// no validation rules for UserId
 
+	// no validation rules for Nickname
+
+	// no validation rules for AllowDownload
+
 	for idx, item := range m.GetSampleTests() {
 		_, _ = idx, item
 
@@ -419,19 +423,21 @@ func (m *ListProblemsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Name
+	// no validation rules for Id
+
+	// no validation rules for Keyword
 
 	// no validation rules for UserId
 
-	// no validation rules for Status
-
 	// no validation rules for Filter
-
-	// no validation rules for OrderBy
 
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.OrderBy != nil {
+		// no validation rules for OrderBy
+	}
 
 	if len(errors) > 0 {
 		return ListProblemsRequestMultiError(errors)

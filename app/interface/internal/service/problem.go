@@ -34,8 +34,10 @@ func NewProblemService(uc *biz.ProblemUsecase,
 
 // ListProblems 题目列表
 func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsRequest) (*v1.ListProblemsResponse, error) {
-	u, _ := auth.GetUserID(ctx)
-	req.UserId = int32(u)
+	if req.UserId != 0 {
+		u, _ := auth.GetUserID(ctx)
+		req.UserId = int32(u)
+	}
 	data, count := s.uc.ListProblems(ctx, req)
 	resp := new(v1.ListProblemsResponse)
 	resp.Data = make([]*v1.Problem, 0)
@@ -50,9 +52,11 @@ func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsR
 			Source:        v.Source,
 			Type:          v1.ProblemType(v.Type),
 			Tags:          v.Tags,
+			AllowDownload: v.AllowDownload,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
 			UserId:        int32(v.UserID),
+			Nickname:      v.Nickname,
 		}
 		for _, s := range v.Statements {
 			p.Statements = append(p.Statements, &v1.ProblemStatement{

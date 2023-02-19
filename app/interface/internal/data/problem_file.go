@@ -123,7 +123,10 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 		store := objectstorage.NewSeaweed()
 		fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
 		storeName := fmt.Sprintf(filepath, p.ProblemID, fileUnixName+path.Ext(p.Name))
-		store.PutObject(r.data.conf.ObjectStorage.PublicBucket, storeName, bytes.NewReader(p.FileContent))
+		err := store.PutObject(r.data.conf.ObjectStorage.PublicBucket, storeName, bytes.NewReader(p.FileContent))
+		if err != nil {
+			return nil, err
+		}
 		res.Content = storeName
 	}
 	err := r.data.db.WithContext(ctx).

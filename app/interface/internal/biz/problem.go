@@ -19,7 +19,8 @@ type Problem struct {
 	ID            int
 	Name          string
 	UserID        int
-	Type          int // 题目类型：标准输入输出、函数题
+	Nickname      string // 作者昵称
+	Type          int    // 题目类型：标准输入输出、函数题
 	TimeLimit     int64
 	MemoryLimit   int64
 	AcceptedCount int
@@ -30,6 +31,7 @@ type Problem struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	Tags          []string
+	AllowDownload bool
 
 	Statements  []*ProblemStatement
 	SampleTests []*Test
@@ -248,7 +250,7 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 		return err
 	}
 	// 储存文件
-	uc.repo.CreateProblemFile(ctx, &ProblemFile{
+	_, err = uc.repo.CreateProblemFile(ctx, &ProblemFile{
 		ProblemID:   id,
 		Name:        problem.Name + ".zip",
 		FileType:    string(ProblemFileFileTypePackage),
@@ -256,7 +258,7 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 		FileContent: buf.Bytes(),
 		FileSize:    int64(buf.Len()),
 	})
-	return nil
+	return err
 }
 
 // DownloadProblems 下载题目

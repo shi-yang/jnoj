@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import dayjs from 'dayjs';
 import {
   Form,
   Input,
-  Select,
-  DatePicker,
   Button,
   Grid,
+  Radio,
+  Switch,
+  Tooltip,
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import locale from './locale';
@@ -20,8 +20,6 @@ const { useForm } = Form;
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
-  const { lang } = useContext(GlobalContext);
-
   const t = useLocale(locale);
   const [form] = useForm();
 
@@ -35,8 +33,6 @@ function SearchForm(props: {
     props.onSearch({});
   };
 
-  const colSpan = lang === 'zh-CN' ? 8 : 12;
-
   return (
     <div className={styles['search-form-wrapper']}>
       <Form
@@ -47,16 +43,26 @@ function SearchForm(props: {
         wrapperCol={{ span: 19 }}
       >
         <Row gutter={24}>
-          <Col span={colSpan}>
+          <Col flex='300px'>
+            <Form.Item label={t['searchTable.columns.user']} field="userId" >
+              <Radio.Group defaultValue={0} type='button'>
+                <Tooltip content={t['searchTable.columns.user.tip']}>
+                  <Radio value={0}>{t['searchTable.columns.user.all']}</Radio>
+                </Tooltip>
+                <Radio value={1}>{t['searchTable.columns.user.me']}</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col span={8}>
             <Form.Item label={t['searchTable.columns.id']} field="id">
               <Input placeholder={t['searchForm.id.placeholder']} allowClear />
             </Form.Item>
           </Col>
-          <Col span={colSpan}>
-            <Form.Item label={t['searchTable.columns.name']} field="name">
+          <Col span={8}>
+            <Form.Item label={t['searchTable.columns.keyword']} field="keyword">
               <Input
                 allowClear
-                placeholder={t['searchForm.name.placeholder']}
+                placeholder={t['searchForm.keyword.placeholder']}
               />
             </Form.Item>
           </Col>

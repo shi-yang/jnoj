@@ -312,14 +312,16 @@ message Problem {
     string source = 11;
     repeated string tags = 12;
     int32 user_id = 13;
+    string nickname = 14;
+    bool allow_download = 15;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 14;
-    google.protobuf.Timestamp created_at = 15;
-    google.protobuf.Timestamp updated_at = 16;
+    repeated SampleTest sample_tests = 16;
+    google.protobuf.Timestamp created_at = 17;
+    google.protobuf.Timestamp updated_at = 19;
 }
 
 // 题目描述
@@ -335,13 +337,15 @@ message ProblemStatement {
 }
 
 message ListProblemsRequest {
-    string name = 1;
-    int32 user_id = 2;
-    int32 status = 3;
-    string filter = 4;
-    string order_by = 5;
-    int32 page = 6;
-    int32 per_page = 7;
+    int32 id = 1;
+    string keyword = 2;
+    int32 user_id = 3;
+    repeated int32 status = 4;
+    repeated int32 type = 5;
+    string filter = 6;
+    optional string order_by = 7;
+    int32 page = 8;
+    int32 per_page = 9;
 }
 
 message ListProblemsResponse {
