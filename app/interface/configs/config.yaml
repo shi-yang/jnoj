@@ -31,7 +31,7 @@ service:
     ssl: true
     address: smtp.exmail.qq.com:465
     username: no-reply@jnoj.dev
-    password: jnojkey
+    password: GKce4Jj7F8tBzkYQ
     host: smtp.exmail.qq.com
 
 consul:
