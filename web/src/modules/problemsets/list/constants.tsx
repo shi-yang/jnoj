@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button } from '@arco-design/web-react';
-import Link from 'next/link';
+import { Button, Link, Space, TableColumnProps, Tag } from '@arco-design/web-react';
 import { IconCheckCircle, IconExclamationCircle } from '@arco-design/web-react/icon';
 
 export const ProblemStatus = {
@@ -9,11 +8,12 @@ export const ProblemStatus = {
   'SOLVED': <IconCheckCircle />,
 };
 
-export function getColumns(
-  t: any,
-  callback: (record: Record<string, any>, type: string) => Promise<void>
-) {
-  return [
+import styles from './style/index.module.less';
+
+export function getColumns(t: any, displayFields: string) {
+  const displaySource = displayFields.includes('source');
+  const displayTags = displayFields.includes('tag');
+  const columns:TableColumnProps[] = [
     {
       title: t['problem.columns.status'],
       dataIndex: 'status',
@@ -24,38 +24,43 @@ export function getColumns(
     {
       title: t['problem.columns.name'],
       dataIndex: 'name',
-      render: (col, record) => <>{record.order}. {record.name}</>
-    },
-    {
-      title: t['problem.columns.submitAndPass'],
-      dataIndex: 'count',
-      align: 'center' as 'center',
-      render(_, record) {
-        return (
-          <>
-            {Number(record.acceptedCount).toLocaleString()} / {Number(record.submitCount).toLocaleString()}
-          </>
-        );
-      },
-      width: 200,
-    },
-    {
-      title: t['problem.columns.operations'],
-      dataIndex: 'operations',
-      align: 'center' as 'center',
-      headerCellStyle: { paddingLeft: '15px' },
-      render: (_, record) => (
-        <Button
-          type="text"
-          size="small"
-          onClick={() => callback(record, 'view')}
-        >
+      render: (col, record) => (
+        <div className={styles['column-title']}>
           <Link href={`/problemsets/${record.problemsetId}/problems/${record.order}`}>
-            {t['problem.columns.operations.view']}
+            <div>
+              {record.order}. {record.name}
+            </div>
           </Link>
-        </Button>
-      ),
-      width: 100,
+          {
+            displayTags && <Space>
+              {record.tags.map((item, index) => <Tag key={index}>{item}</Tag>)}
+            </Space>
+          }
+        </div>
+      )
     },
   ];
+  if (displaySource) {
+    columns.push({
+      title: t['problem.columns.source'],
+      dataIndex: 'source',
+      align: 'center',
+      render: x => x,
+      width: 200,
+    })
+  }
+  columns.push({
+    title: t['problem.columns.submitAndPass'],
+    dataIndex: 'count',
+    align: 'center' as 'center',
+    render(_, record) {
+      return (
+        <>
+          {Number(record.acceptedCount).toLocaleString()} / {Number(record.submitCount).toLocaleString()}
+        </>
+      );
+    },
+    width: 150,
+  })
+  return columns;
 }

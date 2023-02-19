@@ -59,7 +59,7 @@ export default function() {
       render: (col, record) =>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           {col}
-          <Space>{record.tags.map(item => <Tag>{item}</Tag>)}</Space>
+          <Space>{record.tags.map((item, index) => <Tag key={index}>{item}</Tag>)}</Space>
         </div>
     },
     {

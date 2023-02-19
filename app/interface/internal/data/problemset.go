@@ -3,7 +3,9 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -126,41 +128,57 @@ func (r *ProblemsetRepo) DeleteProblemset(ctx context.Context, id int) error {
 }
 
 func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) ([]*biz.ProblemsetProblem, int64) {
-	res := []ProblemsetProblem{}
-	count := int64(0)
-	page := pagination.NewPagination(req.Page, req.PerPage)
-	db := r.data.db.WithContext(ctx).
-		Model(&ProblemsetProblem{}).
-		Preload("Problem", func(db *gorm.DB) *gorm.DB {
-			return db.Select("name, id, submit_count, accepted_count")
-		}).
-		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
-			return db.Select("name, language, problem_id")
-		}).
-		Preload("Problem.ProblemTags")
-	db.Where("problemset_id = ?", req.Id).
-		Order("`order`").
-		Count(&count)
-	db.
-		Offset(page.GetOffset()).
-		Limit(page.GetPageSize()).
-		Find(&res)
 	rv := make([]*biz.ProblemsetProblem, 0)
-	for _, v := range res {
-		p := &biz.ProblemsetProblem{
-			ID:            v.ID,
-			Order:         v.Order,
-			SubmitCount:   v.Problem.SubmitCount,
-			AcceptedCount: v.Problem.AcceptedCount,
-			Source:        v.Problem.Source,
-			ProblemsetID:  v.ProblemsetID,
-			ProblemID:     v.ProblemID,
-		}
-		for _, v := range v.Problem.ProblemTags {
-			p.Tags = append(p.Tags, v.Name)
-		}
-		if len(v.Problem.ProblemStatements) > 0 {
-			p.Name = v.Problem.ProblemStatements[0].Name
+	page := pagination.NewPagination(req.Page, req.PerPage)
+	count := int64(0)
+	db := r.data.db.WithContext(ctx).
+		Select(`
+		pp.id,
+		pp.order,
+		ps.name,
+		pp.problem_id,
+		problem.accepted_count,
+		problem.submit_count,
+		problem.source, GROUP_CONCAT(pt.name) AS tags`).
+		Table("problemset_problem AS pp").
+		Joins("LEFT JOIN problem ON problem.id = pp.problem_id").
+		Joins(`LEFT JOIN(
+			SELECT problem_id, name
+			FROM problem_statement
+			WHERE id IN(SELECT MIN(id) FROM problem_statement GROUP BY problem_id)
+		) AS ps
+		ON ps.problem_id = pp.problem_id`).
+		Joins(`LEFT JOIN(
+			SELECT
+				problem_tag.name,
+				problem_tag_problem.problem_id
+			FROM
+				problem_tag
+			INNER JOIN problem_tag_problem ON problem_tag_problem.problem_tag_id = problem_tag.id
+		) AS pt
+		ON
+			pt.problem_id = pp.problem_id`)
+	db.Where("problemset_id = ?", req.Id)
+	if req.Keyword != "" {
+		db.Where("problem.name like ? or problem.source like ? or pt.name like ?",
+			fmt.Sprintf("%s%%", req.Keyword),
+			fmt.Sprintf("%s%%", req.Keyword),
+			fmt.Sprintf("%%%s%%", req.Keyword),
+		)
+	}
+	db.Group("pp.id, ps.name").
+		Order("pp.order").
+		Count(&count)
+	db.Offset(page.GetOffset()).
+		Limit(page.GetPageSize())
+
+	rows, _ := db.Rows()
+	for rows.Next() {
+		p := &biz.ProblemsetProblem{}
+		var tags string
+		rows.Scan(&p.ID, &p.Order, &p.Name, &p.ProblemID, &p.AcceptedCount, &p.SubmitCount, &p.Source, &tags)
+		if len(tags) != 0 {
+			p.Tags = strings.Split(tags, ",")
 		}
 		rv = append(rv, p)
 	}

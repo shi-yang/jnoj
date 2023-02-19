@@ -21,6 +21,6 @@ ICPC、IOI、OI 赛制均已得到支持。
 
 ## 三 组队训练
 
-可以与好友一起组队训练。
+组建一个小组或者形成一个班级来进行学习。
 
 ![/img/home/intro3.png](/img/home/intro3.png)
