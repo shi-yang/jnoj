@@ -407,7 +407,8 @@ ALTER TABLE `problem_test`
 -- 表的索引 `problem_verification`
 --
 ALTER TABLE `problem_verification`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_problem_id` (`problem_id`);
 
 --
 -- 表的索引 `submission`
