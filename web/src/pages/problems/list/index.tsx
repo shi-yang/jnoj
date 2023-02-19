@@ -24,12 +24,15 @@ import CreateModal from './create';
 import { downloadProblems, getProblem, listProblems } from '@/api/problem';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
+import { setting, SettingState } from '@/store/reducers/setting';
 import ProblemContent from '@/components/Problem/ProblemContent';
+import Head from 'next/head';
 const { Title } = Typography;
 
 export default function() {
   const t = useLocale(locale);
   const user = useAppSelector(userInfo);
+  const settings = useAppSelector<SettingState>(setting);
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     showTotal: true,
@@ -202,49 +205,54 @@ export default function() {
   }
 
   return (
-    <div className={styles['list-container']}>
-      <Card className='container'>
-        <Title heading={3}>{t['page.title']}</Title>
-        <Typography.Paragraph>
-          {t['page.desc']}
-        </Typography.Paragraph>
-        <Typography.Text type='secondary'>{t['page.desc2']}</Typography.Text>
-        <Divider />
-        <SearchForm onSearch={handleSearch} />
-        <div className={styles['button-group']}>
-          <Space>
-            <CreateModal />
-          </Space>
-          <Space>
-            <Button
-              icon={<IconDownload />}
-              disabled={selectedRowKeys.length === 0}
-              onClick={downloadProblem}
-            >
-              {t['searchTable.operation.download']}
-            </Button>
-          </Space>
-        </div>
-        <Table
-          rowKey="id"
-          loading={loading}
-          onChange={onChangeTable}
-          pagination={pagination}
-          columns={columns}
-          data={data}
-          rowSelection={{
-            type: 'radio',
-            selectedRowKeys,
-            onChange: (selectedRowKeys, selectedRows) => {
-              setSelectedRowKeys(selectedRowKeys);
-            },
-            onSelect: (selected, record, selectedRows) => {
-            },
-          }}
-        />
-        <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
-      </Card>
-    </div>
+    <>
+      <Head>
+        <title>{`${t['page.title']} - ${settings.name}`}</title>
+      </Head>
+      <div className={styles['list-container']}>
+        <Card className='container'>
+          <Title heading={3}>{t['page.title']}</Title>
+          <Typography.Paragraph>
+            {t['page.desc']}
+          </Typography.Paragraph>
+          <Typography.Text type='secondary'>{t['page.desc2']}</Typography.Text>
+          <Divider />
+          <SearchForm onSearch={handleSearch} />
+          <div className={styles['button-group']}>
+            <Space>
+              <CreateModal />
+            </Space>
+            <Space>
+              <Button
+                icon={<IconDownload />}
+                disabled={selectedRowKeys.length === 0}
+                onClick={downloadProblem}
+              >
+                {t['searchTable.operation.download']}
+              </Button>
+            </Space>
+          </div>
+          <Table
+            rowKey="id"
+            loading={loading}
+            onChange={onChangeTable}
+            pagination={pagination}
+            columns={columns}
+            data={data}
+            rowSelection={{
+              type: 'radio',
+              selectedRowKeys,
+              onChange: (selectedRowKeys, selectedRows) => {
+                setSelectedRowKeys(selectedRowKeys);
+              },
+              onSelect: (selected, record, selectedRows) => {
+              },
+            }}
+          />
+          <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
+        </Card>
+      </div>
+    </>
   );
 }
 

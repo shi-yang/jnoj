@@ -65,10 +65,12 @@ export default () => {
           </div>
         </div>
         <div className='container'>
-          {activeTab === 'overview' && <Overview group={group} />}
-          {activeTab === 'people' && <People group={group} />}
-          {(group.role === 'ADMIN' || group.role === 'MANAGER') &&  activeTab === 'settings'
-            && <Settings group={group} callback={fetchData} />}
+          <div style={{marginTop: '20px'}}>
+            {activeTab === 'overview' && <Overview group={group} />}
+            {activeTab === 'people' && <People group={group} />}
+            {(group.role === 'ADMIN' || group.role === 'MANAGER') &&  activeTab === 'settings'
+              && <Settings group={group} callback={fetchData} />}
+          </div>
         </div>
       </div>
     </>

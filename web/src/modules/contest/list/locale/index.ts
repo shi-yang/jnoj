@@ -1,6 +1,5 @@
 const i18n = {
   'en-US': {
-    'list.title': 'Contest List',
     'searchTable.form.search': 'Search',
     'searchTable.form.reset': 'Reset',
     'contest.columns.id': 'Contest ID',
@@ -20,7 +19,6 @@ const i18n = {
     'FINISHED': 'Finished',
   },
   'zh-CN': {
-    'list.title': '比赛列表',
     'searchTable.form.search': '查询',
     'searchTable.form.reset': '重置',
     'contest.columns.id': '比赛ID',

@@ -84,7 +84,7 @@ export default () => {
       <Head>
         <title>{`${t['page.title']} - ${settings.name}`}</title>
       </Head>
-      <div className='container'>
+      <div className='container' style={{padding: '20px'}}>
         <Card
           title={t['page.title']}
           extra={
@@ -175,7 +175,7 @@ function AddGroup() {
 
   return (
     <div>
-      <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
+      <Button type='primary' icon={<IconPlus />} onClick={() => setVisible(true)}>
         {t['index.createGroup']}
       </Button>
       <Modal

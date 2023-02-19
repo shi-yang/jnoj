@@ -13,13 +13,9 @@ import './mock';
 import { getColumns } from './constants';
 import CreateModal from './create';
 import { listContests } from '@/api/contest';
-import Head from 'next/head';
-import { setting, SettingState } from '@/store/reducers/setting';
-import { useAppSelector } from '@/hooks';
 
 function ContestList({groupId = 0}) {
   const t = useLocale(locale);
-  const settings = useAppSelector<SettingState>(setting);
 
   const tableCallback = async (record, type) => {
     console.log(record, type);
@@ -79,27 +75,22 @@ function ContestList({groupId = 0}) {
   }
 
   return (
-    <div className='container'>
-      <Head>
-        <title>{`${t['list.title']} - ${settings.name}`}</title>
-      </Head>
-      <Card>
-        <SearchForm onSearch={handleSearch} />
-        <div className={styles['button-group']}>
-          <Space>
-            <CreateModal groupId={groupId} />
-          </Space>
-        </div>
-        <Table
-          rowKey="id"
-          loading={loading}
-          onChange={onChangeTable}
-          pagination={pagination}
-          columns={columns}
-          data={data}
-        />
-      </Card>
-    </div>
+    <Card>
+      <SearchForm onSearch={handleSearch} />
+      <div className={styles['button-group']}>
+        <Space>
+          <CreateModal groupId={groupId} />
+        </Space>
+      </div>
+      <Table
+        rowKey="id"
+        loading={loading}
+        onChange={onChangeTable}
+        pagination={pagination}
+        columns={columns}
+        data={data}
+      />
+    </Card>
   );
 }
 

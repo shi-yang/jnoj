@@ -14,7 +14,7 @@ const App = ({ children }) => {
       <Header>
         <LayoutHeader />
       </Header>
-      <Content>
+      <Content className={styles.main}>
         {children}
       </Content>
       <Footer className={styles.footer}>

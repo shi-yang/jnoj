@@ -1,5 +1,6 @@
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
+import { Card } from '@arco-design/web-react';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown';
 
@@ -18,13 +19,15 @@ Online Judge系统（简称OJ）是一个在线的判题系统。 用户可以�
 export default () => {
   const settings = useAppSelector<SettingState>(setting);
   return (
-    <div className='container'>
+    <div className='container' style={{padding: '20px'}}>
       <Head>
         <title>{`About - ${settings.name}`}</title>
       </Head>
-      <ReactMarkdown>
-        {content}
-      </ReactMarkdown>
+      <Card>
+        <ReactMarkdown>
+          {content}
+        </ReactMarkdown>
+      </Card>
     </div>
   )
 }
