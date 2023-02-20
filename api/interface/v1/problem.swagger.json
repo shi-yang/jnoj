@@ -16,6 +16,39 @@
     "application/json"
   ],
   "paths": {
+    "/download_problems": {
+      "post": {
+        "summary": "下载题目",
+        "operationId": "ProblemService_DownloadProblems",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DownloadProblemsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1DownloadProblemsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProblemService"
+        ]
+      }
+    },
     "/problem_files/{sid}/run": {
       "post": {
         "summary": "运行题目文件",
@@ -76,7 +109,14 @@
         },
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "keyword",
             "in": "query",
             "required": false,
             "type": "string"
@@ -92,8 +132,23 @@
             "name": "status",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "collectionFormat": "multi"
           },
           {
             "name": "filter",
@@ -299,6 +354,12 @@
                 },
                 "source": {
                   "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -1187,7 +1248,7 @@
     },
     "/problems/{problemId}/languages": {
       "get": {
-        "summary": "语言文件列表",
+        "summary": "语言列表",
         "operationId": "ProblemService_ListProblemLanguages",
         "responses": {
           "200": {
@@ -1889,6 +1950,26 @@
         }
       }
     },
+    "v1DownloadProblemsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "v1DownloadProblemsResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
     "v1ListProblemFilesResponse": {
       "type": "object",
       "properties": {
@@ -2057,9 +2138,21 @@
           "type": "string",
           "title": "题目来源"
         },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "userId": {
           "type": "integer",
           "format": "int32"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "allowDownload": {
+          "type": "boolean"
         },
         "sampleTests": {
           "type": "array",
@@ -2346,8 +2439,26 @@
         "source": {
           "type": "string",
           "title": "题目来源"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ProblemsetProblemStatus"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
+    },
+    "v1ProblemsetProblemStatus": {
+      "type": "string",
+      "enum": [
+        "NOT_START",
+        "ATTEMPTED",
+        "SOLVED"
+      ],
+      "default": "NOT_START"
     }
   }
 }

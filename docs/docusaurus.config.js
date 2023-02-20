@@ -3,6 +3,55 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const  path = require('path');
+/**
+ * @type {import('redocusaurus').PresetEntry}
+ */
+const redocusaurus = [
+  'redocusaurus',
+  {
+    debug: Boolean(process.env.DEBUG || process.env.CI),
+    config: path.join(__dirname, 'redocly.yaml'),
+    specs: [
+      {
+        id: 'user',
+        spec: '../api/interface/v1/user.swagger.json',
+        route: '/api/interface/v1/user',
+      },
+      {
+        id: 'group',
+        spec: '../api/interface/v1/group.swagger.json',
+        route: '/api/interface/v1/group',
+      },
+      {
+        id: 'contest',
+        spec: '../api/interface/v1/contest.swagger.json',
+        route: '/api/interface/v1/contest',
+      },
+      {
+        id: 'problem',
+        spec: '../api/interface/v1/problem.swagger.json',
+        route: '/api/interface/v1/problem',
+      },
+      {
+        id: 'submission',
+        spec: '../api/interface/v1/submission.swagger.json',
+        route: '/api/interface/v1/submission',
+      },
+      {
+        id: 'sandbox',
+        spec: '../api/interface/v1/sandboxs.swagger.json',
+        route: '/api/interface/v1/sandboxs',
+      },
+    ],
+    theme: {
+      /**
+       * Highlight color for docs
+       */
+      primaryColor: '#1890ff',
+    },
+  },
+];
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -51,6 +100,8 @@ const config = {
         },
       }),
     ],
+    // @ts-ignore
+    redocusaurus,
   ],
 
   themeConfig:
@@ -69,13 +120,26 @@ const config = {
             position: 'left',
             label: '使用教程',
           },
-          {to: 'https://jisuanya.com', label: 'Demo', position: 'left'},
+          {
+            label: 'API',
+            position: 'left',
+            items: [
+              {label: 'All', to: '/apis'},
+              {label: 'User', to: '/api/interface/v1/user'},
+              {label: 'Group', to: '/api/interface/v1/group'},
+              {label: 'Contest', to: '/api/interface/v1/contest'},
+              {label: 'Problem', to: '/api/interface/v1/problem'},
+              {label: 'Submission', to: '/api/interface/v1/submission'},
+              {label: 'Sanbox', to: '/api/interface/v1/sandboxs'},
+            ]
+          },
           {to: '/blog', label: '博客', position: 'left'},
+          {to: 'https://jisuanya.com', label: 'Demo', position: 'right'},
           {
             href: 'https://github.com/shi-yang/jnoj',
             label: 'GitHub',
             position: 'right',
-          },
+          }
         ],
       },
       footer: {

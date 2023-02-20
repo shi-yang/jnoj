@@ -16,6 +16,45 @@
     "application/json"
   ],
   "paths": {
+    "/captcha": {
+      "get": {
+        "summary": "获取验证码",
+        "operationId": "UserService_GetCaptcha",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "phone",
+            "description": "手机号",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "description": "邮箱",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/login": {
       "post": {
         "summary": "登录",
@@ -305,6 +344,10 @@
         "phone": {
           "type": "string",
           "title": "手机号"
+        },
+        "email": {
+          "type": "string",
+          "title": "邮箱"
         },
         "username": {
           "type": "string",

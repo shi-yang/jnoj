@@ -16,6 +16,59 @@
     "application/json"
   ],
   "paths": {
+    "/last_submission": {
+      "get": {
+        "summary": "最后提交",
+        "operationId": "SubmissionService_GetLastSubmission",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/interfacev1Submission"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "problemId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "entityType",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "SubmissionService"
+        ]
+      }
+    },
     "/submissions": {
       "get": {
         "summary": "提交列表",
@@ -156,41 +209,36 @@
           "SubmissionService"
         ]
       }
-    },
-    "/submissions/{id}/info": {
-      "get": {
-        "summary": "提交的运行信息",
-        "operationId": "SubmissionService_GetSubmissionInfo",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1SubmissionInfo"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "SubmissionService"
-        ]
-      }
     }
   },
   "definitions": {
+    "SubmissionInfoSubmissionSubtaskResult": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "format": "float"
+        },
+        "time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memory": {
+          "type": "string",
+          "format": "int64"
+        },
+        "verdict": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SubmissionInfoSubmissionTest"
+          }
+        }
+      }
+    },
     "SubmissionInfoSubmissionTest": {
       "type": "object",
       "properties": {
@@ -223,8 +271,8 @@
           "format": "int32"
         },
         "score": {
-          "type": "integer",
-          "format": "int32"
+          "type": "number",
+          "format": "float"
         },
         "checkerStdout": {
           "type": "string"
@@ -289,6 +337,9 @@
         "score": {
           "type": "integer",
           "format": "int32"
+        },
+        "info": {
+          "$ref": "#/definitions/v1SubmissionInfo"
         },
         "createdAt": {
           "type": "string",
@@ -355,6 +406,10 @@
         "compileMsg": {
           "type": "string"
         },
+        "score": {
+          "type": "number",
+          "format": "float"
+        },
         "memory": {
           "type": "string",
           "format": "int64"
@@ -371,10 +426,13 @@
           "type": "integer",
           "format": "int32"
         },
-        "tests": {
+        "hasSubtask": {
+          "type": "boolean"
+        },
+        "subtasks": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SubmissionInfoSubmissionTest"
+            "$ref": "#/definitions/SubmissionInfoSubmissionSubtaskResult"
           }
         }
       }
