@@ -86,9 +86,10 @@ const App = (props) => {
       });
   }
   function pack() {
+    Message.info('已提交打包');
     packProblem(props.problem.id)
       .then(res => {
-        Message.success('已提交打包');
+        Message.success('打包成功');
       })
       .catch(res => {
         Message.error(res.response.data.message)

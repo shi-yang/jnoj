@@ -219,7 +219,7 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 	}
 	samples, _ := uc.repo.ListProblemTestContent(ctx, id, true)
 	for _, v := range statements {
-		fstatement, _ := zipFile.Create(fmt.Sprintf("%s/problem-properites.json", v.Language))
+		fstatement, _ := zipFile.Create(fmt.Sprintf("statements/%s/problem-properites.json", v.Language))
 		s := statement{
 			Name:        v.Name,
 			Input:       v.Input,

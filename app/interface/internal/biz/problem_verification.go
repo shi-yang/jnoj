@@ -57,7 +57,7 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 	var res ProblemVerification
 	res.ProblemID = id
 	res.VerificationStatus = VerificationStatusPending
-	uc.log.Info("VerificationInfoActionTest")
+	uc.log.Info("VerificationInfoActionTest", id)
 	t, _ := uc.repo.ListProblemTestContent(ctx, id, true)
 	if len(t) == 0 {
 		res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
@@ -65,7 +65,7 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 			ErrorMessage: "no sample file",
 		})
 	}
-	uc.log.Info("VerificationInfoActionStatement")
+	uc.log.Info("VerificationInfoActionStatement", id)
 	statements, _ := uc.repo.ListProblemStatements(ctx, &v1.ListProblemStatementsRequest{Id: int32(id)})
 	if len(statements) == 0 {
 		res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
@@ -73,7 +73,7 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 			ErrorMessage: "no statements",
 		})
 	}
-	uc.log.Info("VerificationInfoActionSolution")
+	uc.log.Info("VerificationInfoActionSolution", id)
 	problemFiles, _ := uc.repo.ListProblemFiles(ctx, &v1.ListProblemFilesRequest{Id: int32(id)})
 	modelSolutionIndex := -1
 	for k, v := range problemFiles {
@@ -81,13 +81,13 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 			modelSolutionIndex = k
 		}
 	}
+	uc.log.Info("VerificationInfoActionRunSolution", id)
 	if modelSolutionIndex == -1 {
 		res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
 			Action:       VerificationInfoActionSolution,
 			ErrorMessage: "no model solution",
 		})
 	} else {
-		uc.log.Info("VerificationInfoActionRunSolution")
 		if err := uc.RunProblemFile(ctx, problemFiles[modelSolutionIndex].ID); err != nil {
 			res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
 				Action:       VerificationInfoActionRunSolution,
@@ -95,7 +95,7 @@ func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
 			})
 		}
 	}
-	uc.log.Info("VerificationInfoActionChecker")
+	uc.log.Info("VerificationInfoActionChecker", id)
 	// 检查 checker
 	if problem.CheckerID == 0 {
 		res.VerificationInfo = append(res.VerificationInfo, VerificationInfo{
