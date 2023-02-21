@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://www.jnoj.org" target="_blank">
+    <a href="https://www.jnoj.dev" target="_blank">
         <img src="docs/favicon.ico" height="100px">
     </a>
     <h1 align="center">Jiangnan Online Judge</h1>
@@ -11,7 +11,18 @@
 
 在线体验
 ---------
-[JNOJ Demo](https://demo.jnoj.org)
+[JNOJ Demo](https://demo.jnoj.dev)
+
+新版 V2 (**暂未稳定，仅供体验**)
+---------
+[JNOJ V2 Doc](https://v2.jnoj.dev/)
+
+新版采用 Golang、React 前后端分离开发，全新架构，用户在线运行测试，全新的用户体验、题目数据共享下载。
+
+可参考文档切换至 `v2` 分支进行体验。
+
+![Online Judge](docs/images/problem.png)
+![Online Judge](docs/images/problemlist.png)
 
 功能特性
 ----------
@@ -60,7 +71,7 @@ QQ、微信：
 参与贡献
 --------
 
-[https://www.jnoj.org/contribute.html](https://www.jnoj.org/contribute.html)
+[https://www.jnoj.dev/contribute.html](https://www.jnoj.dev/contribute.html)
 
 目录结构
 ----------
