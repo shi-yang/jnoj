@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
-        "yiisoft/yii2-gii": "~2.0.0",
+        "yiisoft/yii2-gii": "~2.2.5",
         "yiisoft/yii2-faker": "~2.0.0",
         "codeception/codeception": "^5.0.0 || ^4.0",
         "codeception/lib-innerbrowser": "^3.0 || ^1.1",
