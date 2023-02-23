@@ -2,11 +2,15 @@ import { createGroupUser, deleteGroupUser, listGroupUsers, updateGroupUser } fro
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
-import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useState } from 'react';
+import context from './context';
+import Layout from './Layout';
 import locale from './locale';
 
-export default function People({group}: any) {
+function People() {
   const t = useLocale(locale);
+  const group = useContext(context);
   const [users, setUsers] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: false,
@@ -109,6 +113,9 @@ export default function People({group}: any) {
   );
 }
 
+People.getLayout = Layout;
+export default People;
+
 function UpdateUserModal({visible, gid, uid, callback}: any) {
   const t = useLocale(locale);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -158,6 +165,7 @@ function AddUser({group, callback}: any) {
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
+  const router = useRouter();
 
   function onOk() {
     form.validate().then((values) => {
@@ -179,9 +187,16 @@ function AddUser({group, callback}: any) {
 
   return (
     <div>
-      <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
-        {t['people.addUser']}
-      </Button>
+      {
+        group.role !== 'GUEST' ? 
+        <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
+          {t['people.addUser']}
+        </Button>
+        : 
+        <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => router.push(`/groups/${group.id}/join`)}>
+          {t['people.joinGroup']}
+        </Button>
+      }
       <Modal
         title={t['all.createProblemset']}
         visible={visible}

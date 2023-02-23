@@ -48,7 +48,9 @@ type GroupServiceHTTPServer interface {
 func RegisterGroupServiceHTTPServer(s *http.Server, srv GroupServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.GroupService/CreateGroup", auth.User())
 	s.Use("/jnoj.interface.v1.GroupService/ListGroups", auth.Guest())
+	s.Use("/jnoj.interface.v1.GroupService/UpdateGroup", auth.User())
 	s.Use("/jnoj.interface.v1.GroupService/GetGroup", auth.Guest())
+	s.Use("/jnoj.interface.v1.GroupService/DeleteGroupUser", auth.User())
 	r := s.Route("/")
 	r.GET("/groups", _GroupService_ListGroups0_HTTP_Handler(srv))
 	r.GET("/groups/{id}", _GroupService_GetGroup0_HTTP_Handler(srv))

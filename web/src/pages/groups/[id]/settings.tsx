@@ -1,10 +1,13 @@
 import { updateGroup } from '@/api/group';
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Message, Radio } from '@arco-design/web-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import context from './context';
+import Layout from './Layout';
 import locale from './locale';
 
-export default function Settings({group, callback}: any) {
+function Settings() {
+  const group = useContext(context);
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -14,7 +17,6 @@ export default function Settings({group, callback}: any) {
       updateGroup(group.id, values)
         .then(res => {
           Message.success('已保存');
-          callback();
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -72,3 +74,6 @@ export default function Settings({group, callback}: any) {
     </Card>
   );
 }
+
+Settings.getLayout = Layout;
+export default Settings;

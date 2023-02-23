@@ -125,17 +125,20 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 		OutputPreview: b.OutputPreview,
 		Order:         b.Order,
 	}
+	// 保存文件
+	if len(b.InputFileContent) > 0 {
+		store := objectstorage.NewSeaweed()
+		storeName := fmt.Sprintf(problemTestInputPath, b.ProblemID, o.ID)
+		err := store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(b.InputFileContent))
+		if err != nil {
+			return nil, err
+		}
+	}
 	err := r.data.db.WithContext(ctx).
 		Create(o).
 		Error
 	if err != nil {
 		return nil, err
-	}
-	// 保存文件
-	if len(b.InputFileContent) > 0 {
-		store := objectstorage.NewSeaweed()
-		storeName := fmt.Sprintf(problemTestInputPath, b.ProblemID, o.ID)
-		store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(b.InputFileContent))
 	}
 	return &biz.ProblemTest{
 		ID: o.ID,

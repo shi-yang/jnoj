@@ -22,6 +22,7 @@ const i18n = {
     'people.column.action.remove': 'Remove',
     'people.column.action.edit': 'Edit',
     'people.addUser': 'Add User',
+    'people.joinGroup': 'Join Group',
     'people.addUser.form.userId': 'User ID',
     'people.updateUser.form.role': 'Role',
     'people.updateUser.form.role.manager': 'Manager',
@@ -29,6 +30,10 @@ const i18n = {
     'role.ADMIN': 'Admin',
     'role.MANAGER': 'Manager',
     'role.MEMBER': 'Member',
+    'invitationCode': 'Invitation Code',
+    'privateGroup': 'Private Group',
+    'publicGroup': 'Public Group',
+    'joinMsg': 'You need an invitation code to invite to join'
   },
   'zh-CN': {
     'page.title': '小组',
@@ -53,6 +58,7 @@ const i18n = {
     'people.column.action.remove': '移除',
     'people.column.action.edit': '编辑',
     'people.addUser': '添加用户',
+    'people.joinGroup': '加入小组',
     'people.addUser.form.userId': '用户ID',
     'people.updateUser.form.role': '角色',
     'people.updateUser.form.role.manager': '管理员',
@@ -60,6 +66,10 @@ const i18n = {
     'role.ADMIN': '组长',
     'role.MANAGER': '管理员',
     'role.MEMBER': '普通成员',
+    'invitationCode': '邀请码',
+    'privateGroup': '私有小组',
+    'publicGroup': '公开小组',
+    'joinMsg': '需要邀请码邀请才能加入'
   },
 };
 

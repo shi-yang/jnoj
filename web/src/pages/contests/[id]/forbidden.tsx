@@ -3,15 +3,18 @@ import { createContestUser } from '@/api/contest';
 import { Button, Divider, Empty, Message, Statistic, Typography } from '@arco-design/web-react';
 import { IconExclamation } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/router';
 
 const now = Date.now();
 export default function Forbidden({contest}: {
   contest: {id: number, runningStatus: string, status: string, startTime: string | number | Date | dayjs.Dayjs, role: string}
 }) {
+  const router = useRouter();
   function register() {
     createContestUser(contest.id)
       .then(() => {
         Message.success('注册成功');
+        router.push(`/contests/${contest.id}`);
       });
   }
   return (
