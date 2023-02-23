@@ -24,6 +24,7 @@ git checkout v2
 cd deployments
 docker compose -f docker-compose.yaml -f docker-compose.admin.yaml up -d
 docker compose -f seaweedfs-docker-compose.yaml up -d
+cd ../web
 yarn install
 yarn dev -p 9918
 ```
