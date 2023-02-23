@@ -1,8 +1,9 @@
-import useLocale from "@/utils/useLocale";
-import { Typography } from "@arco-design/web-react";
-import locale from "./locale";
+import useLocale from '@/utils/useLocale';
+import { Typography } from '@arco-design/web-react';
+import locale from './locale';
+import React from 'react';
 
-export default ({ verdict }) => {
+export default function SubmissionVerdict({ verdict }: { verdict: number }) {
   const t = useLocale(locale);
   const VerdictMap = {
     1: 'verdict.pending',
@@ -31,5 +32,5 @@ export default ({ verdict }) => {
     <Typography.Text bold type={VerdictColorMap[verdict]}>
       {t[VerdictMap[verdict]]}
     </Typography.Text>
-  )
+  );
 }

@@ -1,16 +1,14 @@
-import { getContestProblem } from "@/api/contest";
-import { useEffect, useState } from "react";
+import { getContestProblem } from '@/api/contest';
+import React, { useEffect, useState } from 'react';
 import styles from './style/problem.module.less';
-import { Grid, ResizeBox, Typography } from "@arco-design/web-react";
-import useLocale from "@/utils/useLocale";
-import locale from "./locale";
+import { Grid, ResizeBox, Typography } from '@arco-design/web-react';
+import useLocale from '@/utils/useLocale';
+import locale from './locale';
 import Editor from './editor';
-import ProblemContent from "@/components/Problem/ProblemContent";
-import { useRouter } from "next/router";
+import ProblemContent from '@/components/Problem/ProblemContent';
+import { useRouter } from 'next/router';
 
-export default ({contest, number}) => {
-  const t = useLocale(locale);
-  const router = useRouter();
+export default function Problem({contest, number}: {contest: {id: number}, number: string}) {
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState({
     statements: [],
@@ -26,20 +24,20 @@ export default ({contest, number}) => {
         setProblem(res.data);
       })
       .catch(err => {
-        console.log(err)
+        console.log(err);
       })
       .finally(() => {
         setLoading(false);
       });
   }
   useEffect(() => {
-    fetchData()
-  }, [contest.id, number])
+    fetchData();
+  }, [contest.id, number]);
   return (
     <div className={styles['container']}>
       { !loading && (
         <div className={styles['problem-layout']}>
-          <Grid.Row className={styles.header} justify="space-between" align="center">
+          <Grid.Row className={styles.header} justify='space-between' align='center'>
             <Grid.Col span={24}>
               <Typography.Title className={styles.title} heading={5}>
                 {number} - {problem.statements[language].name}
@@ -66,5 +64,5 @@ export default ({contest, number}) => {
         </div>
       )}
     </div>
-  )
+  );
 }

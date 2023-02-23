@@ -1,16 +1,16 @@
 import { Button, Drawer, Link, List, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import styles from './style/description.module.less'
+import styles from './style/description.module.less';
 import ProblemContent from '@/components/Problem/ProblemContent';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { IconLeft, IconRight } from '@arco-design/web-react/icon';
 import { listProblemsetProblems } from '@/api/problemset';
 import ProblemContext from './context';
 import { useRouter } from 'next/router';
 import { ProblemStatus } from '@/modules/problemsets/list/constants';
 
-const Description = ({ problemset }) => {
+const Description = ({ problemset }: any) => {
   const {language, problem, fetchProblem} = useContext(ProblemContext);
   const t = useLocale(locale);
   const router = useRouter();
@@ -44,7 +44,7 @@ const Description = ({ problemset }) => {
   );
 };
 
-function Problemset({problemset}) {
+function Problemset({problemset}: any) {
   const [visible, setVisible] = useState(false);
   const [problems, setProblems] = useState([]);
   const { fetchProblem } = useContext(ProblemContext);
@@ -62,7 +62,7 @@ function Problemset({problemset}) {
         ...pagination,
         current,
         pageSize,
-      })
+      });
     }
   });
   const router = useRouter();

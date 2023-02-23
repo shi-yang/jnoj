@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
 import { Link, Tabs, Typography } from '@arco-design/web-react';
@@ -15,7 +15,7 @@ import Overview from './overview';
 import People from './people';
 import Settings from './settings';
 
-export default () => {
+export default function Index() {
   const t = useLocale(locale);
   const router = useRouter();
   const { id } = router.query;
@@ -74,5 +74,5 @@ export default () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};

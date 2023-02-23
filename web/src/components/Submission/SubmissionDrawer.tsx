@@ -1,14 +1,14 @@
-import useLocale from "@/utils/useLocale";
-import { Collapse, Divider, Drawer, Message, Space, Typography } from "@arco-design/web-react";
-import { useEffect, useState } from "react";
-import { getSubmission } from "@/api/submission";
-import { FormatMemorySize } from "@/utils/format";
-import styles from './style/submission.module.less'
-import Highlight from "@/components/Highlight";
-import locale from "./locale";
-import SubmissionVerdict from "./SubmissionVerdict";
+import useLocale from '@/utils/useLocale';
+import { Collapse, Divider, Drawer, Message, Space, Typography } from '@arco-design/web-react';
+import React, { useEffect, useState } from 'react';
+import { getSubmission } from '@/api/submission';
+import { FormatMemorySize } from '@/utils/format';
+import styles from './style/submission.module.less';
+import Highlight from '@/components/Highlight';
+import locale from './locale';
+import SubmissionVerdict from './SubmissionVerdict';
 
-export default ({id, visible, onCancel}) => {
+export default function SubmissionDrawer ({id, visible, onCancel}: {id: number, visible: boolean, onCancel?: (e: MouseEvent | Event) => void}) {
   const t = useLocale(locale);
   const [submission, setSubmission] = useState({source: '', info: {
     subtasks: [],
@@ -27,8 +27,8 @@ export default ({id, visible, onCancel}) => {
         setSubmission(res.data);
       })
       .catch(res => {
-        Message.error(res.response.data.message)
-      })
+        Message.error(res.response.data.message);
+      });
   }
   useEffect(() => {
     fetchData();
@@ -81,6 +81,7 @@ export default ({id, visible, onCancel}) => {
                       {
                         item.tests.map((test, testIndex) => 
                           <Collapse.Item
+                            key={testIndex}
                             header={(
                               <Space split={<Divider type='vertical' />}>
                                 <span>#{testIndex + 1}</span>
@@ -154,5 +155,5 @@ export default ({id, visible, onCancel}) => {
         </div>
       }
     </Drawer>
-  )
+  );
 }

@@ -8,8 +8,8 @@ import {
   Table,
   TableColumnProps,
 } from '@arco-design/web-react';
-import { IconCalendar, IconCheckCircle, IconUser } from '@arco-design/web-react/icon';
-import { ReactNode, useEffect, useState } from 'react';
+import { IconCalendar, IconUser } from '@arco-design/web-react/icon';
+import React, { ReactNode, useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/info.module.less';
 const { Row, Col } = Grid;
@@ -40,10 +40,10 @@ function StatisticItem(props: StatisticItemType) {
   );
 }
 
-function Info({contest}) {
+function Info({contest}: {contest: {id: number, participantCount: number}}) {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
-  const [problems, setProblems] = useState([])
+  const [problems, setProblems] = useState([]);
   const columns: TableColumnProps[] = [
     {
       title: t['info.table.column.problem'],
@@ -119,7 +119,7 @@ function Info({contest}) {
         <Table rowKey={r => r.number} columns={columns} data={problems} pagination={false} />
       </div>
     </div>
-  )
+  );
 }
 
 export default Info;

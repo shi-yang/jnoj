@@ -11,6 +11,6 @@ const i18n = {
     'activeDays': '活跃天数',
     'problemSolved': '解答题目',
   },
-}
+};
 
 export default i18n;

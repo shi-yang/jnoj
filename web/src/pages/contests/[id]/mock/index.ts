@@ -30,7 +30,7 @@ const { standings } = Mock.mock({
       ]
     }
   ]
-})
+});
 const { submissions } = Mock.mock({
   'submissions|100': [
     {
@@ -52,12 +52,12 @@ const { users } = Mock.mock({
       'nickname': () => Random.cname(),
     }
   ]
-})
+});
 const statusMap = {
   0: 'pending',
   1: 'correct',
   2: 'incorrect'
-}
+};
 const { status } = Mock.mock({
   'status|2000': [
     {
@@ -69,7 +69,7 @@ const { status } = Mock.mock({
       interval: () => Random.integer(0, 120102)
     }
   ]
-})
+});
 setupMock({
   setup: () => {
     Mock.mock(/^\/contests\/\d*$/, () => {
@@ -78,38 +78,38 @@ setupMock({
         title: Random.ctitle(),
         start_time: Random.datetime(),
         end_time: Random.datetime(),
-      }
+      };
     });
     Mock.mock(/^\/contests$/, () => {
       return {
         data: problems,
         total: problems.length,
-      }
-    })
+      };
+    });
     Mock.mock(/^\/contests\/\d*\/standings$/, () => {
       return {
         data: standings,
         total: standings.length,
-      }
-    })
+      };
+    });
     Mock.mock(/^\/contests\/\d*\/problems$/, () => {
       return {
         data: problems,
         total: problems.length,
-      }
-    })
+      };
+    });
     Mock.mock(/^\/contests\/\d*\/statuses$/, () => {
       return {
         data: status,
         total: status.length,
-      }
-    })
+      };
+    });
     Mock.mock(/^\/contests\/\d*\/users$/, () => {
       return {
         data: users,
         total: users.length,
-      }
-    })
+      };
+    });
     Mock.mock(/^\/contests\/\d*\/problems\/[A-Z]$/, () => {
       return {
         id: 10002,
@@ -134,13 +134,13 @@ setupMock({
             output: '7 2\r\n3 7 5 1 10 3 20\r\n'
           }
         ],
-      }
+      };
     });
     Mock.mock(/^\/contests\/\d*\/submissions$/, () => {
       return {
         data: submissions,
         total: submissions.length,
-      }
-    })
+      };
+    });
   },
 });

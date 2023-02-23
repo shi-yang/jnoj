@@ -57,9 +57,9 @@ int main() {
     userContent: '',
     mainContent: '',
   }
-}
+};
 
-const App = (props) => {
+const App = (props: any) => {
   const t = useLocale(locale);
   const [languages, setLanguages] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -73,15 +73,15 @@ const App = (props) => {
         const options = [];
         Object.keys(LanguageMap).forEach(item => {
           const found = langs.find(v => {
-            return v.languageCode === Number(item)
-          })
+            return v.languageCode === Number(item);
+          });
           if (!found) {
             options.push(item);
           }
-        })
+        });
         setLanguages(langs || []);
         setSelectOptions(options);
-      })
+      });
   }
   function edit(id) {
     getProblemLanguage(props.problem.id, id)
@@ -91,28 +91,28 @@ const App = (props) => {
           language: data.languageCode,
           mainContent: data.mainContent,
           userContent: data.userContent,
-        })
+        });
         setSelectedLanguage(id);
-      })
+      });
   }
   function deleteLanguage(id) {
     deleteProblemLanguage(props.problem.id, id)
       .then(res => {
         Message.success('删除成功');
-        fetchData()
+        fetchData();
       });
   }
   function onOk() {
     form.validate().then((res) => {
       createProblemLanguage(props.problem.id, res)
-        .then(res => {
+        .then(() => {
           Message.success('创建成功');
           form.resetFields();
           setVisible(false);
           fetchData();
         });
-    }).catch(err => {
-      Message.error('form validate error')
+    }).catch(() => {
+      Message.error('form validate error');
     });
   }
   function onSave() {
@@ -120,16 +120,16 @@ const App = (props) => {
       const values = {
         userContent: res.userContent,
         mainContent: res.mainContent,
-      }
+      };
       updateProblemLanguage(props.problem.id, selectedLanguage, values)
-        .then(res => {
-          Message.success('已保存')
-        })
+        .then(() => {
+          Message.success('已保存');
+        });
     });
   }
   function onLanguageChange(e) {
-    form.setFieldValue('mainContent', languageDemoTemplate[e].mainContent)
-    form.setFieldValue('userContent', languageDemoTemplate[e].userContent)
+    form.setFieldValue('mainContent', languageDemoTemplate[e].mainContent);
+    form.setFieldValue('userContent', languageDemoTemplate[e].userContent);
   }
   useEffect(() => {
     fetchData();
@@ -139,7 +139,7 @@ const App = (props) => {
       <Card title='语言文件' >
         <div className={styles['button-group']}>
           <Space>
-            <Button type='primary' onClick={() => {setVisible(true); form.clearFields}}>添加</Button>
+            <Button type='primary' onClick={() => {setVisible(true); form.clearFields; }}>添加</Button>
             <Modal
               title='添加'
               style={{ width: 1000 }}
@@ -163,7 +163,7 @@ const App = (props) => {
                               <Select.Option key={item} value={item}>
                                 {LanguageMap[item]}
                               </Select.Option>
-                            )
+                            );
                           })
                         }
                       </Select>
@@ -223,20 +223,22 @@ const App = (props) => {
                 dataSource={languages}
                 render={(item, index) => (
                   <List.Item key={index} actions={[
-                    <Button onClick={() => edit(item.id)}>
-                      <IconEdit />
-                    </Button>,
-                    <Popconfirm
-                      title='Are you sure you want to delete?'
-                      onOk={() => deleteLanguage(item.id)}
-                    >
-                      <Button><IconDelete /></Button>
-                    </Popconfirm>
+                    <div key={index}>
+                      <Button onClick={() => edit(item.id)}>
+                        <IconEdit />
+                      </Button>,
+                      <Popconfirm
+                        title='Are you sure you want to delete?'
+                        onOk={() => deleteLanguage(item.id)}
+                      >
+                        <Button><IconDelete /></Button>
+                      </Popconfirm>
+                    </div>
                   ]}>
-                  <List.Item.Meta
-                    title={item.languageName}
-                  />
-                </List.Item>
+                    <List.Item.Meta
+                      title={item.languageName}
+                    />
+                  </List.Item>
                 )}
               />
             </Grid.Col>
@@ -259,7 +261,7 @@ const App = (props) => {
                                   <Select.Option key={item.id} value={item.languageCode}>
                                     {item.languageName}
                                   </Select.Option>
-                                )
+                                );
                               })
                             }
                           </Select>

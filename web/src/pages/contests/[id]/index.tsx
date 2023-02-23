@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Grid, Slider } from '@arco-design/web-react';
 import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
@@ -32,7 +32,12 @@ const normalWidth = 220;
 
 function Index() {
   const t = useLocale(locale);
-  const [contest, setContest] = useState({name: '', startTime: new Date(), endTime: new Date(), status: 0, role: '', runningStatus: ''});
+  const [contest, setContest] = useState({
+    id: 0,
+    name: '', startTime: new Date(), endTime: new Date(), status: '', role: '',
+    participantCount: 0,
+    runningStatus: '',
+  });
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [siderWidth, setSiderWidth] = useState(normalWidth);
@@ -61,25 +66,25 @@ function Index() {
       .finally(() => {
         setLoading(false);
       });
-  }
+  };
 
   let timer = null;
   let contestDuration = 0;
   const updateTime = (startTime, endTime) => {
-    contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime()
+    contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime();
     timer = setInterval(() => {
       const t = new Date();
       const diff = t.getTime() - new Date(startTime).getTime();
       setSliderValue(diff / contestDuration * 100);
       setCurrentTime(new Date());
     }, 1000);
-  }
+  };
 
   useEffect(() => {
     fetchData();
     return () => {
-      clearInterval(timer)
-    }
+      clearInterval(timer);
+    };
   }, []);
 
   const onCollapse = (collapsed) => {
@@ -105,7 +110,7 @@ function Index() {
     } else {
       setMenuSelected(key);
     }
-  }
+  };
 
   return (
     (!loading &&

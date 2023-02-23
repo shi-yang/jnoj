@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Grid, Input, Message, Modal, PaginationProps, Popover, Radio, Space, Switch, Table, TableColumnProps, Upload } from '@arco-design/web-react';
+import { Button, Card, Form, Grid, Input, Message, Modal, PaginationProps, Popover, Radio, Table, TableColumnProps, Upload } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
@@ -48,7 +48,7 @@ interface SubtaskNode {
 }
 
 const makeSubtaskVisualization = (content:string) => {
-  const subtasks:SubtaskNode[] = JSON.parse(content)
+  const subtasks:SubtaskNode[] = JSON.parse(content);
   let res = '';
   subtasks.forEach(item => {
     if (item.tests.length === 1) {
@@ -58,16 +58,16 @@ const makeSubtaskVisualization = (content:string) => {
     }
     res += item.score + (item.timeLimit ? ' ' + item.timeLimit : '') + (item.memoryLimit ? ' ' + item.memoryLimit : '');
     res += '\n';
-  })
+  });
   return res;
-}
+};
 
 const makeVisualizationSubtask = (content:string) => {
   const subtasks:SubtaskNode[] = [];
   const lines = content.split('\n');
   lines.forEach(item => {
     if (item === '') {
-      return
+      return;
     }
     const node:SubtaskNode = {
       score: 0,
@@ -88,11 +88,11 @@ const makeVisualizationSubtask = (content:string) => {
       node.memoryLimit = Number(nums[4]) ?? 0;
     }
     subtasks.push(node);
-  })
+  });
   return subtasks;
-}
+};
 
-const App = (props) => {
+const App = (props: any) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -121,31 +121,31 @@ const App = (props) => {
       });
     }).finally(() => {
       setLoading(false);
-    })
+    });
   }
   function deleteTest(id) {
     deleteProblemTests(props.problem.id, id)
-      .then(res => {
+      .then(() => {
         Message.success('删除成功');
-        fetchData()
-      })
+        fetchData();
+      });
   }
   function customRequest(option) {
-    const { onProgress, onError, onSuccess, file } = option;
+    const { file } = option;
     const formData = new FormData();
     formData.append('file', file);
     uploadProblemTest(props.problem.id, formData)
       .then(res => {
         Message.success('上传成功');
         fetchData();
-      })
+      });
   }
   function edit(record) {
     form.setFieldsValue({
       id: record.id,
       isExample: record.isExample,
       remark: record.remark,
-    })
+    });
     setVisible(true);
   }
   function onOk() {
@@ -153,28 +153,28 @@ const App = (props) => {
       const values = {
         isExample: res.isExample,
         remark: res.remark,
-      }
+      };
       updateProblemTest(props.problem.id, res.id, values)
         .then(res => {
-          Message.success('已保存')
-          setVisible(false)
-          fetchData()
-        })
+          Message.success('已保存');
+          setVisible(false);
+          fetchData();
+        });
     });
   }
   function onSortEnd({ oldIndex, newIndex }) {
     if (oldIndex !== newIndex) {
       const newData = arrayMove([].concat(data), oldIndex, newIndex).filter((el) => !!el);
       const ids = newData.map(item => {
-        return item.id
-      })
+        return item.id;
+      });
       sortProblemTests(props.problem.id, {ids})
         .then(res => {
-          Message.success('已保存')
+          Message.success('已保存');
         })
         .catch((err) => {
-          Message.error('保存失败')
-        })
+          Message.error('保存失败');
+        });
       setData(newData);
     }
   }
@@ -194,7 +194,7 @@ const App = (props) => {
     />
   );
 
-  const DraggableRow = (props) => {
+  const DraggableRow = (props: any) => {
     const { record, index, ...rest } = props;
     return <SortableItem index={index} {...rest} />;
   };
@@ -246,7 +246,7 @@ const App = (props) => {
       dataIndex: 'id',
       align: 'center',
       render: (col, record, index) => {
-        return index + 1
+        return index + 1;
       }
     },
     {
@@ -349,27 +349,27 @@ const App = (props) => {
       const values = {
         content: JSON.stringify(content),
         fileType: 'subtask'
-      }
+      };
       if (subtask.id !== 0) {
         updateProblemFile(props.problem.id, subtask.id, values)
           .then(res => {
-            Message.success('已保存')
-            setVisible(false)
-            fetchData()
+            Message.success('已保存');
+            setVisible(false);
+            fetchData();
           })
           .catch(err => {
-            Message.error(err.response.data.message)
-          })
+            Message.error(err.response.data.message);
+          });
       } else {
         createProblemFile(props.problem.id, values)
           .then(res => {
-            Message.success('已保存')
-            setVisible(false)
-            fetchData()
+            Message.success('已保存');
+            setVisible(false);
+            fetchData();
           })
           .catch(err => {
-            Message.error(err.response.data.message)
-          })
+            Message.error(err.response.data.message);
+          });
       }
     });
   }
@@ -384,7 +384,7 @@ const App = (props) => {
         setSubtask(subtask);
       }
     });
-  }, [])
+  }, []);
   useEffect(() => {
     fetchData();
   }, [pagination.current, pagination.pageSize]);
@@ -406,7 +406,7 @@ const App = (props) => {
             <Button
               onClick={(e) => {
                 setSubtaskVisible(true);
-                form.setFieldValue('content', subtask.content)
+                form.setFieldValue('content', subtask.content);
               }}
             >
               配置子任务

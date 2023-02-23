@@ -7,7 +7,7 @@ import styles from './style/tests.module.less';
 import { FormatTime } from '@/utils/format';
 const FormItem = Form.Item;
 
-const App = (props) => {
+const App = (props: any) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -71,7 +71,7 @@ const App = (props) => {
     deleteProblemFile(props.problem.id, id)
       .then(res => {
         Message.success('删除成功');
-        fetchData()
+        fetchData();
       });
   }
   useEffect(() => {

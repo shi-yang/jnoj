@@ -16,7 +16,7 @@ interface RecentlySubmittedProps {
   entityType?: number,
 }
 
-export default React.memo((props: RecentlySubmittedProps) => {
+const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const t = useLocale(locale);
   const ws = useRef<WebSocket | null>(null);
   const [submission, setSubmission] = useState({ id: 0, verdict: 0 });
@@ -31,7 +31,7 @@ export default React.memo((props: RecentlySubmittedProps) => {
       if (e.data === '') {
         return;
       }
-      const msg = JSON.parse(e.data)
+      const msg = JSON.parse(e.data);
       if (msg.type === 'SUBMISSION_RESULT') {
         if (msg.message.status === 'running') {
           setBtnContent(msg.message.message);
@@ -40,9 +40,9 @@ export default React.memo((props: RecentlySubmittedProps) => {
           getSubmission(msg.message.sid)
             .then(res => {
               setIsRunning(false);
-              setSubmission(res.data)
+              setSubmission(res.data);
               setBtnContent('');
-            })
+            });
         }
       }
     };
@@ -67,7 +67,7 @@ export default React.memo((props: RecentlySubmittedProps) => {
             setIsRunning(false);
           }
           setSubmission(res.data);
-        })
+        });
     } else {
       getLastSubmission({
         entityId: props.entityId,
@@ -77,7 +77,7 @@ export default React.memo((props: RecentlySubmittedProps) => {
         setSubmission(res.data);
       }).catch(err => {
         setSubmission({id: 0, verdict: 0});
-      })
+      });
     }
   }, [props.entityId, props.entityType, props.problemId, props.lastSubmissionID]);
 
@@ -96,11 +96,15 @@ export default React.memo((props: RecentlySubmittedProps) => {
         </span>
       }
     >
-      <Button type='dashed' icon={icon()} onClick={() => { setVisible(true) }}>
+      <Button type='dashed' icon={icon()} onClick={() => { setVisible(true); }}>
         {btnContent === '' && <SubmissionVerdict verdict={submission.verdict} />}
         {btnContent !== '' && <span>{btnContent}</span>}
       </Button>
       {visible && <SubmissionDrawer id={submission.id} visible={visible} onCancel={onCancel} />}
     </Popover>
-  )
-})
+  );
+});
+
+RecentlySubmitted.displayName = 'RecentlySubmitted';
+
+export default RecentlySubmitted;

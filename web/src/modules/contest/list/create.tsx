@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Form, Input, DatePicker, Message } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 
-function CreateModal({groupId = 0}) {
+function CreateModal({groupId = 0}: {groupId: number}) {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -25,11 +25,11 @@ function CreateModal({groupId = 0}) {
       };
       setConfirmLoading(true);
       createContest(data).then(res => {
-        Message.success('创建成功')
-        router.push(`/contests/${res.data.id}`)
+        Message.success('创建成功');
+        router.push(`/contests/${res.data.id}`);
       }).finally(() => {
         setConfirmLoading(false);
-      })
+      });
     });
   }
 

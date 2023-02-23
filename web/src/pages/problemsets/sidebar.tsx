@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactNode } from 'react';
 import { Link, Card, List, Space, Typography } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { listProblemsets } from '@/api/problemset';
 import { IconArrowRight, IconList } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
-export default function() {
+export default function Sidebar() {
   const t = useLocale(locale);
   const [problemSets, setProblemSets] = useState([]);
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function() {
   );
 }
 
-const Content = ({ children }) => {
+const Content = ({ children }:{ children: ReactNode }) => {
   const t = useLocale(locale);
   return (
     <Space

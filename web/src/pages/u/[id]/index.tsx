@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getUserProfileCalendar, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
 import { Card, Divider, Select, Space, Statistic, Typography } from '@arco-design/web-react';
@@ -10,7 +10,7 @@ import Submission from '@/components/Submission/Submission';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 
-export default function() {
+export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
   const { id } = router.query;
@@ -30,13 +30,13 @@ export default function() {
       .then(res => {
         const { data } = res;
         setProfileCalendar(data);
-      })
+      });
   }
   useEffect(() => {
     getUsers(id)
       .then(res => {
         setUser(res.data);
-      })
+      });
     getUserProfileCalendar(id).
       then(res => {
         const { data } = res;
@@ -45,10 +45,10 @@ export default function() {
           setCalendarOptions(current => [...current, {
             name: item,
             value: item
-          }])
-        })
-      })
-  }, []);
+          }]);
+        });
+      });
+  }, [id]);
   return (
     <div>
       <Head>
@@ -92,8 +92,8 @@ export default function() {
           </Space>
         </Card>
         <Divider type='horizontal' />
-        <Submission userId={id} />
+        <Submission userId={Number(id)} />
       </div>
     </div>
-  )
+  );
 }

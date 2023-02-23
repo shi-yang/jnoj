@@ -1,13 +1,14 @@
-import { createContestProblem, deleteContestProblem, listContestProblems, updateContest } from "@/api/contest";
-import useLocale from "@/utils/useLocale";
-import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm } from "@arco-design/web-react";
-import { IconDelete, IconPlus } from "@arco-design/web-react/icon";
-import { useEffect, useState } from "react";
-import locale from "../locale";
+import { createContestProblem, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
+import useLocale from '@/utils/useLocale';
+import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm } from '@arco-design/web-react';
+import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from 'react';
+import locale from '../locale';
 const { RangePicker } = DatePicker;
 import styles from '../style/setting.module.less';
 
-const AddProblem = ({contestId, callback}) => {
+const AddProblem = ({contestId, callback}: {contestId: number, callback: () => void}) => {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -20,20 +21,20 @@ const AddProblem = ({contestId, callback}) => {
       setConfirmLoading(true);
       createContestProblem(contestId, data)
         .then(res => {
-          setVisible(false)
-          callback()
+          setVisible(false);
+          callback();
         })
         .catch(res => {
-          Message.error(res.response.data.message || '出错了')
+          Message.error(res.response.data.message || '出错了');
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
   return (
     <div>
-      <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
+      <Button type='primary' icon={<IconPlus />} onClick={() => setVisible(true)}>
         {t['setting.info.addProblem']}
       </Button>
       <Modal
@@ -51,21 +52,23 @@ const AddProblem = ({contestId, callback}) => {
       </Modal>
     </div>
   );
-}
+};
 
 const ContestType = [
   { name: 'ICPC', description: 'International Collegiate Programming Contest', value: 1 },
   { name: 'IOI', description: 'International Olympiad in Informatics', value: 2 },
   { name: 'OI', description: 'Olympiad in Informatics', value: 3 },
-]
+];
 
 const ContestStatus = [
   { name: '隐藏', description: '仅邀请用户可参加', value: 'HIDDEN', id: 0 },
   { name: '公开', description: '任何人均可参加', value: 'PUBLIC', id: 1 },
   { name: '私有', description: '仅邀请用户可参加', value: 'PRIVATE', id: 2 },
-]
+];
 
-const SettingInfo = ({contest}) => {
+const SettingInfo = ({contest}: {
+  contest: any
+}) => {
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -80,28 +83,28 @@ const SettingInfo = ({contest}) => {
         type: values.type,
         status: status.id,
       };
-      setConfirmLoading(true)
+      setConfirmLoading(true);
       updateContest(contest.id, data)
         .then(res => {
-          Message.success('已保存')
+          Message.success('已保存');
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
   function listProblems() {
     listContestProblems(contest.id)
       .then(res => {
-        setProblems(res.data.data)
-      })
+        setProblems(res.data.data);
+      });
   }
   function deleteProblem(number) {
     deleteContestProblem(contest.id, number)
       .then(res => {
         Message.success('已删除');
-        listProblems()
-      })
+        listProblems();
+      });
   }
   useEffect(() => {
     form.setFieldsValue({
@@ -111,7 +114,7 @@ const SettingInfo = ({contest}) => {
       status: contest.status,
     });
     listProblems();
-  }, [])
+  }, []);
   return (
     <div>
       <Card title={t['setting.info.basicInfo']}>
@@ -196,13 +199,14 @@ const SettingInfo = ({contest}) => {
               [
                 <Popconfirm
                   focusLock
+                  key={index}
                   title='Are you sure you want to delete?'
                   onOk={() => deleteProblem(item.number)}
                 >
                   <Button
                     icon={<IconDelete />}
-                    shape="circle"
-                    type="secondary"
+                    shape='circle'
+                    type='secondary'
                   />
                 </Popconfirm>
               ]
@@ -217,6 +221,6 @@ const SettingInfo = ({contest}) => {
         />
       </Card>
     </div>
-  )
-}
+  );
+};
 export default SettingInfo;

@@ -12,7 +12,7 @@ export interface LoginResponse {
 }
 
 export function Login(data: LoginRequest) {
-  return axios.post<LoginResponse>('/login', data)
+  return axios.post<LoginResponse>('/login', data);
 }
 
 export interface RegisterRequest {
@@ -22,15 +22,15 @@ export interface RegisterRequest {
 }
 
 export function Register(data: RegisterRequest) {
-  return axios.post('/register', data)
+  return axios.post('/register', data);
 }
 
 export function getUserInfo() {
-  return axios.get('/user/info')
+  return axios.get('/user/info');
 }
 
 export function getUsers(id) {
-  return axios.get(`/users/${id}`)
+  return axios.get(`/users/${id}`);
 }
 
 interface getCaptchaRequest {
@@ -38,9 +38,9 @@ interface getCaptchaRequest {
   email?: string;
 }
 export function getCaptcha(params:getCaptchaRequest) {
-  return axios.get(`/captcha`, { params })
+  return axios.get(`/captcha`, { params });
 }
 
 export function getUserProfileCalendar(id, params = undefined) {
-  return axios.get(`/users/${id}/profile_calendar`, { params })
+  return axios.get(`/users/${id}/profile_calendar`, { params });
 }

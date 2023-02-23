@@ -1,44 +1,44 @@
 import { getProblemVerification, updateProblem, verifyProblem } from '@/api/problem';
 import useLocale from '@/utils/useLocale';
 import { Form, Input, Button, Card, Message, List, Radio, InputTag } from '@arco-design/web-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import locale from './locale';
 const FormItem = Form.Item;
 const VerificationStatus = ['', '待验证', '验证失败', '验证成功'];
-const App = (props) => {
+const App = (props: any) => {
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [verification, setVerification] = useState({verificationStatus: 0, verificaitonInfo: []});
   function onSubmit(values) {
     updateProblem(props.problem.id, values)
       .then(res => {
-        Message.info('已保存')
+        Message.info('已保存');
       })
       .catch(err => {
-        Message.error(err.response.data.message)
-      })
+        Message.error(err.response.data.message);
+      });
   }
   function fetchData() {
     getProblemVerification(props.problem.id)
       .then(res => {
         setVerification(res.data);
-      })
+      });
   }
   function verify() {
     verifyProblem(props.problem.id).then(res => {
-      Message.info('已提交校验，请稍等刷新')
-    })
+      Message.info('已提交校验，请稍等刷新');
+    });
   }
   useEffect(() => {
-    fetchData()
+    fetchData();
     form.setFieldsValue({
       status: props.problem.status,
       timeLimit: props.problem.timeLimit,
       memoryLimit: props.problem.memoryLimit,
       source: props.problem.source,
       tags: props.problem.tags
-    })
-  }, [])
+    });
+  }, []);
   return (
     <>
       <Card>
@@ -82,7 +82,7 @@ const App = (props) => {
               return {
                 title: item.action,
                 description: item.errorMessage,
-              }
+              };
             })}
             render={(item, index) => 
               <List.Item key={index}>

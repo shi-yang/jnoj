@@ -44,8 +44,8 @@ setupMock({
             output: '7 2\r\n3 7 5 1 10 3 20\r\n'
           }
         ],
-      }
-    })
+      };
+    });
     Mock.mock(/\/problems\/\d*\/solutions$/, () => {
       return [
         {
@@ -64,8 +64,8 @@ setupMock({
           created_at: Random.date(),
           type: 'Correct',
         }
-      ]
-    })
+      ];
+    });
     Mock.mock(/\/problems\/\d*\/statements$/, () => {
       return {
         data: [
@@ -90,8 +90,8 @@ setupMock({
             notes: Random.paragraph()
           }
         ]
-      }
-    })
+      };
+    });
     Mock.mock(/\/problems\/\d*\/tests$/, () => {
       return {
         data: [
@@ -137,13 +137,13 @@ setupMock({
           },
         ],
         total: 12,
-      }
-    })
+      };
+    });
     Mock.mock(/\/problems\/\d*\/checkers$/, () => {
       return {
         std_checkers: stdChekcers,
         user_checkers: userChekcers,
-      }
-    })
+      };
+    });
   },
 });

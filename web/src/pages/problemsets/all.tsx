@@ -3,15 +3,15 @@ import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Descriptions, Form, Grid, Input, Message, Modal, Typography, Link, Pagination, PaginationProps } from '@arco-design/web-react'
+import { Button, Card, Descriptions, Form, Grid, Input, Message, Modal, Typography, Link, Pagination, PaginationProps } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
 
-export default () => {
+export default function All() {
   const t = useLocale(locale);
   const settings = useAppSelector<SettingState>(setting);
   const [problemsets, setProblemsets] = useState([]);
@@ -100,7 +100,7 @@ export default () => {
         </Card>
       </div>
     </>
-  )
+  );
 }
 
 function AddProblemset() {
@@ -116,15 +116,15 @@ function AddProblemset() {
       createProblemset(values)
         .then(res => {
           setVisible(false);
-          Message.success(t['all.create.savedSuccessfully'])
-          router.push(`/problemsets/${res.data.id}/update`)
+          Message.success(t['all.create.savedSuccessfully']);
+          router.push(`/problemsets/${res.data.id}/update`);
         })
         .catch(err => {
-          Message.error(err.response.data.message)
+          Message.error(err.response.data.message);
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
 

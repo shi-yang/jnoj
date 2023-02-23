@@ -1,34 +1,34 @@
-import useLocale from "@/utils/useLocale";
-import { Divider, Message, Typography } from "@arco-design/web-react"
-import ReactMarkdown from "react-markdown";
+import useLocale from '@/utils/useLocale';
+import { Divider, Typography } from '@arco-design/web-react';
+import ReactMarkdown from 'react-markdown';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
-import locale from "./locale";
+import locale from './locale';
 import styles from './style/index.module.less';
-import { IconCopy } from "@arco-design/web-react/icon";
-import { useMemo, useRef } from "react";
-import React from "react";
+import { IconCopy } from '@arco-design/web-react/icon';
+import { useMemo } from 'react';
+import React from 'react';
 const { Title, Paragraph } = Typography;
-export default ({problem, language}) => {
+export default function ProblemContent({problem, language}: any) {
   const t = useLocale(locale);
   const refsById = useMemo(() => {
-    const refs = {}
+    const refs = {};
     problem.sampleTests.forEach((_, index) => {
-        refs[index+'input'] = React.createRef()
-        refs[index+'output'] = React.createRef()
-    })
-    return refs
-  }, [problem.sampleTests])
+        refs[index+'input'] = React.createRef();
+        refs[index+'output'] = React.createRef();
+    });
+    return refs;
+  }, [problem.sampleTests]);
   const onCopy = (ref) => {
     ref.current.innerHTML = t['copied'];
     setTimeout(() => {
       if (ref.current) {
         ref.current.innerHTML = t['copy'];
       }
-    }, 1000)
-  }
+    }, 1000);
+  };
   return (
     <Typography className={styles.content}>
       <Paragraph type='secondary' spacing='close'>
@@ -100,7 +100,7 @@ export default ({problem, language}) => {
                 <pre>{ item.output }</pre>
               </div>
             </div>
-          )
+          );
         })
       }
       { problem.statements[language].note != '' &&
@@ -130,5 +130,5 @@ export default ({problem, language}) => {
         </>
       }
     </Typography>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, List, Message, Grid, Tag, Popconfirm } from '@arco-design/web-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
 import { deleteProblemStatement, listProblemStatements, updateProblemStatement } from '@/api/problem-statement';
@@ -12,7 +12,7 @@ import { deleteProblemFile, listProblemFiles, uploadProblemFile } from '@/api/pr
 const FormItem = Form.Item;
 const Row = Grid.Row;
 const Col = Grid.Col;
-export default ({problem}) => {
+export default function Statement({problem}: any) {
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [statements, setStatements] = useState([]);
@@ -31,7 +31,7 @@ export default ({problem}) => {
           note: d[0].note,
         });
       }
-    })
+    });
     listProblemFiles(problem.id, {fileType: 'statement'})
       .then(res => {
         const { data } = res.data;
@@ -41,16 +41,16 @@ export default ({problem}) => {
             uid: item.id,
             name: item.name,
             url: item.content,
-          })
-        })
-        setAttachmentFiles(arr)
-      })
+          });
+        });
+        setAttachmentFiles(arr);
+      });
   }
   function onSubmit(values) {
     updateProblemStatement(problem.id, statements[current].id, values)
       .then(res => {
-        Message.info('已保存')
-      })
+        Message.info('已保存');
+      });
   }
   function editStatement(index) {
     setCurrent(index);
@@ -60,14 +60,14 @@ export default ({problem}) => {
       input: statements[index].input,
       output: statements[index].output,
       note: statements[index].note,
-    })
+    });
   }
   function deleteStatement(index) {
     deleteProblemStatement(problem.id, statements[index].id)
       .then(res => {
         fetchData();
         Message.success('已删除');
-      })
+      });
   }
   function uploadFile(option) {
     const { onError, onSuccess, file } = option;
@@ -82,14 +82,14 @@ export default ({problem}) => {
       })
       .catch(err => {
         onError();
-      })
+      });
   }
   function removeFile(option) {
     deleteProblemFile(problem.id, option.uid)
       .then(res => {
         Message.success('已删除');
         fetchData();
-      })
+      });
   }
   useEffect(() => {
     fetchData();
@@ -106,21 +106,23 @@ export default ({problem}) => {
           >
             {statements.map((item, index) => (
                 <List.Item key={index} actions={[
-                  <Button onClick={() => editStatement(index)}>
-                    <IconEdit />
-                  </Button>,
-                  <Popconfirm
-                    title='Are you sure you want to delete?'
-                    onOk={() => deleteStatement(index)}
-                  >
-                    <Button><IconDelete /></Button>
-                  </Popconfirm>
+                  <div key={index}>
+                    <Button onClick={() => editStatement(index)}>
+                      <IconEdit />
+                    </Button>,
+                    <Popconfirm
+                      title='Are you sure you want to delete?'
+                      onOk={() => deleteStatement(index)}
+                    >
+                      <Button><IconDelete /></Button>
+                    </Popconfirm>
+                  </div>
                 ]}>
-                <List.Item.Meta
-                  title={item.name}
-                  description={(<Tag>{item.language}</Tag>)}
-                />
-              </List.Item>
+                  <List.Item.Meta
+                    title={item.name}
+                    description={(<Tag>{item.language}</Tag>)}
+                  />
+                </List.Item>
             ))}
           </List>
         </Col>
@@ -173,5 +175,5 @@ export default ({problem}) => {
         </Col>
       </Row>
     </Card>
-  )
+  );
 }

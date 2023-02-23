@@ -5,18 +5,18 @@ export const LanguageMap = {
   1: 'C++',
   2: 'Java',
   3: 'Python3'
-}
+};
 
 export function listSubmissions(params) {
-  return axios.get('/submissions', {params})
+  return axios.get('/submissions', {params});
 }
 
 export function createSubmission(data) {
-  return axios.post('/submissions', data)
+  return axios.post('/submissions', data);
 }
 
 export function getSubmission(id) {
-  return axios.get(`/submissions/${id}`)
+  return axios.get(`/submissions/${id}`);
 }
 
 interface getLastSubmissionProps {
@@ -25,5 +25,5 @@ interface getLastSubmissionProps {
   entityType?: number,
 }
 export function getLastSubmission(params:getLastSubmissionProps) {
-  return axios.get(`/last_submission`, {params})
+  return axios.get(`/last_submission`, {params});
 }

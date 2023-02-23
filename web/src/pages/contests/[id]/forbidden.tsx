@@ -1,15 +1,18 @@
-import { createContestUser } from "@/api/contest"
-import { Button, Divider, Empty, Message, Statistic, Typography } from "@arco-design/web-react"
-import { IconExclamation } from "@arco-design/web-react/icon"
-import dayjs from "dayjs"
+import React from 'react';
+import { createContestUser } from '@/api/contest';
+import { Button, Divider, Empty, Message, Statistic, Typography } from '@arco-design/web-react';
+import { IconExclamation } from '@arco-design/web-react/icon';
+import dayjs from 'dayjs';
 
 const now = Date.now();
-export default ({contest}) => {
+export default function Forbidden({contest}: {
+  contest: {id: number, runningStatus: string, status: string, startTime: string | number | Date | dayjs.Dayjs, role: string}
+}) {
   function register() {
     createContestUser(contest.id)
-      .then(res => {
-        Message.success('注册成功')
-      })
+      .then(() => {
+        Message.success('注册成功');
+      });
   }
   return (
     <div>
@@ -56,5 +59,5 @@ export default ({contest}) => {
         }
       />
     </div>
-  )
+  );
 }

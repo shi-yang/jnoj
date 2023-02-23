@@ -7,6 +7,7 @@ import codeonline from '@/assets/home/codeonline.png';
 import { IconGithub, IconShareAlt, IconThumbUp } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
+import Image from 'next/image';
 export default function Index() {
   const t = useLocale(locale);
   const settings = useAppSelector<SettingState>(setting);
@@ -57,7 +58,7 @@ export default function Index() {
       <section>
         <div className='container'>
           <h2 className={styles['section-title']}>{t['runOnline']}</h2>
-          <img src={codeonline.src} alt='Online Programming' />
+          <Image width={1320} height={770} src={codeonline.src} alt='Online Programming' />
         </div>
       </section>
     </>

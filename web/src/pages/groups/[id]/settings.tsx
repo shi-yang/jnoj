@@ -1,10 +1,10 @@
 import { updateGroup } from '@/api/group';
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Message, Radio } from '@arco-design/web-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import locale from './locale';
 
-export default ({group, callback}) => {
+export default function Settings({group, callback}: any) {
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -18,14 +18,14 @@ export default ({group, callback}) => {
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
   useEffect(() => {
     let invitationCode = group.invitationCode;
     // 简单生成一个邀请码去初始化
     if (invitationCode === '') {
-      invitationCode = Date.now().toString(36)
+      invitationCode = Date.now().toString(36);
     }
     form.setFieldsValue({
       name: group.name,

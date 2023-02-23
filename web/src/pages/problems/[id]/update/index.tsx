@@ -85,7 +85,7 @@ function Index(props) {
               </TabPane>
             }
             <TabPane key='package' title={t['tab.package']}>
-              <Package problem={data} />
+              <Package problemId={data.id} />
             </TabPane>
           </Tabs>
         </div>

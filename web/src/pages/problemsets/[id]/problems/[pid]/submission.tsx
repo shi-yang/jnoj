@@ -9,7 +9,7 @@ import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
 import { userInfo } from '@/store/reducers/user';
 import { useAppSelector } from '@/hooks';
 
-const Submission = (props) => {
+const Submission = ({problemId}: {problemId: number}) => {
   const t = useLocale(locale);
   const user = useAppSelector(userInfo);
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ const Submission = (props) => {
     const { current, pageSize } = pagination;
     setLoading(true);
     listSubmissions({
-      problemId: props.problem.id,
+      problemId: problemId,
       userId: user.id,
       page: current,
       perPage: pageSize,
@@ -104,14 +104,14 @@ const Submission = (props) => {
       align: 'center',
       render: (_, record) => (
         <>
-          <Button type="text" size="small" onClick={(e) => { setVisible(true); setId(record.id) }}>查看</Button>
+          <Button type="text" size="small" onClick={(e) => { setVisible(true); setId(record.id); }}>查看</Button>
         </>
       ),
     },
   ];
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+  }, [problemId, pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
   return (
     <Card style={{height: '100%', overflow: 'auto'}}>
       <Table

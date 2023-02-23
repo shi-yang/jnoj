@@ -1,8 +1,8 @@
-import { listContestUsers } from "@/api/contest";
-import { PaginationProps, Table } from "@arco-design/web-react";
-import { useEffect, useState } from "react";
+import { listContestUsers } from '@/api/contest';
+import { PaginationProps, Table } from '@arco-design/web-react';
+import React, { useEffect, useState } from 'react';
 
-const Users = ({contest}) => {
+const Users = ({contest}: {contest: {id: number}}) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -43,7 +43,7 @@ const Users = ({contest}) => {
       })
       .finally(() => {
         setLoading(false);
-      })
+      });
   }
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -55,7 +55,7 @@ const Users = ({contest}) => {
   return (
     <>
       <Table
-        rowKey="id"
+        rowKey='id'
         loading={loading}
         onChange={onChangeTable}
         pagination={pagination}
@@ -63,7 +63,7 @@ const Users = ({contest}) => {
         data={data}
       />
     </>
-  )
-}
+  );
+};
 
 export default Users;

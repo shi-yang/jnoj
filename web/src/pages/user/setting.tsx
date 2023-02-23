@@ -1,10 +1,11 @@
-import { Button, Card, Form, Input, Tabs, Typography } from "@arco-design/web-react"
-import FormItem from "@arco-design/web-react/es/Form/form-item"
-import TabPane from "@arco-design/web-react/es/Tabs/tab-pane"
+import React from 'react';
+import { Button, Card, Form, Input, Tabs, Typography } from '@arco-design/web-react';
+import FormItem from '@arco-design/web-react/es/Form/form-item';
+import TabPane from '@arco-design/web-react/es/Tabs/tab-pane';
 
-export default () => {
+export default function Setting() {
   return (
-    <div className="container">
+    <div className='container'>
       <Card>
         <Tabs defaultActiveTab='1'>
           <TabPane key='1' title='简介'>
@@ -27,5 +28,5 @@ export default () => {
         </Tabs>
       </Card>
     </div>
-  )
+  );
 }

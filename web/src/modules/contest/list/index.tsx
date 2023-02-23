@@ -14,7 +14,7 @@ import { getColumns } from './constants';
 import CreateModal from './create';
 import { listContests } from '@/api/contest';
 
-function ContestList({groupId = 0}) {
+function ContestList({groupId = 0}: {groupId?:number}) {
   const t = useLocale(locale);
 
   const tableCallback = async (record, type) => {
@@ -83,7 +83,7 @@ function ContestList({groupId = 0}) {
         </Space>
       </div>
       <Table
-        rowKey="id"
+        rowKey='id'
         loading={loading}
         onChange={onChangeTable}
         pagination={pagination}

@@ -4,7 +4,7 @@ import { getAccessToken } from './auth';
 
 const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL
-})
+});
 
 http.interceptors.request.use(config => {
   const token = getAccessToken();
@@ -12,7 +12,7 @@ http.interceptors.request.use(config => {
     config.headers['Authorization'] = 'Bearer ' + token;
   }
   return config;
-})
+});
 
 const err = (error) => {
   if (error.response) {
@@ -22,11 +22,11 @@ const err = (error) => {
       Router.push('/403');
     }
   }
-  return Promise.reject(error)
-}
+  return Promise.reject(error);
+};
 
 http.interceptors.response.use(response => {
   return response;
-}, err)
+}, err);
 
 export default http;

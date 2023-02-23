@@ -1,8 +1,7 @@
+import React from 'react';
 import List from './list';
-export default function() {
+export default function Index() {
   return (
-    <>
-      <List />
-    </>
-  )
+    <List />
+  );
 }

@@ -8,7 +8,7 @@ import { FormatMemorySize, FormatTime } from '@/utils/format';
 import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
 import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
 
-const Submission = ({contest}) => {
+const Submission = ({contest}: {contest: {id: number}}) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -112,7 +112,7 @@ const Submission = ({contest}) => {
       align: 'center',
       render: (_, record) => (
         <>
-          <Button type="text" size="small" onClick={(e) => { setVisible(true); setId(record.id) }}>查看</Button>
+          <Button type="text" size="small" onClick={(e) => { setVisible(true); setId(record.id); }}>查看</Button>
         </>
       ),
     },

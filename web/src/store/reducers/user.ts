@@ -1,7 +1,6 @@
 import { getUserInfo as getInfo } from "@/api/user";
 import { removeAccessToken } from "@/utils/auth";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { HYDRATE } from "next-redux-wrapper";
 
 export interface UserInfoState {
   userInfo?: {
@@ -23,31 +22,31 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserInfo(state, action) {
-      state.userInfo = action.payload
+      state.userInfo = action.payload;
     }
   },
   extraReducers: builder => {
     builder
       .addCase(getUserInfo.fulfilled, (state: UserInfoState, action) => {
-        const data = action.payload
+        const data = action.payload;
         state.userInfo.id = data.id;
         state.userInfo.username = data.username;
         state.userInfo.avatar = data.avatar;
         state.userInfo.nickname = data.nickname;
-        state.isLogged = true
+        state.isLogged = true;
       })
       .addCase(getUserInfo.rejected, (state, action) => {
-        state.isLogged = false
-        removeAccessToken()
-      })
+        state.isLogged = false;
+        removeAccessToken();
+      });
   }
-})
+});
 
 export const getUserInfo = createAsyncThunk('user/info', async () => {
-  const resp = await getInfo()
-  return resp.data
-})
+  const resp = await getInfo();
+  return resp.data;
+});
 
-export const { setUserInfo } = userSlice.actions
-export default userSlice.reducer
-export const userInfo = (state) => state.user.userInfo
+export const { setUserInfo } = userSlice.actions;
+export default userSlice.reducer;
+export const userInfo = (state) => state.user.userInfo;

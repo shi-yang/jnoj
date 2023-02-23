@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Menu, Message, Select, Tooltip } from '@arco-design/web-react';
 import styles from './style/layout-header.module.less';
 import useLocale from '@/utils/useLocale';
@@ -41,7 +41,7 @@ const LayoutHeader = () => {
             disabled
           >
             <Link href='/'>
-              <img style={{height: 21, cursor: 'pointer' }} src={Logo.src} />
+              <img style={{height: 21,  cursor: 'pointer' }} src={Logo.src} alt='logo' />
             </Link>
           </MenuItem>
           <MenuItem key='/'>
@@ -108,6 +108,6 @@ const LayoutHeader = () => {
       </ul>
     </div>
   );
-}
+};
 
 export default LayoutHeader;

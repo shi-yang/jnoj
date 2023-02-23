@@ -4,12 +4,12 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { Form, Input, Button, Select, Card, Divider, Modal, Message, Alert } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Highlight from '@/components/Highlight';
 import styles from './style/checker.module.less';
 const FormItem = Form.Item;
 const Option = Select.Option;
-const App = (props) => {
+const App = (props: any) => {
   const t = useLocale(locale);
   const [userCheckers, setUserCheckers] = useState([]);
   const [stdCheckers, setStdCheckers] = useState([]);
@@ -26,23 +26,23 @@ const App = (props) => {
     listProblemStdCheckers(props.problem.id)
       .then((res) => {
         setStdCheckers(res.data.data);
-        setNotes(res.data.data, props.problem.checkerId)
+        setNotes(res.data.data, props.problem.checkerId);
       });
     if (props.problem.checkerId !== 0) {
       getProblemFile(props.problem.id, props.problem.checkerId)
         .then(res => {
-          setChecker(res.data)
-        })
+          setChecker(res.data);
+        });
     }
   }
   function setNotes(stdCheckers, checkerId) {
     const std = stdCheckers.find(value => {
-      return value.id === checkerId
-    })
+      return value.id === checkerId;
+    });
     if (std) {
-      setNote(t[`checker.std.${std.name}.intro`])
+      setNote(t[`checker.std.${std.name}.intro`]);
     } else {
-      setNote('')
+      setNote('');
     }
   }
   function onOk() {
@@ -56,25 +56,25 @@ const App = (props) => {
       };
       createProblemFile(props.problem.id, values)
         .then(res => {
-          Message.success('已保存')
-          setVisible(false)
-          fetchData()
+          Message.success('已保存');
+          setVisible(false);
+          fetchData();
         });
     });
   }
   function onSave() {
     updateProblemChecker(props.problem.id, { checkerId })
       .then(res => {
-        Message.info('已保存')
-      })
+        Message.info('已保存');
+      });
   }
   function onSelectedChange(e) {
-    setNotes(stdCheckers, e)
-    setCheckerId(e)
+    setNotes(stdCheckers, e);
+    setCheckerId(e);
     getProblemFile(props.problem.id, e)
       .then(res => {
-        setChecker(res.data)
-      })
+        setChecker(res.data);
+      });
   }
   useEffect(() => {
     fetchData();

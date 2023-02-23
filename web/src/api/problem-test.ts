@@ -1,7 +1,7 @@
 import axios from '@/utils/request';
 
 export function CreateProblemTest(pid: number, file: any) {
-  return axios.post(`/problems/${pid}/tests`, file)
+  return axios.post(`/problems/${pid}/tests`, file);
 }
 
 export interface ListProblemTetstsResponse {
@@ -15,11 +15,11 @@ export interface ListProblemTetstsResponse {
   total: number;
 }
 export function listProblemTests(id: number, params) {
-  return axios.get<ListProblemTetstsResponse>(`/problems/${id}/tests`, {params})
+  return axios.get<ListProblemTetstsResponse>(`/problems/${id}/tests`, {params});
 }
 
 export function deleteProblemTests(pid: number, testId: number) {
-  return axios.delete(`/problems/${pid}/tests/${testId}`)
+  return axios.delete(`/problems/${pid}/tests/${testId}`);
 }
 
 export function uploadProblemTest(id, data) {
@@ -27,13 +27,13 @@ export function uploadProblemTest(id, data) {
     headers: {
       'Content-Type': 'multipart/form-data;charset=UTF-8'
     }
-  })
+  });
 }
 
 export function updateProblemTest(pid, testId, data) {
-  return axios.put(`/problems/${pid}/tests/${testId}`, data)
+  return axios.put(`/problems/${pid}/tests/${testId}`, data);
 }
 
 export function sortProblemTests(pid, data) {
-  return axios.post(`/problems/${pid}/test/sort`, data)
+  return axios.post(`/problems/${pid}/test/sort`, data);
 }

@@ -23,8 +23,8 @@ export default function RegisterForm() {
   const t = useLocale(locale);
   const router = useRouter();
 
-  const [time, setTime] = useState(0)
-  const timer = useRef(null)
+  const [time, setTime] = useState(0);
+  const timer = useRef(null);
 
   useEffect(() => {
     timer.current && clearInterval(timer.current);
@@ -37,15 +37,15 @@ export default function RegisterForm() {
     } else if (time === 0) {
       timer.current && clearInterval(timer.current);
     }
-  }, [time])
+  }, [time]);
 
   const getCode = () => {
-    setTime(60)
+    setTime(60);
     getCaptcha({
       email: form.getFieldValue('email'),
       phone: form.getFieldValue('phone'),
-    })
-  }
+    });
+  };
   
   function onSubmit() {
     form.validate().then((values) => {
@@ -62,7 +62,7 @@ export default function RegisterForm() {
           }
         })
         .catch(err => {
-          Message.info(err.response.data.message)
+          Message.info(err.response.data.message);
         })
         .finally(() => {
           setLoading(false);
@@ -147,9 +147,9 @@ export default function RegisterForm() {
                   } else {
                     await form.validate(['phone']);
                   }
-                  getCode()
+                  getCode();
                 } catch (e) {
-                  console.log(e)
+                  console.log(e);
                 }
               }}
             >{ time ? `${time}秒后获取`: '获取验证码' }</Button>

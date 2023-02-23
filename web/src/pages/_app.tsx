@@ -1,9 +1,9 @@
-import type { AppProps } from 'next/app'
+import type { AppProps } from 'next/app';
 import { wrapper } from '@/store';
 import MainLayout from '@/components/Layouts/MainLayout';
 import useStorage from '@/utils/useStorage';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import NProgress from 'nprogress';
 import { ConfigProvider } from '@arco-design/web-react';
 import zhCN from '@arco-design/web-react/es/locale/zh-CN';
@@ -19,7 +19,7 @@ interface RenderConfig {
   arcoTheme?: string;
 }
 
-const PageLayout = ({ Component, pageProps }) => {
+const PageLayout = ({ Component, pageProps }: any) => {
   if (Component.getLayout) {
     return Component.getLayout(<Component {...pageProps} />);
   } else {
@@ -99,7 +99,7 @@ function MyApp({ renderConfig, Component, ...rest }: { renderConfig: RenderConfi
         </GlobalContext.Provider>
       </Provider>
     </ConfigProvider>
-  )
+  );
 }
 
 MyApp.getInitialProps = async (appContext) => {

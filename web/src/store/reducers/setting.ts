@@ -12,8 +12,8 @@ const settingSlice = createSlice({
     setSetting(state, action) {
     }
   },
-})
+});
 
-export const { setSetting } = settingSlice.actions
-export default settingSlice.reducer
-export const setting = (state) => state.setting
+export const { setSetting } = settingSlice.actions;
+export default settingSlice.reducer;
+export const setting = (state) => state.setting;

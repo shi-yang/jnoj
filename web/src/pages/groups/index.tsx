@@ -1,3 +1,4 @@
+import React from 'react';
 import { createGroup, listGroups } from '@/api/group';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
@@ -6,7 +7,7 @@ import useLocale from '@/utils/useLocale';
 import {
   Button, Card, Descriptions, Form, Grid, Input, Message,
   Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty
-} from '@arco-design/web-react'
+} from '@arco-design/web-react';
 import { IconPlus, IconUser } from '@arco-design/web-react/icon';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -16,7 +17,7 @@ import styles from './style/all.module.less';
 import './mock';
 import { isLogged } from '@/utils/auth';
 
-export default () => {
+export default function Index() {
   const t = useLocale(locale);
   const settings = useAppSelector<SettingState>(setting);
   const [groups, setGroups] = useState([]);
@@ -62,15 +63,11 @@ export default () => {
           pageSize,
           total: Number(res.data.total),
         });
-      })
+      });
   }
   function onTabsChange(key) {
     setActiveTab(key);
-    if (key === 'mygroup') {
-      setFormParams({...formParams, mygroup: true })
-    } else {
-      setFormParams({...formParams, mygroup: false })
-    }
+    setFormParams({...formParams, mygroup: key === 'mygroup' });
   }
   function onChange(current, pageSize) {
     setPatination({
@@ -101,7 +98,7 @@ export default () => {
               <Input.Search
                 style={{ width: '240px' }}
                 onSearch={(value) => {
-                  setFormParams({...formParams, name: value})
+                  setFormParams({...formParams, name: value});
                 }}
               />
             }
@@ -151,8 +148,8 @@ export default () => {
         </Card>
       </div>
     </>
-  )
-}
+  );
+};
 
 function AddGroup() {
   const t = useLocale(locale);
@@ -169,7 +166,7 @@ function AddGroup() {
           setVisible(false);
           Message.success(t['index.create.savedSuccessfully']);
           router.push(`/groups/${res.data.id}`);
-        })
+        });
     });
   }
 

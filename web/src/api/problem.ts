@@ -22,37 +22,37 @@ export interface Problem {
 }
 
 export function listProblems(params) {
-  return axios.get(`/problems`, {params})
+  return axios.get(`/problems`, {params});
 }
 
 export function getProblem(id) {
-  return axios.get<Problem>(`/problems/${id}`)
+  return axios.get<Problem>(`/problems/${id}`);
 }
 
 export function updateProblem(id: number, data) {
-  return axios.put(`/problems/${id}`, data)
+  return axios.put(`/problems/${id}`, data);
 }
 
 export function createProblem(data) {
-  return axios.post(`/problems`, data)
+  return axios.post(`/problems`, data);
 }
 
 export function updateProblemChecker(id, data) {
-  return axios.put(`/problems/${id}/checkers`, data)
+  return axios.put(`/problems/${id}/checkers`, data);
 }
 
 export function verifyProblem(id) {
-  return axios.post(`/problems/${id}/verify`, {})
+  return axios.post(`/problems/${id}/verify`, {});
 }
 
 export function getProblemVerification(id) {
-  return axios.get(`/problems/${id}/verification`)
+  return axios.get(`/problems/${id}/verification`);
 }
 
 export function packProblem(id) {
-  return axios.post(`/problems/${id}/pack`, {})
+  return axios.post(`/problems/${id}/pack`, {});
 }
 
 export function downloadProblems(ids:number[]) {
-  return axios.post(`/download_problems`, { ids: ids })
+  return axios.post(`/download_problems`, { ids: ids });
 }

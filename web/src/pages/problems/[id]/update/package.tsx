@@ -7,7 +7,7 @@ import styles from './style/tests.module.less';
 import { FormatStorageSize, FormatTime } from '@/utils/format';
 import { packProblem } from '@/api/problem';
 
-const App = (props) => {
+const App = ({problemId}: {problemId:number}) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -65,12 +65,12 @@ const App = (props) => {
   function downloadFile(record) {
     const a = document.createElement('a');
     a.href = record.content;
-    a.download = props.problem.id + '.' + record.name;
+    a.download = problemId + '.' + record.name;
     a.click();
   }
   function fetchData() {
     setLoading(true);
-    listProblemFiles(props.problem.id, { fileType: 'package' })
+    listProblemFiles(problemId, { fileType: 'package' })
       .then((res) => {
         setData(res.data.data || []);
       })
@@ -79,7 +79,7 @@ const App = (props) => {
       });
   }
   function deleteFile(id) {
-    deleteProblemFile(props.problem.id, id)
+    deleteProblemFile(problemId, id)
       .then(res => {
         Message.success('删除成功');
         fetchData();
@@ -87,13 +87,13 @@ const App = (props) => {
   }
   function pack() {
     Message.info('已提交打包');
-    packProblem(props.problem.id)
+    packProblem(problemId)
       .then(res => {
         Message.success('打包成功');
       })
       .catch(res => {
-        Message.error(res.response.data.message)
-      })
+        Message.error(res.response.data.message);
+      });
   }
   useEffect(() => {
     fetchData();

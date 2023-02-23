@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Link, Space, TableColumnProps, Tag } from '@arco-design/web-react';
+import { Link, Space, TableColumnProps, Tag } from '@arco-design/web-react';
 import { IconCheckCircle, IconExclamationCircle } from '@arco-design/web-react/icon';
 
 export const ProblemStatus = {
@@ -47,7 +47,7 @@ export function getColumns(t: any, displayFields: string) {
       align: 'center',
       render: x => x,
       width: 200,
-    })
+    });
   }
   columns.push({
     title: t['problem.columns.submitAndPass'],
@@ -61,6 +61,6 @@ export function getColumns(t: any, displayFields: string) {
       );
     },
     width: 150,
-  })
+  });
   return columns;
 }

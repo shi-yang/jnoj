@@ -1,8 +1,8 @@
-import dayjs from 'dayjs'
+import dayjs from 'dayjs';
 
 export const FormatTime = (time: string | number | Date | dayjs.Dayjs):string => {
-  return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
-}
+  return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+};
 
 export const FormatStorageSize = (size:number):string =>  {
   if (size < 1024) {
@@ -13,7 +13,7 @@ export const FormatStorageSize = (size:number):string =>  {
     return (size / (1024 * 1024)).toFixed(2) + 'MB';
   }
   return (size / (1024 * 1024 * 1024)).toFixed(2) + 'GB';
-}
+};
 
 export const FormatMemorySize = (size:number):string =>  {
   if (size < 1024) {
@@ -22,4 +22,4 @@ export const FormatMemorySize = (size:number):string =>  {
     return (size / 1024).toFixed(2) + 'MB';
   }
   return (size / (1024 * 1024)).toFixed(2) + 'GB';
-}
+};

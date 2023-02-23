@@ -1,10 +1,11 @@
-import useLocale from "@/utils/useLocale";
-import { Tabs } from "@arco-design/web-react";
-import Info from "./info";
-import locale from "../locale";
-import Users from "./users";
+import React from 'react';
+import useLocale from '@/utils/useLocale';
+import { Tabs } from '@arco-design/web-react';
+import Info from './info';
+import locale from '../locale';
+import Users from './users';
 
-const Setting = ({contest}) => {
+const Setting = ({contest}: any) => {
   const t = useLocale(locale);
   return (
     <Tabs defaultActiveTab='info'>
@@ -15,6 +16,6 @@ const Setting = ({contest}) => {
         <Users contest={contest} />
       </Tabs.TabPane>
     </Tabs>
-  )
-}
+  );
+};
 export default Setting;

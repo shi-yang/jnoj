@@ -20,12 +20,12 @@ function Problem() {
   const settings = useAppSelector<SettingState>(setting);
   useEffect(() => {
     fetchData();
-  }, [])
+  }, []);
   function fetchData() {
     getProblemset(id)
       .then((res) => {
         setProblemset(res.data);
-      })
+      });
   }
   return (
     <div className='container'>

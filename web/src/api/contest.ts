@@ -4,66 +4,66 @@ export enum ContestRole {
   GUEST = 'GUEST',
   PLAYER = 'PLAYER',
   ADMIN = 'ADMIN',
-};
+}
 
 export function getContest(id) {
-  return axios.get(`/contests/${id}`)
+  return axios.get(`/contests/${id}`);
 }
 
 export function listContests(params) {
-  return axios.get(`/contests`, { params })
+  return axios.get(`/contests`, { params });
 }
 
 export function createContest(data) {
-  return axios.post(`/contests`, data)
+  return axios.post(`/contests`, data);
 }
 
 export function updateContest(id, data) {
-  return axios.put(`/contests/${id}`, data)
+  return axios.put(`/contests/${id}`, data);
 }
 
 export function listContestAllSubmissions(id, params = undefined) {
   return axios.get(`/contests/${id}/all_submissions`, {
     params
-  })
+  });
 }
 
 export function listContestProblems(id) {
-  return axios.get(`/contests/${id}/problems`)
+  return axios.get(`/contests/${id}/problems`);
 }
 
 export function createContestProblem(id, data) {
-  return axios.post(`/contests/${id}/problems`, data)
+  return axios.post(`/contests/${id}/problems`, data);
 }
 
 export function deleteContestProblem(id, problemNumber) {
-  return axios.delete(`/contests/${id}/problems/${problemNumber}`)
+  return axios.delete(`/contests/${id}/problems/${problemNumber}`);
 }
 
 export function listContestProblemLanguages(id, problemNumber) {
-  return axios.get(`/contests/${id}/problems/${problemNumber}/languages`)
+  return axios.get(`/contests/${id}/problems/${problemNumber}/languages`);
 }
 
 export function getContestProblemLanguage(id, problemNumber, lang) {
-  return axios.get(`/contests/${id}/problems/${problemNumber}/languages/${lang}`)
+  return axios.get(`/contests/${id}/problems/${problemNumber}/languages/${lang}`);
 }
 
 export function listContestStatuses(id) {
-  return axios.get(`/contests/${id}/statuses`)
+  return axios.get(`/contests/${id}/statuses`);
 }
 
 export function listContestUsers(id) {
-  return axios.get(`/contests/${id}/users`)
+  return axios.get(`/contests/${id}/users`);
 }
 
 export function createContestUser(id, data = null) {
-  return axios.post(`/contests/${id}/users`, data)
+  return axios.post(`/contests/${id}/users`, data);
 }
 
 export function getContestProblem(id, pkey) {
-  return axios.get(`/contests/${id}/problems/${pkey}`)
+  return axios.get(`/contests/${id}/problems/${pkey}`);
 }
 
 export function listContestSubmissions(id, params) {
-  return axios.get(`/contests/${id}/submissions`, params)
+  return axios.get(`/contests/${id}/submissions`, params);
 }

@@ -1,0 +1,21 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "prettier",
+    // "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
+    // "plugin:react-hooks/recommended",
+    // "next/core-web-vitals"
+  ],
+  "rules": {
+    "semi": ["error", "always"]
+  }
+}

@@ -1,7 +1,7 @@
-import { listContestProblems, listContestAllSubmissions, listContestStatuses, listContestUsers } from '@/api/contest';
-import { Table, TableColumnProps, Tag } from '@arco-design/web-react';
+import { listContestProblems, listContestAllSubmissions, listContestUsers } from '@/api/contest';
+import { Table, TableColumnProps } from '@arco-design/web-react';
 import { IconCheckCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './style/standings.module.less';
 
 enum ContestType {
@@ -63,7 +63,7 @@ const getCellColorClassName = (col) => {
     return styles['attempted'];
   }
   return '';
-}
+};
 
 const generateTableColumn = (problems, contestType) => {
   const t = [...basicColumn];
@@ -72,19 +72,19 @@ const generateTableColumn = (problems, contestType) => {
       title: 'Penalty',
       dataIndex: 'score',
       align: 'center',
-    })
+    });
   } else if (contestType === ContestType.ContestTypeIOI) {
     t.push({
       title: 'Score',
       dataIndex: 'score',
       align: 'center',
-    })
+    });
   } else if (contestType === ContestType.ContestTypeOI) {
     t.push({
       title: 'Max Score',
       dataIndex: 'maxScore',
       align: 'center',
-    })
+    });
   }
   problems.forEach(problem => {
     t.push({
@@ -118,11 +118,11 @@ const generateTableColumn = (problems, contestType) => {
         </>
       ),
     });
-  })
+  });
   return t;
-}
+};
 
-const App = ({contest}) => {
+const App = ({contest}: any) => {
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     sizeCanChange: true,
@@ -151,11 +151,11 @@ const App = ({contest}) => {
           status: 'UNSUBMIT',
           score: 0,
           maxScore: 0,
-        }
-      })
-    })
+        };
+      });
+    });
     // 记录一血
-    let firstBlood = {}
+    let firstBlood = {};
     submissions.forEach(submission => {
       const problemNumber = submission.problem;
       const uid = submission.userId;
@@ -169,7 +169,7 @@ const App = ({contest}) => {
           firstBlood[problemNumber] = uid;
           res[uid].problem[problemNumber].isFirstBlood = true;
         }
-        res[uid].solved++
+        res[uid].solved++;
       }
       // 分数
       if (contest.type === ContestType.ContestTypeICPC) {
@@ -188,7 +188,7 @@ const App = ({contest}) => {
           Math.max(res[uid].problem[problemNumber].maxScore, submission.score);
       }
       res[uid].problem[problemNumber].status = submission.status;
-    })
+    });
     const arr:TableContentProps[] = [];
     Object.keys(res).forEach((key, index) => {
       const item:TableContentProps = {
@@ -219,11 +219,11 @@ const App = ({contest}) => {
           item.problem[k].first = problems[k].score;
           item.problem[k].second = problems[k].maxScore;
         }
-      })
+      });
       item.maxScore = maxScore;
       item.score = score;
       arr.push(item);
-    })
+    });
     arr.sort((a, b) => {
       if (contest.type === ContestType.ContestTypeICPC) {
         if (a.solved !== b.solved) {
@@ -238,19 +238,19 @@ const App = ({contest}) => {
         }
         return b.maxScore - a.maxScore;
       }
-    })
+    });
     for (let i = 0; i < arr.length; i++) {
       arr[i].rank = i + 1;
     }
     setPagination({ ...pagination, total: arr.length });
     setData(arr);
-  }
+  };
 
   function fetchData() {
     setLoading(true);
-    const p1 = listContestAllSubmissions(contest.id)
-    const p2 = listContestProblems(contest.id)
-    const p3 = listContestUsers(contest.id)
+    const p1 = listContestAllSubmissions(contest.id);
+    const p2 = listContestProblems(contest.id);
+    const p3 = listContestUsers(contest.id);
     Promise.all([p1, p2, p3])
       .then((values) => {
         const problems = values[1].data.data;
@@ -261,7 +261,7 @@ const App = ({contest}) => {
       })
       .finally(() => {
         setLoading(false);
-      })
+      });
   }
 
   function onChangeTable(pagination) {

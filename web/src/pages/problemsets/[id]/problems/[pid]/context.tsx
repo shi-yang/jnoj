@@ -8,7 +8,7 @@ const ProblemContext = createContext({
     statements: [],
   },
   language: 0,
-  fetchProblem: (any) => {}
+  fetchProblem: (params: any) => {}
 });
 
 export default ProblemContext;

@@ -43,11 +43,11 @@ export default function LoginForm() {
     setLoading(true);
     Login(params)
       .then((res) => {
-        setAccessToken(res.data.token)
+        setAccessToken(res.data.token);
         afterLoginSuccess(params);
       })
-      .catch(err => {
-        Message.error(t['login.form.login.errMsg'])
+      .catch(() => {
+        Message.error(t['login.form.login.errMsg']);
       })
       .finally(() => {
         setLoading(false);

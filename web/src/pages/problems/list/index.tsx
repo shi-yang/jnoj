@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   Card,
@@ -29,7 +29,7 @@ import ProblemContent from '@/components/Problem/ProblemContent';
 import Head from 'next/head';
 const { Title } = Typography;
 
-export default function() {
+export default function Index() {
   const t = useLocale(locale);
   const user = useAppSelector(userInfo);
   const settings = useAppSelector<SettingState>(setting);
@@ -169,15 +169,15 @@ export default function() {
   }
 
   function onChangeTable({ current, pageSize }, sorter, filters) {
-    const params = {}
+    const params = {};
     if (sorter.direction) {
       if (sorter.direction == 'descend') {
-        Object.assign(params, {orderBy: 'id desc'})
+        Object.assign(params, {orderBy: 'id desc'});
       } else {
-        Object.assign(params, {orderBy: 'id'})
+        Object.assign(params, {orderBy: 'id'});
       }
     }
-    Object.assign(params, filters)
+    Object.assign(params, filters);
     setFormParams({...formParams, ...params});
     setPagination({
       ...pagination,
@@ -201,7 +201,7 @@ export default function() {
       })
       .catch(err => {
         Message.error(err.response.data.message);
-      })
+      });
   }
 
   return (
@@ -249,14 +249,14 @@ export default function() {
               },
             }}
           />
-          <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false)}} />
+          <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false);}} />
         </Card>
       </div>
     </>
   );
 }
 
-function ProblemView({id, visible, onCancel}) {
+function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onCancel?: (e: MouseEvent | Event) => void;}) {
   const [data, setData] = useState({
     id: 0,
     name: '',
@@ -274,12 +274,12 @@ function ProblemView({id, visible, onCancel}) {
           return {
             label: item.language,
             value: index,
-          }
+          };
         });
         setLanguageOptions(langs);
-      })
+      });
     }
-  }, [id])
+  }, [id]);
   return (
     <Drawer
       width={800}
@@ -320,5 +320,5 @@ function ProblemView({id, visible, onCancel}) {
         </div>
       }
     </Drawer>
-  )
+  );
 }

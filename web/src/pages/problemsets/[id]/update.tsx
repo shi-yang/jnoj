@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Divider, Form, Input, InputNumber, Message, Modal, PaginationProps, Popconfirm, Space, Table, TableColumnProps, Typography } from '@arco-design/web-react';
+import {
+  Button, Card, Divider, Form, Input, InputNumber,
+  Message, Modal, PaginationProps, Popconfirm,
+  Table, TableColumnProps
+} from '@arco-design/web-react';
 import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
 import { useRouter } from 'next/router';
-import { addProblemToProblemset, deleteProblemFromProblemset, getProblemset, listProblemsetProblems, sortProblemsetProblems, updateProblemset } from '@/api/problemset';
+import {
+  addProblemToProblemset, deleteProblemFromProblemset, getProblemset,
+  listProblemsetProblems, sortProblemsetProblems, updateProblemset
+} from '@/api/problemset';
 import Head from 'next/head';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
@@ -17,12 +24,12 @@ function UpdateProblemset() {
   const [form] = Form.useForm();
   const { id } = router.query;
   const settings = useAppSelector<SettingState>(setting);
-  const [problemset, setProblemset] = useState({name: '', description: ''});
+  const [problemset, setProblemset] = useState({id: 0, name: '', description: ''});
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     fetchData();
-  }, [])
+  }, []);
   function fetchData() {
     setLoading(true);
     getProblemset(id)
@@ -32,14 +39,14 @@ function UpdateProblemset() {
         form.setFieldsValue({
           name: res.data.name,
           description: res.data.description,
-        })
-      })
+        });
+      });
   }
   function onSubmit(v) {
     updateProblemset(id, v)
       .then(res => {
-        Message.success(t['update.form.saveInfo'])
-      })
+        Message.success(t['update.form.saveInfo']);
+      });
   }
   return (!loading && (
     <div className='container'>
@@ -65,7 +72,7 @@ function UpdateProblemset() {
           </Form>
         </Card>
         <Divider />
-        <Problems problemset={problemset} />
+        <Problems problemsetId={problemset.id} />
       </div>
     </div>)
   );
@@ -99,7 +106,7 @@ const SortableWrapper = SortableContainer((props) => {
 const SortableItem = SortableElement((props) => {
   return <tr {...props} />;
 });
-function Problems({problemset}) {
+function Problems({problemsetId}: {problemsetId: number}) {
   const t = useLocale(locale);
   const [problems, setProblems] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -121,7 +128,7 @@ function Problems({problemset}) {
       page: current,
       perPage: pageSize,
     };
-    listProblemsetProblems(problemset.id, params)
+    listProblemsetProblems(problemsetId, params)
       .then((res) => {
         setProblems(res.data.data);
         setPatination({
@@ -142,11 +149,11 @@ function Problems({problemset}) {
     });
   }
   function removeProblem(pid) {
-    deleteProblemFromProblemset(problemset.id, pid)
+    deleteProblemFromProblemset(problemsetId, pid)
       .then(res => {
         Message.success('已移除');
         fetchData();
-      })
+      });
   }
 
   const columns: TableColumnProps[] = [
@@ -178,7 +185,7 @@ function Problems({problemset}) {
             focusLock
             title={t['update.table.column.action.remove.tips']}
             onOk={() => {
-              removeProblem(record.order)
+              removeProblem(record.order);
             }}
             onCancel={() => {
             }}
@@ -196,16 +203,16 @@ function Problems({problemset}) {
         return {
           id: v.id,
           order: v.order
-        }
+        };
       });
-      sortProblemsetProblems(problemset.id, {ids})
+      sortProblemsetProblems(problemsetId, {ids})
         .then(res => {
           Message.success('已保存');
           fetchData();
         })
         .catch((err) => {
           Message.error('保存失败');
-        })
+        });
     }
   }
 
@@ -224,7 +231,7 @@ function Problems({problemset}) {
     />
   );
 
-  const DraggableRow = (props) => {
+  const DraggableRow = (props: any) => {
     const { record, index, ...rest } = props;
     return <SortableItem index={index} {...rest} />;
   };
@@ -273,7 +280,7 @@ function Problems({problemset}) {
   };
   return (
     <Card>
-      <AddProblem problemset={problemset} callback={fetchData} />
+      <AddProblem problemsetId={problemsetId} callback={fetchData} />
       <Table
         rowKey={r => r.id}
         className='arco-drag-table-container'
@@ -285,10 +292,10 @@ function Problems({problemset}) {
         data={problems}
       />
     </Card>
-  )
+  );
 }
 
-function AddProblem({problemset, callback}) {
+function AddProblem({problemsetId, callback}: {problemsetId: number, callback?:() => void}) {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -297,17 +304,17 @@ function AddProblem({problemset, callback}) {
   function onOk() {
     form.validate().then((values) => {
       setConfirmLoading(true);
-      addProblemToProblemset(problemset.id, values)
+      addProblemToProblemset(problemsetId, values)
         .then(res => {
           setVisible(false);
           callback();
         })
         .catch(err => {
-          Message.error(err.response.data.message)
+          Message.error(err.response.data.message);
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
 

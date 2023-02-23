@@ -2,10 +2,10 @@ import { createGroupUser, deleteGroupUser, listGroupUsers, updateGroupUser } fro
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import locale from './locale';
 
-export default ({group}) => {
+export default function People({group}: any) {
   const t = useLocale(locale);
   const [users, setUsers] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -23,7 +23,7 @@ export default ({group}) => {
       .then(res => {
         Message.success('已移除');
         fetchData();
-      })
+      });
   }
 
   const columns:TableColumnProps[] = [
@@ -54,7 +54,7 @@ export default ({group}) => {
               focusLock
               title={t['people.column.action.remove?']}
               onOk={() => {
-                removeUser(record.userId)
+                removeUser(record.userId);
               }}
             >
               <Button type='text'>{t['people.column.action.remove']}</Button>
@@ -70,7 +70,7 @@ export default ({group}) => {
         </>
       )
     }
-  ]
+  ];
   function fetchData() {
     const { current, pageSize } = pagination;
     const params = {
@@ -86,7 +86,7 @@ export default ({group}) => {
           pageSize,
           total: Number(res.data.total),
         });
-      })
+      });
   }
   function callback() {
     setUpdateModalVisible(false);
@@ -109,7 +109,7 @@ export default ({group}) => {
   );
 }
 
-function UpdateUserModal({visible, gid, uid, callback}) {
+function UpdateUserModal({visible, gid, uid, callback}: any) {
   const t = useLocale(locale);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
@@ -120,14 +120,14 @@ function UpdateUserModal({visible, gid, uid, callback}) {
       updateGroupUser(gid, uid, values)
         .then(res => {
           callback();
-          Message.success(t['savedSuccessfully'])
+          Message.success(t['savedSuccessfully']);
         })
         .catch(err => {
-          Message.error(err.response.data.message)
+          Message.error(err.response.data.message);
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
 
@@ -153,7 +153,7 @@ function UpdateUserModal({visible, gid, uid, callback}) {
   );
 }
 
-function AddUser({group, callback}) {
+function AddUser({group, callback}: any) {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -166,14 +166,14 @@ function AddUser({group, callback}) {
         .then(res => {
           setVisible(false);
           callback();
-          Message.success(t['savedSuccessfully'])
+          Message.success(t['savedSuccessfully']);
         })
         .catch(err => {
-          Message.error(err.response.data.message)
+          Message.error(err.response.data.message);
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
 

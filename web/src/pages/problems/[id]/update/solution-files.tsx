@@ -10,7 +10,7 @@ const FormItem = Form.Item;
 import CodeMirror from '@uiw/react-codemirror';
 import { LanguageMap } from '@/api/submission';
 
-const App = ({problem}) => {
+const App = ({problem}: any) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -104,9 +104,9 @@ const App = ({problem}) => {
     setLoading(true);
     listProblemLanguages(problem.id)
       .then(res => {
-        const langs = res.data.data
+        const langs = res.data.data;
         setLanguageOptions(langs);
-      })
+      });
     listProblemFiles(problem.id, { fileType: 'solution' })
       .then((res) => {
         setData(res.data.data || []);
@@ -124,26 +124,26 @@ const App = ({problem}) => {
           name: data.name,
           content: data.content,
           type: data.type,
-        })
-        setEditVisible(true)
-      })
+        });
+        setEditVisible(true);
+      });
   }
   function onLanguageChange(e) {
     if (problem.type === 'FUNCTION') {
       const lang = languageOptions.find(item => {
-        return item.languageCode === Number(e)
-      })
+        return item.languageCode === Number(e);
+      });
       getProblemLanguage(problem.id, lang.id)
         .then(res => {
           form.setFieldValue('content', res.data.userContent);
-        })
+        });
     }
   }
   function deleteFile(id) {
     deleteProblemFile(problem.id, id)
       .then(res => {
         Message.success('删除成功');
-        fetchData()
+        fetchData();
       });
   }
   function onOk() {
@@ -157,9 +157,9 @@ const App = ({problem}) => {
       };
       createProblemFile(problem.id, values)
         .then(res => {
-          Message.success('已保存')
-          setVisible(false)
-          fetchData()
+          Message.success('已保存');
+          setVisible(false);
+          fetchData();
         });
     });
   }
@@ -181,8 +181,8 @@ const App = ({problem}) => {
   function runFile(id) {
     runProblemFile(id)
       .then(res => {
-        Message.info('已提交')
-      })
+        Message.info('已提交');
+      });
   }
   useEffect(() => {
     fetchData();
@@ -215,7 +215,7 @@ const App = ({problem}) => {
                         <Select.Option key={index} value={`${item.languageCode}`}>
                           {item.languageName}
                         </Select.Option>
-                      )
+                      );
                     })}
                   </Select>
                 </FormItem>

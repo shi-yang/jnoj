@@ -11,9 +11,9 @@ import { getContestProblemLanguage, listContestProblemLanguages } from '@/api/co
 import RecentlySubmitted from '@/modules/submission/RecentlySubmitted';
 import { isLogged } from '@/utils/auth';
 
-export default function App(props) {
+export default function App(props: any) {
   const t = useLocale(locale);
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState('');
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageList, setLanguageList] = useState([]);
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
@@ -31,27 +31,27 @@ export default function App(props) {
     getLanguages();
   }, []);
   const onChange = React.useCallback((value, viewUpdate) => {
-    setValue(value)
+    setValue(value);
   }, []);
   const onChangeLanguage = (e) => {
     setLanguage(e);
-  }
+  };
   const getLanguages = () => {
     listContestProblemLanguages(props.contest.id, props.problem.number)
       .then(res => {
-        const langs = res.data.data
+        const langs = res.data.data;
         setLanguageList(langs);
         const userLang = langs.find(item => {
-          return item.languageCode === Number(language)
-        })
+          return item.languageCode === Number(language);
+        });
         if (userLang.id !== 0 && userLang) {
           getContestProblemLanguage(props.contest.id, props.problem.number, userLang.id)
             .then(res => {
               setValue(res.data.userContent);
-            })
+            });
         }
-      })
-  }
+      });
+  };
   const onSubmit = () => {
     const data = {
       problemNumber: props.problem.number,
@@ -63,7 +63,7 @@ export default function App(props) {
       setLastSubmissionID(res.data.id);
       Message.success('已提交');
     });
-  }
+  };
   return (
     <div className={styles['container']}>
       <div className={styles['code-header']}>
@@ -78,7 +78,7 @@ export default function App(props) {
               <Select.Option key={index} value={`${item.languageCode}`}>
                 {item.languageName}
               </Select.Option>
-            )
+            );
           })}
         </Select>
         <Select
@@ -90,7 +90,7 @@ export default function App(props) {
             autoAlignPopupWidth: false,
             autoAlignPopupMinWidth: true,
           }}
-          renderFormat={(option, value) => <IconSkin />}
+          renderFormat={() => <IconSkin />}
         >
           {themes.map((item, index) => 
             <Select.Option key={index} value={item}>
@@ -124,7 +124,7 @@ export default function App(props) {
               lastSubmissionID={lastSubmissionID}
             />
           }
-          <Button type='primary' onClick={(e) => onSubmit()}>{t['submit']}</Button>
+          <Button type='primary' onClick={() => onSubmit()}>{t['submit']}</Button>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ export interface createProblemStatementRequest {
 }
 
 export function createProblemStatement(id: number, data: createProblemStatementRequest) {
-  return axios.post(`/problems/${id}/statements`, data)
+  return axios.post(`/problems/${id}/statements`, data);
 }
 
 export interface statement {
@@ -26,7 +26,7 @@ export interface listProblemStatementsResponse {
 }
 
 export function listProblemStatements(id: number) {
-  return axios.get<listProblemStatementsResponse>(`/problems/${id}/statements`)
+  return axios.get<listProblemStatementsResponse>(`/problems/${id}/statements`);
 }
 
 export interface updateProblemStatementRequest {
@@ -37,9 +37,9 @@ export interface updateProblemStatementRequest {
 }
 
 export function updateProblemStatement(id: number, sid: number, data: updateProblemStatementRequest) {
-  return axios.put(`/problems/${id}/statements/${sid}`, data)
+  return axios.put(`/problems/${id}/statements/${sid}`, data);
 }
 
 export function deleteProblemStatement(id: number, sid: number) {
-  return axios.delete(`/problems/${id}/statements/${sid}`)
+  return axios.delete(`/problems/${id}/statements/${sid}`);
 }

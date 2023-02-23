@@ -92,8 +92,10 @@ const Timer = React.memo(() => {
       </Tooltip>
     }
     </>
-  )
-})
+  );
+});
+
+Timer.displayName = 'Timer';
 
 function Index() {
   const t = useLocale(locale);
@@ -126,10 +128,10 @@ function Index() {
           return {
             label: item.language,
             value: index,
-          }
+          };
         });
         setLanguageOptions(langs);
-      })
+      });
   }
   function onChangeLanguage(e) {
     setLanguage(e);
@@ -140,8 +142,8 @@ function Index() {
     fetchData(pid);
     getProblemset(id)
       .then(res => {
-        setProblemset(res.data)
-      })
+        setProblemset(res.data);
+      });
   }, []);
 
   return (
@@ -217,7 +219,7 @@ function Index() {
                   <Description problemset={problemset} />
                 </TabPane>
                 <TabPane key='submission' className={styles['tabs-pane']} title={t['tab.submissions']}>
-                  <Submission problem={problem} />
+                  <Submission problemId={problem.id} />
                 </TabPane>
               </Tabs>
             </div>,

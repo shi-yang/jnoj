@@ -27,7 +27,7 @@ const languageNameToMonacoLanguage = {
 export default function App() {
   const t = useLocale(locale);
   const { problem } = useContext(ProblemContext);
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState('');
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageId, setLanguageId] = useState(0);
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
@@ -40,40 +40,40 @@ export default function App() {
   const runCode = () => {
     setConsoleVisible(true);
     consoleRef.current.runCode();
-  }
-  const onChange = React.useCallback((value, viewUpdate) => {
-    setValue(value)
+  };
+  const onChange = React.useCallback((value) => {
+    setValue(value);
   }, []);
   
   const onChangeLanguage = (e) => {
     setLanguage(e);
     // 函数题需要查询对应的语言模板
     if (problem.type === 'FUNCTION') {
-      const lang = languageList.find(item => item.languageCode === Number(e))
+      const lang = languageList.find(item => item.languageCode === Number(e));
       getProblemLanguage(problem.id, lang.id)
         .then(res => {
           setLanguageId(lang.id);
           setValue(res.data.userContent);
-        })
+        });
     }
-  }
+  };
   const getLanguages = () => {
     listProblemLanguages(problem.id)
       .then(res => {
-        const langs = res.data.data
+        const langs = res.data.data;
         setLanguageList(langs);
-        const userLang = langs.find(item => item.languageCode === Number(language))
+        const userLang = langs.find(item => item.languageCode === Number(language));
         if (problem.type === 'FUNCTION' && userLang) {
           getProblemLanguage(problem.id, userLang.id)
             .then(res => {
               setLanguageId(userLang.id);
               setValue(res.data.userContent);
-            })
+            });
         } else {
           setValue('');
         }
-      })
-  }
+      });
+  };
   const onSubmit = () => {
     const data = {
       problemId: problem.id,
@@ -84,7 +84,7 @@ export default function App() {
       Message.success('已提交');
       setLastSubmissionID(res.data.id);
     });
-  }
+  };
   useEffect(() => {
     if (problem.id === 0) {
       return;
@@ -92,7 +92,7 @@ export default function App() {
     setCases(problem.sampleTests.map(item => item.input));
     setIsMounted(true);
     getLanguages();
-  }, [problem.id])
+  }, [problem.id]);
   return (
     <div className={styles['container']}>
       <div className={styles['code-header']}>
@@ -107,7 +107,7 @@ export default function App() {
               <Select.Option key={index} value={`${item.languageCode}`}>
                 {item.languageName}
               </Select.Option>
-            )
+            );
           })}
         </Select>
         <Select
@@ -174,7 +174,7 @@ export default function App() {
   );
 }
 
-function ConsoleComponent({ problem, defaultCases, language, languageId, source }, ref) {
+function ConsoleComponent({ problem, defaultCases, language, languageId, source }: any, ref) {
   const t = useLocale(locale);
   const [casesResult, setCasesResult] = useState([]);
   const [activeTab, setActiveTab] = useState('cases');
@@ -184,9 +184,9 @@ function ConsoleComponent({ problem, defaultCases, language, languageId, source 
   const [cases, setCases] = useState(defaultCases);
   useImperativeHandle(ref, () => ({
     runCode: () => {
-      onSubmit()
+      onSubmit();
     }
-  }))
+  }));
   const onSubmit = () => {
     form.validate().then((values) => {
       setCasesResult([]);
@@ -201,10 +201,10 @@ function ConsoleComponent({ problem, defaultCases, language, languageId, source 
           memoryLimit: problem.memoryLimit,
         };
         if (languageId !== 0) {
-          data.languageId = languageId          
+          data.languageId = languageId;
         }
-        p.push(runSandbox(data))
-      })
+        p.push(runSandbox(data));
+      });
       setCompileMsg('');
       setLoading(true);
       Promise.all(p)
@@ -215,15 +215,15 @@ function ConsoleComponent({ problem, defaultCases, language, languageId, source 
               return;
             }
             setCasesResult(v => [...v, { stdin: cases[index], ...value.data }]);
-          })
+          });
         })
         .finally(() => {
           setLoading(false);
-        })
+        });
     }).catch(err => {
-      console.log(err)
-    })
-  }
+      console.log(err);
+    });
+  };
   return (
     <ResizeBox
       directions={['top']}
@@ -310,7 +310,7 @@ function ConsoleComponent({ problem, defaultCases, language, languageId, source 
                         <pre>{item.stdout}</pre>
                       </div>
                     </div>
-                  )
+                  );
                 }) :
                   <>
                     <Typography.Title heading={4}>{t['console.result.compileError']}</Typography.Title>
@@ -322,7 +322,7 @@ function ConsoleComponent({ problem, defaultCases, language, languageId, source 
         </Card>
       </Spin>
     </ResizeBox>
-  )
+  );
 }
 
-const Console = forwardRef(ConsoleComponent)
+const Console = forwardRef(ConsoleComponent);

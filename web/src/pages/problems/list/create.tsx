@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Form, Input, Radio, Space, Typography } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
@@ -24,7 +24,7 @@ function App() {
         })
         .finally(() => {
           setConfirmLoading(false);
-        })
+        });
     });
   }
 

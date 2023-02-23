@@ -29,7 +29,7 @@ const App = (page) => {
         <div className={styles.navbar}>
           <div className={styles.left}>
             <Link href='/'>
-              <img style={{height: 21, cursor: 'pointer' }} src={Logo.src} />
+              <img style={{height: 21,  cursor: 'pointer' }} src={Logo.src} alt='logo' />
             </Link>
           </div>
           <ul className={styles.right}>

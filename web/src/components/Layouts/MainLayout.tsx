@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Divider, Layout } from '@arco-design/web-react';
 import LayoutHeader from './LayoutHeader';
 import styles from './style/main-layouts.module.less';
@@ -7,8 +7,8 @@ import { setting, SettingState } from '@/store/reducers/setting';
 
 const { Header, Footer, Content } = Layout;
 
-const App = ({ children }) => {
-  const settings = useAppSelector<SettingState>(setting)
+const App = ({ children }: { children: ReactNode }) => {
+  const settings = useAppSelector<SettingState>(setting);
   return (
     <Layout className={styles.layout}>
       <Header>
@@ -22,11 +22,11 @@ const App = ({ children }) => {
           <div style={{padding: '15px 0'}}>
             &copy; {new Date().getFullYear()} {settings.name}
             <Divider type='vertical' />
-            Powered by <a href='https://github.com/shi-yang/jnoj' target="_blank">jnoj</a>
+            Powered by <a href='https://github.com/shi-yang/jnoj' target="_blank" rel='noreferrer'>jnoj</a>
             {settings.beian && (
               <>
                 <Divider type='vertical' />
-                <a href="https://beian.miit.gov.cn" target="_blank">
+                <a href="https://beian.miit.gov.cn" target="_blank" rel='noreferrer'>
                   {settings.beian}
                 </a>
               </>

@@ -20,7 +20,7 @@ import { IconSettings } from '@arco-design/web-react/icon';
 import useStorage from '@/utils/useStorage';
 const { Row, Col } = Grid;
 
-function ProblemList({problemsetID = 0}) {
+function ProblemList({problemsetID = 0}: {problemsetID: number}) {
   const t = useLocale(locale);
   const { lang } = useContext(GlobalContext);
   const [displayFields, setDisplayFields] = useStorage('displayField', '');

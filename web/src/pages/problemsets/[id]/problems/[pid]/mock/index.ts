@@ -35,13 +35,13 @@ setupMock({
             output: '7 2\r\n3 7 5 1 10 3 20\r\n'
           }
         ],
-      }
+      };
     });
     Mock.mock(/^\/submissions$/, () => {
       return {
         data: submissions,
         total: submissions.length,
-      }
-    })
+      };
+    });
   },
 });

@@ -10,5 +10,5 @@ export interface runRequest {
 }
 
 export function runSandbox(data:runRequest) {
-  return axios.post(`/sandboxs`, data)
+  return axios.post(`/sandboxs`, data);
 }

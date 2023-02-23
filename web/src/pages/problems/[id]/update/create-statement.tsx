@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Modal, Button, Form, Input, Select, Message, Radio } from '@arco-design/web-react';
+import React, { useEffect, useState } from 'react';
+import { Modal, Button, Form, Select, Message } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -8,7 +8,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 const options = ['中文', 'English'];
-function App(props) {
+function App(props: any) {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -21,31 +21,31 @@ function App(props) {
       createProblemStatement(props.problem.id, res)
         .then(res => {
           Message.success('Success !');
-          props.callback()
+          props.callback();
         })
         .finally(() => {
           setVisible(false);
           setConfirmLoading(false);
-        })
+        });
     });
   }
 
   function fetchData() {
     listProblemStatements(props.problem.id)
       .then(res => {
-        const { data } = res.data
+        const { data } = res.data;
         data.forEach(item => {
-          setDisabledLanguages((pre) => ({...pre, [item.language]: true}))
-        })
-      })
+          setDisabledLanguages((pre) => ({...pre, [item.language]: true}));
+        });
+      });
   }
   useEffect(() => {
     fetchData();
     return () => {
       form.clearFields();
       setDisabledLanguages({});
-    }
-  }, [visible])
+    };
+  }, [visible]);
   return (
     <div>
       <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>

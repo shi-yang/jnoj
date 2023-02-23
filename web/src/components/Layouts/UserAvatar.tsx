@@ -1,13 +1,14 @@
-import { useAppSelector } from "@/hooks";
-import { userInfo } from "@/store/reducers/user";
-import { removeAccessToken } from "@/utils/auth";
-import useLocale from "@/utils/useLocale";
-import { Avatar, Button, Divider, Dropdown, Menu } from "@arco-design/web-react"
-import { IconPoweroff, IconSettings, IconUser } from "@arco-design/web-react/icon"
-import { useRouter } from "next/router";
+import React from 'react';
+import { useAppSelector } from '@/hooks';
+import { userInfo } from '@/store/reducers/user';
+import { removeAccessToken } from '@/utils/auth';
+import useLocale from '@/utils/useLocale';
+import { Avatar, Button, Divider, Dropdown, Menu } from '@arco-design/web-react';
+import { IconPoweroff, IconSettings, IconUser } from '@arco-design/web-react/icon';
+import { useRouter } from 'next/router';
 import styles from './style/main-layouts.module.less';
 
-export default () => {
+export default function UserAvatar() {
   const t = useLocale();
   const user = useAppSelector(userInfo);
   const router = useRouter();
@@ -26,16 +27,16 @@ export default () => {
   }
   const droplist = (
     <Menu onClickMenuItem={onDropListMenuItemClick}>
-      <Menu.Item key="homepage">
+      <Menu.Item key='homepage'>
         <IconUser className={styles['dropdown-icon']} />
         {t['menu.user.home']}
       </Menu.Item>
-      <Menu.Item key="setting">
+      <Menu.Item key='setting'>
         <IconSettings className={styles['dropdown-icon']} />
         {t['menu.user.setting']}
       </Menu.Item>
       <Divider style={{ margin: '4px 0' }} />
-      <Menu.Item key="logout">
+      <Menu.Item key='logout'>
         <IconPoweroff className={styles['dropdown-icon']} />
         {t['logout']}
       </Menu.Item>
@@ -43,7 +44,7 @@ export default () => {
   );
   
   return (
-    <Dropdown droplist={droplist} position="br">
+    <Dropdown droplist={droplist} position='br'>
       <Button type='text' style={{width: '100px'}}>
         <Avatar size={32} style={{ cursor: 'pointer' }}>
           <IconUser />
@@ -51,5 +52,5 @@ export default () => {
         <span>{ user.nickname }</span>
       </Button>
     </Dropdown>
-  )
+  );
 }

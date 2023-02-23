@@ -7,7 +7,13 @@ import { FormatMemorySize, FormatTime } from '@/utils/format';
 import SubmissionVerdict from './SubmissionVerdict';
 import SubmissionDrawer from './SubmissionDrawer';
 
-const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => {
+interface SubmissionProps {
+  pid?:number,
+  entityType?:number,
+  userId?:number,
+}
+
+const Submission = ({pid=undefined, entityType=undefined, userId=undefined}: SubmissionProps) => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -100,11 +106,7 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}) => 
       title: t['action'],
       dataIndex: 'action',
       align: 'center',
-      render: (_, record) => (
-        <>
-          <Button type="text" size="small" onClick={() => { onView(record.id) }}>查看</Button>
-        </>
-      ),
+      render: (_, record) => <Button type="text" size="small" onClick={() => { onView(record.id); }}>查看</Button>,
     },
   ];
   useEffect(() => {
