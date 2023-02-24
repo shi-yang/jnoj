@@ -8,12 +8,14 @@ import { GlobalContext } from '@/context';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
+import CreateModal from './create';
 
 const { Row, Col } = Grid;
 const { useForm } = Form;
 
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
+  groupId: number
 }) {
   const { lang } = useContext(GlobalContext);
 
@@ -49,6 +51,9 @@ function SearchForm(props: {
           </Col>
         </Row>
       </Form>
+      <div className={styles['right-button']}>
+        <CreateModal groupId={props.groupId} />
+      </div>
     </div>
   );
 }

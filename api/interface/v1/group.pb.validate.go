@@ -62,8 +62,6 @@ func (m *Group) validate(all bool) error {
 
 	// no validation rules for Description
 
-	// no validation rules for UserId
-
 	// no validation rules for MemberCount
 
 	// no validation rules for Privacy
@@ -71,6 +69,10 @@ func (m *Group) validate(all bool) error {
 	// no validation rules for Membership
 
 	// no validation rules for InvitationCode
+
+	// no validation rules for UserId
+
+	// no validation rules for UserNickname
 
 	// no validation rules for Role
 
@@ -203,6 +205,8 @@ func (m *ListGroupsRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Name
+
+	// no validation rules for Sort
 
 	// no validation rules for Page
 

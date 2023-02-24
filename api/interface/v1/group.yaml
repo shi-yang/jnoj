@@ -9,3 +9,5 @@ rules:
   middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector: "/jnoj.interface.v1.GroupService/DeleteGroupUser"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.GroupService/CreateGroupUser"
+  middleware: "jnoj/internal/middleware/auth.User()"

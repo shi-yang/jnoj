@@ -30,6 +30,8 @@ type Group struct {
 	MemberCount    int
 	UserID         int
 	CreatedAt      time.Time
+
+	User *User `json:"user" gorm:"foreignKey:UserID"`
 }
 
 // GroupUser .
@@ -56,13 +58,23 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 	count := int64(0)
 	page := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
-		Model(&Group{})
+		Model(&Group{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		})
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
 	uid, ok := auth.GetUserID(ctx)
 	if req.Mygroup != nil && *req.Mygroup && ok {
 		db.Joins("INNER JOIN group_user on group_user.group_id=group.ID AND group_user.user_id=?", uid)
+		if req.Sort != "" {
+			if req.Sort == "joinedAt" {
+				db.Order("group_user.created_at desc")
+			} else {
+				db.Order("group.created_at desc")
+			}
+		}
 	}
 	db.Count(&count)
 	db.Offset(page.GetOffset()).
@@ -70,14 +82,19 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 		Find(&res)
 	rv := make([]*biz.Group, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.Group{
+		g := &biz.Group{
 			ID:          v.ID,
 			Name:        v.Name,
 			Membership:  v.Membership,
 			Privacy:     v.Privacy,
 			Description: v.Description,
 			MemberCount: v.MemberCount,
-		})
+			UserID:      v.UserID,
+		}
+		if v.User != nil {
+			g.UserNickname = v.User.Nickname
+		}
+		rv = append(rv, g)
 	}
 	return rv, count
 }

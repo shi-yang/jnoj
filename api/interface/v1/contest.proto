@@ -164,6 +164,16 @@ message Contest {
     }
     // 运行状态
     RunningStatus running_status = 13;
+    message Owner {
+        enum OwnerType {
+            GROUP = 0;
+            USER = 1;
+        }
+        OwnerType type = 1;
+        int32 id = 2;
+        string name = 3;
+    }
+    Owner owner = 14;
 }
 
 message ListContestProblemsRequest {

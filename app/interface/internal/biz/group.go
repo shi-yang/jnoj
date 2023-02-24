@@ -20,6 +20,7 @@ type Group struct {
 	MemberCount    int
 	Role           int // 当前登录用户的角色
 	UserID         int
+	UserNickname   string
 	CreatedAt      time.Time
 }
 

@@ -35,6 +35,8 @@ type Contest struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt
+	Group            *Group `json:"group" gorm:"foreignKey:GroupID"`
+	User             *User  `json:"user" gorm:"foreignKey:UserID"`
 }
 
 // NewContestRepo .
@@ -51,7 +53,13 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	count := int64(0)
 	pager := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
-		Model(&Contest{})
+		Model(&Contest{}).
+		Preload("Group", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name")
+		}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		})
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
@@ -65,7 +73,7 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 		Find(&res)
 	rv := make([]*biz.Contest, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.Contest{
+		c := &biz.Contest{
 			ID:               v.ID,
 			Name:             v.Name,
 			StartTime:        v.StartTime,
@@ -73,7 +81,14 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 			ParticipantCount: v.ParticipantCount,
 			Type:             v.Type,
 			GroupId:          v.GroupID,
-		})
+			UserID:           v.UserID,
+		}
+		if v.Group != nil {
+			c.OwnerName = v.Group.Name
+		} else if v.User != nil {
+			c.OwnerName = v.User.Nickname
+		}
+		rv = append(rv, c)
 	}
 	return rv, count
 }

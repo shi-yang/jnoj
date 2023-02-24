@@ -716,6 +716,35 @@ func (m *Contest) validate(all bool) error {
 
 	// no validation rules for RunningStatus
 
+	if all {
+		switch v := interface{}(m.GetOwner()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ContestValidationError{
+					field:  "Owner",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ContestValidationError{
+					field:  "Owner",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetOwner()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ContestValidationError{
+				field:  "Owner",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return ContestMultiError(errors)
 	}
@@ -3133,6 +3162,112 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetContestProblemLanguageRequestValidationError{}
+
+// Validate checks the field values on Contest_Owner with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Contest_Owner) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Contest_Owner with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in Contest_OwnerMultiError, or
+// nil if none found.
+func (m *Contest_Owner) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Contest_Owner) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Type
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	if len(errors) > 0 {
+		return Contest_OwnerMultiError(errors)
+	}
+
+	return nil
+}
+
+// Contest_OwnerMultiError is an error wrapping multiple validation errors
+// returned by Contest_Owner.ValidateAll() if the designated constraints
+// aren't met.
+type Contest_OwnerMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m Contest_OwnerMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m Contest_OwnerMultiError) AllErrors() []error { return m }
+
+// Contest_OwnerValidationError is the validation error returned by
+// Contest_Owner.Validate if the designated constraints aren't met.
+type Contest_OwnerValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e Contest_OwnerValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e Contest_OwnerValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e Contest_OwnerValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e Contest_OwnerValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e Contest_OwnerValidationError) ErrorName() string { return "Contest_OwnerValidationError" }
+
+// Error satisfies the builtin error interface
+func (e Contest_OwnerValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sContest_Owner.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = Contest_OwnerValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = Contest_OwnerValidationError{}
 
 // Validate checks the field values on ContestProblem_Statement with the rules
 // defined in the proto definition for this message. If any rules are

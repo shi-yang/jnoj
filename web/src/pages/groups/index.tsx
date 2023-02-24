@@ -6,9 +6,9 @@ import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
 import {
   Button, Card, Descriptions, Form, Grid, Input, Message,
-  Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty
+  Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty, Select, Space, Avatar
 } from '@arco-design/web-react';
-import { IconPlus, IconUser } from '@arco-design/web-react/icon';
+import { IconMore, IconPlus, IconShareInternal, IconThumbUp, IconUser } from '@arco-design/web-react/icon';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -30,10 +30,13 @@ export default function Index() {
     hideOnSinglePage: true,
     sizeOptions: [25, 50, 100]
   });
-  const [formParams, setFormParams] = useState({});
+  const [formParams, setFormParams] = useState({
+    name: '',
+    sort: 'joinedAt',
+    mygroup: true,
+  });
   const [activeTab, setActiveTab] = useState('all');
   const user = useAppSelector(userInfo);
-  const didMountRef = useRef(true);
   useEffect(() => {
     if (isLogged) {
       setActiveTab('mygroup');
@@ -41,10 +44,6 @@ export default function Index() {
     }
   }, []);
   useEffect(() => {
-    if (didMountRef.current) {
-      didMountRef.current = false;
-      return;
-    }
     fetchData();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
   function fetchData() {
@@ -95,12 +94,28 @@ export default function Index() {
             style={{marginBottom: '10px'}}
             activeTab={activeTab}
             extra={
-              <Input.Search
-                style={{ width: '240px' }}
-                onSearch={(value) => {
-                  setFormParams({...formParams, name: value});
-                }}
-              />
+              <Space>
+                { activeTab === 'mygroup' &&
+                  <Select
+                    style={{ width: 120 }}
+                    defaultValue='joinedAt'
+                    onChange={(value) => setFormParams({...formParams, sort: value})}
+                  >
+                    <Select.Option value='joinedAt'>
+                      {t['index.sort.joinedAt']}
+                    </Select.Option>
+                    <Select.Option value='createdAt'>
+                      {t['index.sort.createdAt']}
+                    </Select.Option>
+                  </Select>
+                }
+                <Input.Search
+                  style={{ width: '240px' }}
+                  onSearch={(value) => {
+                    setFormParams({...formParams, name: value});
+                  }}
+                />
+              </Space>
             }
             onChange={onTabsChange}
           >
@@ -114,23 +129,32 @@ export default function Index() {
                   <Card
                     bordered={true}
                     size='small'
-                    title={
-                      item.name
-                    }
+                    actions={[
+                      <span className='icon-hover'>
+                        <IconUser /> {item.memberCount}
+                      </span>,
+                    ]}
                   >
-                    <div className={styles.content}>
-                      <Typography.Paragraph
-                        className={styles['description']}
-                        ellipsis={{ showTooltip: true, cssEllipsis: true, rows: 2 }}
-                      >
-                        {item.description}
-                      </Typography.Paragraph>
-                    </div>
-                    <Descriptions
-                      size="small"
-                      data={[
-                        { label: <IconUser />, value: item.memberCount  },
-                      ]}
+                    <Card.Meta
+                      avatar={
+                        <Space>
+                          <Avatar size={24} style={{ backgroundColor: '#3370ff' }}>
+                            <IconUser />
+                          </Avatar>
+                          <Typography.Text>{item.userNickname}</Typography.Text>
+                        </Space>
+                      }
+                      title={item.name}
+                      description={
+                        <div className={styles.content}>
+                          <Typography.Paragraph
+                            className={styles['description']}
+                            ellipsis={{ showTooltip: true, cssEllipsis: true, rows: 2 }}
+                          >
+                            {item.description}
+                          </Typography.Paragraph>
+                        </div>
+                      }
                     />
                   </Card>
                 </Link>
@@ -172,7 +196,7 @@ function AddGroup() {
 
   return (
     <div>
-      <Button type='primary' icon={<IconPlus />} onClick={() => setVisible(true)}>
+      <Button type='outline' icon={<IconPlus />} onClick={() => setVisible(true)}>
         {t['index.createGroup']}
       </Button>
       <Modal

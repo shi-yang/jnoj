@@ -1,7 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import { FormatTime } from '@/utils/format';
-import { IconUser } from '@arco-design/web-react/icon';
+import { Link } from '@arco-design/web-react';
+import { IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 
 export const ContestType = ['', 'ICPC', 'IOI', 'OI'];
 
@@ -58,5 +58,13 @@ export function getColumns(
       width: 180,
       render: col => FormatTime(col)
     },
+    {
+      title: t['contest.columns.owner'],
+      dataIndex: 'owner',
+      align: 'center' as 'center',
+      render: col => col.type === 'GROUP'
+        ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
+        : <Link href={`/u/${col.id}`}>{col.name}</Link>
+    }
   ];
 }

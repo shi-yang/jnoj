@@ -25,6 +25,7 @@ type Contest struct {
 	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
+	OwnerName        string
 }
 
 const (

@@ -69,20 +69,22 @@ message Group {
     int32 id = 1;
     string name = 2;
     string description = 3;
-    int32 user_id = 4;
-    int32 member_count = 5;
-    int32 privacy = 6;
-    int32 membership = 7;
-    string invitation_code = 8;
-    GroupUserRole role = 9;
-    google.protobuf.Timestamp created_at = 10;
+    int32 member_count = 4;
+    int32 privacy = 5;
+    int32 membership = 6;
+    string invitation_code = 7;
+    int32 user_id = 8;
+    string user_nickname = 9;
+    GroupUserRole role = 10;
+    google.protobuf.Timestamp created_at = 11;
 }
 
 message ListGroupsRequest {
     string name = 1;
     optional bool mygroup = 2;
-    int32 page = 3;
-    int32 per_page = 4;
+    string sort = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListGroupsResponse {

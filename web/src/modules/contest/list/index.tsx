@@ -3,7 +3,6 @@ import {
   Table,
   Card,
   PaginationProps,
-  Space,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
@@ -11,7 +10,6 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
-import CreateModal from './create';
 import { listContests } from '@/api/contest';
 
 function ContestList({groupId = 0}: {groupId?:number}) {
@@ -30,7 +28,8 @@ function ContestList({groupId = 0}: {groupId?:number}) {
     pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
-    sizeOptions: [25, 50, 100]
+    sizeOptions: [25, 50, 100],
+    hideOnSinglePage: true,
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
@@ -76,12 +75,7 @@ function ContestList({groupId = 0}: {groupId?:number}) {
 
   return (
     <Card>
-      <SearchForm onSearch={handleSearch} />
-      <div className={styles['button-group']}>
-        <Space>
-          <CreateModal groupId={groupId} />
-        </Space>
-      </div>
+      <SearchForm groupId={groupId} onSearch={handleSearch} />
       <Table
         rowKey='id'
         loading={loading}

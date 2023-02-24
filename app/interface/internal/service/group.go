@@ -29,12 +29,14 @@ func (s *GroupService) ListGroups(ctx context.Context, req *v1.ListGroupsRequest
 	resp.Data = make([]*v1.Group, 0)
 	for _, v := range res {
 		resp.Data = append(resp.Data, &v1.Group{
-			Id:          int32(v.ID),
-			Name:        v.Name,
-			Privacy:     int32(v.Privacy),
-			Membership:  int32(v.Membership),
-			Description: v.Description,
-			MemberCount: int32(v.MemberCount),
+			Id:           int32(v.ID),
+			Name:         v.Name,
+			Privacy:      int32(v.Privacy),
+			Membership:   int32(v.Membership),
+			Description:  v.Description,
+			MemberCount:  int32(v.MemberCount),
+			UserId:       int32(v.UserID),
+			UserNickname: v.UserNickname,
 		})
 	}
 	return resp, nil

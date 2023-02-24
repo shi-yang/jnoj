@@ -46,7 +46,12 @@ function Settings() {
         <Form.Item label={t['settings.form.description']} field='description'>
           <Input.TextArea placeholder='' />
         </Form.Item>
-        <Form.Item label={t['settings.form.privacy']} field='privacy' required rules={[{ required: true }]}>
+        <Form.Item
+          label={t['settings.form.privacy']}
+          field='privacy'
+          required rules={[{ required: true }]}
+          help={t['settings.form.privacy.helpMsg']}
+        >
           <Radio.Group>
             <Radio value={0}>{t['settings.form.privacy.private']}</Radio>
             <Radio value={1}>{t['settings.form.privacy.public']}</Radio>

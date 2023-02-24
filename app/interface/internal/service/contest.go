@@ -38,6 +38,16 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			Type:             int32(v.Type),
 			RunningStatus:    v1.Contest_RunningStatus(runningStatus),
 		}
+		c.Owner = &v1.Contest_Owner{
+			Name: v.OwnerName,
+		}
+		if v.GroupId != 0 {
+			c.Owner.Id = int32(v.GroupId)
+			c.Owner.Type = v1.Contest_Owner_GROUP
+		} else {
+			c.Owner.Id = int32(v.UserID)
+			c.Owner.Type = v1.Contest_Owner_USER
+		}
 		resp.Data = append(resp.Data, c)
 	}
 	return resp, nil

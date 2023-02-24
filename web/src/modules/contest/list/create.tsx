@@ -35,21 +35,22 @@ function CreateModal({groupId = 0}: {groupId: number}) {
 
   return (
     <div>
-      <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
+      <Button type='outline' icon={<IconPlus />} onClick={() => setVisible(true)}>
         {t['searchTable.operations.add']}
       </Button>
       <Modal
-        title='创建比赛'
+        title={t['searchForm.create.createContest']}
+        style={{width: '650px'}}
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
         onCancel={() => setVisible(false)}
       >
         <Form form={form}>
-          <FormItem label='比赛名称' required field='name' rules={[{ required: true }]}>
+          <FormItem label={t['searchForm.create.contestName']} required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
           </FormItem>
-          <FormItem label='比赛时间' required field='time' rules={[{ required: true }]}>
+          <FormItem label={t['searchForm.create.contestTime']} required field='time' rules={[{ required: true }]}>
             <RangePicker
               showTime={{
                 format: 'HH:mm:ss',
