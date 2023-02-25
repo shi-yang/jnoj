@@ -164,7 +164,7 @@ func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, 
 			return isOIModeRunning, false
 		}
 		runningStatus := contest.GetRunningStatus()
-		role := contest.GetRole(ctx)
+		role := contest.Role
 		// 比赛未结束时，仅 比赛管理员 admin 或者当前选手可查看
 		if runningStatus != ContestRunningStatusFinished {
 			// OI 提交之后无反馈
@@ -220,8 +220,13 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		if err != nil {
 			return nil, v1.ErrorContestNotFound(err.Error())
 		}
-		if !uc.contestRepo.ExistContestUser(ctx, s.EntityID, s.UserID) {
-			uc.contestRepo.CreateContestUser(ctx, &ContestUser{ContestID: s.EntityID, UserID: s.UserID})
+		// 用户没有参赛时，自动注册
+		if role := uc.contestRepo.GetContestUserRole(ctx, s.EntityID, s.UserID); role == ContestRoleGuest {
+			uc.contestRepo.CreateContestUser(ctx, &ContestUser{
+				ContestID: s.EntityID,
+				UserID:    s.UserID,
+				Role:      ContestRoleUnofficialPlayer,
+			})
 		}
 		contestProblem, err := uc.contestRepo.GetContestProblemByNumber(ctx, s.EntityID, s.ProblemNumber)
 		if err != nil {

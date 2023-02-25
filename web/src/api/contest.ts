@@ -1,11 +1,5 @@
 import axios from '@/utils/request';
 
-export enum ContestRole {
-  GUEST = 'GUEST',
-  PLAYER = 'PLAYER',
-  ADMIN = 'ADMIN',
-}
-
 export function getContest(id) {
   return axios.get(`/contests/${id}`);
 }
@@ -60,10 +54,14 @@ export function createContestUser(id, data = null) {
   return axios.post(`/contests/${id}/users`, data);
 }
 
+export function updateContestUser(id, data) {
+  return axios.put(`/contests/${id}/users`, data);
+}
+
 export function getContestProblem(id, pkey) {
   return axios.get(`/contests/${id}/problems/${pkey}`);
 }
 
 export function listContestSubmissions(id, params) {
-  return axios.get(`/contests/${id}/submissions`, params);
+  return axios.get(`/contests/${id}/submissions`, {params});
 }

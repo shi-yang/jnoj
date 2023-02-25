@@ -37,6 +37,7 @@ const OperationContestServiceListContestSubmissions = "/jnoj.interface.v1.Contes
 const OperationContestServiceListContestUsers = "/jnoj.interface.v1.ContestService/ListContestUsers"
 const OperationContestServiceListContests = "/jnoj.interface.v1.ContestService/ListContests"
 const OperationContestServiceUpdateContest = "/jnoj.interface.v1.ContestService/UpdateContest"
+const OperationContestServiceUpdateContestUser = "/jnoj.interface.v1.ContestService/UpdateContestUser"
 
 type ContestServiceHTTPServer interface {
 	CreateContest(context.Context, *CreateContestRequest) (*Contest, error)
@@ -53,6 +54,7 @@ type ContestServiceHTTPServer interface {
 	ListContestUsers(context.Context, *ListContestUsersRequest) (*ListContestUsersResponse, error)
 	ListContests(context.Context, *ListContestsRequest) (*ListContestsResponse, error)
 	UpdateContest(context.Context, *UpdateContestRequest) (*Contest, error)
+	UpdateContestUser(context.Context, *UpdateContestUserRequest) (*ContestUser, error)
 }
 
 func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServer) {
@@ -65,6 +67,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/GetContestProblem", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestUser", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/UpdateContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestUsers", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestAllSubmissions", auth.Guest())
@@ -81,8 +84,9 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.DELETE("/contests/{id}/problems/{number}", _ContestService_DeleteContestProblem0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems/{number}/languages", _ContestService_ListContestProblemLanguages0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems/{number}/languages/{language}", _ContestService_GetContestProblemLanguage0_HTTP_Handler(srv))
-	r.GET("/contests/{id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
-	r.POST("/contests/{id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
+	r.GET("/contests/{contest_id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
+	r.POST("/contests/{contest_id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
+	r.PUT("/contests/{contest_id}/users", _ContestService_UpdateContestUser0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
 }
@@ -345,6 +349,28 @@ func _ContestService_CreateContestUser0_HTTP_Handler(srv ContestServiceHTTPServe
 	}
 }
 
+func _ContestService_UpdateContestUser0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateContestUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceUpdateContestUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateContestUser(ctx, req.(*UpdateContestUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ContestUser)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListContestAllSubmissionsRequest
@@ -404,6 +430,7 @@ type ContestServiceHTTPClient interface {
 	ListContestUsers(ctx context.Context, req *ListContestUsersRequest, opts ...http.CallOption) (rsp *ListContestUsersResponse, err error)
 	ListContests(ctx context.Context, req *ListContestsRequest, opts ...http.CallOption) (rsp *ListContestsResponse, err error)
 	UpdateContest(ctx context.Context, req *UpdateContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
+	UpdateContestUser(ctx context.Context, req *UpdateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
 }
 
 type ContestServiceHTTPClientImpl struct {
@@ -442,7 +469,7 @@ func (c *ContestServiceHTTPClientImpl) CreateContestProblem(ctx context.Context,
 
 func (c *ContestServiceHTTPClientImpl) CreateContestUser(ctx context.Context, in *CreateContestUserRequest, opts ...http.CallOption) (*ContestUser, error) {
 	var out ContestUser
-	pattern := "/contests/{id}/users"
+	pattern := "/contests/{contest_id}/users"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationContestServiceCreateContestUser))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -559,7 +586,7 @@ func (c *ContestServiceHTTPClientImpl) ListContestSubmissions(ctx context.Contex
 
 func (c *ContestServiceHTTPClientImpl) ListContestUsers(ctx context.Context, in *ListContestUsersRequest, opts ...http.CallOption) (*ListContestUsersResponse, error) {
 	var out ListContestUsersResponse
-	pattern := "/contests/{id}/users"
+	pattern := "/contests/{contest_id}/users"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceListContestUsers))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -588,6 +615,19 @@ func (c *ContestServiceHTTPClientImpl) UpdateContest(ctx context.Context, in *Up
 	pattern := "/contests/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationContestServiceUpdateContest))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) UpdateContestUser(ctx context.Context, in *UpdateContestUserRequest, opts ...http.CallOption) (*ContestUser, error) {
+	var out ContestUser
+	pattern := "/contests/{contest_id}/users"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContestServiceUpdateContestUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

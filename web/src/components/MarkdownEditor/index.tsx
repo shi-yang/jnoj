@@ -83,7 +83,7 @@ const Editor = ({imageRequest, imageUploadedFile, ...props}: JSX.IntrinsicAttrib
       style={{height: '100%'}}
       minHeight={300}
       commands={[
-        image({imageRequest, imageUploadedFile}),
+        imageRequest && image({imageRequest, imageUploadedFile}),
       ]}
       previewOptions={{
         remarkPlugins:[[remarkMath]],

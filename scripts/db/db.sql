@@ -19,7 +19,9 @@ CREATE TABLE `contest` (
   `type` tinyint UNSIGNED NOT NULL,
   `group_id` int UNSIGNED NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `status` tinyint UNSIGNED NOT NULL,
+  `privacy` tinyint UNSIGNED NOT NULL,
+  `membership` tinyint UNSIGNED NOT NULL,
+  `invitation_code` varchar(16) COLLATE utf8mb4_general_ci NOT NULL,
   `participant_count` mediumint UNSIGNED NOT NULL DEFAULT '0',
   `user_id` int UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -54,7 +56,8 @@ CREATE TABLE `contest_user` (
   `id` int UNSIGNED NOT NULL,
   `contest_id` int UNSIGNED NOT NULL,
   `user_id` int UNSIGNED NOT NULL,
-  `is_ban` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `name` varchar(64) COLLATE utf8mb4_general_ci NOT NULL,
+  `role` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

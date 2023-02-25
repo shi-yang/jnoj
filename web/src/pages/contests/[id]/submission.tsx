@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -7,9 +7,11 @@ import { listContestSubmissions } from '@/api/contest';
 import { FormatMemorySize, FormatTime } from '@/utils/format';
 import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
 import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
+import ContestContext from './context';
 
-const Submission = ({contest}: {contest: {id: number}}) => {
+const Submission = () => {
   const t = useLocale(locale);
+  const contest = useContext(ContestContext);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -17,19 +19,23 @@ const Submission = ({contest}: {contest: {id: number}}) => {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
-    pageSize: 10,
+    pageSize: 20,
     current: 1,
+    sizeOptions: [20, 50, 100],
     pageSizeChangeResetCurrent: true,
   });
+  useEffect(() => {
+    fetchData();
+  }, [pagination.pageSize, pagination.current]);
   function fetchData() {
     const { current, pageSize } = pagination;
-    const param = {
+    const params = {
       page: current,
-      pageSize,
+      per_page: pageSize,
       contestId: contest.id
     };
     setLoading(true);
-    listContestSubmissions(contest.id, param)
+    listContestSubmissions(contest.id, params)
       .then((res) => {
         setData(res.data.data || []);
         setPatination({
@@ -118,9 +124,6 @@ const Submission = ({contest}: {contest: {id: number}}) => {
     },
   ];
 
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <Card>
       <Table

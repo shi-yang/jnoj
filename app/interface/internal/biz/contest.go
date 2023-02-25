@@ -18,10 +18,12 @@ type Contest struct {
 	FrozenTime       *time.Time // 封榜时间
 	Type             int        // 比赛类型
 	Description      string
-	Status           int // 隐藏，公开，私有
+	Privacy          int    // 隐私设置，私有、公开
+	Membership       int    // 参赛资格
+	InvitationCode   string // 邀请码
 	UserID           int
-	ParticipantCount int  // 参与人数
-	IsRegistered     bool // 是否参赛
+	ParticipantCount int // 参与人数
+	Role             int // 登录用户角色
 	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
@@ -29,9 +31,17 @@ type Contest struct {
 }
 
 const (
-	ContestRoleGuest = iota
-	ContestRolePlayer
-	ContestRoleAdmin
+	ContestRoleGuest            = iota // 游客
+	ContestRoleOfficialPlayer          // 选手，只有正式选手参与排名
+	ContestRoleUnofficialPlayer        // 非正式选手，不参与排名
+	ContestRoleWriter                  // 出题人
+	ContestRoleAdmin                   // 管理
+)
+
+const (
+	ContestMembershipAllowAnyone    = iota // 允许任何人
+	ContestMembershipInvitationCode        // 凭邀请码
+	ContestMembershipGroupUser             // 仅小组成员，比赛属于小组时才能设置
 )
 
 type ContestSubmission struct {
@@ -55,9 +65,8 @@ const (
 )
 
 const (
-	ContestStatusHidden  = iota // 隐藏
-	ContestStatusPublic         // 公开
-	ContestStatusPrivate        // 私有
+	ContestPrivacyPrivate = iota // 私有
+	ContestPrivacyPublic         // 公开
 )
 
 const (
@@ -89,11 +98,11 @@ const (
 )
 
 // HasPermission 是否有权限
-// 修改权限，仅比赛创建人可以看
+// 修改权限，仅比赛创建人
 // 查看权限，规则要求：
 // 1、公开情况下，比赛结束
 // 2、管理员
-// 3、比赛不是不可见状态
+// 3、比赛不是私有
 // 4、参赛用户
 func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bool {
 	userID, _ := auth.GetUserID(ctx)
@@ -104,32 +113,16 @@ func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bo
 	if c.UserID == userID {
 		return true
 	}
-	// 隐藏情况下除了比赛创建人都不准看
-	if c.Status == ContestStatusHidden {
-		return false
-	}
 	runningStatus := c.GetRunningStatus()
 	// 公开赛比赛结束
-	if c.Status == ContestStatusPublic && runningStatus == ContestRunningStatusFinished {
+	if c.Privacy == ContestPrivacyPublic && runningStatus == ContestRunningStatusFinished {
 		return true
 	}
-	role := c.GetRole(ctx)
-	// 是选手且比赛开始后
-	if role == ContestRolePlayer && runningStatus != ContestRunningStatusNotStarted {
+	// 比赛开始后
+	if c.Role == ContestRoleOfficialPlayer && runningStatus != ContestRunningStatusNotStarted {
 		return true
 	}
 	return false
-}
-
-// GetRole 获取当前用户的角色
-func (c *Contest) GetRole(ctx context.Context) int {
-	userID, ok := auth.GetUserID(ctx)
-	if ok && c.UserID == userID {
-		return ContestRoleAdmin
-	} else if c.IsRegistered {
-		return ContestRolePlayer
-	}
-	return ContestRoleGuest
 }
 
 // ContestRepo is a Contest repo.
@@ -173,6 +166,10 @@ func (uc *ContestUsecase) GetContest(ctx context.Context, id int) (*Contest, err
 	contest, err := uc.repo.GetContest(ctx, id)
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	// 邀请码仅管理员可见
+	if contest.Role != ContestRoleAdmin {
+		contest.InvitationCode = ""
 	}
 	return contest, nil
 }
@@ -245,8 +242,8 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			Time:          v.Time,
 			Memory:        v.Memory,
 			User: ContestUser{
-				ID:       v.User.ID,
-				Nickname: v.User.Nickname,
+				ID:   v.User.ID,
+				Name: v.User.Nickname,
 			},
 		}
 		// OI 提交之后无反馈

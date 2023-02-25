@@ -504,9 +504,11 @@ func (m *UpdateContestRequest) validate(all bool) error {
 
 	// no validation rules for Type
 
-	// no validation rules for Status
+	// no validation rules for Privacy
 
-	// no validation rules for ParticipantCount
+	// no validation rules for Membership
+
+	// no validation rules for InvitationCode
 
 	if len(errors) > 0 {
 		return UpdateContestRequestMultiError(errors)
@@ -704,13 +706,24 @@ func (m *Contest) validate(all bool) error {
 
 	// no validation rules for Type
 
-	// no validation rules for Status
+	// no validation rules for Privacy
+
+	// no validation rules for Membership
+
+	if utf8.RuneCountInString(m.GetInvitationCode()) > 16 {
+		err := ContestValidationError{
+			field:  "InvitationCode",
+			reason: "value length must be at most 16 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for ParticipantCount
 
 	// no validation rules for UserId
-
-	// no validation rules for IsRegistered
 
 	// no validation rules for Role
 
@@ -1763,9 +1776,13 @@ func (m *ContestUser) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Nickname
+	// no validation rules for Name
 
 	// no validation rules for UserId
+
+	// no validation rules for UserNickname
+
+	// no validation rules for Role
 
 	if len(errors) > 0 {
 		return ContestUserMultiError(errors)
@@ -1866,7 +1883,7 @@ func (m *ListContestUsersRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for ContestId
 
 	// no validation rules for Page
 
@@ -2112,7 +2129,9 @@ func (m *CreateContestUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for ContestId
+
+	// no validation rules for InvitationCode
 
 	if len(errors) > 0 {
 		return CreateContestUserRequestMultiError(errors)
@@ -2193,6 +2212,116 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateContestUserRequestValidationError{}
+
+// Validate checks the field values on UpdateContestUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateContestUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateContestUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateContestUserRequestMultiError, or nil if none found.
+func (m *UpdateContestUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateContestUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ContestId
+
+	// no validation rules for UserId
+
+	// no validation rules for Name
+
+	// no validation rules for Role
+
+	if len(errors) > 0 {
+		return UpdateContestUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateContestUserRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateContestUserRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateContestUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateContestUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateContestUserRequestMultiError) AllErrors() []error { return m }
+
+// UpdateContestUserRequestValidationError is the validation error returned by
+// UpdateContestUserRequest.Validate if the designated constraints aren't met.
+type UpdateContestUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateContestUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateContestUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateContestUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateContestUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateContestUserRequestValidationError) ErrorName() string {
+	return "UpdateContestUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateContestUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateContestUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateContestUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateContestUserRequestValidationError{}
 
 // Validate checks the field values on ListContestAllSubmissionsRequest with
 // the rules defined in the proto definition for this message. If any rules

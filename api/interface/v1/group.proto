@@ -5,6 +5,7 @@ package jnoj.interface.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -106,7 +107,7 @@ message UpdateGroupRequest {
     string name = 2;
     int32 privacy = 3;
     int32 membership = 4;
-    string invitation_code = 5;
+    string invitation_code = 5 [(validate.rules).string = {max_len: 16}];
     string description = 6;
 }
 

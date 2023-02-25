@@ -672,7 +672,16 @@ func (m *UpdateGroupRequest) validate(all bool) error {
 
 	// no validation rules for Membership
 
-	// no validation rules for InvitationCode
+	if utf8.RuneCountInString(m.GetInvitationCode()) > 16 {
+		err := UpdateGroupRequestValidationError{
+			field:  "InvitationCode",
+			reason: "value length must be at most 16 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Description
 

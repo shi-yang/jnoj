@@ -1,9 +1,11 @@
 import { createContestProblem, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
+import Editor from '@/components/MarkdownEditor';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm } from '@arco-design/web-react';
+import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import ContestContext from '../context';
 import locale from '../locale';
 const { RangePicker } = DatePicker;
 import styles from '../style/setting.module.less';
@@ -60,28 +62,34 @@ const ContestType = [
   { name: 'OI', description: 'Olympiad in Informatics', value: 3 },
 ];
 
-const ContestStatus = [
-  { name: '隐藏', description: '仅邀请用户可参加', value: 'HIDDEN', id: 0 },
-  { name: '公开', description: '任何人均可参加', value: 'PUBLIC', id: 1 },
-  { name: '私有', description: '仅邀请用户可参加', value: 'PRIVATE', id: 2 },
+const ContestPrivacy = [
+  { name: '私有', description: '比赛的任何信息、任何时候都仅对参赛用户可见。私有比赛不意味着只有受邀用户才能参加，请注意参赛设置', value: 'PRIVATE'},
+  { name: '公开', description: '设为公开时，比赛介绍、榜单全程任何用户均可见，但比赛未结束前，题目、提交信息仅对参赛用户可见', value: 'PUBLIC'},
 ];
 
-const SettingInfo = ({contest}: {
-  contest: any
-}) => {
+const ContestMembership = [
+  { name: '允许任何人', description: '允许任何用户参加', value: 'ALLOW_ANYONE'},
+  { name: '邀请码', description: '凭借邀请码参加', value: 'INVITATION_CODE'},
+  { name: '小组用户', description: '仅当前归属的小组用户参加', value: 'GROUP_USER'},
+];
+
+const SettingInfo = () => {
+  const contest = useContext(ContestContext);
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [problems, setProblems] = useState([]);
   function onSubmit() {
     form.validate().then((values) => {
-      const status = ContestStatus.find(item => item.value === values.status);
       const data = {
         name: values.name,
         startTime: new Date(values.time[0]).toISOString(),
         endTime: new Date(values.time[1]).toISOString(),
         type: values.type,
-        status: status.id,
+        privacy: values.privacy,
+        membership: values.membership,
+        invitationCode: values.invitationCode,
+        description: values.description,
       };
       setConfirmLoading(true);
       updateContest(contest.id, data)
@@ -107,81 +115,121 @@ const SettingInfo = ({contest}: {
       });
   }
   useEffect(() => {
+    let invitationCode = contest.invitationCode;
+    // 简单生成一个邀请码去初始化
+    if (invitationCode === '') {
+      invitationCode = Date.now().toString(36);
+    }
     form.setFieldsValue({
       name: contest.name,
       time: [contest.startTime, contest.endTime],
       type: contest.type,
-      status: contest.status,
+      privacy: contest.privacy,
+      membership: contest.membership,
+      invitationCode: invitationCode,
+      description: contest.description,
     });
     listProblems();
   }, []);
   return (
     <div>
       <Card title={t['setting.info.basicInfo']}>
-        <Form form={form} style={{ width: 600 }} autoComplete='off' onSubmit={onSubmit}>
-          <Form.Item label={t['setting.info.contestName']} required field='name' rules={[{ required: true }]}>
-            <Input placeholder='' />
-          </Form.Item>
-          <Form.Item label={t['setting.info.contestTime']} required field='time' rules={[{ required: true }]}>
-            <RangePicker
-              showTime={{
-                format: 'HH:mm:ss',
-              }}
-              format='YYYY-MM-DD HH:mm:ss'
-            />
-          </Form.Item>
-          <Form.Item label={t['setting.info.contestStatus']} required field='status' rules={[{ required: true }]}>
-            <Radio.Group className={styles['card-radio-group']}>
-              {ContestStatus.map((item, index) => {
-                return (
-                  <Radio key={index} value={item.value}>
-                    {({ checked }) => {
-                      return (
-                        <Space
-                          align='start'
-                          className={styles[`custom-radio-card`] + (checked ?  ' ' + styles['custom-radio-card-checked']: '')}
-                        >
-                          <div className={styles['custom-radio-card-mask']}>
-                            <div className={styles['custom-radio-card-mask-dot']}></div>
-                          </div>
-                          <div>
-                            <div className={styles['custom-radio-card-title']}>{item.name}</div>
-                            <Typography.Text type='secondary'>{item.description}</Typography.Text>
-                          </div>
-                        </Space>
-                      );
-                    }}
-                  </Radio>
-                );
-              })}
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item label={t['setting.info.contestType']} required field='type' rules={[{ required: true }]}>
-            <Radio.Group className={styles['card-radio-group']}>
-              {ContestType.map((item, index) => {
-                return (
-                  <Radio key={index} value={item.value}>
-                    {({ checked }) => {
-                      return (
-                        <Space
-                          align='start'
-                          className={styles[`custom-radio-card`] + (checked ?  ' ' + styles['custom-radio-card-checked']: '')}
-                        >
-                          <div className={styles['custom-radio-card-mask']}>
-                            <div className={styles['custom-radio-card-mask-dot']}></div>
-                          </div>
-                          <div>
-                            <div className={styles['custom-radio-card-title']}>{item.name}</div>
-                            <Typography.Text type='secondary'>{item.description}</Typography.Text>
-                          </div>
-                        </Space>
-                      );
-                    }}
-                  </Radio>
-                );
-              })}
-            </Radio.Group>
-          </Form.Item>
+        <Form form={form} autoComplete='off' onSubmit={onSubmit}>
+          <Grid.Row>
+            <Grid.Col span={12}>
+              <Form.Item label={t['setting.info.contestName']} required field='name' rules={[{ required: true }]}>
+                <Input placeholder='' />
+              </Form.Item>
+              <Form.Item label={t['setting.info.contestTime']} required field='time' rules={[{ required: true }]}>
+                <RangePicker
+                  showTime={{
+                    format: 'HH:mm:ss',
+                  }}
+                  format='YYYY-MM-DD HH:mm:ss'
+                />
+              </Form.Item>
+              <Form.Item label={t['setting.info.contestPrivacy']} required field='privacy' rules={[{ required: true }]}>
+                <Radio.Group className={styles['card-radio-group']}>
+                  {ContestPrivacy.map((item, index) => {
+                    return (
+                      <Radio key={index} value={item.value}>
+                        {({ checked }) => {
+                          return (
+                            <Space
+                              align='start'
+                              className={styles[`custom-radio-card`] + (checked ?  ' ' + styles['custom-radio-card-checked']: '')}
+                            >
+                              <div className={styles['custom-radio-card-mask']}>
+                                <div className={styles['custom-radio-card-mask-dot']}></div>
+                              </div>
+                              <div>
+                                <div className={styles['custom-radio-card-title']}>{item.name}</div>
+                                <Typography.Text type='secondary'>{item.description}</Typography.Text>
+                              </div>
+                            </Space>
+                          );
+                        }}
+                      </Radio>
+                    );
+                  })}
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item label={t['setting.info.contestMembership']} required field='membership' rules={[{ required: true }]}>
+                <Radio.Group className={styles['card-radio-group']}>
+                  {ContestMembership.map((item, index) => {
+                    if (item.value === 'GROUP_USER' && contest.owner.type === 'USER') {
+                      return;
+                    }
+                    return (
+                      <Radio key={index} value={item.value}>
+                        {item.name}
+                      </Radio>
+                    );
+                  })}
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item shouldUpdate noStyle>
+                {(values) => {
+                  return values.membership === 'INVITATION_CODE' && (
+                    <Form.Item field='invitationCode' label={t['setting.info.contestMembership.invitationCode']} rules={[{ required: true }]}>
+                      <Input />
+                    </Form.Item>
+                  );
+                }}
+              </Form.Item>
+              <Form.Item label={t['setting.info.contestType']} required field='type' rules={[{ required: true }]}>
+                <Radio.Group className={styles['card-radio-group']}>
+                  {ContestType.map((item, index) => {
+                    return (
+                      <Radio key={index} value={item.value}>
+                        {({ checked }) => {
+                          return (
+                            <Space
+                              align='start'
+                              className={styles[`custom-radio-card`] + (checked ?  ' ' + styles['custom-radio-card-checked']: '')}
+                            >
+                              <div className={styles['custom-radio-card-mask']}>
+                                <div className={styles['custom-radio-card-mask-dot']}></div>
+                              </div>
+                              <div>
+                                <div className={styles['custom-radio-card-title']}>{item.name}</div>
+                                <Typography.Text type='secondary'>{item.description}</Typography.Text>
+                              </div>
+                            </Space>
+                          );
+                        }}
+                      </Radio>
+                    );
+                  })}
+                </Radio.Group>
+              </Form.Item>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Form.Item label={t['setting.info.description']} field='description'>
+                <Editor />
+              </Form.Item>
+            </Grid.Col>
+          </Grid.Row>
           <Form.Item wrapperCol={{ offset: 5 }}>
             <Button type='primary' htmlType='submit'>{t['save']}</Button>
           </Form.Item>

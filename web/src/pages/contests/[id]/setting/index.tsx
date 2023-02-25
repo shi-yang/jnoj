@@ -10,10 +10,10 @@ const Setting = ({contest}: any) => {
   return (
     <Tabs defaultActiveTab='info'>
       <Tabs.TabPane key='info' title={t['setting.tab.info']} destroyOnHide>
-        <Info contest={contest} />
+        <Info />
       </Tabs.TabPane>
       <Tabs.TabPane key='user' title={t['setting.tab.users']} destroyOnHide>
-        <Users contest={contest} />
+        <Users />
       </Tabs.TabPane>
     </Tabs>
   );

@@ -27,7 +27,9 @@ type Contest struct {
 	EndTime          time.Time
 	FrozenTime       *time.Time
 	Type             int
-	Status           int
+	Privacy          int    // 隐私设置，私有、公开
+	Membership       int    // 参赛资格
+	InvitationCode   string // 邀请码
 	Description      string
 	GroupID          int
 	UserID           int
@@ -82,6 +84,8 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 			Type:             v.Type,
 			GroupId:          v.GroupID,
 			UserID:           v.UserID,
+			Membership:       v.Membership,
+			Privacy:          v.Privacy,
 		}
 		if v.Group != nil {
 			c.OwnerName = v.Group.Name
@@ -97,6 +101,12 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, error) {
 	var c Contest
 	err := r.data.db.Model(Contest{}).
+		Preload("Group", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name")
+		}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		}).
 		First(&c, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -108,15 +118,26 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		EndTime:          c.EndTime,
 		FrozenTime:       c.FrozenTime,
 		Type:             c.Type,
-		Status:           c.Status,
+		Privacy:          c.Privacy,
+		Membership:       c.Membership,
+		InvitationCode:   c.InvitationCode,
 		Description:      c.Description,
 		ParticipantCount: c.ParticipantCount,
 		UserID:           c.UserID,
 		GroupId:          c.GroupID,
 		CreatedAt:        c.CreatedAt,
 	}
+	if c.Group != nil {
+		res.OwnerName = c.Group.Name
+	} else if c.User != nil {
+		res.OwnerName = c.User.Nickname
+	}
 	if uid, ok := auth.GetUserID(ctx); ok {
-		res.IsRegistered = r.ExistContestUser(ctx, c.ID, uid)
+		if uid == c.UserID {
+			res.Role = biz.ContestRoleAdmin
+		} else {
+			res.Role = r.GetContestUserRole(ctx, c.ID, uid)
+		}
 	}
 	return res, err
 }
@@ -142,18 +163,20 @@ func (r *contestRepo) CreateContest(ctx context.Context, c *biz.Contest) (*biz.C
 // UpdateContest .
 func (r *contestRepo) UpdateContest(ctx context.Context, c *biz.Contest) (*biz.Contest, error) {
 	res := Contest{
-		ID:          c.ID,
-		Name:        c.Name,
-		StartTime:   c.StartTime,
-		EndTime:     c.EndTime,
-		FrozenTime:  c.FrozenTime,
-		Type:        c.Type,
-		Description: c.Description,
-		Status:      c.Status,
+		ID:             c.ID,
+		Name:           c.Name,
+		StartTime:      c.StartTime,
+		EndTime:        c.EndTime,
+		FrozenTime:     c.FrozenTime,
+		Type:           c.Type,
+		Description:    c.Description,
+		Privacy:        c.Privacy,
+		Membership:     c.Membership,
+		InvitationCode: c.InvitationCode,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Select("Name", "StartTime", "EndTime", "FrozenTime", "Type", "Description", "Status").
+		Select("Name", "StartTime", "EndTime", "FrozenTime", "Type", "Description", "Privacy", "Membership", "InvitationCode").
 		Updates(&res).Error
 	return &biz.Contest{
 		ID: res.ID,

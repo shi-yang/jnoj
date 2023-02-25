@@ -1,15 +1,14 @@
 import { getContestProblem } from '@/api/contest';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from './style/problem.module.less';
 import { Grid, ResizeBox, Typography } from '@arco-design/web-react';
-import useLocale from '@/utils/useLocale';
-import locale from './locale';
 import Editor from './editor';
 import ProblemContent from '@/components/Problem/ProblemContent';
-import { useRouter } from 'next/router';
+import ContestContext from './context';
 
-export default function Problem({contest, number}: {contest: {id: number}, number: string}) {
+export default function Problem({number}: { number: string}) {
   const [loading, setLoading] = useState(true);
+  const contest = useContext(ContestContext);
   const [problem, setProblem] = useState({
     statements: [],
     timeLimit: 0,

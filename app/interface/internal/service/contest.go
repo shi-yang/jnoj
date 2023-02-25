@@ -37,6 +37,8 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			EndTime:          timestamppb.New(v.EndTime),
 			Type:             int32(v.Type),
 			RunningStatus:    v1.Contest_RunningStatus(runningStatus),
+			Privacy:          v1.ContestPrivacy(v.Privacy),
+			Membership:       v1.ContestMembership(v.Membership),
 		}
 		c.Owner = &v1.Contest_Owner{
 			Name: v.OwnerName,
@@ -64,13 +66,24 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		Name:             res.Name,
 		Type:             int32(res.Type),
 		Description:      res.Description,
-		Status:           v1.ContestStatus(res.Status),
+		Privacy:          v1.ContestPrivacy(res.Privacy),
+		Membership:       v1.ContestMembership(res.Membership),
+		InvitationCode:   res.InvitationCode,
 		ParticipantCount: int32(res.ParticipantCount),
 		StartTime:        timestamppb.New(res.StartTime),
 		EndTime:          timestamppb.New(res.EndTime),
-		IsRegistered:     res.IsRegistered,
 		RunningStatus:    v1.Contest_RunningStatus(res.GetRunningStatus()),
-		Role:             v1.Contest_Role(res.GetRole(ctx)),
+		Role:             v1.ContestUserRole(res.Role),
+	}
+	resp.Owner = &v1.Contest_Owner{
+		Name: res.OwnerName,
+	}
+	if res.GroupId != 0 {
+		resp.Owner.Id = int32(res.GroupId)
+		resp.Owner.Type = v1.Contest_Owner_GROUP
+	} else {
+		resp.Owner.Id = int32(res.UserID)
+		resp.Owner.Type = v1.Contest_Owner_USER
 	}
 	return resp, nil
 }
@@ -85,13 +98,15 @@ func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContes
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.uc.UpdateContest(ctx, &biz.Contest{
-		ID:          int(req.Id),
-		Name:        req.Name,
-		Description: req.Description,
-		StartTime:   req.StartTime.AsTime(),
-		EndTime:     req.EndTime.AsTime(),
-		Type:        int(req.Type),
-		Status:      int(req.Status),
+		ID:             int(req.Id),
+		Name:           req.Name,
+		Description:    req.Description,
+		StartTime:      req.StartTime.AsTime(),
+		EndTime:        req.EndTime.AsTime(),
+		Type:           int(req.Type),
+		Privacy:        int(req.Privacy),
+		Membership:     int(req.Membership),
+		InvitationCode: req.InvitationCode,
 	})
 	if err != nil {
 		return nil, err
@@ -111,6 +126,7 @@ func (s *ContestService) CreateContest(ctx context.Context, req *v1.CreateContes
 		GroupId:   int(req.GroupId),
 		StartTime: req.StartTime.AsTime(),
 		EndTime:   req.EndTime.AsTime(),
+		Privacy:   biz.ContestPrivacyPrivate,
 	})
 	if err != nil {
 		return nil, err
@@ -284,9 +300,11 @@ func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListConte
 	resp := new(v1.ListContestUsersResponse)
 	for _, v := range users {
 		resp.Data = append(resp.Data, &v1.ContestUser{
-			Id:       int32(v.ID),
-			UserId:   int32(v.UserID),
-			Nickname: v.Nickname,
+			Id:           int32(v.ID),
+			UserId:       int32(v.UserID),
+			UserNickname: v.UserNickname,
+			Name:         v.Name,
+			Role:         v1.ContestUserRole(v.Role),
 		})
 	}
 	resp.Total = count
@@ -296,10 +314,36 @@ func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListConte
 // CreateContestUsers 新增比赛用户
 func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateContestUserRequest) (*v1.ContestUser, error) {
 	u := &biz.ContestUser{
-		ContestID: int(req.Id),
+		ContestID: int(req.ContestId),
 	}
 	u.UserID, _ = auth.GetUserID(ctx)
-	res, _ := s.uc.CreateContestUser(ctx, u)
+	res, err := s.uc.CreateContestUser(ctx, u, req.InvitationCode)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ContestUser{
+		Id: int32(res.ID),
+	}, nil
+}
+
+// UpdateContestUser 修改比赛用户信息
+func (s *ContestService) UpdateContestUser(ctx context.Context, req *v1.UpdateContestUserRequest) (*v1.ContestUser, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	res, err := s.uc.UpdateContestUser(ctx, &biz.ContestUser{
+		ContestID: int(req.ContestId),
+		UserID:    int(req.UserId),
+		Name:      req.Name,
+		Role:      int(req.Role),
+	})
+	if err != nil {
+		return nil, err
+	}
 	return &v1.ContestUser{
 		Id: int32(res.ID),
 	}, nil
@@ -355,7 +399,7 @@ func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.Lis
 			Language:      int32(v.Language),
 			User: &v1.ListContestSubmissionsResponse_User{
 				Id:       int32(v.User.ID),
-				Nickname: v.User.Nickname,
+				Nickname: v.User.Name,
 			},
 		})
 	}

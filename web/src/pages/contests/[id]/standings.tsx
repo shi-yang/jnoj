@@ -1,7 +1,10 @@
 import { listContestProblems, listContestAllSubmissions, listContestUsers } from '@/api/contest';
-import { Table, TableColumnProps } from '@arco-design/web-react';
+import useLocale from '@/utils/useLocale';
+import { PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconCheckCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import ContestContext from './context';
+import locale from './locale';
 import styles from './style/standings.module.less';
 
 enum ContestType {
@@ -9,24 +12,6 @@ enum ContestType {
   ContestTypeIOI = 2,
   ContestTypeOI = 3,
 };
-
-const basicColumn:TableColumnProps[] = [
-  {
-    title: 'Rank',
-    dataIndex: 'rank',
-    align: 'center',
-  },
-  {
-    title: 'Who',
-    dataIndex: 'who',
-    align: 'center',
-  },
-  {
-    title: 'Solved',
-    dataIndex: 'solved',
-    align: 'center',
-  },
-];
 
 interface TableContentProps {
   // 排名
@@ -37,6 +22,8 @@ interface TableContentProps {
   userId: number;
   // 解答
   solved: number;
+  // 是否参与排名。只有正式选手才参与排名
+  isRank?: boolean;
   // 分数 OI、IOI模式
   // ICPC, score = 罚时
   // OI, score = 最后一次提交
@@ -50,6 +37,24 @@ interface TableContentProps {
   };
 }
 
+const basicColumn = (t: any):TableColumnProps[] => [
+  {
+    title: t['standings.table.rank'],
+    dataIndex: 'rank',
+    align: 'center',
+    render: (col, record) => record.isRank ? col : '-'
+  },
+  {
+    title: t['standings.table.who'],
+    dataIndex: 'who',
+    align: 'center',
+  },
+  {
+    title: t['standings.table.solved'],
+    dataIndex: 'solved',
+    align: 'center',
+  },
+];
 
 const getCellColorClassName = (col) => {
   if (col.status === 'CORRECT') {
@@ -65,29 +70,29 @@ const getCellColorClassName = (col) => {
   return '';
 };
 
-const generateTableColumn = (problems, contestType) => {
-  const t = [...basicColumn];
+const generateTableColumn = (problems, contestType, t) => {
+  const columns = [...basicColumn(t)];
   if (contestType === ContestType.ContestTypeICPC) {
-    t.push({
-      title: 'Penalty',
+    columns.push({
+      title: t['standings.table.penalty'],
       dataIndex: 'score',
       align: 'center',
     });
   } else if (contestType === ContestType.ContestTypeIOI) {
-    t.push({
-      title: 'Score',
+    columns.push({
+      title: t['standings.table.score'],
       dataIndex: 'score',
       align: 'center',
     });
   } else if (contestType === ContestType.ContestTypeOI) {
-    t.push({
-      title: 'Max Score',
+    columns.push({
+      title: t['standings.table.maxScore'],
       dataIndex: 'maxScore',
       align: 'center',
     });
   }
   problems.forEach(problem => {
-    t.push({
+    columns.push({
       title: String.fromCharCode(65 + problem.number),
       dataIndex: `problem.${problem.number}`,
       align: 'center',
@@ -119,33 +124,38 @@ const generateTableColumn = (problems, contestType) => {
       ),
     });
   });
-  return t;
+  return columns;
 };
 
-const App = ({contest}: any) => {
+const App = () => {
+  const t = useLocale(locale);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
     total: 0,
     pageSize: 100,
     current: 1,
     pageSizeChangeResetCurrent: true,
+    sizeOptions: [100, 200, 500, 1000]
   });
   const [columns, setColumns] = useState<TableColumnProps[]>([]);
   const [data, setData] = useState([]);
+  const contest = useContext(ContestContext);
 
   const processTeamData = (users, problems, submissions) => {
     let res = {};
     // 初始化用户排名数据
     users.forEach(user => {
-      res[user.userId] = {};
-      res[user.userId].userId = user.userId;
-      res[user.userId].who = user.nickname;
-      res[user.userId].solved = 0;
-      res[user.userId].problem = {};
+      const initUser = {
+        userId: user.userId,
+        who: user.name,
+        solved: 0,
+        problem: {},
+        isRank: user.role === 'ROLE_OFFICIAL_PLAYER',
+      };
       problems.forEach(p => {
-        res[user.userId].problem[p.number] = {
+        initUser.problem[p.number] = {
           attempted: 0,
           isFirstBlood: false,
           status: 'UNSUBMIT',
@@ -153,6 +163,7 @@ const App = ({contest}: any) => {
           maxScore: 0,
         };
       });
+      res[user.userId] = initUser;
     });
     // 记录一血
     let firstBlood = {};
@@ -199,6 +210,7 @@ const App = ({contest}: any) => {
         score: 0,
         maxScore: 0,
         problem: {},
+        isRank: res[key].isRank,
       };
       const problems = res[key].problem;
       // 计算所得总分
@@ -239,8 +251,12 @@ const App = ({contest}: any) => {
         return b.maxScore - a.maxScore;
       }
     });
+    let rank = 1;
     for (let i = 0; i < arr.length; i++) {
-      arr[i].rank = i + 1;
+      if (arr[i].isRank) {
+        arr[i].rank = rank;
+        rank++;
+      }
     }
     setPagination({ ...pagination, total: arr.length });
     setData(arr);
@@ -256,7 +272,7 @@ const App = ({contest}: any) => {
         const problems = values[1].data.data;
         const users = values[2].data.data;
         const submissions = values[0].data.data;
-        setColumns(generateTableColumn(problems, contest.type));
+        setColumns(generateTableColumn(problems, contest.type, t));
         processTeamData(users, problems, submissions);
       })
       .finally(() => {
@@ -267,7 +283,6 @@ const App = ({contest}: any) => {
   function onChangeTable(pagination) {
     const { current, pageSize } = pagination;
     setLoading(true);
-    setData(data.slice((current - 1) * pageSize, current * pageSize));
     setPagination((pagination) => ({ ...pagination, current, pageSize }));
     setLoading(false);
   }
@@ -276,27 +291,27 @@ const App = ({contest}: any) => {
     fetchData();
   }, []);
   return (
-    <div>
+    <div style={{overflow: 'hidden'}}>
       <div className={styles['table-legend']}>
         <div>
           <span className={styles['legend-status'] + ' ' + styles['solved-first']}></span>
-          <p className={styles['legend-label']}>最快解答</p>
+          <p className={styles['legend-label']}>{t['standings.solvedFirst']}</p>
         </div>
         <div>
           <span className={styles['legend-status'] + ' ' + styles['solved']}></span>
-          <p className={styles['legend-label']}>正确解答</p>
+          <p className={styles['legend-label']}>{t['standings.solved']}</p>
         </div>
         <div>
           <span className={styles['legend-status'] + ' ' + styles['attempted']}></span>
-          <p className={styles['legend-label']}>尝试解答</p>
+          <p className={styles['legend-label']}>{t['standings.attempted']}</p>
         </div>
         <div>
           <span className={styles['legend-status'] + ' ' + styles['pending']}></span>
-          <p className={styles['legend-label']}>等待测评</p>
+          <p className={styles['legend-label']}>{t['standings.pending']}</p>
         </div>
       </div>
       <Table
-        rowKey={(r) => r.rank}
+        rowKey={(r) => r.userId}
         columns={columns}
         data={data}
         border={false}

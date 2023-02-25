@@ -9,7 +9,11 @@ import {
   TableColumnProps,
 } from '@arco-design/web-react';
 import { IconCalendar, IconUser } from '@arco-design/web-react/icon';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+import ContestContext from './context';
 import locale from './locale';
 import styles from './style/info.module.less';
 const { Row, Col } = Grid;
@@ -40,8 +44,9 @@ function StatisticItem(props: StatisticItemType) {
   );
 }
 
-function Info({contest}: {contest: {id: number, participantCount: number}}) {
+function Info() {
   const t = useLocale(locale);
+  const contest = useContext(ContestContext);
   const [loading, setLoading] = useState(false);
   const [problems, setProblems] = useState([]);
   const columns: TableColumnProps[] = [
@@ -87,29 +92,20 @@ function Info({contest}: {contest: {id: number, participantCount: number}}) {
   return (
     <div>
       <Row>
-        <Col flex={1}>
+        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
           <StatisticItem
             icon={<IconCalendar />}
-            title='题目数量'
+            title={t['info.stat.problem']}
             count={problems.length}
             loading={loading}
           />
         </Col>
         <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
+        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
           <StatisticItem
             icon={<IconUser />}
-            title='参赛用户'
+            title={t['info.stat.user']}
             count={contest.participantCount}
-            loading={loading}
-          />
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title='提交数量'
-            count={123}
             loading={loading}
           />
         </Col>
@@ -117,6 +113,12 @@ function Info({contest}: {contest: {id: number, participantCount: number}}) {
       <Divider />
       <div style={{ maxWidth: '1200px', margin: '0 auto'}}>
         <Table rowKey={r => r.number} columns={columns} data={problems} pagination={false} />
+        <ReactMarkdown
+          remarkPlugins={[remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+        >
+          {contest.description}
+        </ReactMarkdown>
       </div>
     </div>
   );

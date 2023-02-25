@@ -130,7 +130,7 @@ export default function Index() {
                     bordered={true}
                     size='small'
                     actions={[
-                      <span className='icon-hover'>
+                      <span key={index} className='icon-hover'>
                         <IconUser /> {item.memberCount}
                       </span>,
                     ]}
