@@ -3,7 +3,7 @@ import { Typography } from '@arco-design/web-react';
 import locale from './locale';
 import React from 'react';
 
-enum VerdictStatus {
+export enum VerdictStatus {
   Pending = 1,
   CompileError = 2,
   WrongAnswer = 3,
@@ -15,7 +15,7 @@ enum VerdictStatus {
   SystemError = 9,
 }
 
-const VerdictMap = {
+export const VerdictMap = {
   1: 'verdict.pending',
   2: 'verdict.compileError',
   3: 'verdict.wrongAnswer',

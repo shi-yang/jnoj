@@ -230,8 +230,6 @@ func (m *ListSubmissionsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for ProblemId
-
 	// no validation rules for EntityId
 
 	// no validation rules for EntityType
@@ -241,6 +239,10 @@ func (m *ListSubmissionsRequest) validate(all bool) error {
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.ProblemId != nil {
+		// no validation rules for ProblemId
+	}
 
 	if len(errors) > 0 {
 		return ListSubmissionsRequestMultiError(errors)

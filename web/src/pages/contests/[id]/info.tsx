@@ -95,6 +95,23 @@ function Info() {
         <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
           <StatisticItem
             icon={<IconCalendar />}
+            title={t['info.stat.type']}
+            count={contest.type}
+            loading={loading}
+          />
+        </Col>
+        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
+          <StatisticItem
+            icon={<IconCalendar />}
+            title={t['info.stat.runningStatus']}
+            count={t[contest.runningStatus]}
+            loading={loading}
+          />
+        </Col>
+        <Divider type="vertical" className={styles.divider} />
+        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
+          <StatisticItem
+            icon={<IconCalendar />}
             title={t['info.stat.problem']}
             count={problems.length}
             loading={loading}

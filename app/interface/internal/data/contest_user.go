@@ -23,20 +23,22 @@ type ContestUser struct {
 // ListContestUsers .
 func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) ([]*biz.ContestUser, int64) {
 	count := int64(0)
-	r.data.db.WithContext(ctx).
-		Model(&ContestUser{}).
-		Where("contest_id = ?", req.ContestId).
-		Count(&count)
-	if count == 0 {
-		return nil, 0
-	}
-	rows, _ := r.data.db.WithContext(ctx).
+	db := r.data.db.WithContext(ctx).
 		Select("c.id, c.user_id, c.name, c.role, user.nickname").
 		Table("contest_user as c").
 		Joins("LEFT JOIN user on user.id = c.user_id").
-		Where("c.contest_id = ?", req.ContestId).
-		Rows()
-
+		Where("c.contest_id = ?", req.ContestId)
+	if req.Name != "" {
+		db.Where("c.name = ?", req.Name)
+	}
+	if req.Role != nil {
+		db.Where("c.role = ?", *req.Role)
+	}
+	db.Count(&count)
+	if count == 0 {
+		return nil, 0
+	}
+	rows, _ := db.Rows()
 	rv := make([]*biz.ContestUser, 0)
 	for rows.Next() {
 		var v biz.ContestUser

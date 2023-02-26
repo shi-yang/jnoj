@@ -3,8 +3,6 @@ import { FormatTime } from '@/utils/format';
 import { Link } from '@arco-design/web-react';
 import { IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 
-export const ContestType = ['', 'ICPC', 'IOI', 'OI'];
-
 export function getColumns(
   t: any,
   callback: (record: Record<string, any>, type: string) => Promise<void>
@@ -42,7 +40,7 @@ export function getColumns(
       dataIndex: 'type',
       align: 'center' as 'center',
       width: 100,
-      render: (col) => ContestType[col]
+      render: col => col
     },
     {
       title: t['contest.columns.startedAt'],

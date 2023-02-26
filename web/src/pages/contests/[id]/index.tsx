@@ -105,7 +105,8 @@ function Index() {
       id: 0,
       type: '',
       name: '',
-    }
+    },
+    problems: []
   });
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
@@ -165,7 +166,7 @@ function Index() {
 
   return (
     (!loading &&
-      <ContestContext.Provider value={contest}>
+      <ContestContext.Provider value={{...contest, problems: problems}}>
         <div className={styles['contest-layout-basic']}>
           <Head>
             <title>{`${contest.name} - ${settings.name}`}</title>
@@ -199,7 +200,6 @@ function Index() {
                     >
                       {problems.map(value => 
                         <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>
-                          
                           {String.fromCharCode(65 + value.number)}. {value.name}
                           <span className='arco-menu-icon-suffix'>
                             {ProblemStatus[value.status]}

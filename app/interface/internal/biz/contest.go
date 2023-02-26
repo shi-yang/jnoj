@@ -59,9 +59,9 @@ type ContestSubmission struct {
 }
 
 const (
-	ContestTypeICPC = iota + 1 // ICPC 赛制 International Collegiate Programming Contest
-	ContestTypeIOI             // IOI 赛制 International Olympiad in Informatics
-	ContestTypeOI              // OI 赛制 Olympiad in Informatics
+	ContestTypeICPC = iota // ICPC 赛制 International Collegiate Programming Contest
+	ContestTypeIOI         // IOI 赛制 International Olympiad in Informatics
+	ContestTypeOI          // OI 赛制 Olympiad in Informatics
 )
 
 const (
@@ -218,17 +218,26 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 // ListContestSubmissions .
 func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest, contest *Contest) ([]*ContestSubmission, int64) {
 	res := make([]*ContestSubmission, 0)
+	problems, _ := uc.repo.ListContestProblems(ctx, int(req.ContestId))
+	problemMap := make(map[int]int)
+	var reqProblemID *int32
+	for _, v := range problems {
+		problemMap[v.ProblemID] = v.Number
+		// 将传过来的 Number 换成 Problem.ID 去查询
+		if req.Problem != nil && reqProblemID == nil && v.Number == int(*req.Problem) {
+			id := int32(v.ProblemID)
+			reqProblemID = &id
+		}
+	}
 	submissions, count := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
-		EntityId:   req.Id,
+		EntityId:   req.ContestId,
 		EntityType: SubmissionEntityTypeContest,
 		Page:       req.Page,
 		PerPage:    req.PerPage,
+		Verdict:    req.Verdict,
+		ProblemId:  reqProblemID,
+		UserId:     req.UserId,
 	})
-	problems, _ := uc.repo.ListContestProblems(ctx, int(req.Id))
-	problemMap := make(map[int]int)
-	for _, v := range problems {
-		problemMap[v.ProblemID] = v.Number
-	}
 	runningStatus := contest.GetRunningStatus()
 	for _, v := range submissions {
 		cs := &ContestSubmission{
@@ -247,7 +256,7 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			},
 		}
 		// OI 提交之后无反馈
-		if runningStatus == ContestRunningStatusInProgress && contest.Type == ContestTypeOI {
+		if runningStatus != ContestRunningStatusFinished && contest.Type == ContestTypeOI {
 			cs.Verdict = SubmissionVerdictPending
 			cs.Time = 0
 			cs.Memory = 0

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from './style/problem.module.less';
 import { Grid, ResizeBox, Typography } from '@arco-design/web-react';
 import Editor from './editor';
-import ProblemContent from '@/components/Problem/ProblemContent';
+import ProblemContent from '@/modules/problem/ProblemContent';
 import ContestContext from './context';
 
 export default function Problem({number}: { number: string}) {

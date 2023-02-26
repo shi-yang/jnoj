@@ -1885,9 +1885,15 @@ func (m *ListContestUsersRequest) validate(all bool) error {
 
 	// no validation rules for ContestId
 
+	// no validation rules for Name
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.Role != nil {
+		// no validation rules for Role
+	}
 
 	if len(errors) > 0 {
 		return ListContestUsersRequestMultiError(errors)
@@ -2133,6 +2139,17 @@ func (m *CreateContestUserRequest) validate(all bool) error {
 
 	// no validation rules for InvitationCode
 
+	if utf8.RuneCountInString(m.GetName()) > 64 {
+		err := CreateContestUserRequestValidationError{
+			field:  "Name",
+			reason: "value length must be at most 64 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return CreateContestUserRequestMultiError(errors)
 	}
@@ -2346,7 +2363,7 @@ func (m *ListContestAllSubmissionsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for ContestId
 
 	// no validation rules for UserId
 
@@ -2593,11 +2610,17 @@ func (m *ListContestSubmissionsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for ContestId
+
+	// no validation rules for UserId
 
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.Problem != nil {
+		// no validation rules for Problem
+	}
 
 	if len(errors) > 0 {
 		return ListContestSubmissionsRequestMultiError(errors)

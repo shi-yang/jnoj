@@ -57,9 +57,9 @@ const AddProblem = ({contestId, callback}: {contestId: number, callback: () => v
 };
 
 const ContestType = [
-  { name: 'ICPC', description: 'International Collegiate Programming Contest', value: 1 },
-  { name: 'IOI', description: 'International Olympiad in Informatics', value: 2 },
-  { name: 'OI', description: 'Olympiad in Informatics', value: 3 },
+  { name: 'ICPC', description: 'International Collegiate Programming Contest' },
+  { name: 'IOI', description: 'International Olympiad in Informatics' },
+  { name: 'OI', description: 'Olympiad in Informatics' },
 ];
 
 const ContestPrivacy = [
@@ -201,7 +201,7 @@ const SettingInfo = () => {
                 <Radio.Group className={styles['card-radio-group']}>
                   {ContestType.map((item, index) => {
                     return (
-                      <Radio key={index} value={item.value}>
+                      <Radio key={index} value={item.name}>
                         {({ checked }) => {
                           return (
                             <Space

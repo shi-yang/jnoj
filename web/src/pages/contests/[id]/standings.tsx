@@ -8,9 +8,9 @@ import locale from './locale';
 import styles from './style/standings.module.less';
 
 enum ContestType {
-  ContestTypeICPC = 1,
-  ContestTypeIOI = 2,
-  ContestTypeOI = 3,
+  ContestTypeICPC = 'ICPC',
+  ContestTypeIOI = 'IOI',
+  ContestTypeOI = 'OI',
 };
 
 interface TableContentProps {

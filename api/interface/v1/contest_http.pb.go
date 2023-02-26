@@ -87,8 +87,8 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.GET("/contests/{contest_id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
 	r.PUT("/contests/{contest_id}/users", _ContestService_UpdateContestUser0_HTTP_Handler(srv))
-	r.GET("/contests/{id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
-	r.GET("/contests/{id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
+	r.GET("/contests/{contest_id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
+	r.GET("/contests/{contest_id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
 }
 
 func _ContestService_ListContests0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
@@ -534,7 +534,7 @@ func (c *ContestServiceHTTPClientImpl) GetContestProblemLanguage(ctx context.Con
 
 func (c *ContestServiceHTTPClientImpl) ListContestAllSubmissions(ctx context.Context, in *ListContestAllSubmissionsRequest, opts ...http.CallOption) (*ListContestAllSubmissionsResponse, error) {
 	var out ListContestAllSubmissionsResponse
-	pattern := "/contests/{id}/all_submissions"
+	pattern := "/contests/{contest_id}/all_submissions"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceListContestAllSubmissions))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -573,7 +573,7 @@ func (c *ContestServiceHTTPClientImpl) ListContestProblems(ctx context.Context, 
 
 func (c *ContestServiceHTTPClientImpl) ListContestSubmissions(ctx context.Context, in *ListContestSubmissionsRequest, opts ...http.CallOption) (*ListContestSubmissionsResponse, error) {
 	var out ListContestSubmissionsResponse
-	pattern := "/contests/{id}/submissions"
+	pattern := "/contests/{contest_id}/submissions"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceListContestSubmissions))
 	opts = append(opts, http.PathTemplate(pattern))

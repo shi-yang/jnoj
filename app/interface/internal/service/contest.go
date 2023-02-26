@@ -35,7 +35,7 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			ParticipantCount: int32(v.ParticipantCount),
 			StartTime:        timestamppb.New(v.StartTime),
 			EndTime:          timestamppb.New(v.EndTime),
-			Type:             int32(v.Type),
+			Type:             v1.ContestType(v.Type),
 			RunningStatus:    v1.Contest_RunningStatus(runningStatus),
 			Privacy:          v1.ContestPrivacy(v.Privacy),
 			Membership:       v1.ContestMembership(v.Membership),
@@ -64,7 +64,7 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 	resp := &v1.Contest{
 		Id:               int32(res.ID),
 		Name:             res.Name,
-		Type:             int32(res.Type),
+		Type:             v1.ContestType(res.Type),
 		Description:      res.Description,
 		Privacy:          v1.ContestPrivacy(res.Privacy),
 		Membership:       v1.ContestMembership(res.Membership),
@@ -314,6 +314,7 @@ func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListConte
 // CreateContestUsers 新增比赛用户
 func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateContestUserRequest) (*v1.ContestUser, error) {
 	u := &biz.ContestUser{
+		Name:      req.Name,
 		ContestID: int(req.ContestId),
 	}
 	u.UserID, _ = auth.GetUserID(ctx)
@@ -351,7 +352,7 @@ func (s *ContestService) UpdateContestUser(ctx context.Context, req *v1.UpdateCo
 
 // ListContestAllSubmissions 用户比赛提交榜单
 func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.ListContestAllSubmissionsRequest) (*v1.ListContestAllSubmissionsResponse, error) {
-	submissions := s.uc.ListContestAllSubmissions(ctx, int(req.Id), int(req.UserId))
+	submissions := s.uc.ListContestAllSubmissions(ctx, int(req.ContestId), int(req.UserId))
 	resp := new(v1.ListContestAllSubmissionsResponse)
 	for _, v := range submissions {
 		s := &v1.ListContestAllSubmissionsResponse_Submission{
@@ -375,7 +376,7 @@ func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.
 
 // ListContestSubmissions 用户比赛提交列表
 func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.ListContestSubmissionsRequest) (*v1.ListContestSubmissionsResponse, error) {
-	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}

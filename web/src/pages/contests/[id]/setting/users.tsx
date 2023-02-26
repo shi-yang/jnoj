@@ -1,9 +1,17 @@
 import { listContestUsers, updateContestUser } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Radio, Table } from '@arco-design/web-react';
-import React, { useContext, useEffect, useState } from 'react';
+import { IconSearch } from '@arco-design/web-react/icon';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import ContestContext from '../context';
 import locale from '../locale';
+
+enum  ContestUserRole {
+  ROLE_OFFICIAL_PLAYER = 'ROLE_OFFICIAL_PLAYER',
+  ROLE_UNOFFICIAL_PLAYER = 'ROLE_UNOFFICIAL_PLAYER',
+  ROLE_WRITER = 'ROLE_WRITER',
+  ROLE_ADMIN = 'ROLE_ADMIN',
+}
 
 function UpdateUserModal({visible, record, callback}: any) {
   const contest = useContext(ContestContext);
@@ -37,15 +45,16 @@ function UpdateUserModal({visible, record, callback}: any) {
       <Form
         form={form}
       >
-        <Form.Item label='参赛名称' required field='name' rules={[{ required: true }]}>
+        <Form.Item label={t['setting.users.name']} required field='name' rules={[{ required: true }]}>
           <Input placeholder='' />
         </Form.Item>
-        <Form.Item label='选手角色' required field='role' rules={[{ required: true }]}>
+        <Form.Item label={t['setting.users.role']} required field='role' rules={[{ required: true }]}>
           <Radio.Group>
-            <Radio value='ROLE_OFFICIAL_PLAYER'>{t['setting.users.role.ROLE_OFFICIAL_PLAYER']}</Radio>
-            <Radio value='ROLE_UNOFFICIAL_PLAYER'>{t['setting.users.role.ROLE_UNOFFICIAL_PLAYER']}</Radio>
-            <Radio value='ROLE_WRITER'>{t['setting.users.role.ROLE_WRITER']}</Radio>
-            <Radio value='ROLE_ADMIN'>{t['setting.users.role.ROLE_ADMIN']}</Radio>
+            {Object.keys(ContestUserRole).map((item, index) =>
+              <Radio key={index} value={item}>
+                {t[`setting.users.role.${item}`]}
+              </Radio>
+            )}
           </Radio.Group>
         </Form.Item>
       </Form>
@@ -58,6 +67,7 @@ function Users() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const contest = useContext(ContestContext);
+  const [formParams, setFormParams] = useState({});
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -87,7 +97,14 @@ function Users() {
       title: t['setting.users.role'],
       dataIndex: 'role',
       align: 'center' as 'center',
-      render: col => t[`setting.users.role.${col}`]
+      render: col => t[`setting.users.role.${col}`],
+      filters: Object.keys(ContestUserRole).map(item => {
+        return {
+          text: t[`setting.users.role.${item}`],
+          value: item
+        };
+      }),
+      filterMultiple: false,
     },
     {
       title: t['setting.users.operation'],
@@ -100,12 +117,17 @@ function Users() {
   ];
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   function fetchData() {
     const { current, pageSize } = pagination;
+    const params = {
+      page: current,
+      per_page: pageSize,
+      ...formParams,
+    };
     setLoading(true);
-    listContestUsers(contest.id)
+    listContestUsers(contest.id, params)
       .then(res => {
         setData(res.data.data);
         setPatination({
@@ -119,7 +141,9 @@ function Users() {
         setLoading(false);
       });
   }
-  function onChangeTable({ current, pageSize }) {
+  function onChangeTable({ current, pageSize }, sorter, filters) {
+    console.log('filters', filters);
+    setFormParams({...formParams, ...filters});
     setPatination({
       ...pagination,
       current,

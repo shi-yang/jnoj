@@ -8,6 +8,8 @@ const i18n = {
     'menu.setting': 'Setting',
     'menu.submission': 'Submission',
     'menu.problem': 'Problem',
+    'info.stat.runningStatus': 'Running Status',
+    'info.stat.type': 'Contest Type',
     'info.stat.problem': 'Problem Count',
     'info.stat.user': 'User Count',
     'info.table.column.problem': 'Problem',
@@ -49,6 +51,7 @@ const i18n = {
     'standings.solved': 'Solved',
     'standings.attempted': 'Attempted',
     'standings.pending': 'Pending',
+    'submission.justMySubmission': 'My Submission',
     'save': 'Save',
     'problemList': 'Problem List',
     'problemCount': 'Problem Count',
@@ -69,6 +72,12 @@ const i18n = {
     'timeLimit': 'Time Limit',
     'memoryLimit': 'Memory Limit',
     'run': 'Run',
+    // Running Status
+    'NOT_STARTED': 'Not started yet',
+    'FROZEN_STANDINGS': 'In progress',
+    'IN_PROGRESS': 'In progress',
+    'FINISHED': 'Finished',
+
   },
   'zh-CN': {
     'header.start': '开始',
@@ -79,6 +88,8 @@ const i18n = {
     'menu.setting': '设置',
     'menu.submission': '提交',
     'menu.problem': '题目',
+    'info.stat.type': '比赛类型',
+    'info.stat.runningStatus': '运行状态',
     'info.stat.problem': '题目数量',
     'info.stat.user': '用户数量',
     'info.table.column.problem': '题目',
@@ -120,6 +131,7 @@ const i18n = {
     'standings.solved': '正确解答',
     'standings.attempted': '尝试解答',
     'standings.pending': '等待测评',
+    'submission.justMySubmission': '只看我的',
     'save': '保存',
     'problemList': '题目列表',
     'problemCount': '题目数量',
@@ -140,6 +152,11 @@ const i18n = {
     'timeLimit': '时间限制',
     'memoryLimit': '内存限制',
     'run': '运行',
+    // 运行状态
+    'NOT_STARTED': '尚未开始',
+    'FROZEN_STANDINGS': '进行中（已封榜）',
+    'IN_PROGRESS': '进行中',
+    'FINISHED': '已结束',
   },
 };
 

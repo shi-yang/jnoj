@@ -8,7 +8,7 @@ const ContestContext = createContext({
   privacy: '',
   membership: '',
   role: '',
-  type: 0,
+  type: '',
   groupId: 0,
   participantCount: 0,
   runningStatus: '',
@@ -18,7 +18,8 @@ const ContestContext = createContext({
     id: 0,
     type: '',
     name: '',
-  }
+  },
+  problems: [],
 });
 
 export default ContestContext;

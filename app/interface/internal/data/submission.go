@@ -62,14 +62,14 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
 			return db.Select("problem_id, name")
 		})
-	if req.ProblemId != 0 {
-		db.Where("problem_id = ?", req.ProblemId)
+	if req.ProblemId != nil {
+		db.Where("problem_id = ?", *req.ProblemId)
 	}
 	if req.UserId != 0 {
 		db.Where("user_id = ?", req.UserId)
 	}
-	if len(req.Verdicts) > 0 {
-		db.Where("verdict in (?)", req.Verdicts)
+	if len(req.Verdict) > 0 {
+		db.Where("verdict in (?)", req.Verdict)
 	}
 	if req.EntityId != 0 {
 		db.Where("entity_id = ?", req.EntityId)

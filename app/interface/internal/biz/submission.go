@@ -135,7 +135,7 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 	isOIModeRunning, hasPermission := uc.checkerPermission(
 		ctx, int(req.EntityType),
 		int(req.EntityId),
-		int(req.ProblemId),
+		int(*req.ProblemId),
 		0,
 	)
 	if !hasPermission {

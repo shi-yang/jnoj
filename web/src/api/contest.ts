@@ -46,8 +46,8 @@ export function listContestStatuses(id) {
   return axios.get(`/contests/${id}/statuses`);
 }
 
-export function listContestUsers(id) {
-  return axios.get(`/contests/${id}/users`);
+export function listContestUsers(id, params=undefined) {
+  return axios.get(`/contests/${id}/users`, {params});
 }
 
 export function createContestUser(id, data = null) {

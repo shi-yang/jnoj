@@ -96,13 +96,13 @@ service ContestService {
     // 获取比赛榜单
     rpc ListContestAllSubmissions (ListContestAllSubmissionsRequest) returns (ListContestAllSubmissionsResponse) {
         option (google.api.http) = {
-            get: "/contests/{id}/all_submissions"
+            get: "/contests/{contest_id}/all_submissions"
         };
     }
     // 获取提交列表
     rpc ListContestSubmissions (ListContestSubmissionsRequest) returns (ListContestSubmissionsResponse) {
         option (google.api.http) = {
-            get: "/contests/{id}/submissions"
+            get: "/contests/{contest_id}/submissions"
         };
     }
 }
@@ -149,10 +149,16 @@ message UpdateContestRequest {
     google.protobuf.Timestamp start_time = 4;
     google.protobuf.Timestamp end_time = 5;
     google.protobuf.Timestamp frozen_time = 6;
-    int32 type = 7;
+    ContestType type = 7;
     ContestPrivacy privacy = 8;
     ContestMembership membership = 9;
     string invitation_code = 10;
+}
+
+enum ContestType {
+    ICPC = 0;
+    IOI = 1;
+    OI = 2;
 }
 
 message Contest {
@@ -162,7 +168,7 @@ message Contest {
     google.protobuf.Timestamp start_time = 4;
     google.protobuf.Timestamp end_time = 5;
     google.protobuf.Timestamp frozen_time = 6;
-    int32 type = 7;
+    ContestType type = 7;
     ContestPrivacy privacy = 8;
     ContestMembership membership = 9;
     string invitation_code = 10 [(validate.rules).string = {max_len: 16}];
@@ -272,8 +278,10 @@ message ContestUser {
 
 message ListContestUsersRequest {
     int32 contest_id = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    string name = 2;
+    optional ContestUserRole role = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListContestUsersResponse {
@@ -284,6 +292,7 @@ message ListContestUsersResponse {
 message CreateContestUserRequest {
     int32 contest_id = 1;
     string invitation_code = 2;
+    string name = 3 [(validate.rules).string = {max_len: 64}];
 }
 
 message UpdateContestUserRequest {
@@ -294,7 +303,7 @@ message UpdateContestUserRequest {
 }
 
 message ListContestAllSubmissionsRequest {
-    int32 id = 1;
+    int32 contest_id = 1;
     int32 user_id = 2;
 }
 
@@ -315,9 +324,12 @@ message ListContestAllSubmissionsResponse {
 }
 
 message ListContestSubmissionsRequest {
-    int32 id = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    int32 contest_id = 1;
+    repeated int32 verdict = 2;
+    optional int32 problem = 3;
+    int32 user_id = 4;
+    int32 page = 5;
+    int32 per_page = 6;
 }
 
 message ListContestSubmissionsResponse {
