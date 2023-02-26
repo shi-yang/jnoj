@@ -5,7 +5,7 @@ import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile,
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { FormatTime } from '@/utils/format';
-import Submission from '@/components/Submission/Submission';
+import Submission from '@/modules/submission/Submission';
 const FormItem = Form.Item;
 import CodeMirror from '@uiw/react-codemirror';
 import { LanguageMap } from '@/api/submission';

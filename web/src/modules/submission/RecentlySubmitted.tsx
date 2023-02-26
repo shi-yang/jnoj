@@ -1,6 +1,6 @@
 import { getLastSubmission, getSubmission } from '@/api/submission';
-import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
-import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
+import SubmissionDrawer from './SubmissionDrawer';
+import SubmissionVerdict from './SubmissionVerdict';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';

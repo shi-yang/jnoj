@@ -6,7 +6,7 @@ import { Card, Divider, Select, Space, Statistic, Typography } from '@arco-desig
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
-import Submission from '@/components/Submission/Submission';
+import Submission from '@/modules/submission/Submission';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 

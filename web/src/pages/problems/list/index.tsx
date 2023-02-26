@@ -25,7 +25,7 @@ import { downloadProblems, getProblem, listProblems } from '@/api/problem';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
 import { setting, SettingState } from '@/store/reducers/setting';
-import ProblemContent from '@/components/Problem/ProblemContent';
+import ProblemContent from '@/modules/problem/ProblemContent';
 import Head from 'next/head';
 const { Title } = Typography;
 

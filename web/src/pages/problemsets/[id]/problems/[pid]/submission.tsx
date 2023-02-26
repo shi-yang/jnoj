@@ -4,8 +4,8 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { LanguageMap, listSubmissions } from '@/api/submission';
 import { FormatMemorySize, FormatTime } from '@/utils/format';
-import SubmissionDrawer from '@/components/Submission/SubmissionDrawer';
-import SubmissionVerdict from '@/components/Submission/SubmissionVerdict';
+import SubmissionDrawer from '@/modules/submission/SubmissionDrawer';
+import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
 import { userInfo } from '@/store/reducers/user';
 import { useAppSelector } from '@/hooks';
 

@@ -2,7 +2,7 @@ import { Button, Drawer, Link, List, PaginationProps } from '@arco-design/web-re
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/description.module.less';
-import ProblemContent from '@/components/Problem/ProblemContent';
+import ProblemContent from '@/modules/problem/ProblemContent';
 import React, { useContext, useEffect, useState } from 'react';
 import { IconLeft, IconRight } from '@arco-design/web-react/icon';
 import { listProblemsetProblems } from '@/api/problemset';
