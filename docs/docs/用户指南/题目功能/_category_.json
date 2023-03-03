@@ -1,0 +1,14 @@
+{
+  "position": 1,
+  "label": "题目功能",
+  "collapsible": true,
+  "collapsed": false,
+  "className": "red",
+  "link": {
+    "type": "generated-index",
+    "title": "用户指南"
+  },
+  "customProps": {
+    "description": ""
+  }
+}
