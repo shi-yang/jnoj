@@ -132,10 +132,14 @@ func NewSubmissionUsecase(
 // ListSubmissions list Submission
 func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSubmissionsRequest) ([]*Submission, int64) {
 	// 检查访问权限
+	problemId := 0
+	if req.ProblemId != nil {
+		problemId = int(*req.ProblemId)
+	}
 	isOIModeRunning, hasPermission := uc.checkerPermission(
 		ctx, int(req.EntityType),
 		int(req.EntityId),
-		int(*req.ProblemId),
+		problemId,
 		0,
 	)
 	if !hasPermission {
