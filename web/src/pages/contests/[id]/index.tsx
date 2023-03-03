@@ -95,7 +95,7 @@ function Index() {
     privacy: '',
     membership: '',
     role: 'GUEST',
-    type: 0,
+    type: '',
     groupId: 0,
     participantCount: 0,
     runningStatus: '',
