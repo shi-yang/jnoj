@@ -1,6 +1,6 @@
 import { listContestProblems, listContestAllSubmissions, listContestUsers } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
+import { Link, PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconCheckCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
@@ -48,6 +48,7 @@ const basicColumn = (t: any):TableColumnProps[] => [
     title: t['standings.table.who'],
     dataIndex: 'who',
     align: 'center',
+    render: (_, record) => <Link href={`/u/${record.userId}`} target='_blank'>{record.who}</Link>
   },
   {
     title: t['standings.table.solved'],
