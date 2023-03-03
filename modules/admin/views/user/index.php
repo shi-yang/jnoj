@@ -128,6 +128,13 @@ $this->registerJs($js);
                 },
                 'format' => 'raw'
             ],
+            [
+                'attribute' => Yii::t('app', 'class'),
+                'value' => function ($model, $widget) {
+                    return Html::encode($model->profile->class);
+                },
+                'format' => 'raw'
+            ],
             // 'status',
             // 'created_at',
             // 'updated_at',

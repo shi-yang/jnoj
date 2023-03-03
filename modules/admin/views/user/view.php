@@ -32,6 +32,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'username',
             'created_at',
             'updated_at',
+            [
+                'attribute' => Yii::t('app', 'class'),
+                'value' => function ($model, $widget) {
+                    return Html::encode($model->profile->class);
+                },
+                'format' => 'raw'
+            ],
         ],
     ]) ?>
 

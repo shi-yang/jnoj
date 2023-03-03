@@ -40,6 +40,7 @@ class UserProfile extends \yii\db\ActiveRecord
             [['address', 'description', 'major'], 'string'],
             [['signature', 'school'], 'string', 'max' => 128],
             [['major'], 'string', 'max' => 64],
+            [['class'], 'string', 'max' => 64],
             [['user_id'], 'unique'],
         ];
     }
@@ -59,7 +60,8 @@ class UserProfile extends \yii\db\ActiveRecord
             'description' => Yii::t('app', 'Description'),
             'school' => Yii::t('app', 'School'),
             'student_number' => Yii::t('app', 'Student Number'),
-            'major' => Yii::t('app', 'Major')
+            'major' => Yii::t('app', 'Major'),
+            'class' => Yii::t('app', 'class')
         ];
     }
 }

@@ -19,7 +19,20 @@ $this->title = Yii::t('app', 'Setting');
         <?= Html::label(Yii::t('app', 'OJ名称'), 'ojName') ?>
         <?= Html::textInput('ojName', $settings['ojName'], ['class' => 'form-control']) ?>
     </div>
-
+    <div class="form-group">
+        <?= Html::label('注册功能', 'SigninMode') ?>
+        <?= Html::radioList('SigninMode', $settings['SigninMode'], [
+            1 => '启用',
+            0 => '禁用'
+        ]) ?>
+    </div>
+    <div class="form-group">
+        <?= Html::label('小组功能', 'GroupMode') ?>
+        <?= Html::radioList('GroupMode', $settings['GroupMode'], [
+            1 => '启用',
+            0 => '禁用'
+        ]) ?>
+    </div>
     <div class="form-group">
         <?= Html::label(Yii::t('app', 'OI 模式'), 'oiMode') ?>
         <?= Html::radioList('oiMode', $settings['oiMode'], [

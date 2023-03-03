@@ -63,10 +63,6 @@ AppAsset::register($this);
             'url' => ['/rating/problem'],
             'active' => Yii::$app->controller->id == 'rating'
         ],
-        [
-            'label' => '<span class="glyphicon glyphicon-user"></span> ' . Yii::t('app', 'Group'),
-            'url' => Yii::$app->user->isGuest ? ['/group/index'] : ['/group/my-group']
-        ],
         ['label' => '<span class="glyphicon glyphicon-knight"></span> ' . Yii::t('app', 'Contests'), 'url' => ['/contest/index']],
         [
             'label' => '<span class="glyphicon glyphicon-info-sign"></span> '. Yii::t('app', 'Wiki'),
@@ -74,8 +70,19 @@ AppAsset::register($this);
             'active' => Yii::$app->controller->id == 'wiki'
         ],
     ];
+    if (!(Yii::$app->user->isGuest) && Yii::$app->user->identity->isAdmin()) {
+        $menuItems[] = ['label' => '<span class="glyphicon glyphicon-user"></span> ' . Yii::t('app', 'Group'),
+        'url' => Yii::$app->user->isGuest ? ['/group/index'] : ['/group/my-group']];
+    } else {
+        if (Yii::$app->setting->get('GroupMode') == "1") {
+            $menuItems[] = ['label' => '<span class="glyphicon glyphicon-user"></span> ' . Yii::t('app', 'Group'),
+                'url' => Yii::$app->user->isGuest ? ['/group/index'] : ['/group/my-group']];
+        }
+    }
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => '<span class="glyphicon glyphicon-new-window"></span> ' . Yii::t('app', 'Signup'), 'url' => ['/site/signup']];
+        if (Yii::$app->setting->get('SigninMode') == "1"){
+            $menuItems[] = ['label' => '<span class="glyphicon glyphicon-new-window"></span> ' . Yii::t('app', 'Signup'), 'url' => ['/site/signup']];
+        }
         $menuItems[] = ['label' => '<span class="glyphicon glyphicon-log-in"></span> ' . Yii::t('app', 'Login'), 'url' => ['/site/login']];
     } else {
         if (Yii::$app->user->identity->isAdmin()) {

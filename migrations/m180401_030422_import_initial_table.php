@@ -67,7 +67,8 @@ class m180401_030422_import_initial_table extends BaseMigration
             'description' => $this->string(),
             'school' => $this->string(),
             'student_number' => $this->string(64),
-            'major' => $this->string(64)
+            'major' => $this->string(64),
+            'class' => $this->string(64)
         ], $this->tableOptions);
 
         $this->execute('ALTER TABLE {{%user_profile}} ADD PRIMARY KEY(`user_id`);');

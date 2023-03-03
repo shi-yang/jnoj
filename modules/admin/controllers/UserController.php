@@ -127,6 +127,13 @@ class UserController extends Controller
         $model = $this->findModel($id);
 
         if (Yii::$app->request->isPost) {
+            $newNickname = Yii::$app->request->post('User')['newNickname'];
+            if (!empty($newNickname)) {
+                Yii::$app->db->createCommand()->update('{{%user}}', 
+                    ['username' => $newNickname, 'nickname' => $newNickname], 
+                    ['id' => $model->id]
+                )->execute();
+            }
             $newPassword = Yii::$app->request->post('User')['newPassword'];
             $role = Yii::$app->request->post('User')['role'];
             if (!empty($newPassword)) {
