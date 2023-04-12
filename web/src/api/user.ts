@@ -44,3 +44,15 @@ export function getCaptcha(params:getCaptchaRequest) {
 export function getUserProfileCalendar(id, params = undefined) {
   return axios.get(`/users/${id}/profile_calendar`, { params });
 }
+
+export function getUserProfileProblemSolved(id, params) {
+  return axios.get(`/users/${id}/profile_problemsolved`, { params });
+}
+
+export function updateUser(id, data) {
+  return axios.put(`/users/${id}`, data);
+}
+
+export function updateUserPassword(id, data) {
+  return axios.put(`/users/${id}/password`, data);
+}

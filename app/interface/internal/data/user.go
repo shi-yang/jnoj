@@ -76,8 +76,15 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	}, err
 }
 
-func (r *userRepo) Update(ctx context.Context, g *biz.User) (*biz.User, error) {
-	return g, nil
+func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
+	update := User{
+		ID:       u.ID,
+		Nickname: u.Nickname,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Updates(&update).Error
+	return u, err
 }
 
 func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
@@ -136,6 +143,32 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 		Where("verdict = ?", biz.SubmissionVerdictAccepted).
 		Where("created_at >= ? and created_at < ?", start, end).
 		Scan(&res.TotalProblemSolved)
+	return res, nil
+}
+
+func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
+	res := new(v1.GetUserProfileProblemSolvedResponse)
+	var t []struct {
+		ProblemID int
+		Verdict   int
+	}
+	r.data.db.WithContext(ctx).
+		Select("problem_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
+		Table("submission").
+		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeCommon).
+		Group("problem_id").
+		Order("problem_id").
+		Scan(&t)
+	for _, v := range t {
+		status := v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT
+		if v.Verdict == 0 {
+			status = v1.GetUserProfileProblemSolvedResponse_Problem_INCORRECT
+		}
+		res.Problems = append(res.Problems, &v1.GetUserProfileProblemSolvedResponse_Problem{
+			Id:     int32(v.ProblemID),
+			Status: status,
+		})
+	}
 	return res, nil
 }
 

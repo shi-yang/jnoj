@@ -33,9 +33,10 @@ type User struct {
 type UserRepo interface {
 	CreateUser(context.Context, *User) (*User, error)
 	GetUser(context.Context, *User) (*User, error)
-	Update(context.Context, *User) (*User, error)
+	UpdateUser(context.Context, *User) (*User, error)
 	FindByID(context.Context, int) (*User, error)
 	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
+	GetUserProfileProblemSolved(context.Context, *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error)
 
 	GetCaptcha(ctx context.Context, key string) (string, error)
 	SaveCaptcha(ctx context.Context, key string, value string) error
@@ -163,6 +164,18 @@ func (uc *UserUsecase) GetUser(ctx context.Context, id int) (*User, error) {
 	return uc.repo.FindByID(ctx, id)
 }
 
+func (uc *UserUsecase) UpdateUser(ctx context.Context, u *User) (*User, error) {
+	return uc.repo.UpdateUser(ctx, u)
+}
+
+func (uc *UserUsecase) UpdateUserPassowrd(ctx context.Context, u *User, oldPassword string, newPassword string) (*User, error) {
+	if !validatePassword(u.Password, oldPassword) {
+		return nil, v1.ErrorInvalidUsernameOrPassword("")
+	}
+	password, _ := generatePasswordHash(newPassword)
+	return uc.repo.UpdateUser(ctx, &User{ID: u.ID, Password: password})
+}
+
 // generatePasswordHash Generates password hash from password
 func generatePasswordHash(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -180,4 +193,8 @@ func validatePassword(password, hash string) bool {
 
 func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {
 	return uc.repo.GetUserProfileCalendar(ctx, req)
+}
+
+func (uc *UserUsecase) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
+	return uc.repo.GetUserProfileProblemSolved(ctx, req)
 }

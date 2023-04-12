@@ -1,3 +1,7 @@
 rules:
 - selector: "/jnoj.interface.v1.UserService/GetUserInfo"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.UserService/UpdateUser"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.UserService/UpdateUserPassword"
+  middleware: "jnoj/internal/middleware/auth.User()"

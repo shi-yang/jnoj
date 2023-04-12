@@ -26,27 +26,38 @@ const OperationUserServiceGetCaptcha = "/jnoj.interface.v1.UserService/GetCaptch
 const OperationUserServiceGetUser = "/jnoj.interface.v1.UserService/GetUser"
 const OperationUserServiceGetUserInfo = "/jnoj.interface.v1.UserService/GetUserInfo"
 const OperationUserServiceGetUserProfileCalendar = "/jnoj.interface.v1.UserService/GetUserProfileCalendar"
+const OperationUserServiceGetUserProfileProblemSolved = "/jnoj.interface.v1.UserService/GetUserProfileProblemSolved"
 const OperationUserServiceLogin = "/jnoj.interface.v1.UserService/Login"
 const OperationUserServiceRegister = "/jnoj.interface.v1.UserService/Register"
+const OperationUserServiceUpdateUser = "/jnoj.interface.v1.UserService/UpdateUser"
+const OperationUserServiceUpdateUserPassword = "/jnoj.interface.v1.UserService/UpdateUserPassword"
 
 type UserServiceHTTPServer interface {
 	GetCaptcha(context.Context, *GetCaptchaRequest) (*emptypb.Empty, error)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetUserInfo(context.Context, *emptypb.Empty) (*GetUserInfoResponse, error)
 	GetUserProfileCalendar(context.Context, *GetUserProfileCalendarRequest) (*GetUserProfileCalendarResponse, error)
+	GetUserProfileProblemSolved(context.Context, *GetUserProfileProblemSolvedRequest) (*GetUserProfileProblemSolvedResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
+	UpdateUserPassword(context.Context, *UpdateUserPasswordRequest) (*emptypb.Empty, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.UserService/GetUserInfo", auth.User())
+	s.Use("/jnoj.interface.v1.UserService/UpdateUser", auth.User())
+	s.Use("/jnoj.interface.v1.UserService/UpdateUserPassword", auth.User())
 	r := s.Route("/")
 	r.POST("/login", _UserService_Login0_HTTP_Handler(srv))
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
 	r.GET("/captcha", _UserService_GetCaptcha0_HTTP_Handler(srv))
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
+	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
+	r.PUT("/users/{id}/password", _UserService_UpdateUserPassword0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_calendar", _UserService_GetUserProfileCalendar0_HTTP_Handler(srv))
+	r.GET("/users/{id}/profile_problemsolved", _UserService_GetUserProfileProblemSolved0_HTTP_Handler(srv))
 }
 
 func _UserService_Login0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
@@ -147,6 +158,50 @@ func _UserService_GetUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http
 	}
 }
 
+func _UserService_UpdateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceUpdateUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateUser(ctx, req.(*UpdateUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*User)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_UpdateUserPassword0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateUserPasswordRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceUpdateUserPassword)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateUserPassword(ctx, req.(*UpdateUserPasswordRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _UserService_GetUserProfileCalendar0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetUserProfileCalendarRequest
@@ -169,13 +224,38 @@ func _UserService_GetUserProfileCalendar0_HTTP_Handler(srv UserServiceHTTPServer
 	}
 }
 
+func _UserService_GetUserProfileProblemSolved0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserProfileProblemSolvedRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceGetUserProfileProblemSolved)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserProfileProblemSolved(ctx, req.(*GetUserProfileProblemSolvedRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetUserProfileProblemSolvedResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserServiceHTTPClient interface {
 	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	GetUserInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetUserInfoResponse, err error)
 	GetUserProfileCalendar(ctx context.Context, req *GetUserProfileCalendarRequest, opts ...http.CallOption) (rsp *GetUserProfileCalendarResponse, err error)
+	GetUserProfileProblemSolved(ctx context.Context, req *GetUserProfileProblemSolvedRequest, opts ...http.CallOption) (rsp *GetUserProfileProblemSolvedResponse, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterResponse, err error)
+	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *User, err error)
+	UpdateUserPassword(ctx context.Context, req *UpdateUserPasswordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type UserServiceHTTPClientImpl struct {
@@ -238,6 +318,19 @@ func (c *UserServiceHTTPClientImpl) GetUserProfileCalendar(ctx context.Context, 
 	return &out, err
 }
 
+func (c *UserServiceHTTPClientImpl) GetUserProfileProblemSolved(ctx context.Context, in *GetUserProfileProblemSolvedRequest, opts ...http.CallOption) (*GetUserProfileProblemSolvedResponse, error) {
+	var out GetUserProfileProblemSolvedResponse
+	pattern := "/users/{id}/profile_problemsolved"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceGetUserProfileProblemSolved))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *UserServiceHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*LoginResponse, error) {
 	var out LoginResponse
 	pattern := "/login"
@@ -258,6 +351,32 @@ func (c *UserServiceHTTPClientImpl) Register(ctx context.Context, in *RegisterRe
 	opts = append(opts, http.Operation(OperationUserServiceRegister))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...http.CallOption) (*User, error) {
+	var out User
+	pattern := "/users/{id}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceUpdateUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) UpdateUserPassword(ctx context.Context, in *UpdateUserPasswordRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/users/{id}/password"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceUpdateUserPassword))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

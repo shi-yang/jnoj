@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { getUserProfileCalendar, getUsers } from '@/api/user';
+import { getUserProfileCalendar, getUserProfileProblemSolved, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Divider, Select, Space, Statistic, Typography } from '@arco-design/web-react';
+import { Card, Divider, Radio, Select, Space, Statistic, Tabs, Tag, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -14,7 +14,9 @@ export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
   const { id } = router.query;
-  const [user, setUser] = useState({username: ''});
+  const [user, setUser] = useState({username: '', nickname: ''});
+  const settings = useAppSelector<SettingState>(setting);
+  const [calendarOptions, setCalendarOptions] = useState([]);
   const [profileCalendar, setProfileCalendar] = useState({
     submissionCalendar: [],
     totalSubmission: 0,
@@ -23,14 +25,19 @@ export default function UserPage() {
     start: '',
     end: '',
   });
-  const settings = useAppSelector<SettingState>(setting);
-  const [calendarOptions, setCalendarOptions] = useState([]);
+  const [profileProblemSolved, setProfileProblemSolved] = useState([]);
   function onCalendarSelectChange(e) {
     getUserProfileCalendar(id, { year: e })
       .then(res => {
         const { data } = res;
         setProfileCalendar(data);
       });
+  }
+  function onProblemSolvedTabChange(e) {
+    getUserProfileProblemSolved(id, {type: e})
+      .then(res => {
+        setProfileProblemSolved(res.data.problems);
+      })
   }
   useEffect(() => {
     getUsers(id)
@@ -48,6 +55,10 @@ export default function UserPage() {
           }]);
         });
       });
+    getUserProfileProblemSolved(id, {type: 'problemset'})
+      .then(res => {
+        setProfileProblemSolved(res.data.problems);
+      })
   }, [id]);
   return (
     <div>
@@ -57,7 +68,7 @@ export default function UserPage() {
       <div className='container'>
         <div>
           <Typography.Title>
-            {user.username}
+            {user.nickname} <Divider type='vertical' /><small>{user.username}</small>
           </Typography.Title>
         </div>
         <Card 
@@ -93,6 +104,24 @@ export default function UserPage() {
         </Card>
         <Divider type='horizontal' />
         <Submission userId={Number(id)} />
+        <Divider type='horizontal' />
+        <Card
+          title='做题情况'
+        >
+          {/* <Tabs
+            type='rounded'
+            style={{marginBottom: '10px'}}
+            onChange={onProblemSolvedTabChange}
+          >
+            <Tabs.TabPane key="problemset" title='题单' />
+            <Tabs.TabPane key="group" title='小组' />
+          </Tabs> */}
+          <Space wrap>
+            {profileProblemSolved.map((item, index) => (
+              <Tag key={index} color={item.status === 'CORRECT' ? 'green' : 'orange'}>{item.id}</Tag>
+            ))}
+          </Space>
+        </Card>
       </div>
     </div>
   );
