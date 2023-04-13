@@ -86,11 +86,11 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 			UserID:           v.UserID,
 			Membership:       v.Membership,
 			Privacy:          v.Privacy,
+			UserNickname:     v.User.Nickname,
+			OwnerName:        v.User.Nickname,
 		}
 		if v.Group != nil {
 			c.OwnerName = v.Group.Name
-		} else if v.User != nil {
-			c.OwnerName = v.User.Nickname
 		}
 		rv = append(rv, c)
 	}

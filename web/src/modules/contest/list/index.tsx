@@ -19,7 +19,7 @@ function ContestList({groupId = 0}: {groupId?:number}) {
     console.log(record, type);
   };
 
-  const columns = useMemo(() => getColumns(t, tableCallback), [t]);
+  const columns = useMemo(() => getColumns(t, groupId, tableCallback), [t]);
 
   const [data, setData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({

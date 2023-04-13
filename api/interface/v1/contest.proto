@@ -196,6 +196,7 @@ message Contest {
         OwnerType type = 1;
         int32 id = 2;
         string name = 3;
+        string user_nickname = 4;
     }
     Owner owner = 15;
 }

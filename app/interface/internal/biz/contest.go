@@ -21,13 +21,14 @@ type Contest struct {
 	Privacy          int    // 隐私设置，私有、公开
 	Membership       int    // 参赛资格
 	InvitationCode   string // 邀请码
-	UserID           int
-	ParticipantCount int // 参与人数
-	Role             int // 登录用户角色
+	UserID           int    // 创建人ID
+	UserNickname     string // 创建人名称
+	ParticipantCount int    // 参与人数
+	Role             int    // 登录用户角色
 	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	OwnerName        string
+	OwnerName        string // 创建者名称
 }
 
 const (

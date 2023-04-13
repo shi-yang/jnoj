@@ -5,6 +5,7 @@ import { IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 
 export function getColumns(
   t: any,
+  groupId: number,
   callback: (record: Record<string, any>, type: string) => Promise<void>
 ) {
   return [
@@ -60,9 +61,17 @@ export function getColumns(
       title: t['contest.columns.owner'],
       dataIndex: 'owner',
       align: 'center' as 'center',
-      render: col => col.type === 'GROUP'
-        ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
-        : <Link href={`/u/${col.id}`}>{col.name}</Link>
+      render: (col, record) => {
+        if (groupId) {
+          return <Link href={`/u/${record.userId}`}>{col.userNickname}</Link>
+        }
+        return col.type === 'GROUP'
+          ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
+          : <Link href={`/u/${col.id}`}>{col.name}</Link>
+      }
+      // render: col => col.type === 'GROUP'
+      //   ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
+      //   : <Link href={`/u/${col.id}`}>{col.name}</Link>
     }
   ];
 }

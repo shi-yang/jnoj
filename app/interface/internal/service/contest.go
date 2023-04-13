@@ -39,9 +39,11 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			RunningStatus:    v1.Contest_RunningStatus(runningStatus),
 			Privacy:          v1.ContestPrivacy(v.Privacy),
 			Membership:       v1.ContestMembership(v.Membership),
+			UserId:           int32(v.UserID),
 		}
 		c.Owner = &v1.Contest_Owner{
-			Name: v.OwnerName,
+			Name:         v.OwnerName,
+			UserNickname: v.UserNickname,
 		}
 		if v.GroupId != 0 {
 			c.Owner.Id = int32(v.GroupId)

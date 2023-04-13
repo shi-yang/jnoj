@@ -3343,6 +3343,8 @@ func (m *Contest_Owner) validate(all bool) error {
 
 	// no validation rules for Name
 
+	// no validation rules for UserNickname
+
 	if len(errors) > 0 {
 		return Contest_OwnerMultiError(errors)
 	}
