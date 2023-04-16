@@ -1,0 +1,3 @@
+rules:
+- selector: "/jnoj.interface.v1.RankingService/ListProblemRankings"
+  middleware: "jnoj/internal/middleware/auth.Guest()"

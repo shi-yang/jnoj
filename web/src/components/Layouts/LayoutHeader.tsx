@@ -56,6 +56,9 @@ const LayoutHeader = () => {
           <MenuItem key='/contests'>
             <Link href='/contests'><IconList />{ t['menu.contest'] }</Link>
           </MenuItem>
+          <MenuItem key='/rankings'>
+            <Link href='/rankings'><IconList />{ t['menu.ranking'] }</Link>
+          </MenuItem>
           <MenuItem key='/home/about'>
             <Link href='/home/about'><IconHeart /> { t['menu.about'] }</Link>
           </MenuItem>
