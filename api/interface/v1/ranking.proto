@@ -15,6 +15,7 @@ service RankingService {
 }
 
 message ListProblemRankingsRequest {
+    int32 type = 1;
 }
 
 message ProblemRanking {
@@ -26,5 +27,6 @@ message ProblemRanking {
 
 message ListProblemRankingsResponse {
     repeated ProblemRanking data = 1;
-    int64 total = 2;
+    ProblemRanking my_ranking = 2;
+    int64 total = 3;
 }

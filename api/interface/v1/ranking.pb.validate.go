@@ -57,6 +57,8 @@ func (m *ListProblemRankingsRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Type
+
 	if len(errors) > 0 {
 		return ListProblemRankingsRequestMultiError(errors)
 	}
@@ -299,6 +301,35 @@ func (m *ListProblemRankingsResponse) validate(all bool) error {
 			}
 		}
 
+	}
+
+	if all {
+		switch v := interface{}(m.GetMyRanking()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListProblemRankingsResponseValidationError{
+					field:  "MyRanking",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListProblemRankingsResponseValidationError{
+					field:  "MyRanking",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMyRanking()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListProblemRankingsResponseValidationError{
+				field:  "MyRanking",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
 	// no validation rules for Total

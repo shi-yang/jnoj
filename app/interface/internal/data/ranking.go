@@ -28,7 +28,7 @@ func NewRankingRepo(data *Data, logger log.Logger) biz.RankingRepo {
 // ListProblemRankings .
 func (r *rankingRepo) ListProblemRankings(ctx context.Context, req *v1.ListProblemRankingsRequest) ([]*biz.ProblemRanking, int64) {
 	res := make([]*biz.ProblemRanking, 0)
-	cacheKey := "list_problem_ranking"
+	cacheKey := fmt.Sprintf("list_problem_ranking_%d", req.Type)
 	cacheRes, err := r.data.redisdb.Get(ctx, cacheKey).Result()
 	if err == nil {
 		json.Unmarshal([]byte(cacheRes), &res)
@@ -41,11 +41,25 @@ func (r *rankingRepo) ListProblemRankings(ctx context.Context, req *v1.ListProbl
 		UserID    int
 		Nickname  string
 	}
-	r.data.db.WithContext(ctx).
+	db := r.data.db.WithContext(ctx).
 		Model(&Submission{}).
 		Select("submission.verdict, submission.problem_id, submission.user_id, user.nickname").
-		Joins("LEFT JOIN user ON user.id=submission.user_id").
-		Find(&submissions)
+		Joins("LEFT JOIN user ON user.id=submission.user_id")
+	now := time.Now()
+	// 昨天
+	if req.Type == 1 {
+		db.Where("submission.created_at >= ? and submission.created_at < ?", now.AddDate(0, 0, -1), now)
+	} else if req.Type == 2 {
+		// 过去七天
+		db.Where("submission.created_at >= ? and submission.created_at < ?", now.AddDate(0, 0, -7), now)
+	} else if req.Type == 3 {
+		// 过去30天
+		db.Where("submission.created_at >= ? and submission.created_at < ?", now.AddDate(0, -1, 0), now)
+	} else if req.Type == 4 {
+		// 过去一年
+		db.Where("submission.created_at >= ? and submission.created_at < ?", now.AddDate(-1, 0, 0), now)
+	}
+	db.Find(&submissions)
 	userAndProblemMap := make(map[string]int)
 	userCount := make(map[int]*biz.ProblemRanking)
 	for _, s := range submissions {
@@ -75,6 +89,6 @@ func (r *rankingRepo) ListProblemRankings(ctx context.Context, req *v1.ListProbl
 		res[i].Rank = i + 1
 	}
 	t, _ := json.Marshal(res)
-	r.data.redisdb.Set(ctx, cacheKey, t, time.Minute*5)
+	r.data.redisdb.Set(ctx, cacheKey, t, time.Hour)
 	return res, int64(len(res))
 }
