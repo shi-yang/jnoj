@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 
+	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -37,13 +38,13 @@ func main() {
 	}
 	createDefaultProblemset()
 	migrateFuncMap := map[string]func(){
-		//"contest_user": migrateContestUser,
-		// "contest": migrateContest,
+		"contest_user": migrateContestUser,
+		"contest":      migrateContest,
 		// "contest_announcement": migrateContestAnnouncement,
-		// "contest_problem":      migrateContestProblem,
+		"contest_problem": migrateContestProblem,
 		// "group_user": migrateGroupUser,
 		// "group": migrateGroup,
-		"problem": migrateProblem,
+		// "problem": migrateProblem,
 		// "polygon_problem":      migratePolygonProblem,
 		// "polygon_status":       migratePolygonStatus,
 		// "setting":              migrateSetting,
@@ -92,7 +93,7 @@ func migrateContest() {
 			StartTime:        v.StartTime,
 			EndTime:          v.EndTime,
 			FrozenTime:       v.LockBoardTime,
-			Type:             v.Type,
+			Type:             ContestType[v.Type],
 			Privacy:          ContestStatusMap[v.Status],
 			Membership:       0,
 			Description:      v.Description,
@@ -183,6 +184,7 @@ func migrateProblem() {
 	var resv2 []*v2.Problem
 	var resStatementV2 []*v2.ProblemStatement
 	var problemset []*v2.ProblemsetProblem
+	converter := md.NewConverter("", true, nil)
 	oDB.Model(&v1.Problem{}).Find(&resv1)
 	for key, v := range resv1 {
 		resv2 = append(resv2, &v2.Problem{
@@ -196,20 +198,21 @@ func migrateProblem() {
 			Status:        v.Status,
 			Source:        v.Source,
 		})
-		resStatementV2 = append(resStatementV2, &v2.ProblemStatement{
+		statement := &v2.ProblemStatement{
 			ProblemID: v.ID,
 			Name:      v.Title,
-			Legend:    v.Description,
 			Language:  "中文",
-			Input:     v.Input,
-			Output:    v.Ouput,
-			Note:      v.Hint,
 			UserID:    v.CreatedBy,
-		})
+		}
+		statement.Legend, _ = converter.ConvertString(v.Description)
+		statement.Input, _ = converter.ConvertString(v.Input)
+		statement.Output, _ = converter.ConvertString(v.Output)
+		statement.Note, _ = converter.ConvertString(v.Hint)
+		resStatementV2 = append(resStatementV2, statement)
 		problemset = append(problemset, &v2.ProblemsetProblem{
 			ProblemID:    v.ID,
 			ProblemsetID: 1,
-			Order:        key,
+			Order:        key + 1,
 		})
 	}
 	if err := nDB.Create(resv2); err != nil {
@@ -230,6 +233,7 @@ func migratePolygonProblem() {
 	var resv2 []*v2.Problem
 	var resStatementV2 []*v2.ProblemStatement
 	oDB.Model(&v1.PolygonProblem{}).Find(&resv1)
+	converter := md.NewConverter("", true, nil)
 	for _, v := range resv1 {
 		var p v2.Problem
 		err := oDB.Model(&v1.Problem{}).First(&p, "polygon_id = ?", v.ID).Error
@@ -248,16 +252,17 @@ func migratePolygonProblem() {
 			Status:        v.Status,
 			Source:        v.Source,
 		})
-		resStatementV2 = append(resStatementV2, &v2.ProblemStatement{
+		statement := &v2.ProblemStatement{
 			ProblemID: v.ID,
 			Name:      v.Title,
-			Legend:    v.Description,
 			Language:  "中文",
-			Input:     v.Input,
-			Output:    v.Ouput,
-			Note:      v.Hint,
 			UserID:    v.CreatedBy,
-		})
+		}
+		statement.Legend, _ = converter.ConvertString(v.Description)
+		statement.Input, _ = converter.ConvertString(v.Input)
+		statement.Output, _ = converter.ConvertString(v.Output)
+		statement.Note, _ = converter.ConvertString(v.Hint)
+		resStatementV2 = append(resStatementV2, statement)
 	}
 	nDB.Create(resv2)
 	nDB.Create(resStatementV2)

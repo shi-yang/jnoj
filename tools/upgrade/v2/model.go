@@ -46,6 +46,12 @@ const (
 	ContestPrivacyPublic         // 公开
 )
 
+const (
+	ContestTypeICPC = iota // ICPC 赛制 International Collegiate Programming Contest
+	ContestTypeIOI         // IOI 赛制 International Olympiad in Informatics
+	ContestTypeOI          // OI 赛制 Olympiad in Informatics
+)
+
 // 测试点的储存路径
 const ProblemTestInputPath = "/problem_tests/%d/%d.in"
 const ProblemTestOutputPath = "/problem_tests/%d/%d.out"

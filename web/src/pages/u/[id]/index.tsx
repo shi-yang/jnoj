@@ -6,7 +6,7 @@ import { Card, Divider, Radio, Select, Space, Statistic, Tabs, Tag, Typography }
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
-import Submission from '@/modules/submission/Submission';
+import SubmissionList from '@/modules/submission/SubmissionList';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 
@@ -103,7 +103,7 @@ export default function UserPage() {
           </Space>
         </Card>
         <Divider type='horizontal' />
-        <Submission userId={Number(id)} />
+        <SubmissionList userId={Number(id)} />
         <Divider type='horizontal' />
         <Card
           title='做题情况'

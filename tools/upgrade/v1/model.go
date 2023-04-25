@@ -35,7 +35,7 @@ type ContestUser struct {
 	ID           int
 	UserID       int
 	ContestID    int
-	UserPassword int
+	UserPassword string
 	Rank         int
 	RatingChange int
 }
@@ -64,7 +64,7 @@ type PolygonProblem struct {
 	Title           string
 	Description     string
 	Input           string
-	Ouput           string
+	Output          string
 	SampleInput     string
 	SampleOutput    string
 	Spj             bool
@@ -72,14 +72,14 @@ type PolygonProblem struct {
 	SpjSource       string
 	Hint            string
 	Source          string
-	TimeLimit       int
+	TimeLimit       float64
 	MemoryLimit     int
 	Status          int
 	Accepted        int
 	Submit          int
 	Solved          int
-	Tags            int
-	Solution        int
+	Tags            string
+	Solution        string
 	SolutionLang    int
 	SoluitionSource string
 	CreatedAt       time.Time
@@ -105,20 +105,20 @@ type Problem struct {
 	Title            string
 	Description      string
 	Input            string
-	Ouput            string
+	Output           string
 	SampleInput      string
 	SampleOutput     string
 	Spj              bool
 	Hint             string
 	Source           string
-	TimeLimit        int
+	TimeLimit        float64
 	MemoryLimit      int
 	Status           int
 	Accepted         int
 	Submit           int
 	Solved           int
-	Tags             int
-	Solution         int
+	Tags             string
+	Solution         string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	CreatedBy        int

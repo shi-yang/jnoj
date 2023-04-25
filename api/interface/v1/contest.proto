@@ -109,7 +109,7 @@ service ContestService {
 
 message ListContestsRequest {
     string name = 1;
-    int32 group_id = 2;
+    optional int32 group_id = 2;
     int32 page = 3;
     int32 per_page = 4;
 }

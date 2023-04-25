@@ -11,3 +11,5 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.GroupService/CreateGroupUser"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.GroupService/UpdateGroupUser"
+  middleware: "jnoj/internal/middleware/auth.User()"

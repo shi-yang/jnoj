@@ -59,11 +59,13 @@ func (m *ListContestsRequest) validate(all bool) error {
 
 	// no validation rules for Name
 
-	// no validation rules for GroupId
-
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.GroupId != nil {
+		// no validation rules for GroupId
+	}
 
 	if len(errors) > 0 {
 		return ListContestsRequestMultiError(errors)

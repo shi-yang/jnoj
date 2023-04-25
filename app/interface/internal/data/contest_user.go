@@ -43,6 +43,9 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 	for rows.Next() {
 		var v biz.ContestUser
 		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &v.UserNickname)
+		if v.Name == "" {
+			v.Name = v.UserNickname
+		}
 		rv = append(rv, &v)
 	}
 	return rv, count

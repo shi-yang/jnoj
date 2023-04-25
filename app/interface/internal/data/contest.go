@@ -65,8 +65,8 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
-	if req.GroupId != 0 {
-		db.Where("group_id = ?", req.GroupId)
+	if req.GroupId != nil {
+		db.Where("group_id = ?", *req.GroupId)
 	}
 	db.Count(&count).
 		Order("id desc")

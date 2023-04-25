@@ -5,7 +5,7 @@ import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile,
 import locale from './locale';
 import styles from './style/tests.module.less';
 import { FormatTime } from '@/utils/format';
-import Submission from '@/modules/submission/Submission';
+import SubmissionList from '@/modules/submission/SubmissionList';
 const FormItem = Form.Item;
 import CodeMirror from '@uiw/react-codemirror';
 import { LanguageMap } from '@/api/submission';
@@ -238,7 +238,7 @@ const App = ({problem}: any) => {
         <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
       </Card>
       <Card title={'运行信息'}>
-        <Submission pid={problem.id} entityType={2} />
+        <SubmissionList pid={problem.id} entityType={2} />
       </Card>
     </>
   );

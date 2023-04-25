@@ -36,6 +36,15 @@ var ContestStatusMap = map[int]int{
 	2: v2.ContestPrivacyPrivate, // 私有
 }
 
+var ContestType = map[int]int{
+	0: v2.ContestTypeIOI,  // TYPE_EDUCATIONAL
+	1: v2.ContestTypeICPC, // TYPE_RANK_SINGLE
+	2: v2.ContestTypeICPC, // TYPE_RANK_GROUP
+	3: v2.ContestTypeIOI,  // TYPE_HOMEWORK
+	4: v2.ContestTypeOI,   // TYPE_OI
+	5: v2.ContestTypeIOI,  // TYPE_IOI
+}
+
 var GroupUserRole = map[int]int{
 	0: v2.GroupUserRoleMember,  // ROLE_REUSE_INVITATION
 	1: v2.GroupUserRoleMember,  // ROLE_REUSE_APPLICATION

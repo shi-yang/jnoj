@@ -1,8 +1,7 @@
 import { listContestUsers, updateContestUser } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Radio, Table } from '@arco-design/web-react';
-import { IconSearch } from '@arco-design/web-react/icon';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
 import locale from '../locale';
 
@@ -48,7 +47,7 @@ function UpdateUserModal({visible, record, callback}: any) {
         <Form.Item label={t['setting.users.name']} required field='name' rules={[{ required: true }]}>
           <Input placeholder='' />
         </Form.Item>
-        <Form.Item label={t['setting.users.role']} required field='role' rules={[{ required: true }]}>
+        <Form.Item label={t['setting.users.role']} required field='role' rules={[{ required: true }]} help='请注意：出题人和管理有同样的权限，均可在任何时候查看全部选手的提交记录'>
           <Radio.Group>
             {Object.keys(ContestUserRole).map((item, index) =>
               <Radio key={index} value={item}>

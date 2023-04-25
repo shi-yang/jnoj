@@ -175,7 +175,7 @@ func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, 
 			if contest.Type == ContestTypeOI {
 				isOIModeRunning = true
 			}
-			if role != ContestRoleAdmin && int(submissionUserId) != uid {
+			if (role != ContestRoleAdmin || role != ContestRoleWriter) && int(submissionUserId) != uid {
 				return isOIModeRunning, false
 			}
 		}

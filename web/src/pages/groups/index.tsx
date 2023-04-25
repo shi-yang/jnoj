@@ -5,13 +5,13 @@ import { setting, SettingState } from '@/store/reducers/setting';
 import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
 import {
-  Button, Card, Descriptions, Form, Grid, Input, Message,
+  Button, Card, Form, Grid, Input, Message,
   Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty, Select, Space, Avatar
 } from '@arco-design/web-react';
-import { IconMore, IconPlus, IconShareInternal, IconThumbUp, IconUser } from '@arco-design/web-react/icon';
+import { IconPlus, IconUser } from '@arco-design/web-react/icon';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
 import './mock';
@@ -24,11 +24,10 @@ export default function Index() {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: false,
     showTotal: true,
-    pageSize: 25,
+    pageSize: 24,
     current: 1,
     pageSizeChangeResetCurrent: true,
     hideOnSinglePage: true,
-    sizeOptions: [25, 50, 100]
   });
   const [formParams, setFormParams] = useState({
     name: '',
@@ -38,7 +37,7 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState('all');
   const user = useAppSelector(userInfo);
   useEffect(() => {
-    if (isLogged) {
+    if (isLogged()) {
       setActiveTab('mygroup');
       setFormParams({...formParams, mygroup: true });
     }
@@ -119,7 +118,7 @@ export default function Index() {
             }
             onChange={onTabsChange}
           >
-            {isLogged && <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />}
+            {isLogged() && <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />}
             <Tabs.TabPane key="all" title={t['index.tab.allgroup']} />
           </Tabs>
           <Grid.Row gutter={24} className={styles['card-content']}>

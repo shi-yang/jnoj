@@ -123,7 +123,7 @@ function Index() {
       .then((res) => {
         const { data } = res;
         setContest(data);
-        if (data.role !== 'GUEST' && data.runningStatus !== 'NOT_STARTED') {
+        if (data.role !== 'ROLE_GUEST' && data.runningStatus !== 'NOT_STARTED') {
           setMenuSelected('info');
           listContestProblems(router.query.id).then(res => {
             setProblems(res.data.data);

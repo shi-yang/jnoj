@@ -21,7 +21,6 @@ import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
-import problem from '@/pages/contests/[id]/problem';
 
 const TabPane = Tabs.TabPane;
 

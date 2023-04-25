@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Form,
   Input,
@@ -9,13 +9,14 @@ import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
 import CreateModal from './create';
+import { getGroup } from '@/api/group';
 
 const { Row, Col } = Grid;
 const { useForm } = Form;
 
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
-  groupId: number
+  groupId?: number
 }) {
   const { lang } = useContext(GlobalContext);
 
@@ -26,6 +27,17 @@ function SearchForm(props: {
     const values = form.getFieldsValue();
     props.onSearch(values);
   };
+
+  const [canCreateContest, setCanCreateContest] = useState(true);
+
+  useEffect(() => {
+    if (props.groupId) {
+      getGroup(props.groupId).then(res => {
+        if (res.data.role === 'GUEST' || res.data.role === 'MEMBER')
+        setCanCreateContest(false);
+      });
+    }
+  }, []);
 
   const colSpan = lang === 'zh-CN' ? 8 : 12;
 
@@ -52,7 +64,7 @@ function SearchForm(props: {
         </Row>
       </Form>
       <div className={styles['right-button']}>
-        <CreateModal groupId={props.groupId} />
+        { canCreateContest && <CreateModal groupId={props.groupId} /> }
       </div>
     </div>
   );

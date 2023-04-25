@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormatTime } from '@/utils/format';
 import { Link } from '@arco-design/web-react';
-import { IconUser, IconUserGroup } from '@arco-design/web-react/icon';
+import { IconLock, IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 
 export function getColumns(
   t: any,
@@ -10,18 +10,12 @@ export function getColumns(
 ) {
   return [
     {
-      title: t['contest.columns.id'],
-      dataIndex: 'id',
-      align: 'center' as 'center',
-      width: 200,
-    },
-    {
       title: t['contest.columns.name'],
       dataIndex: 'name',
       align: 'left' as 'left',
       render: (value, record) => (
         <Link href={`/contests/${record.id}`}>
-          {value}
+          { record.privacy === 'PRIVATE' && <IconLock /> } {value}
         </Link>
       )
     },

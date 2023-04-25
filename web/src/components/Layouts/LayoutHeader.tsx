@@ -4,7 +4,7 @@ import styles from './style/layout-header.module.less';
 import useLocale from '@/utils/useLocale';
 import { GlobalContext } from '@/context';
 import IconButton from './IconButton';
-import { IconCodeSquare, IconHeart, IconHome, IconLanguage, IconList, IconMoonFill, IconSunFill, IconUserGroup } from '@arco-design/web-react/icon';
+import { IconCodeSquare, IconHeart, IconHome, IconLanguage, IconList, IconMoonFill, IconSunFill, IconTrophy, IconUserGroup } from '@arco-design/web-react/icon';
 import defaultLocale from '@/locale';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -57,7 +57,7 @@ const LayoutHeader = () => {
             <Link href='/contests'><IconList />{ t['menu.contest'] }</Link>
           </MenuItem>
           <MenuItem key='/rankings'>
-            <Link href='/rankings'><IconList />{ t['menu.ranking'] }</Link>
+            <Link href='/rankings'><IconTrophy />{ t['menu.ranking'] }</Link>
           </MenuItem>
           <MenuItem key='/home/about'>
             <Link href='/home/about'><IconHeart /> { t['menu.about'] }</Link>

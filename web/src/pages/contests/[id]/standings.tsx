@@ -1,11 +1,13 @@
-import { listContestProblems, listContestAllSubmissions, listContestUsers } from '@/api/contest';
+import { listContestProblems, listContestAllSubmissions, listContestUsers, listContestSubmissions } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Link, PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
-import { IconCheckCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
+import { Button, Divider, Link, List, Modal, PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
+import { IconCheckCircle, IconClockCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
 import locale from './locale';
 import styles from './style/standings.module.less';
+import { FormatTime } from '@/utils/format';
+import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
 
 enum ContestType {
   ContestTypeICPC = 'ICPC',
@@ -101,6 +103,7 @@ const generateTableColumn = (problems, contestType, t) => {
         padding: '3px',
         margin: '0',
       },
+      editable: true,
       render: (col, record) => (
         <>
           {col.status !== 'UNSUBMIT' && (
@@ -127,6 +130,57 @@ const generateTableColumn = (problems, contestType, t) => {
   });
   return columns;
 };
+
+function TableCell(props) {
+  const { children, className, rowData, column, onHandleSave, contestId } = props;
+  const [visible, setVisible] = useState(false);
+  const [modal, contextHolder] = Modal.useModal();
+  useEffect(() => {
+    if (visible) {
+      // 排行榜中点击表格项，展示对应的提交记录列表
+      const problemNumber = column.key.split('.')[1]
+      listContestSubmissions(contestId, {userId: rowData.userId, problem: problemNumber}).then(res => {
+        const submissions = res.data.data;
+        modal.info({
+          icon: null,
+          footer: null,
+          closable: true,
+          content: (
+            <>
+              <List
+                size='small'
+                dataSource={submissions}
+                render={(item, index) =>
+                  <List.Item key={index}>
+                    <IconClockCircle /> {FormatTime(item.createdAt)}
+                    <Divider type='vertical' />
+                    <SubmissionVerdict verdict={item.verdict} />
+                    →
+                    <Link href={`/submissions/${item.id}`} target='_blank'>
+                      {item.id}
+                    </Link>
+                  </List.Item>
+                }
+              />
+            </>
+          ),
+          onCancel() {
+            setVisible(false);
+          },
+        })
+      })
+    }
+  }, [visible]);
+  if (!column.editable) {
+    return children;
+  }
+  return (
+    <div onClick={() => {setVisible(true)}} style={{cursor: 'pointer'}}>
+      {contextHolder}
+      {children}
+    </div>
+  );
+}
 
 const App = () => {
   const t = useLocale(locale);
@@ -313,6 +367,11 @@ const App = () => {
       </div>
       <Table
         rowKey={(r) => r.userId}
+        components={{
+          body: {
+            cell: (props) => TableCell({...props, contestId: contest.id})
+          }
+        }}
         columns={columns}
         data={data}
         border={false}

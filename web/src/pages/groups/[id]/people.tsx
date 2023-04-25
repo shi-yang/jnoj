@@ -1,6 +1,6 @@
 import { createGroupUser, deleteGroupUser, listGroupUsers, updateGroupUser } from '@/api/group';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps } from '@arco-design/web-react';
+import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
@@ -18,7 +18,15 @@ function People() {
     pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
-    sizeOptions: [25, 50, 100]
+    sizeOptions: [25, 50, 100],
+    hideOnSinglePage: true,
+    onChange: (current, pageSize) => {
+      setPatination({
+        ...pagination,
+        current,
+        pageSize,
+      });
+    }
   });
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [updateUserId, setUpdateUserId] = useState(0);
@@ -32,14 +40,10 @@ function People() {
 
   const columns:TableColumnProps[] = [
     {
-      title: t['people.column.userId'],
-      dataIndex: 'userId',
-      align: 'center' as 'center',
-    },
-    {
       title: t['people.column.nickname'],
       dataIndex: 'nickname',
       align: 'center' as 'center',
+      render: (col, record) => <Link href={`/u/${record.userId}`}>{col}</Link>
     },
     {
       title: t['people.column.role'],

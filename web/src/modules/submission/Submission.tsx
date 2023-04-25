@@ -1,130 +1,150 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
+import { Collapse, Divider, Message, Space, Typography } from '@arco-design/web-react';
+import React, { useEffect, useState } from 'react';
+import { getSubmission } from '@/api/submission';
+import { FormatMemorySize } from '@/utils/format';
+import styles from './style/submission.module.less';
+import Highlight from '@/components/Highlight';
 import locale from './locale';
-import { LanguageMap, listSubmissions } from '@/api/submission';
-import { FormatMemorySize, FormatTime } from '@/utils/format';
 import SubmissionVerdict from './SubmissionVerdict';
-import SubmissionDrawer from './SubmissionDrawer';
 
-interface SubmissionProps {
-  pid?:number,
-  entityType?:number,
-  userId?:number,
-}
-
-const Submission = ({pid=undefined, entityType=undefined, userId=undefined}: SubmissionProps) => {
+export default function Submission ({id}: {id: number}) {
   const t = useLocale(locale);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [submissionId, setSubmissionId] = useState(0);
-  const [visible, setVisible] = useState(false);
-  const [pagination, setPatination] = useState<PaginationProps>({
-    sizeCanChange: true,
-    showTotal: true,
-    pageSize: 10,
-    current: 1,
-    pageSizeChangeResetCurrent: true,
-  });
+  const [submission, setSubmission] = useState({source: '', info: {
+    subtasks: [],
+    compileMsg: '',
+    hasSubtask: false,
+    acceptedTestCount: 0,
+    totalTestCount: 0,
+  }});
+
   function fetchData() {
-    const { current, pageSize } = pagination;
-    const params = {
-      page: current,
-      perPage: pageSize,
-      problemId: pid,
-      userId: userId,
-      entityType: entityType,
-    };
-    setLoading(true);
-    listSubmissions(params)
-      .then((res) => {
-        setData(res.data.data || []);
-        setPatination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
+    getSubmission(id)
+      .then(res => {
+        setSubmission(res.data);
       })
-      .finally(() => {
-        setLoading(false);
+      .catch(res => {
+        Message.error(res.response.data.message);
       });
   }
-  function onView(id) {
-    setSubmissionId(id);
-    setVisible(true);
-  }
-  function onChangeTable({ current, pageSize }) {
-    setPatination({
-      ...pagination,
-      current,
-      pageSize,
-    });
-  }
-  const columns: TableColumnProps[] = [
-    {
-      title: '#',
-      dataIndex: 'id',
-      align: 'center',
-    },
-    {
-      title: t['language'],
-      dataIndex: 'language',
-      align: 'center',
-      render: (col) => LanguageMap[col]
-    },
-    {
-      title: t['verdict'],
-      dataIndex: 'verdict',
-      align: 'center',
-      render: (col) => <SubmissionVerdict verdict={col} />
-    },
-    {
-      title: t['score'],
-      dataIndex: 'score',
-      align: 'center',
-    },
-    {
-      title: t['time'],
-      dataIndex: 'time',
-      align: 'center',
-      render: (col) => `${col / 1000} ms`
-    },
-    {
-      title: t['memory'],
-      dataIndex: 'memory',
-      align: 'center',
-      render: (col) => FormatMemorySize(col)
-    },
-    {
-      title: t['createdAt'],
-      dataIndex: 'createdAt',
-      align: 'center',
-      render: (col) => FormatTime(col)
-    },
-    {
-      title: t['action'],
-      dataIndex: 'action',
-      align: 'center',
-      render: (_, record) => <Button type="text" size="small" onClick={() => { onView(record.id); }}>查看</Button>,
-    },
-  ];
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [id]);
   return (
-    <Card>
-      <SubmissionDrawer visible={visible} id={submissionId} onCancel={() => setVisible(false)} />
-      <Table
-        rowKey={r => r.id}
-        loading={loading}
-        columns={columns}
-        onChange={onChangeTable}
-        pagination={pagination}
-        data={data}
-      />
-    </Card>
+    <>
+      <Typography.Title heading={4}>{t['drawer.source']}</Typography.Title>
+      <Highlight content={submission.source} />
+      {
+        submission.info &&
+        <div>
+          {submission.info.compileMsg != '' && (
+            <>
+              <Divider />
+              <Typography.Title heading={4}>{t['drawer.compileInfo']}</Typography.Title>
+              <Highlight content={submission.info.compileMsg} />
+            </>
+          )}
+          <Divider />
+          <Typography.Title heading={4}>{t['drawer.tests']}</Typography.Title>
+          <div>
+            {submission.info.acceptedTestCount} / {submission.info.totalTestCount}
+          </div>
+          <Collapse
+            style={{ maxWidth: 1180 }}
+          >
+            {
+              submission.info.subtasks.map((item, index) => 
+                submission.info.hasSubtask 
+                ? <Collapse.Item
+                    header={(
+                      <Space split={<Divider type='vertical' />}>
+                        <span>#{index + 1}</span>
+                        <SubmissionVerdict verdict={item.verdict} />
+                        <span>{t['score']}: {item.score.toFixed(1)}</span>
+                        <span>{t['time']}: {(item.time / 1000)} ms</span>
+                        <span>{t['memory']}: {FormatMemorySize(item.memory)}</span>
+                      </Space>
+                    )}
+                    name={`${index}`}
+                    key={index}
+                  >
+                    <Collapse>
+                      {
+                        item.tests.map((test, testIndex) => 
+                          <Collapse.Item
+                            key={testIndex}
+                            header={(
+                              <Space split={<Divider type='vertical' />}>
+                                <span>#{testIndex + 1}</span>
+                                <SubmissionVerdict verdict={test.verdict} />
+                                <span>{t['time']}: {(test.time / 1000)} ms</span>
+                                <span>{t['memory']}: {FormatMemorySize(test.memory)}</span>
+                              </Space>
+                            )}
+                            name={`${index}-${testIndex}`}
+                          >
+                            <div className={styles['sample-test']}>
+                              <div className={styles.input}>
+                                <h4>{t['input']}</h4>
+                                <pre>{test.stdin}</pre>
+                              </div>
+                              <div className={styles.output}>
+                                <h4>{t['output']}</h4>
+                                <pre>{ test.stdout }</pre>
+                              </div>
+                              <div className={styles.output}>
+                                <h4>{t['answer']}</h4>
+                                <pre>{ test.answer }</pre>
+                              </div>
+                              <div className={styles.output}>
+                                <h4>Checker out</h4>
+                                <pre>{ test.checkerStdout }</pre>
+                              </div>
+                            </div>
+                          </Collapse.Item>
+                        )
+                      }
+                    </Collapse>
+                  </Collapse.Item>
+                : item.tests.map((test, testIndex) =>
+                  <Collapse.Item
+                    header={(
+                      <Space split={<Divider type='vertical' />}>
+                        <span>#{testIndex + 1}</span>
+                        <SubmissionVerdict verdict={test.verdict} />
+                        <span>{t['score']}: {test.score.toFixed(1)}</span>
+                        <span>{t['time']}: {(test.time / 1000)} ms</span>
+                        <span>{t['memory']}: {FormatMemorySize(test.memory)}</span>
+                      </Space>
+                    )}
+                    name={`${testIndex}`}
+                    key={testIndex}
+                  >
+                    <div className={styles['sample-test']}>
+                      <div className={styles.input}>
+                        <h4>{t['input']}</h4>
+                        <pre>{test.stdin}</pre>
+                      </div>
+                      <div className={styles.output}>
+                        <h4>{t['output']}</h4>
+                        <pre>{ test.stdout }</pre>
+                      </div>
+                      <div className={styles.output}>
+                        <h4>{t['answer']}</h4>
+                        <pre>{ test.answer }</pre>
+                      </div>
+                      <div className={styles.output}>
+                        <h4>Checker out</h4>
+                        <pre>{ test.checkerStdout }</pre>
+                      </div>
+                    </div>
+                  </Collapse.Item>
+                )
+              )
+            }
+          </Collapse>
+        </div>
+      }
+    </>
   );
-};
-
-export default Submission;
+}
