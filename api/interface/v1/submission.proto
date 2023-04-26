@@ -48,8 +48,10 @@ message Submission {
     int64 time = 6;
     int32 verdict = 7;
     int32 score = 8;
-    SubmissionInfo info = 9;
-    google.protobuf.Timestamp created_at = 10;
+    int32 user_id = 9;
+    string nickname = 10;
+    SubmissionInfo info = 11;
+    google.protobuf.Timestamp created_at = 12;
 }
 
 message ListSubmissionsRequest {

@@ -20,6 +20,7 @@ type Submission struct {
 	Language       int
 	Score          int
 	UserID         int
+	Nickname       string
 	Source         string
 	EntityID       int
 	EntityType     int

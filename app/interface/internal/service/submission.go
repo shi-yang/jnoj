@@ -95,6 +95,8 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 		Language:  int32(res.Language),
 		CreatedAt: timestamppb.New(res.CreatedAt),
 		Info:      infoResp,
+		UserId:    int32(res.UserID),
+		Nickname:  res.Nickname,
 	}, nil
 }
 

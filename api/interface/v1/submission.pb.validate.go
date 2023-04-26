@@ -73,6 +73,10 @@ func (m *Submission) validate(all bool) error {
 
 	// no validation rules for Score
 
+	// no validation rules for UserId
+
+	// no validation rules for Nickname
+
 	if all {
 		switch v := interface{}(m.GetInfo()).(type) {
 		case interface{ ValidateAll() error }:

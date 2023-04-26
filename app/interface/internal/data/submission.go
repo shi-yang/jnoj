@@ -109,6 +109,9 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submission, error) {
 	var res Submission
 	err := r.data.db.Model(Submission{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		}).
 		First(&res, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -125,6 +128,7 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 		EntityType: res.EntityType,
 		UserID:     res.UserID,
 		CreatedAt:  res.CreatedAt,
+		Nickname:   res.User.Nickname,
 	}, err
 }
 

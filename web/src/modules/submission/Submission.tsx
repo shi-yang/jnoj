@@ -1,8 +1,8 @@
 import useLocale from '@/utils/useLocale';
-import { Collapse, Divider, Message, Space, Typography } from '@arco-design/web-react';
+import { Card, Collapse, Descriptions, Divider, Link, Message, Space, Typography } from '@arco-design/web-react';
 import React, { useEffect, useState } from 'react';
-import { getSubmission } from '@/api/submission';
-import { FormatMemorySize } from '@/utils/format';
+import { LanguageMap, getSubmission } from '@/api/submission';
+import { FormatMemorySize, FormatTime } from '@/utils/format';
 import styles from './style/submission.module.less';
 import Highlight from '@/components/Highlight';
 import locale from './locale';
@@ -10,18 +10,28 @@ import SubmissionVerdict from './SubmissionVerdict';
 
 export default function Submission ({id}: {id: number}) {
   const t = useLocale(locale);
-  const [submission, setSubmission] = useState({source: '', info: {
+  const [submission, setSubmission] = useState({id: 0, source: '', info: {
     subtasks: [],
     compileMsg: '',
     hasSubtask: false,
     acceptedTestCount: 0,
     totalTestCount: 0,
   }});
+  const [descriptionData, setDescriptionData] = useState([]);
 
   function fetchData() {
     getSubmission(id)
       .then(res => {
-        setSubmission(res.data);
+        const { data } = res;
+        setSubmission(data);
+        setDescriptionData([
+          {label: t['user'], value: <Link href={`/u/${data.userId}`}>{data.nickname}</Link>},
+          {label: t['verdict'], value: <SubmissionVerdict verdict={data.verdict} />},
+          {label: t['time'], value: `${data.time / 1000} ms`},
+          {label: t['memory'], value: FormatMemorySize(data.memory)},
+          {label: t['language'], value: LanguageMap[data.language]},
+          {label: t['createdAt'], value: FormatTime(data.createdAt)},
+        ]);
       })
       .catch(res => {
         Message.error(res.response.data.message);
@@ -32,6 +42,14 @@ export default function Submission ({id}: {id: number}) {
   }, [id]);
   return (
     <>
+      <Typography.Title heading={4}>{t['submissionID']}:{submission.id}</Typography.Title>
+      <Descriptions
+        data={descriptionData}
+        layout='vertical'
+        border
+        column={6}
+        style={{ marginBottom: 20 }}
+      />
       <Typography.Title heading={4}>{t['drawer.source']}</Typography.Title>
       <Highlight content={submission.source} />
       {
