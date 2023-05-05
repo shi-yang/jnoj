@@ -17,15 +17,14 @@ const (
 	initPath        = "init"
 )
 
-// cgroupV2
-// https://www.kernel.org/doc/Documentation/cgroup-v2.txt
-// https://docs.kernel.org/admin-guide/cgroup-v2.html
-type cgroupV2 struct{}
+func init() {
+	Initcgroupv2()
+}
 
-// Install creates and configures cgroups.
-func (c *cgroupV2) Install(pid, containerID, memory string) error {
-	_, _ = os.Stderr.WriteString(fmt.Sprintf("InitCGroup(%s, %s, %s) Starting...\n", pid, containerID, memory))
-
+func Initcgroupv2() error {
+	if !IsOnlyV2() {
+		return nil
+	}
 	p, err := os.ReadFile(path.Join(rootPathPrefix, cgroupProcs))
 	if err != nil {
 		return err
@@ -36,13 +35,13 @@ func (c *cgroupV2) Install(pid, containerID, memory string) error {
 	}
 	// mkdir init
 	if err := os.Mkdir(path.Join(rootPathPrefix, initPath), 0755); err != nil && !errors.Is(err, os.ErrExist) {
-		_, _ = os.Stderr.WriteString(fmt.Sprintf("mkdir init(%s) failed, err: %s\n", filepath.Join(rootPathPrefix, containerID), err.Error()))
+		fmt.Printf("mkdir init(%s) failed, err: %s\n", rootPathPrefix, err.Error())
 		return err
 	}
 	// move all process into init cgroup
 	procFile, err := os.OpenFile(path.Join(rootPathPrefix, initPath, cgroupProcs), os.O_RDWR, 0644)
 	if err != nil {
-		_, _ = os.Stderr.WriteString(fmt.Sprintf("move all process into init cgroup(%s) failed, err: %s\n", filepath.Join(rootPathPrefix, containerID), err.Error()))
+		fmt.Printf("move all process into init cgroup(%s) failed, err: %s\n", rootPathPrefix, err.Error())
 		return err
 	}
 	for _, v := range procs {
@@ -52,14 +51,25 @@ func (c *cgroupV2) Install(pid, containerID, memory string) error {
 
 	controllers, err := getcgroupV2AvailableController()
 	if err != nil {
-		_, _ = os.Stderr.WriteString(fmt.Sprintf("getcgroupV2AvailableController(%s) failed, err: %s\n", filepath.Join(rootPathPrefix, containerID), err.Error()))
+		fmt.Printf("getcgroupV2AvailableController(%s) failed, err: %s\n", rootPathPrefix, err.Error())
 		return err
 	}
 	controlMsg := []byte("+" + strings.Join(controllers, " +"))
 	if err := os.WriteFile(path.Join(rootPathPrefix, subtreeControl), controlMsg, os.ModePerm); err != nil {
-		_, _ = os.Stderr.WriteString(fmt.Sprintf("os.WriteFile(%s, %s, os.ModePerm) failed, err: %s\n", filepath.Join(rootPathPrefix, containerID), subtreeControl, err.Error()))
+		fmt.Printf("os.WriteFile(%s, %s, os.ModePerm) failed, err: %s\n", rootPathPrefix, subtreeControl, err.Error())
 		return err
 	}
+	return nil
+}
+
+// cgroupV2
+// https://www.kernel.org/doc/Documentation/cgroup-v2.txt
+// https://docs.kernel.org/admin-guide/cgroup-v2.html
+type cgroupV2 struct{}
+
+// Install creates and configures cgroups.
+func (c *cgroupV2) Install(pid, containerID, memory string) error {
+	_, _ = os.Stderr.WriteString(fmt.Sprintf("InitCGroup(%s, %s, %s) Starting...\n", pid, containerID, memory))
 
 	if err := os.MkdirAll(filepath.Join(rootPathPrefix, containerID), os.ModePerm); err != nil {
 		_, _ = os.Stderr.WriteString(fmt.Sprintf("os.MkdirAll(%s, os.ModePerm) failed, err: %s\n", filepath.Join(rootPathPrefix, containerID), err.Error()))

@@ -1,0 +1,19 @@
+FROM golang:1.20 AS builder
+
+COPY ../ /src
+WORKDIR /src
+
+RUN cd app/sandbox && GOPROXY=https://goproxy.cn make build
+
+FROM debian:latest
+
+COPY deployments/sources.list /etc/apt/sources.list
+COPY --from=builder /src/app/sandbox/bin /app
+COPY --from=builder /src/app/sandbox/configs /app/configs
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        wget make gcc g++ openjdk-17-jdk python3
+
+WORKDIR /app
+
+ENTRYPOINT ["./server", "-conf", "./configs"]

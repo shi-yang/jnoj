@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 COPY sources.list /etc/apt/sources.list
 
-ENV GOVERSION 1.19.1
+ENV GOVERSION 1.20
 ENV GOROOT /opt/go
 ENV GOPATH /go
 ENV GOPROXY https://goproxy.cn,direct
