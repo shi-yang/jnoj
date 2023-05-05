@@ -58,7 +58,7 @@ func sandboxInit() {
 	// 限制内存时，多给 4 MB
 	memoryLimit += 4
 
-	if err := container.InitCGroup(strconv.Itoa(os.Getpid()), containerID, strconv.FormatInt(memoryLimit, 10)); err != nil {
+	if err := container.Newcgroup().Install(strconv.Itoa(os.Getpid()), containerID, strconv.FormatInt(memoryLimit, 10)); err != nil {
 		r.Err = err.Error()
 		result, _ := json.Marshal(r)
 		_, _ = os.Stdout.Write(result)
@@ -117,7 +117,7 @@ func Run(basedir string, lang *Language, input []byte, memoryLimit int64, timeLi
 	var stdout, stderr bytes.Buffer
 	u, _ := uuid.NewRandom()
 	containerID := u.String()
-	defer container.CleanCGroup(containerID)
+	defer container.Newcgroup().Uninstall(containerID)
 	cmd := reexec.Command("sandboxInit",
 		basedir,
 		containerID,
