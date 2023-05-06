@@ -1,4 +1,4 @@
-import { createGroupUser, deleteGroupUser, listGroupUsers, updateGroupUser } from '@/api/group';
+import { createGroupUser, deleteGroupUser, getGroupUser, listGroupUsers, updateGroupUser } from '@/api/group';
 import useLocale from '@/utils/useLocale';
 import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
@@ -142,6 +142,18 @@ function UpdateUserModal({visible, gid, uid, callback}: any) {
     });
   }
 
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    getGroupUser(gid, uid).then(res => {
+      form.setFieldsValue({
+        role: res.data.role,
+        nickname: res.data.nickname,
+      });
+    });
+  }, [visible]);
+
   return (
     <Modal
       title={t['all.createProblemset']}
@@ -155,9 +167,12 @@ function UpdateUserModal({visible, gid, uid, callback}: any) {
       >
         <Form.Item label={t['people.updateUser.form.role']} required field='role' rules={[{ required: true }]}>
           <Radio.Group>
-            <Radio value={1}>{t['people.updateUser.form.role.manager']}</Radio>
-            <Radio value={2}>{t['people.updateUser.form.role.member']}</Radio>
+            <Radio value='MANAGER'>{t['people.updateUser.form.role.manager']}</Radio>
+            <Radio value='MEMBER'>{t['people.updateUser.form.role.member']}</Radio>
           </Radio.Group>
+        </Form.Item>
+        <Form.Item label={t['people.updateUser.form.nickname']} required field='nickname' rules={[{ required: true }]}>
+          <Input />
         </Form.Item>
       </Form>
     </Modal>

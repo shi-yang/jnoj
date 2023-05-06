@@ -40,6 +40,7 @@ type GroupUser struct {
 	GroupID   int
 	UserID    int
 	Role      int
+	Nickname  string
 	CreatedAt time.Time
 	User      *User `json:"user" gorm:"foreignKey:UserID"`
 }
@@ -178,14 +179,18 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 		Count(&count)
 	rv := make([]*biz.GroupUser, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.GroupUser{
+		u := &biz.GroupUser{
 			ID:        v.ID,
-			Nickname:  v.User.Nickname,
+			Nickname:  v.Nickname,
 			UserID:    v.UserID,
 			GroupID:   v.GroupID,
 			Role:      v.Role,
 			CreatedAt: v.CreatedAt,
-		})
+		}
+		if u.Nickname == "" {
+			u.Nickname = v.User.Nickname
+		}
+		rv = append(rv, u)
 	}
 	return rv, count
 }
@@ -195,15 +200,23 @@ func (r *groupRepo) GetGroupUser(ctx context.Context, gid int, uid int) (*biz.Gr
 	var res GroupUser
 	err := r.data.db.WithContext(ctx).
 		Model(&GroupUser{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname")
+		}).
 		First(&res, "group_id = ? and user_id = ?", gid, uid).
 		Error
-	return &biz.GroupUser{
+	u := &biz.GroupUser{
 		ID:        res.ID,
 		UserID:    res.UserID,
 		GroupID:   res.GroupID,
 		Role:      res.Role,
+		Nickname:  res.Nickname,
 		CreatedAt: res.CreatedAt,
-	}, err
+	}
+	if u.Nickname == "" {
+		u.Nickname = res.User.Nickname
+	}
+	return u, err
 }
 
 // CreateGroupUser .
@@ -233,9 +246,10 @@ func (r *groupRepo) CreateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz
 // UpdateGroupUser .
 func (r *groupRepo) UpdateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz.GroupUser, error) {
 	res := GroupUser{
-		UserID:  g.UserID,
-		GroupID: g.GroupID,
-		Role:    g.Role,
+		UserID:   g.UserID,
+		GroupID:  g.GroupID,
+		Role:     g.Role,
+		Nickname: g.Nickname,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

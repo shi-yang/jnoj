@@ -160,8 +160,9 @@ func (s *GroupService) UpdateGroupUser(ctx context.Context, req *v1.UpdateGroupU
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	update := &biz.GroupUser{
-		UserID:  int(req.Uid),
-		GroupID: int(req.Gid),
+		UserID:   int(req.Uid),
+		GroupID:  int(req.Gid),
+		Nickname: req.Nickname,
 	}
 	switch req.Role {
 	case v1.GroupUserRole_MANAGER:

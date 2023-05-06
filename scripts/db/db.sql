@@ -89,6 +89,7 @@ CREATE TABLE `group_user` (
   `id` int UNSIGNED NOT NULL,
   `group_id` int UNSIGNED NOT NULL,
   `user_id` int UNSIGNED NOT NULL,
+  `nickname` VARCHAR(64) NOT NULL DEFAULT '',
   `role` tinyint UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

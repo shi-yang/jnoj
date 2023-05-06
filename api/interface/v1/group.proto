@@ -155,5 +155,6 @@ message CreateGroupUserRequest {
 message UpdateGroupUserRequest {
     int32 gid = 1;
     int32 uid = 2;
-    GroupUserRole role = 3;
+    string nickname = 3;
+    GroupUserRole role = 4;
 }

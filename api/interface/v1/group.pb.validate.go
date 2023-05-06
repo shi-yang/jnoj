@@ -1491,6 +1491,8 @@ func (m *UpdateGroupUserRequest) validate(all bool) error {
 
 	// no validation rules for Uid
 
+	// no validation rules for Nickname
+
 	// no validation rules for Role
 
 	if len(errors) > 0 {
