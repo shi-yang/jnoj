@@ -3,22 +3,33 @@ package main
 import (
 	"bytes"
 	"fmt"
-	objectstorage "jnoj/pkg/object_storage"
 	v1 "jnoj/tools/upgrade/v1"
 	v2 "jnoj/tools/upgrade/v2"
 	"log"
 	"os"
+	"path"
+	"strconv"
+	"strings"
+
+	objectstorage "jnoj/pkg/object_storage"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
+
 	"github.com/google/uuid"
+	"github.com/leeqvip/gophp"
 	"gorm.io/gorm"
 )
 
 var (
 	oldSource    = "root:123456@tcp(mysql:3306)/jnoj2?charset=utf8mb4&parseTime=True&loc=Local"
 	newSource    = "root:123456@tcp(mysql:3306)/jnoj2?charset=utf8mb4&parseTime=True&loc=Local"
-	testDataPath = ""
-	bucket       = Bucket{}
+	testDataPath = "data"
+	bucket       = Bucket{
+		Bucket:    "private",
+		SecretId:  "jnoj_access_key1",
+		SecretKey: "jnoj_secret_key1",
+		Endpoint:  "http://jnoj-s3:8333",
+	}
 )
 
 var (
@@ -38,20 +49,20 @@ func main() {
 	}
 	createDefaultProblemset()
 	migrateFuncMap := map[string]func(){
-		"contest_user": migrateContestUser,
-		"contest":      migrateContest,
-		// "contest_announcement": migrateContestAnnouncement,
-		"contest_problem": migrateContestProblem,
-		// "group_user": migrateGroupUser,
-		// "group": migrateGroup,
-		// "problem": migrateProblem,
-		// "polygon_problem":      migratePolygonProblem,
-		// "polygon_status":       migratePolygonStatus,
-		// "setting":              migrateSetting,
-		// "solution": migrateSolution,
-		// "solution_info":        migrateSolutionInfo,
-		// "user":                 migrateUser,
-		// "user_profile":         migrateUserProfile,
+		"contest_user":         migrateContestUser,
+		"contest":              migrateContest,
+		"contest_announcement": migrateContestAnnouncement,
+		"contest_problem":      migrateContestProblem,
+		"group_user":           migrateGroupUser,
+		"group":                migrateGroup,
+		"problem":              migrateProblem,
+		"polygon_problem":      migratePolygonProblem,
+		"polygon_status":       migratePolygonStatus,
+		"setting":              migrateSetting,
+		"solution":             migrateSolution,
+		"solution_info":        migrateSolutionInfo,
+		"user":                 migrateUser,
+		"user_profile":         migrateUserProfile,
 	}
 	log.Println("migrate db start")
 	for k, v := range migrateFuncMap {
@@ -60,9 +71,9 @@ func main() {
 		log.Println("migrate", k, "done")
 	}
 	log.Println("migrate db done")
-	// log.Println("migrate test data start")
-	// migrateTestData()
-	// log.Println("migrate test data done")
+	log.Println("migrate test data start")
+	migrateTestData()
+	log.Println("migrate test data done")
 }
 
 func createDefaultProblemset() {
@@ -184,9 +195,14 @@ func migrateProblem() {
 	var resv2 []*v2.Problem
 	var resStatementV2 []*v2.ProblemStatement
 	var problemset []*v2.ProblemsetProblem
-	converter := md.NewConverter("", true, nil)
+	converter := md.NewConverter("", true, &md.Options{
+		EscapeMode: "none",
+	})
 	oDB.Model(&v1.Problem{}).Find(&resv1)
 	for key, v := range resv1 {
+		if key > 1000 {
+			break
+		}
 		resv2 = append(resv2, &v2.Problem{
 			ID:            v.ID,
 			Name:          v.Title,
@@ -194,6 +210,7 @@ func migrateProblem() {
 			MemoryLimit:   int64(v.MemoryLimit),
 			AcceptedCount: v.Accepted,
 			SubmitCount:   v.Submit,
+			CheckerID:     1002,
 			UserID:        v.CreatedBy,
 			Status:        v.Status,
 			Source:        v.Source,
@@ -215,13 +232,13 @@ func migrateProblem() {
 			Order:        key + 1,
 		})
 	}
-	if err := nDB.Create(resv2); err != nil {
+	if err := nDB.Create(resv2).Error; err != nil {
 		log.Println(err)
 	}
-	if err := nDB.Create(resStatementV2); err != nil {
+	if err := nDB.Create(resStatementV2).Error; err != nil {
 		log.Println(err)
 	}
-	if err := nDB.Create(problemset); err != nil {
+	if err := nDB.Create(problemset).Error; err != nil {
 		log.Println(err)
 	}
 }
@@ -355,40 +372,121 @@ func migrateUser() {
 func migrateUserProfile() {
 }
 
+// 迁移测试数据
+// 差异点：
+// 1、在v1中，题目样例储存在MySQL数据库中，题目测试点在文件系统中。
+// 2、在v2中，样例和测试点在数据库和SeaweedFS中都有储存，没有采用文件系统来进行储存
 func migrateTestData() {
-	_, err := os.ReadDir(testDataPath)
-	if err != nil {
-		panic(err)
-	}
+	// 第一步，转存数据库中题目的测试样例
+	store := objectstorage.NewSeaweed()
 	var resv1 []*v1.Problem
-	var resv2 []*v2.Problem
-	var resStatementV2 []*v2.ProblemStatement
 	oDB.Model(&v1.Problem{}).Find(&resv1)
-	for _, v := range resv1 {
-		InputFileContent := []byte("")
-		o := &v2.ProblemTest{
-			ProblemID:     v.ID,
-			Name:          "",
-			IsExample:     true,
-			InputSize:     int64(len(v.SampleInput)),
-			InputPreview:  v.SampleInput,
-			OutputSize:    int64(len(v.SampleInput)),
-			OutputPreview: v.SampleOutput,
+	for index, v := range resv1 {
+		intmp, _ := gophp.Unserialize([]byte(v.SampleInput))
+		outtmp, _ := gophp.Unserialize([]byte(v.SampleOutput))
+		if intmp == nil || outtmp == nil {
+			continue
 		}
-		// 保存文件
-		if len(o.InputPreview) > 0 {
+		in := intmp.([]interface{})
+		out := outtmp.([]interface{})
+		for k, test := range in {
+			log.Println(index, "/", len(resv1), " - ", k, "/", len(in))
+			if test == nil || out[k] == nil {
+				continue
+			}
+			o := &v2.ProblemTest{
+				ProblemID:     v.ID,
+				Name:          "",
+				IsExample:     true,
+				InputSize:     int64(len(test.(string))),
+				InputPreview:  test.(string),
+				OutputSize:    int64(len(out[k].(string))),
+				OutputPreview: out[k].(string),
+			}
+			err := nDB.Create(o).Error
+			if err != nil {
+				log.Println(err)
+			}
+			// 保存文件
 			store := objectstorage.NewSeaweed()
 			storeName := fmt.Sprintf(v2.ProblemTestInputPath, v.ID, o.ID)
-			err := store.PutObject(bucket, storeName, bytes.NewReader(InputFileContent))
+			err = store.PutObject(bucket, storeName, bytes.NewReader([]byte(test.(string))))
+			if err != nil {
+				log.Println(err)
+			}
+			storeName = fmt.Sprintf(v2.ProblemTestOutputPath, v.ID, o.ID)
+			err = store.PutObject(bucket, storeName, bytes.NewReader([]byte(out[k].(string))))
 			if err != nil {
 				log.Println(err)
 			}
 		}
-		err := nDB.Create(o).Error
+	}
+	// 第二步，转存文件系统中的测试点
+	problems, err := os.ReadDir(testDataPath)
+	if err != nil {
+		panic(err)
+	}
+	for index, problem := range problems {
+		if !problem.IsDir() {
+			continue
+		}
+		problemId, _ := strconv.Atoi(problem.Name())
+		testLists, err := os.ReadDir(path.Join(testDataPath, problem.Name()))
 		if err != nil {
 			log.Println(err)
+			continue
+		}
+		for tindex, test := range testLists {
+			log.Println(index, "/", len(problems), " - ", tindex, "/", len(testLists))
+			// TODO 处理SPJ
+			if strings.Contains(test.Name(), "spj") {
+			}
+			if !strings.Contains(test.Name(), "in") {
+				continue
+			}
+			nameTmp := strings.Split(test.Name(), ".")
+			name := strings.Join(nameTmp[:len(nameTmp)-1], ".")
+			// 读取测试点输入、测试点输出
+			in, _ := os.ReadFile(path.Join(testDataPath, problem.Name(), name+".in"))
+			out, err := os.ReadFile(path.Join(testDataPath, problem.Name(), name+".out"))
+			if err != nil {
+				out, err = os.ReadFile(path.Join(testDataPath, problem.Name(), name+".ans"))
+				if err != nil {
+					continue
+				}
+			}
+			o := &v2.ProblemTest{
+				ProblemID:  problemId,
+				Name:       name,
+				InputSize:  int64(len(in)),
+				OutputSize: int64(len(out)),
+			}
+			// 读取 32 个字符作为内容
+			if len(in) < 32 {
+				o.InputPreview = string(in)
+			} else {
+				o.InputPreview = string(in[:32]) + "..."
+			}
+			if len(out) < 32 {
+				o.InputPreview = string(out)
+			} else {
+				o.InputPreview = string(out[:32]) + "..."
+			}
+			err = nDB.Create(o).Error
+			if err != nil {
+				log.Println(err)
+			}
+			// 保存文件
+			storeName := fmt.Sprintf(v2.ProblemTestInputPath, problemId, o.ID)
+			err = store.PutObject(bucket, storeName, bytes.NewReader(in))
+			if err != nil {
+				log.Println(err)
+			}
+			storeName = fmt.Sprintf(v2.ProblemTestOutputPath, problemId, o.ID)
+			err = store.PutObject(bucket, storeName, bytes.NewReader(out))
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
-	nDB.Create(resv2)
-	nDB.Create(resStatementV2)
 }

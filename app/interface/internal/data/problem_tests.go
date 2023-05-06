@@ -125,6 +125,12 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 		OutputPreview: b.OutputPreview,
 		Order:         b.Order,
 	}
+	err := r.data.db.WithContext(ctx).
+		Create(o).
+		Error
+	if err != nil {
+		return nil, err
+	}
 	// 保存文件
 	if len(b.InputFileContent) > 0 {
 		store := objectstorage.NewSeaweed()
@@ -133,12 +139,6 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 		if err != nil {
 			return nil, err
 		}
-	}
-	err := r.data.db.WithContext(ctx).
-		Create(o).
-		Error
-	if err != nil {
-		return nil, err
 	}
 	return &biz.ProblemTest{
 		ID: o.ID,
