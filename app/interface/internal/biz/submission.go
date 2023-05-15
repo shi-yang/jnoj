@@ -78,7 +78,7 @@ const (
 )
 
 const (
-	SubmissionEntityTypeCommon = iota
+	SubmissionEntityTypeProblemset = iota
 	SubmissionEntityTypeContest
 	SubmissionEntityTypeProblemFile
 )
@@ -106,11 +106,12 @@ type SubmissionRepo interface {
 
 // SubmissionUsecase is a Submission usecase.
 type SubmissionUsecase struct {
-	repo          SubmissionRepo
-	problemRepo   ProblemRepo
-	contestRepo   ContestRepo
-	sandboxClient sandboxV1.SandboxServiceClient
-	log           *log.Helper
+	repo           SubmissionRepo
+	problemRepo    ProblemRepo
+	problemsetRepo ProblemsetRepo
+	contestRepo    ContestRepo
+	sandboxClient  sandboxV1.SandboxServiceClient
+	log            *log.Helper
 }
 
 // NewSubmissionUsecase new a Submission usecase.
@@ -118,15 +119,17 @@ func NewSubmissionUsecase(
 	repo SubmissionRepo,
 	problemRepo ProblemRepo,
 	contestRepo ContestRepo,
+	problemsetRepo ProblemsetRepo,
 	sandboxClient sandboxV1.SandboxServiceClient,
 	logger log.Logger,
 ) *SubmissionUsecase {
 	return &SubmissionUsecase{
-		repo:          repo,
-		problemRepo:   problemRepo,
-		contestRepo:   contestRepo,
-		sandboxClient: sandboxClient,
-		log:           log.NewHelper(logger),
+		repo:           repo,
+		problemRepo:    problemRepo,
+		problemsetRepo: problemsetRepo,
+		contestRepo:    contestRepo,
+		sandboxClient:  sandboxClient,
+		log:            log.NewHelper(logger),
 	}
 }
 
@@ -240,15 +243,19 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		contestProblem.SubmitCount += 1
 		uc.contestRepo.UpdateContestProblem(ctx, contestProblem)
 		s.ProblemID = contestProblem.ProblemID
-	}
-	// 处理直接提交至题目
-	if s.ProblemID != 0 {
-		problem, err := uc.problemRepo.GetProblem(ctx, s.ProblemID)
+	} else if s.EntityType == SubmissionEntityTypeProblemset {
+		// 提交至题目
+		p, err := uc.problemsetRepo.GetProblemsetProblem(ctx, s.EntityID, s.ProblemNumber)
 		if err != nil {
-			return nil, v1.ErrorProblemNotFound(err.Error())
+			return nil, v1.ErrorNotFound(err.Error())
+		}
+		problem, err := uc.problemRepo.GetProblem(ctx, p.ProblemID)
+		if err != nil {
+			return nil, v1.ErrorNotFound(err.Error())
 		}
 		problem.SubmitCount += 1
 		uc.problemRepo.UpdateProblem(ctx, problem)
+		s.ProblemID = problem.ID
 	}
 	res, err := uc.repo.CreateSubmission(ctx, s)
 	if err != nil {

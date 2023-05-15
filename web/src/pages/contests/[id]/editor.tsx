@@ -55,7 +55,8 @@ export default function App(props: any) {
   const onSubmit = () => {
     const data = {
       problemNumber: props.problem.number,
-      contestId: props.contest.id,
+      entityId: props.contest.id,
+      entityType: 'CONTEST',
       source: value,
       language: language,
     };

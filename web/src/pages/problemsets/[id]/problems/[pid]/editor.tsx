@@ -13,6 +13,7 @@ import { isLogged } from '@/utils/auth';
 import ProblemContext from './context';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 import Editor from "@monaco-editor/react";
+import { useRouter } from 'next/router';
 
 const themes = [
   'light', 'vs-dark'
@@ -36,6 +37,7 @@ export default function App() {
   const [lastSubmissionID, setLastSubmissionID] = useState(0);
   const [isMounted, setIsMounted] = useState(false); 
   const consoleRef = useRef(null);
+  const router = useRouter();
   const runCode = () => {
     setConsoleVisible(true);
     consoleRef.current.runCode();
@@ -74,10 +76,13 @@ export default function App() {
       });
   };
   const onSubmit = () => {
+    const { id, pid } = router.query;
     const data = {
-      problemId: problem.id,
+      problemNumber: pid,
       source: value,
       language: language,
+      entityId: id,
+      entityType: 'PROBLEMSET'
     };
     createSubmission(data).then(res => {
       Message.success('已提交');

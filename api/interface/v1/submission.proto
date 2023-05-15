@@ -73,15 +73,19 @@ message GetSubmissionRequest {
     int32 id = 1;
 }
 
+enum SubmissionEntityType {
+    PROBLEMSET = 0;
+    CONTEST = 1;
+    PROBLEM_FILE = 2;
+}
+
 message CreateSubmissionRequest {
-    // 题目ID
-    int32 problem_id = 1;
+    int32 entity_id = 1;
+    SubmissionEntityType entity_type = 2;
     // 编程语言
-    int32 language = 2;
+    int32 language = 3;
     // 源码
-    string source = 3;
-    // 比赛相关
-    int32 contest_id = 4;
+    string source = 4;
     int32 problem_number = 5;
 }
 

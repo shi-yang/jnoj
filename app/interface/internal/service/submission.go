@@ -103,14 +103,11 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 // CreateSubmission .
 func (s *SubmissionService) CreateSubmission(ctx context.Context, req *v1.CreateSubmissionRequest) (*v1.Submission, error) {
 	submission := &biz.Submission{
-		ProblemID:     int(req.ProblemId),
 		Source:        req.Source,
 		Language:      int(req.Language),
 		ProblemNumber: int(req.ProblemNumber),
-	}
-	if req.ContestId != 0 {
-		submission.EntityID = int(req.ContestId)
-		submission.EntityType = biz.SubmissionEntityTypeContest
+		EntityID:      int(req.EntityId),
+		EntityType:    int(req.EntityType),
 	}
 	res, err := s.uc.CreateSubmission(ctx, submission)
 	if err != nil {

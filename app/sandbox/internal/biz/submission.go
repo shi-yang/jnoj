@@ -105,7 +105,7 @@ const (
 )
 
 const (
-	SubmissionEntityTypeCommon = iota
+	SubmissionEntityTypeProblemset = iota
 	SubmissionEntityTypeContest
 	SubmissionEntityTypeProblemFile
 )
@@ -251,7 +251,7 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	uc.repo.UpdateSubmission(ctx, s)
 	// 通过时计数
 	if s.Verdict == SubmissionVerdictAccepted {
-		if s.EntityType == SubmissionEntityTypeCommon {
+		if s.EntityType == SubmissionEntityTypeProblemset {
 			problem.AcceptedCount += 1
 			uc.repo.UpdateProblem(ctx, problem)
 		} else if s.EntityType == SubmissionEntityTypeContest {

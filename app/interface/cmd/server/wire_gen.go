@@ -42,7 +42,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, confService *conf.Ser
 	problemsetRepo := data.NewProblemsetRepo(dataData, logger)
 	problemsetUsecase := biz.NewProblemsetUsecase(problemsetRepo, problemRepo, logger)
 	problemService := service.NewProblemService(problemUsecase, problemsetUsecase, logger)
-	submissionUsecase := biz.NewSubmissionUsecase(submissionRepo, problemRepo, contestRepo, sandboxServiceClient, logger)
+	submissionUsecase := biz.NewSubmissionUsecase(submissionRepo, problemRepo, contestRepo, problemsetRepo, sandboxServiceClient, logger)
 	submissionService := service.NewSubmissionService(submissionUsecase)
 	sandboxUsecase := biz.NewSandboxUsecase(sandboxServiceClient, problemRepo, logger)
 	sandboxService := service.NewSandboxService(sandboxUsecase)

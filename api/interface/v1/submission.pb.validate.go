@@ -592,13 +592,13 @@ func (m *CreateSubmissionRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for ProblemId
+	// no validation rules for EntityId
+
+	// no validation rules for EntityType
 
 	// no validation rules for Language
 
 	// no validation rules for Source
-
-	// no validation rules for ContestId
 
 	// no validation rules for ProblemNumber
 
