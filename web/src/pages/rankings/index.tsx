@@ -2,7 +2,7 @@ import { listProblemRankings } from '@/api/ranking';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { isLogged } from '@/utils/auth';
-import { Avatar, Card, Link, List, Radio, Table, TableColumnProps } from '@arco-design/web-react';
+import { Avatar, Card, Grid, Link, List, Radio, Table, TableColumnProps } from '@arco-design/web-react';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 const columns: TableColumnProps[] = [
@@ -53,51 +53,59 @@ export default function Index() {
             ]}
             onChange={e => setRadioValue(e)}
           />
-          <List
-            style={{ width: 600 }}
-            className='container'
-          >
-            {
-              data.length > 0
-              && <List.Item>
-                <List.Item.Meta
-                  title={<Link href={`/u/${data[0].userId}`}>{data[0].nickname}</Link>}
-                  description={data[0].solved}
-                  avatar={<Avatar shape='square' style={{ backgroundColor: '#FFD700' }}>1</Avatar>}
-                />
-              </List.Item>
-            }
-            {
-              data.length > 1
-              && <List.Item>
-                <List.Item.Meta
-                  title={<Link href={`/u/${data[1].userId}`}>{data[1].nickname}</Link>}
-                  description={data[1].solved}
-                  avatar={<Avatar shape='square' style={{ backgroundColor: '#C0C0C0' }}>2</Avatar>}
-                />
-              </List.Item>
-            }
-            {
-              data.length > 2
-              && <List.Item>
-                <List.Item.Meta
-                  title={<Link href={`/u/${data[2].userId}`}>{data[2].nickname}</Link>}
-                  description={data[2].solved}
-                  avatar={<Avatar shape='square' style={{ backgroundColor: '#B87333' }}>3</Avatar>}
-                />
-              </List.Item>
-            }
-            {
-              isLogged() && data.length > 0 &&
-              <List.Item>
-                <List.Item.Meta
-                  title={<Link href={`/u/${myRanking.userId}`}>{myRanking.nickname}</Link>}
-                  description={myRanking.solved}
-                  avatar={<Avatar shape='square'>{myRanking.rank}</Avatar>}
-                />
-              </List.Item>
-            }
-          </List>
+          <Grid.Row>
+            <Grid.Col span={12}>
+              <List
+                header='前三名'
+                className='container'
+              >
+                {
+                  data.length > 0
+                  && <List.Item>
+                    <List.Item.Meta
+                      title={<Link href={`/u/${data[0].userId}`}>{data[0].nickname}</Link>}
+                      description={data[0].solved}
+                      avatar={<Avatar shape='square' style={{ backgroundColor: '#FFD700' }}>1</Avatar>}
+                    />
+                  </List.Item>
+                }
+                {
+                  data.length > 1
+                  && <List.Item>
+                    <List.Item.Meta
+                      title={<Link href={`/u/${data[1].userId}`}>{data[1].nickname}</Link>}
+                      description={data[1].solved}
+                      avatar={<Avatar shape='square' style={{ backgroundColor: '#C0C0C0' }}>2</Avatar>}
+                    />
+                  </List.Item>
+                }
+                {
+                  data.length > 2
+                  && <List.Item>
+                    <List.Item.Meta
+                      title={<Link href={`/u/${data[2].userId}`}>{data[2].nickname}</Link>}
+                      description={data[2].solved}
+                      avatar={<Avatar shape='square' style={{ backgroundColor: '#B87333' }}>3</Avatar>}
+                    />
+                  </List.Item>
+                }
+              </List>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <List header='我的排名'>
+              {
+                  isLogged() && data.length > 0 &&
+                  <List.Item>
+                    <List.Item.Meta
+                      title={<Link href={`/u/${myRanking.userId}`}>{myRanking.nickname}</Link>}
+                      description={myRanking.solved}
+                      avatar={<Avatar shape='square'>{myRanking.rank}</Avatar>}
+                    />
+                  </List.Item>
+                }
+              </List>
+            </Grid.Col>
+          </Grid.Row>
           <Table rowKey={r => r.userId} columns={columns} data={data} />
           <p>注：榜单缓存时间1小时</p>
         </Card>
