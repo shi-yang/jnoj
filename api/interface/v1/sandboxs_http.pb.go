@@ -28,7 +28,7 @@ type SandboxsServiceHTTPServer interface {
 }
 
 func RegisterSandboxsServiceHTTPServer(s *http.Server, srv SandboxsServiceHTTPServer) {
-	s.Use("/jnoj.interface.v1.SandboxService/Run", auth.User())
+	s.Use("/jnoj.interface.v1.SandboxsService/Run", auth.User())
 	r := s.Route("/")
 	r.POST("/sandboxs", _SandboxsService_Run0_HTTP_Handler(srv))
 }
