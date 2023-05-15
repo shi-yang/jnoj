@@ -37,7 +37,7 @@ var (
 	nDB *gorm.DB
 )
 
-func main() {
+func init() {
 	var err error
 	oDB, err = connectDB(oldSource)
 	if err != nil {
@@ -47,22 +47,32 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	// 写入错误日志
+	logFile, err := os.OpenFile("./log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0776)
+	if err != nil {
+		panic(err)
+	}
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.LUTC)
+}
+
+func main() {
 	createDefaultProblemset()
 	migrateFuncMap := map[string]func(){
-		"contest_user":         migrateContestUser,
-		"contest":              migrateContest,
-		"contest_announcement": migrateContestAnnouncement,
-		"contest_problem":      migrateContestProblem,
-		"group_user":           migrateGroupUser,
-		"group":                migrateGroup,
-		"problem":              migrateProblem,
-		"polygon_problem":      migratePolygonProblem,
-		"polygon_status":       migratePolygonStatus,
-		"setting":              migrateSetting,
-		"solution":             migrateSolution,
-		"solution_info":        migrateSolutionInfo,
-		"user":                 migrateUser,
-		"user_profile":         migrateUserProfile,
+		// "contest_user":         migrateContestUser,
+		// "contest":              migrateContest,
+		// "contest_announcement": migrateContestAnnouncement,
+		// "contest_problem":      migrateContestProblem,
+		// "group_user":           migrateGroupUser,
+		// "group":                migrateGroup,
+		//"problem":         migrateProblem,
+		//"polygon_problem": migratePolygonProblem,
+		// "polygon_status":       migratePolygonStatus,
+		// "setting":              migrateSetting,
+		"solution": migrateSolution,
+		// "solution_info":        migrateSolutionInfo,
+		// "user":                 migrateUser,
+		// "user_profile":         migrateUserProfile,
 	}
 	log.Println("migrate db start")
 	for k, v := range migrateFuncMap {
@@ -72,7 +82,7 @@ func main() {
 	}
 	log.Println("migrate db done")
 	log.Println("migrate test data start")
-	migrateTestData()
+	//migrateTestData()
 	log.Println("migrate test data done")
 }
 
@@ -127,11 +137,21 @@ func migrateContestProblem() {
 	var resv2 []*v2.ContestProblem
 	oDB.Model(&v1.ContestProblem{}).Find(&resv1)
 	for _, v := range resv1 {
+		var ac, sc int
+		oDB.Select("count(*)").Model(&v1.Solution{}).
+			Where("contest_id = ? and problem_id = ?", v.ContestID, v.ProblemID).
+			Where("result = 4").
+			Scan(&ac)
+		oDB.Select("count(*)").Model(&v1.Solution{}).
+			Where("contest_id = ? and problem_id = ?", v.ContestID, v.ProblemID).
+			Scan(&sc)
 		resv2 = append(resv2, &v2.ContestProblem{
-			ID:        v.ID,
-			ContestID: v.ContestID,
-			ProblemID: v.ProblemID,
-			Number:    v.Num,
+			ID:            v.ID,
+			ContestID:     v.ContestID,
+			ProblemID:     v.ProblemID,
+			Number:        v.Num,
+			AcceptedCount: ac,
+			SubmitCount:   sc,
 		})
 	}
 	nDB.Create(resv2)
@@ -200,10 +220,7 @@ func migrateProblem() {
 	})
 	oDB.Model(&v1.Problem{}).Find(&resv1)
 	for key, v := range resv1 {
-		if key > 1000 {
-			break
-		}
-		resv2 = append(resv2, &v2.Problem{
+		problemV2 := &v2.Problem{
 			ID:            v.ID,
 			Name:          v.Title,
 			TimeLimit:     int64(v.TimeLimit * 1000),
@@ -214,7 +231,7 @@ func migrateProblem() {
 			UserID:        v.CreatedBy,
 			Status:        v.Status,
 			Source:        v.Source,
-		})
+		}
 		statement := &v2.ProblemStatement{
 			ProblemID: v.ID,
 			Name:      v.Title,
@@ -226,11 +243,34 @@ func migrateProblem() {
 		statement.Output, _ = converter.ConvertString(v.Output)
 		statement.Note, _ = converter.ConvertString(v.Hint)
 		resStatementV2 = append(resStatementV2, statement)
-		problemset = append(problemset, &v2.ProblemsetProblem{
-			ProblemID:    v.ID,
-			ProblemsetID: 1,
-			Order:        key + 1,
-		})
+		// 只有公开的题目才将其加入到默认题库中
+		if v.Status == 1 {
+			problemset = append(problemset, &v2.ProblemsetProblem{
+				ProblemID:    v.ID,
+				ProblemsetID: 1,
+				Order:        key + 1,
+			})
+		}
+		// 处理SPJ
+		if v.Spj {
+			spj, err := os.ReadFile(path.Join(testDataPath, strconv.Itoa(v.ID), "spj.cc"))
+			if err == nil {
+				checker := &v2.ProblemFile{
+					ProblemID: v.ID,
+					Language:  1, // C++
+					Content:   string(spj),
+					FileType:  string(v2.ProblemFileFileTypeChecker),
+					FileSize:  int64(len(spj)),
+				}
+				err := nDB.Create(checker).Error
+				if err != nil {
+					log.Println("problem spj err:", v.ID, err)
+				}
+				// 修改题目spj
+				problemV2.CheckerID = checker.ID
+			}
+		}
+		resv2 = append(resv2, problemV2)
 	}
 	if err := nDB.Create(resv2).Error; err != nil {
 		log.Println(err)
@@ -247,19 +287,16 @@ func migrateProblem() {
 // 合并过程中可能会导致数据重复或者舍弃不一致的数据，优先保留 Problem 表中的数据
 func migratePolygonProblem() {
 	var resv1 []*v1.PolygonProblem
-	var resv2 []*v2.Problem
-	var resStatementV2 []*v2.ProblemStatement
 	oDB.Model(&v1.PolygonProblem{}).Find(&resv1)
 	converter := md.NewConverter("", true, nil)
 	for _, v := range resv1 {
-		var p v2.Problem
-		err := oDB.Model(&v1.Problem{}).First(&p, "polygon_id = ?", v.ID).Error
+		var p v1.Problem
+		err := oDB.Model(&v1.Problem{}).First(&p, "polygon_problem_id = ?", v.ID).Error
 		if err == nil {
 			// 如果 problem 中已经有该 polygon 表数据了，则舍弃
 			continue
 		}
-		resv2 = append(resv2, &v2.Problem{
-			ID:            v.ID,
+		p2 := &v2.Problem{
 			Name:          v.Title,
 			TimeLimit:     int64(v.TimeLimit * 1000),
 			MemoryLimit:   int64(v.MemoryLimit),
@@ -268,9 +305,10 @@ func migratePolygonProblem() {
 			UserID:        v.CreatedBy,
 			Status:        v.Status,
 			Source:        v.Source,
-		})
+		}
+		nDB.Create(&p2)
 		statement := &v2.ProblemStatement{
-			ProblemID: v.ID,
+			ProblemID: p2.ID,
 			Name:      v.Title,
 			Language:  "中文",
 			UserID:    v.CreatedBy,
@@ -279,10 +317,8 @@ func migratePolygonProblem() {
 		statement.Input, _ = converter.ConvertString(v.Input)
 		statement.Output, _ = converter.ConvertString(v.Output)
 		statement.Note, _ = converter.ConvertString(v.Hint)
-		resStatementV2 = append(resStatementV2, statement)
+		nDB.Create(statement)
 	}
-	nDB.Create(resv2)
-	nDB.Create(resStatementV2)
 }
 
 func migratePolygonStatus() {
@@ -292,7 +328,7 @@ func migratePolygonStatus() {
 	for _, v := range resv1 {
 		resv2 = append(resv2, &v2.Submission{
 			ProblemID:  v.ProblemID,
-			Time:       v.Time,
+			Time:       v.Time * 1000,
 			Memory:     v.Memory,
 			Verdict:    VerdictMap[v.Result],
 			Language:   v.Language,
@@ -317,7 +353,7 @@ func migrateSolution() {
 		s := &v2.Submission{
 			ID:        v.ID,
 			ProblemID: v.ProblemID,
-			Time:      v.Time,
+			Time:      v.Time * 1000,
 			Memory:    v.Memory,
 			Verdict:   VerdictMap[v.Result],
 			Language:  v.Language,
@@ -332,7 +368,7 @@ func migrateSolution() {
 		}
 		resv2 = append(resv2, s)
 	}
-	err := nDB.Create(resv2)
+	err := nDB.Create(resv2).Error
 	if err != nil {
 		log.Println(err)
 	}
@@ -438,9 +474,6 @@ func migrateTestData() {
 		}
 		for tindex, test := range testLists {
 			log.Println(index, "/", len(problems), " - ", tindex, "/", len(testLists))
-			// TODO 处理SPJ
-			if strings.Contains(test.Name(), "spj") {
-			}
 			if !strings.Contains(test.Name(), "in") {
 				continue
 			}
