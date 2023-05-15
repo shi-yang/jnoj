@@ -33,7 +33,6 @@ export default function App() {
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
   const [languageList, setLanguageList] = useState([]);
   const [consoleVisible, setConsoleVisible] = useState(false);
-  const [cases, setCases] = useState([]);
   const [lastSubmissionID, setLastSubmissionID] = useState(0);
   const [isMounted, setIsMounted] = useState(false); 
   const consoleRef = useRef(null);
@@ -89,7 +88,6 @@ export default function App() {
     if (problem.id === 0) {
       return;
     }
-    setCases(problem.sampleTests.map(item => item.input));
     setIsMounted(true);
     getLanguages();
   }, [problem.id]);
@@ -143,7 +141,7 @@ export default function App() {
       {
         isMounted &&
         <div style={{display: consoleVisible ? 'block' : 'none'}}>
-          <Console ref={consoleRef} problem={problem} defaultCases={cases} language={language} languageId={languageId} source={value} />
+          <Console ref={consoleRef} key={problem.id} problem={problem} language={language} languageId={languageId} source={value} />
         </div>
       }
       <div className={styles.footer}>
@@ -174,14 +172,14 @@ export default function App() {
   );
 }
 
-function ConsoleComponent({ problem, defaultCases, language, languageId, source }: any, ref) {
+function ConsoleComponent({ problem, language, languageId, source }: any, ref) {
   const t = useLocale(locale);
   const [casesResult, setCasesResult] = useState([]);
   const [activeTab, setActiveTab] = useState('cases');
   const [loading, setLoading] = useState(false);
   const [compileMsg, setCompileMsg] = useState('');
   const [form] = Form.useForm();
-  const [cases, setCases] = useState(defaultCases);
+  const [cases, setCases] = useState(problem.sampleTests.map(item => item.input));
   useImperativeHandle(ref, () => ({
     runCode: () => {
       onSubmit();
