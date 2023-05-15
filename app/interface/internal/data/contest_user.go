@@ -65,7 +65,7 @@ func (r *contestRepo) GetContestUserRole(ctx context.Context, cid int, uid int) 
 
 // CreateContestUser .
 func (r *contestRepo) CreateContestUser(ctx context.Context, b *biz.ContestUser) (*biz.ContestUser, error) {
-	res := ContestUser{UserID: b.UserID, ContestID: b.ContestID}
+	res := ContestUser{UserID: b.UserID, ContestID: b.ContestID, Role: b.Role}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error

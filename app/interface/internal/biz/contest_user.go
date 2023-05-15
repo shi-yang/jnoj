@@ -47,6 +47,8 @@ func (uc *ContestUsecase) CreateContestUser(ctx context.Context, c *ContestUser,
 		return nil, v1.ErrorContestAlreadyRegistered("already registered")
 	}
 
+	c.Role = ContestRoleOfficialPlayer
+
 	res, err := uc.repo.CreateContestUser(ctx, c)
 	if err != nil {
 		return nil, err
