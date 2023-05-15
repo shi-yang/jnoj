@@ -26,7 +26,7 @@ export default function Forbidden() {
     createContestUser(contest.id, data)
       .then(() => {
         Message.success(t['forbidden.registrationFuccessfully']);
-        router.push(`/contests/${contest.id}`);
+        router.reload();
       })
       .catch(() => {
         Message.error(t['forbidden.registrationFailed']);
@@ -47,7 +47,7 @@ export default function Forbidden() {
               />
             )}
             {
-              contest.role === 'GUEST'
+              contest.role === 'ROLE_GUEST'
               && <>
                 {
                   <div>

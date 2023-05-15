@@ -173,7 +173,7 @@ function Index() {
           </Head>
           <Layout style={{height: '100%'}}>
             <ContestHeader contest={contest} />
-            {(contest.role === 'GUEST' && (contest.privacy === 'PRIVATE' || contest.runningStatus !== 'FINISHED')) || (contest.role !== 'ROLE_ADMIN' && contest.runningStatus === 'NOT_STARTED')
+            {(contest.role === 'ROLE_GUEST' && (contest.privacy === 'PRIVATE' || contest.runningStatus !== 'FINISHED')) || (contest.role !== 'ROLE_ADMIN' && contest.runningStatus === 'NOT_STARTED')
               ? <Forbidden />
               : <Layout style={{height: '100%'}}>
                 <Sider
