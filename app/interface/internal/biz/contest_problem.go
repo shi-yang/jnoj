@@ -57,6 +57,13 @@ func (uc *ContestUsecase) ListContestProblems(ctx context.Context, contest *Cont
 			}
 		}
 	}
+	// 如果没有比赛管理权限，不展示 problem_id
+	canUpdate := contest.HasPermission(ctx, ContestPermissionUpdate)
+	for k := range problems {
+		if !canUpdate {
+			problems[k].ProblemID = 0
+		}
+	}
 	return problems, count
 }
 

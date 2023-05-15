@@ -262,7 +262,7 @@ const SettingInfo = () => {
               <List.Item.Meta
                 avatar={<Avatar shape='square'>{String.fromCharCode(65 + item.number)}</Avatar>}
                 title={item.name}
-                description={item.description}
+                description={<div>题目ID: {item.problemId}</div>}
               />
             </List.Item>
           )}

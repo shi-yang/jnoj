@@ -157,6 +157,7 @@ func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListCo
 			Name:          v.Name,
 			SubmitCount:   int32(v.SubmitCount),
 			AcceptedCount: int32(v.AcceptedCount),
+			ProblemId:     int32(v.ProblemID),
 			Status:        v1.ContestProblem_Status(v.Status),
 		})
 	}
