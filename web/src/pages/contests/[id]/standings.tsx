@@ -131,14 +131,14 @@ const generateTableColumn = (problems, contestType, t) => {
   return columns;
 };
 
-function TableCell(props) {
-  const { children, className, rowData, column, onHandleSave, contestId } = props;
+function TableCell(props: any) {
+  const { children, rowData, column, contestId } = props;
   const [visible, setVisible] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
   useEffect(() => {
     if (visible) {
       // 排行榜中点击表格项，展示对应的提交记录列表
-      const problemNumber = column.key.split('.')[1]
+      const problemNumber = column.key.split('.')[1];
       listContestSubmissions(contestId, {userId: rowData.userId, problem: problemNumber}).then(res => {
         const submissions = res.data.data;
         modal.info({
@@ -167,15 +167,15 @@ function TableCell(props) {
           onCancel() {
             setVisible(false);
           },
-        })
-      })
+        });
+      });
     }
   }, [visible]);
   if (!column.editable) {
     return children;
   }
   return (
-    <div onClick={() => {setVisible(true)}} style={{cursor: 'pointer'}}>
+    <div onClick={() => {setVisible(true);}} style={{cursor: 'pointer'}}>
       {contextHolder}
       {children}
     </div>

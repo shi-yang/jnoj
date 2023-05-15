@@ -37,7 +37,7 @@ export default function UserPage() {
     getUserProfileProblemSolved(id, {type: e})
       .then(res => {
         setProfileProblemSolved(res.data.problems);
-      })
+      });
   }
   useEffect(() => {
     getUsers(id)
@@ -58,7 +58,7 @@ export default function UserPage() {
     getUserProfileProblemSolved(id, {type: 'problemset'})
       .then(res => {
         setProfileProblemSolved(res.data.problems);
-      })
+      });
   }, [id]);
   return (
     <div>

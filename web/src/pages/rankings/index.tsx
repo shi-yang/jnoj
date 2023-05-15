@@ -2,9 +2,9 @@ import { listProblemRankings } from '@/api/ranking';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { isLogged } from '@/utils/auth';
-import { Avatar, Card, Link, List, Radio, Table, TableColumnProps } from '@arco-design/web-react'
-import Head from 'next/head'
-import { useEffect, useState } from 'react';
+import { Avatar, Card, Link, List, Radio, Table, TableColumnProps } from '@arco-design/web-react';
+import Head from 'next/head';
+import React, { useEffect, useState } from 'react';
 const columns: TableColumnProps[] = [
   {
     title: '排名',
@@ -13,14 +13,14 @@ const columns: TableColumnProps[] = [
   {
     title: '用户',
     dataIndex: 'user',
-    render: (col, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>
+    render: (col, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>,
   },
   {
     title: '解答数',
     dataIndex: 'solved',
   },
 ];
-export default () => {
+export default function Index() {
   const settings = useAppSelector<SettingState>(setting);
   const [data, setData] = useState([]);
   const [myRanking, setMyRanking] = useState({rank: 0, nickname: '', userId: 0, solved: 0});

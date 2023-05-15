@@ -20,7 +20,7 @@ export default function Setting() {
       updateUser(user.id, values).then(res => {
         dispatch(setUserInfo(values));
         Message.success('已保存');
-      })
+      });
     });
   }
   function onAccountFormSubmit() {
@@ -29,7 +29,7 @@ export default function Setting() {
         Message.success('已保存');
       }).catch(err => {
         Message.error(err.response.data.message);
-      })
+      });
     });
   }
   useEffect(() => {
