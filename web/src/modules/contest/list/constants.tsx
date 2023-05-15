@@ -57,11 +57,11 @@ export function getColumns(
       align: 'center' as 'center',
       render: (col, record) => {
         if (groupId) {
-          return <Link href={`/u/${record.userId}`}>{col.userNickname}</Link>
+          return <Link href={`/u/${record.userId}`}>{col.userNickname}</Link>;
         }
         return col.type === 'GROUP'
           ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
-          : <Link href={`/u/${col.id}`}>{col.name}</Link>
+          : <Link href={`/u/${col.id}`}>{col.name}</Link>;
       }
       // render: col => col.type === 'GROUP'
       //   ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
