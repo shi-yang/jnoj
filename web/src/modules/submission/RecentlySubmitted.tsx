@@ -26,6 +26,9 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const user = useAppSelector(userInfo);
   // websocket 即时向用户反馈测评进度
   useEffect(() => {
+    if (!user.id) {
+      return;
+    }
     ws.current = new WebSocket(process.env.NEXT_PUBLIC_API_WS_URL + '?uid=' + user.id);
     ws.current.onmessage = (e) => {
       if (e.data === '') {
@@ -49,7 +52,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
     return () => {
       ws.current?.close();
     };
-  }, [ws]);
+  }, [ws, user]);
   function icon() {
     if (isRunning) {
       return <Spin />;
