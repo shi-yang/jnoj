@@ -4,8 +4,8 @@ import { IconCheckCircle, IconExclamationCircle } from '@arco-design/web-react/i
 
 export const ProblemStatus = {
   'NOT_START': '',
-  'ATTEMPTED': <IconExclamationCircle />,
-  'SOLVED': <IconCheckCircle />,
+  'ATTEMPTED': <IconExclamationCircle style={{ color: 'rgb(var(--orange-5))' }} />,
+  'SOLVED': <IconCheckCircle style={{ color: 'rgb(var(--green-5))' }} />,
 };
 
 import styles from './style/index.module.less';
