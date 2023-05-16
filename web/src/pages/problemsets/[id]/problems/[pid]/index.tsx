@@ -159,8 +159,13 @@ function Index() {
         <Grid.Row className={styles.header} justify="space-between" align="center">
           <Grid.Col flex='auto'>
             <Typography.Title className={styles.title} heading={5}>
-              <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
-              <Divider type='vertical' />
+              {
+                problemset.id !== 1 &&
+                <>
+                  <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
+                  <Divider type='vertical' />
+                </>
+              }
               {`${pid}. ${problem.name}`}
             </Typography.Title>
           </Grid.Col>

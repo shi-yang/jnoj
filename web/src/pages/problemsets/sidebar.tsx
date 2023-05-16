@@ -14,11 +14,14 @@ export default function Sidebar() {
   function fetchData() {
     const params = {
       page: 1,
-      perPage: 5,
+      perPage: 6,
     };
     listProblemsets(params)
       .then((res) => {
-        setProblemSets(res.data.data);
+        const data = res.data.data;
+        // 不显示默认题单
+        data.shift();
+        setProblemSets(data);
       });
   }
 
