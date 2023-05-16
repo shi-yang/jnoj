@@ -8,6 +8,7 @@ import locale from '../locale';
 enum  ContestUserRole {
   ROLE_OFFICIAL_PLAYER = 'ROLE_OFFICIAL_PLAYER',
   ROLE_UNOFFICIAL_PLAYER = 'ROLE_UNOFFICIAL_PLAYER',
+  ROLE_VIRTUAL_PLAYER = 'ROLE_VIRTUAL_PLAYER',
   ROLE_WRITER = 'ROLE_WRITER',
   ROLE_ADMIN = 'ROLE_ADMIN',
 }
@@ -50,7 +51,7 @@ function UpdateUserModal({visible, record, callback}: any) {
         <Form.Item label={t['setting.users.role']} required field='role' rules={[{ required: true }]} help='请注意：出题人和管理有同样的权限，均可在任何时候查看全部选手的提交记录'>
           <Radio.Group>
             {Object.keys(ContestUserRole).map((item, index) =>
-              <Radio key={index} value={item}>
+              <Radio key={index} value={item} disabled={item === 'ROLE_VIRTUAL_PLAYER'}>
                 {t[`setting.users.role.${item}`]}
               </Radio>
             )}

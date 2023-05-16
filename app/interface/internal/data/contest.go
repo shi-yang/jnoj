@@ -133,10 +133,13 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		res.OwnerName = c.User.Nickname
 	}
 	if uid, ok := auth.GetUserID(ctx); ok {
+		contestUser := r.GetContestUser(ctx, c.ID, uid)
+		if contestUser != nil {
+			res.Role = contestUser.Role
+			res.VirtualStart = contestUser.VirtualStart
+		}
 		if uid == c.UserID {
 			res.Role = biz.ContestRoleAdmin
-		} else {
-			res.Role = r.GetContestUserRole(ctx, c.ID, uid)
 		}
 	}
 	return res, err

@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"time"
 )
 
 // ContestUser is a ContestUser model.
@@ -13,6 +14,7 @@ type ContestUser struct {
 	Name         string // 自定义参赛名称
 	Role         int
 	UserNickname string
+	VirtualStart *time.Time // 虚拟竞赛开始时间
 }
 
 // ContestUserRepo is a ContestUser repo.
@@ -20,7 +22,7 @@ type ContestUserRepo interface {
 	ListContestUsers(context.Context, *v1.ListContestUsersRequest) ([]*ContestUser, int64)
 	CreateContestUser(context.Context, *ContestUser) (*ContestUser, error)
 	DeleteContestUser(context.Context, int) error
-	GetContestUserRole(context.Context, int, int) int
+	GetContestUser(context.Context, int, int) *ContestUser
 	UpdateContestUser(context.Context, *ContestUser) (*ContestUser, error)
 }
 
@@ -43,11 +45,17 @@ func (uc *ContestUsecase) CreateContestUser(ctx context.Context, c *ContestUser,
 	// TODO
 	// if contest.Membership == ContestMembershipGroupUser {
 	// }
-	if role := uc.repo.GetContestUserRole(ctx, c.ContestID, c.UserID); role != ContestRoleGuest {
+	if contestUser := uc.repo.GetContestUser(ctx, c.ContestID, c.UserID); contestUser != nil {
 		return nil, v1.ErrorContestAlreadyRegistered("already registered")
 	}
 
 	c.Role = ContestRoleOfficialPlayer
+	// 在比赛结束后参赛，将以虚拟选手的身份进行参加
+	if contest.GetRunningStatus() == ContestRunningStatusFinished {
+		c.Role = ContestRoleVirtualPlayer
+		now := time.Now()
+		c.VirtualStart = &now
+	}
 
 	res, err := uc.repo.CreateContestUser(ctx, c)
 	if err != nil {

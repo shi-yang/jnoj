@@ -229,7 +229,7 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 			return nil, v1.ErrorContestNotFound(err.Error())
 		}
 		// 用户没有参赛时，自动注册
-		if role := uc.contestRepo.GetContestUserRole(ctx, s.EntityID, s.UserID); role == ContestRoleGuest {
+		if contestUser := uc.contestRepo.GetContestUser(ctx, s.EntityID, s.UserID); contestUser == nil {
 			uc.contestRepo.CreateContestUser(ctx, &ContestUser{
 				ContestID: s.EntityID,
 				UserID:    s.UserID,

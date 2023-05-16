@@ -77,6 +77,9 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		RunningStatus:    v1.Contest_RunningStatus(res.GetRunningStatus()),
 		Role:             v1.ContestUserRole(res.Role),
 	}
+	if res.VirtualStart != nil {
+		resp.VirtualStart = timestamppb.New(*res.VirtualStart)
+	}
 	resp.Owner = &v1.Contest_Owner{
 		Name: res.OwnerName,
 	}
@@ -302,13 +305,17 @@ func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListConte
 	users, count := s.uc.ListContestUsers(ctx, req)
 	resp := new(v1.ListContestUsersResponse)
 	for _, v := range users {
-		resp.Data = append(resp.Data, &v1.ContestUser{
+		u := &v1.ContestUser{
 			Id:           int32(v.ID),
 			UserId:       int32(v.UserID),
 			UserNickname: v.UserNickname,
 			Name:         v.Name,
 			Role:         v1.ContestUserRole(v.Role),
-		})
+		}
+		if v.VirtualStart != nil {
+			u.VirtualStart = timestamppb.New(*v.VirtualStart)
+		}
+		resp.Data = append(resp.Data, u)
 	}
 	resp.Total = count
 	return resp, nil

@@ -112,6 +112,7 @@ const i18n = {
     'setting.users.role.ROLE_GUEST': '游客',
     'setting.users.role.ROLE_OFFICIAL_PLAYER': '正式选手',
     'setting.users.role.ROLE_UNOFFICIAL_PLAYER': '不排名选手',
+    'setting.users.role.ROLE_VIRTUAL_PLAYER': '虚拟参赛选手',
     'setting.users.role.ROLE_WRITER': '出题人',
     'setting.users.role.ROLE_ADMIN': '管理',
     'setting.users.operation': '操作',

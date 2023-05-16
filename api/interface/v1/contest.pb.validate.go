@@ -729,6 +729,35 @@ func (m *Contest) validate(all bool) error {
 
 	// no validation rules for Role
 
+	if all {
+		switch v := interface{}(m.GetVirtualStart()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ContestValidationError{
+					field:  "VirtualStart",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ContestValidationError{
+					field:  "VirtualStart",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetVirtualStart()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ContestValidationError{
+				field:  "VirtualStart",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	// no validation rules for RunningStatus
 
 	if all {
@@ -1783,6 +1812,35 @@ func (m *ContestUser) validate(all bool) error {
 	// no validation rules for UserId
 
 	// no validation rules for UserNickname
+
+	if all {
+		switch v := interface{}(m.GetVirtualStart()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ContestUserValidationError{
+					field:  "VirtualStart",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ContestUserValidationError{
+					field:  "VirtualStart",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetVirtualStart()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ContestUserValidationError{
+				field:  "VirtualStart",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for Role
 

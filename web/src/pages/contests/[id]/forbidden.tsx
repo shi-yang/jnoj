@@ -51,7 +51,10 @@ export default function Forbidden() {
               && <>
                 {
                   <div>
-                    您尚未报名参加该比赛，请先 <Button type='primary' onClick={() => setVisible(true)}>参赛</Button>
+                    <p>私有比赛需要参赛才能查看比赛信息。您尚未报名参加该比赛，请点击 <Button type='primary' onClick={() => setVisible(true)}>参赛</Button>，开始竞赛</p>
+                    {contest.runningStatus === 'FINISHED' && (
+                      <Typography.Text type='error' bold>请注意：由于该比赛当前已经结束，点击参赛您将<strong>立即</strong>开始虚拟竞赛，在虚拟竞赛中，将重现本次比赛的竞赛过程</Typography.Text>
+                    )}
                     <Modal
                       title='参赛须知'
                       visible={visible}

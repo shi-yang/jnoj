@@ -41,10 +41,14 @@ function ContestHeader({contest}: any) {
   const updateTime = (startTime, endTime) => {
     contestDuration = new Date(endTime).getTime() - new Date(startTime).getTime();
     timer = setInterval(() => {
-      const t = new Date();
+      let t = new Date();
+      // 虚拟竞赛
+      if (!!contest.virtualStart) {
+        t = new Date(t.getTime() - new Date(contest.virtualStart).getTime() + new Date(startTime).getTime());
+      }
       const diff = t.getTime() - new Date(startTime).getTime();
       setSliderValue(diff / contestDuration * 100);
-      setCurrentTime(new Date());
+      setCurrentTime(t);
     }, 1000);
   };
   useEffect(() => {
@@ -64,7 +68,7 @@ function ContestHeader({contest}: any) {
         </Col>
         <Col md={8}>
           <div style={{textAlign: 'center'}}>
-            <strong>{t['header.now']}</strong> {FormatTime(currentTime)}
+            <strong>{t['header.now']}</strong> {FormatTime(currentTime)} {contest.virtualStart !== null && <sup>虚拟</sup>}
           </div>
         </Col>
         <Col md={8} style={{textAlign: 'right'}}>

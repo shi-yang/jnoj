@@ -1,6 +1,6 @@
 import { listContestProblems, listContestAllSubmissions, listContestUsers, listContestSubmissions } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Button, Divider, Link, List, Modal, PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
+import { Badge, Button, Divider, Link, List, Modal, PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
 import { IconCheckCircle, IconClockCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
@@ -26,6 +26,8 @@ interface TableContentProps {
   solved: number;
   // 是否参与排名。只有正式选手才参与排名
   isRank?: boolean;
+  // 是否虚拟参赛。
+  isVirtual?: boolean;
   // 分数 OI、IOI模式
   // ICPC, score = 罚时
   // OI, score = 最后一次提交
@@ -50,7 +52,11 @@ const basicColumn = (t: any):TableColumnProps[] => [
     title: t['standings.table.who'],
     dataIndex: 'who',
     align: 'center',
-    render: (_, record) => <Link href={`/u/${record.userId}`} target='_blank'>{record.who}</Link>
+    render: (_, record) => (
+      <Link href={`/u/${record.userId}`} target='_blank'>
+        {record.who}{record.isVirtual && <sup>虚拟</sup>}
+      </Link>
+    )
   },
   {
     title: t['standings.table.solved'],
@@ -208,6 +214,7 @@ const App = () => {
         solved: 0,
         problem: {},
         isRank: user.role === 'ROLE_OFFICIAL_PLAYER',
+        isVirtual: !!user.virtualStart,
       };
       problems.forEach(p => {
         initUser.problem[p.number] = {
@@ -266,6 +273,7 @@ const App = () => {
         maxScore: 0,
         problem: {},
         isRank: res[key].isRank,
+        isVirtual: res[key].isVirtual,
       };
       const problems = res[key].problem;
       // 计算所得总分

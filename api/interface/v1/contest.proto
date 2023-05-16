@@ -138,8 +138,9 @@ enum ContestUserRole {
     ROLE_GUEST = 0; // 游客
     ROLE_OFFICIAL_PLAYER = 1; // 选手，只有正式选手参与排名
     ROLE_UNOFFICIAL_PLAYER = 2; // 非正式选手，不参与排名
-    ROLE_WRITER = 3; // 出题人
-    ROLE_ADMIN = 4; // 管理
+    ROLE_VIRTUAL_PLAYER = 3; // 虚拟比赛
+    ROLE_WRITER = 4; // 出题人
+    ROLE_ADMIN = 5; // 管理
 };
 
 message UpdateContestRequest {
@@ -176,6 +177,8 @@ message Contest {
     int32 user_id = 12;
     // 当前登录用户的角色
     ContestUserRole role = 13;
+    // 登录用户虚拟参赛时间
+    google.protobuf.Timestamp virtual_start = 14;
     enum RunningStatus {
         // 尚未开始
         NOT_STARTED = 0;
@@ -187,7 +190,7 @@ message Contest {
         FINISHED = 3;
     }
     // 运行状态
-    RunningStatus running_status = 14;
+    RunningStatus running_status = 15;
     message Owner {
         enum OwnerType {
             GROUP = 0;
@@ -198,7 +201,7 @@ message Contest {
         string name = 3;
         string user_nickname = 4;
     }
-    Owner owner = 15;
+    Owner owner = 16;
 }
 
 message ListContestProblemsRequest {
@@ -274,7 +277,8 @@ message ContestUser {
     string name = 2;
     int32 user_id = 3;
     string user_nickname = 4;
-    ContestUserRole role = 5;
+    google.protobuf.Timestamp virtual_start = 5;
+    ContestUserRole role = 6;
 }
 
 message ListContestUsersRequest {

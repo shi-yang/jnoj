@@ -18,13 +18,14 @@ type Contest struct {
 	FrozenTime       *time.Time // 封榜时间
 	Type             int        // 比赛类型
 	Description      string
-	Privacy          int    // 隐私设置，私有、公开
-	Membership       int    // 参赛资格
-	InvitationCode   string // 邀请码
-	UserID           int    // 创建人ID
-	UserNickname     string // 创建人名称
-	ParticipantCount int    // 参与人数
-	Role             int    // 登录用户角色
+	Privacy          int        // 隐私设置，私有、公开
+	Membership       int        // 参赛资格
+	InvitationCode   string     // 邀请码
+	UserID           int        // 创建人ID
+	UserNickname     string     // 创建人名称
+	ParticipantCount int        // 参与人数
+	Role             int        // 登录用户角色
+	VirtualStart     *time.Time // 登录用户比赛虚拟开始时间
 	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
@@ -35,6 +36,7 @@ const (
 	ContestRoleGuest            = iota // 游客
 	ContestRoleOfficialPlayer          // 选手，只有正式选手参与排名
 	ContestRoleUnofficialPlayer        // 非正式选手，不参与排名
+	ContestRoleVirtualPlayer           // 虚拟参赛选手
 	ContestRoleWriter                  // 出题人
 	ContestRoleAdmin                   // 管理
 )
@@ -87,6 +89,12 @@ func (c *Contest) GetRunningStatus() int {
 	} else if now.Before(c.EndTime) {
 		return ContestRunningStatusInProgress
 	}
+	// 虚拟竞赛比赛状态
+	if c.VirtualStart != nil {
+		if now.Sub(*c.VirtualStart) < c.EndTime.Sub(c.StartTime) {
+			return ContestRunningStatusInProgress
+		}
+	}
 	return ContestRunningStatusFinished
 }
 
@@ -120,7 +128,7 @@ func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bo
 		return true
 	}
 	// 比赛开始后
-	if c.Role == ContestRoleOfficialPlayer && runningStatus != ContestRunningStatusNotStarted {
+	if (c.Role != ContestRoleGuest) && runningStatus != ContestRunningStatusNotStarted {
 		return true
 	}
 	return false
@@ -200,18 +208,35 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 	if !contest.HasPermission(ctx, ContestPermissionView) {
 		return nil
 	}
-	res := uc.repo.ListContestAllSubmissions(ctx, id, uid)
+	submissions := uc.repo.ListContestAllSubmissions(ctx, id, uid)
 
-	for i := 0; i < len(res); i++ {
+	var virtualTime time.Time
+	now := time.Now()
+	if contest.VirtualStart != nil {
+		virtualTime = contest.StartTime.Add(now.Sub(*contest.VirtualStart))
+	}
+	runningStatus := contest.GetRunningStatus()
+	uc.log.Info("virtualTime", virtualTime)
+	uc.log.Info("runningStatus", runningStatus)
+	uc.log.Info("role", contest.Role)
+	var res []*ContestSubmission
+	for _, s := range submissions {
+		// 虚拟竞赛，不返回后面的提交
+		if runningStatus == ContestRunningStatusInProgress && contest.Role == ContestRoleVirtualPlayer {
+			if s.CreatedAt.After(virtualTime) {
+				continue
+			}
+		}
 		if contest.Type == ContestTypeICPC {
-			res[i].Score = int(res[i].CreatedAt.Sub(contest.StartTime).Minutes())
+			s.Score = int(s.CreatedAt.Sub(contest.StartTime).Minutes())
 		}
-		if contest.Type == ContestTypeOI && contest.GetRunningStatus() != ContestRunningStatusFinished {
-			res[i].Verdict = SubmissionVerdictPending
-			res[i].Time = 0
-			res[i].Memory = 0
-			res[i].Score = 0
+		if contest.Type == ContestTypeOI && runningStatus != ContestRunningStatusFinished {
+			s.Verdict = SubmissionVerdictPending
+			s.Time = 0
+			s.Memory = 0
+			s.Score = 0
 		}
+		res = append(res, s)
 	}
 	return res
 }
