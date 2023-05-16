@@ -10,7 +10,7 @@ import SubmissionVerdict from './SubmissionVerdict';
 
 export default function Submission ({id}: {id: number}) {
   const t = useLocale(locale);
-  const [submission, setSubmission] = useState({id: 0, source: '', info: {
+  const [submission, setSubmission] = useState({id: 0, source: '', language: 0, info: {
     subtasks: [],
     compileMsg: '',
     hasSubtask: false,
@@ -27,6 +27,7 @@ export default function Submission ({id}: {id: number}) {
         setDescriptionData([
           {label: t['user'], value: <Link href={`/u/${data.userId}`}>{data.nickname}</Link>},
           {label: t['verdict'], value: <SubmissionVerdict verdict={data.verdict} />},
+          {label: t['score'], value: <SubmissionVerdict verdict={data.score} />},
           {label: t['time'], value: `${data.time / 1000} ms`},
           {label: t['memory'], value: FormatMemorySize(data.memory)},
           {label: t['language'], value: LanguageMap[data.language]},
@@ -51,7 +52,7 @@ export default function Submission ({id}: {id: number}) {
         style={{ marginBottom: 20 }}
       />
       <Typography.Title heading={4}>{t['drawer.source']}</Typography.Title>
-      <Highlight content={submission.source} />
+      <Highlight content={submission.source} language={submission.language} />
       {
         submission.info &&
         <div>

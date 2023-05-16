@@ -1,11 +1,22 @@
-import hljs, { AutoHighlightResult } from 'highlight.js';
+import hljs, { HighlightResult } from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
 import React, { useEffect, useState } from 'react';
 
-export default function Highlight({content}: {content: string}) {
-  const [v, setV] = useState<AutoHighlightResult>({} as AutoHighlightResult);
+const LanguageMap = {
+  0: 'c',
+  1: 'cpp',
+  2: 'java',
+  3: 'py'
+};
+
+export default function Highlight({content, language}: {content: string, language?: number}) {
+  const [v, setV] = useState<HighlightResult>({} as HighlightResult);
   useEffect(() => {
-    setV(hljs.highlightAuto(content));
+    if (language === undefined) {
+      setV(hljs.highlightAuto(content));
+    } else {
+      setV(hljs.highlight(LanguageMap[language], content))
+    }
   }, [content]);
   return (
     <pre>
