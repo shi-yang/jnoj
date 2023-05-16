@@ -46,7 +46,7 @@ export default function Index() {
             type='button'
             options={[
               {label: '全部时间', value: 0},
-              {label: '昨天', value: 1},
+              {label: '近24小时', value: 1},
               {label: '近七天', value: 2},
               {label: '近一个月', value: 3},
               {label: '近一年', value: 4},
@@ -94,7 +94,7 @@ export default function Index() {
             <Grid.Col span={12}>
               <List header='我的排名'>
               {
-                  isLogged() && data.length > 0 &&
+                  isLogged() && myRanking &&
                   <List.Item>
                     <List.Item.Meta
                       title={<Link href={`/u/${myRanking.userId}`}>{myRanking.nickname}</Link>}
