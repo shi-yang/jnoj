@@ -216,9 +216,6 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 		virtualTime = contest.StartTime.Add(now.Sub(*contest.VirtualStart))
 	}
 	runningStatus := contest.GetRunningStatus()
-	uc.log.Info("virtualTime", virtualTime)
-	uc.log.Info("runningStatus", runningStatus)
-	uc.log.Info("role", contest.Role)
 	var res []*ContestSubmission
 	for _, s := range submissions {
 		// 虚拟竞赛，不返回后面的提交
