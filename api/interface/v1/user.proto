@@ -67,6 +67,13 @@ service UserService {
             get: "/users/{id}/profile_problemsolved"
         };
     };
+    // 创建用户
+    rpc CreateUser (CreateUserRequest) returns (User) {
+        option (google.api.http) = {
+            post: "/users"
+            body: "*"
+        };
+    };
 }
 
 message LoginRequest {
@@ -179,4 +186,25 @@ message GetUserProfileProblemSolvedResponse {
         Status status = 2;
     };
     repeated Problem problems = 1;
+}
+
+message CreateUserRequest {
+    oneof id {
+        // either phone or email must be set.
+        option (validate.required) = true;
+
+        // 手机号
+        string phone = 1 [(validate.rules).string = { pattern: "^1[3456789][0-9]{9}$" }];
+        // 邮箱
+        string email = 2 [(validate.rules).string.email = true];
+    }
+    // 用户名
+    string username = 3 [(validate.rules).string = {
+        // 以字母、数字、下划线，且非纯数字，长度在 5 - 16 位之间
+        pattern:   "^[a-zA-Z][a-zA-Z0-9_-]{4,15}$",
+    }];
+    // 昵称
+    string nickname = 4;
+    // 密码
+    string password = 5 [(validate.rules).string = {min_len: 6, max_len: 16}];
 }

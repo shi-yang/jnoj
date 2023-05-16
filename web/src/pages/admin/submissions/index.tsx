@@ -1,10 +1,9 @@
 import React from 'react';
-import Layout from './Layout';
-import { Card } from '@arco-design/web-react';
+import Layout from '../Layout';
 
 function Index() {
   return (
-    <Card>待开发</Card>
+    <div>待开发</div>
   );
 };
 

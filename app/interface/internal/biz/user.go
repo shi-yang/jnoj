@@ -160,6 +160,10 @@ func (uc *UserUsecase) VerifyCaptcha(ctx context.Context, email, phone, captcha 
 	return nil
 }
 
+func (uc *UserUsecase) CreateUser(ctx context.Context, u *User) (*User, error) {
+	return uc.repo.CreateUser(ctx, u)
+}
+
 func (uc *UserUsecase) GetUser(ctx context.Context, id int) (*User, error) {
 	return uc.repo.FindByID(ctx, id)
 }

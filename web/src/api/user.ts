@@ -56,3 +56,7 @@ export function updateUser(id, data) {
 export function updateUserPassword(id, data) {
   return axios.put(`/users/${id}/password`, data);
 }
+
+export function createUser(data) {
+  return axios.post('/users', data);
+}

@@ -58,21 +58,21 @@ func init() {
 
 func main() {
 	createDefaultProblemset()
-	migrateFuncMap := map[string]func(){
-		// "contest_user":         migrateContestUser,
-		// "contest":              migrateContest,
-		// "contest_announcement": migrateContestAnnouncement,
-		// "contest_problem":      migrateContestProblem,
-		// "group_user":           migrateGroupUser,
-		// "group":                migrateGroup,
-		//"problem":         migrateProblem,
-		//"polygon_problem": migratePolygonProblem,
-		// "polygon_status":       migratePolygonStatus,
-		// "setting":              migrateSetting,
-		"solution": migrateSolution,
-		// "solution_info":        migrateSolutionInfo,
-		// "user":                 migrateUser,
-		// "user_profile":         migrateUserProfile,
+	migrateFuncMap := []func(){
+		migrateContestUser,
+		migrateContest,
+		migrateContestAnnouncement,
+		migrateContestProblem,
+		migrateGroupUser,
+		migrateGroup,
+		migrateProblem,
+		migratePolygonProblem,
+		migratePolygonStatus,
+		migrateSetting,
+		migrateSolution,
+		migrateSolutionInfo,
+		migrateUser,
+		migrateUserProfile,
 	}
 	log.Println("migrate db start")
 	for k, v := range migrateFuncMap {
@@ -215,6 +215,7 @@ func migrateProblem() {
 	var resv2 []*v2.Problem
 	var resStatementV2 []*v2.ProblemStatement
 	var problemset []*v2.ProblemsetProblem
+	var problemVerification []*v2.ProblemVerification
 	converter := md.NewConverter("", true, &md.Options{
 		EscapeMode: "none",
 	})
@@ -229,7 +230,7 @@ func migrateProblem() {
 			SubmitCount:   v.Submit,
 			CheckerID:     1002,
 			UserID:        v.CreatedBy,
-			Status:        v.Status,
+			Status:        1,
 			Source:        v.Source,
 		}
 		statement := &v2.ProblemStatement{
@@ -271,6 +272,10 @@ func migrateProblem() {
 			}
 		}
 		resv2 = append(resv2, problemV2)
+		problemVerification = append(problemVerification, &v2.ProblemVerification{
+			ProblemID:          v.ID,
+			VerificationStatus: 3,
+		})
 	}
 	if err := nDB.Create(resv2).Error; err != nil {
 		log.Println(err)
@@ -279,6 +284,9 @@ func migrateProblem() {
 		log.Println(err)
 	}
 	if err := nDB.Create(problemset).Error; err != nil {
+		log.Println(err)
+	}
+	if err := nDB.Create(problemVerification).Error; err != nil {
 		log.Println(err)
 	}
 }

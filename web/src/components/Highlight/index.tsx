@@ -15,7 +15,7 @@ export default function Highlight({content, language}: {content: string, languag
     if (language === undefined) {
       setV(hljs.highlightAuto(content));
     } else {
-      setV(hljs.highlight(LanguageMap[language], content))
+      setV(hljs.highlight(LanguageMap[language], content));
     }
   }, [content]);
   return (

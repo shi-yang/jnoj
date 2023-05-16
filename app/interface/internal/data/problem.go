@@ -69,11 +69,13 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 	if len(req.Type) > 0 {
 		db.Where("type in (?)", req.Type)
 	}
-	if req.UserId != 0 {
-		db.Where("user_id = ?", req.UserId)
-	} else {
-		// 不查自己的，只能查公开的
-		db.Where("status = ?", biz.ProblemStatusPublic)
+	if req.UserId != 1 {
+		if req.UserId != 0 {
+			db.Where("user_id = ?", req.UserId)
+		} else {
+			// 不查自己的，只能查公开的
+			db.Where("status = ?", biz.ProblemStatusPublic)
+		}
 	}
 	if req.Id != 0 {
 		db.Where("problem.id = ?", req.Id)

@@ -21,6 +21,7 @@ function Layout(page) {
   }
   function onTabChange(e) {
     setActiveTab(e);
+    router.push(`/admin/${e}`);
   }
   useEffect(() => {
     fetchData();
@@ -45,7 +46,9 @@ function Layout(page) {
               onChange={onTabChange}
             >
               <Tabs.TabPane key='' title={<span><IconHome /> {t['header.tab.overview']}</span>} />
-              <Tabs.TabPane key='user' title={<span><IconUser /> {t['header.tab.user']}</span>} />
+              <Tabs.TabPane key='users' title={<span><IconUser /> {t['header.tab.user']}</span>} />
+              <Tabs.TabPane key='submissions' title={<span><IconUser /> {t['header.tab.submissions']}</span>} />
+              <Tabs.TabPane key='problems' title={<span><IconUser /> {t['header.tab.problems']}</span>} />
             </Tabs>
           </div>
         </div>

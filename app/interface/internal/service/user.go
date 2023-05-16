@@ -123,7 +123,25 @@ func (s UserService) GetUserProfileCalendar(ctx context.Context, req *v1.GetUser
 	return s.uc.GetUserProfileCalendar(ctx, req)
 }
 
-// 用户主页提交统计
+// GetUserProfileProblemSolved 用户主页提交统计
 func (s UserService) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	return s.uc.GetUserProfileProblemSolved(ctx, req)
+}
+
+// CreateUser
+func (s UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.User, error) {
+	if uid, _ := auth.GetUserID(ctx); uid != 1 {
+		return nil, v1.ErrorForbidden("")
+	}
+	u, err := s.uc.CreateUser(ctx, &biz.User{
+		Username: req.Username,
+		Nickname: req.Nickname,
+		Email:    req.GetEmail(),
+		Phone:    req.GetPhone(),
+		Password: req.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.User{Id: int32(u.ID)}, err
 }

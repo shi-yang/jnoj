@@ -4,12 +4,16 @@ const i18n = {
     'header.tab.overview': 'Overview',
     'header.tab.user': 'User',
     'header.tab.settings': 'Settings',
+    'header.tab.submissions': 'Submissions',
+    'header.tab.problems': 'Problems',
   },
   'zh-CN': {
     'page.title': '后台',
     'header.tab.overview': '概览',
-    'header.tab.user': '用户',
+    'header.tab.user': '用户列表',
     'header.tab.settings': '设置',
+    'header.tab.submissions': '提交列表',
+    'header.tab.problems': '题目列表',
   },
 };
 
