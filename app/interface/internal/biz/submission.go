@@ -291,7 +291,7 @@ func (uc *SubmissionUsecase) GetLastSubmission(ctx context.Context, entityType, 
 		return nil, err
 	}
 	// 检查访问权限
-	isOIModeRunning, _ := uc.checkerPermission(ctx, s.EntityType, s.EntityID, s.ProblemID, s.UserID)
+	isOIModeRunning, _, _ := uc.checkerPermission(ctx, s.EntityType, s.EntityID, s.ProblemID, s.UserID)
 	if isOIModeRunning {
 		s.Verdict = SubmissionVerdictPending
 		s.Time = 0
