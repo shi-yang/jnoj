@@ -140,7 +140,7 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 	if req.ProblemId != nil {
 		problemId = int(*req.ProblemId)
 	}
-	isOIModeRunning, hasPermission := uc.checkerPermission(
+	isOIModeRunning, _, hasPermission := uc.checkerPermission(
 		ctx, int(req.EntityType),
 		int(req.EntityId),
 		problemId,
@@ -163,34 +163,36 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 }
 
 // checkerPermission 检查访问权限
-func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, entityId, problemId, submissionUserId int) (isOIModeRunning, ok bool) {
-	isOIModeRunning = false
+func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, entityId, problemId, submissionUserId int) (
+	isOIModeRunning, isContestRunning, ok bool) {
+	ok = true
 	uid, _ := auth.GetUserID(ctx)
 	if entityType == SubmissionEntityTypeContest {
 		contest, err := uc.contestRepo.GetContest(ctx, int(entityId))
 		if err != nil {
-			return isOIModeRunning, false
+			return
 		}
 		runningStatus := contest.GetRunningStatus()
 		role := contest.Role
 		// 比赛未结束时，仅 比赛管理员 admin 或者当前选手可查看
 		if runningStatus != ContestRunningStatusFinished {
+			isContestRunning = true
 			// OI 提交之后无反馈
 			if contest.Type == ContestTypeOI {
 				isOIModeRunning = true
 			}
 			if (role != ContestRoleAdmin || role != ContestRoleWriter) && int(submissionUserId) != uid {
-				return isOIModeRunning, false
+				ok = false
 			}
 		}
 	} else if entityType == SubmissionEntityTypeProblemFile {
 		// 处理提交至出题时的文件
 		problem, _ := uc.problemRepo.GetProblem(ctx, problemId)
 		if !problem.HasPermission(ctx, ProblemPermissionUpdate) {
-			return false, false
+			return
 		}
 	}
-	return false, true
+	return
 }
 
 // GetSubmission get a Submission
@@ -201,7 +203,7 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 	}
 	info, _ := uc.repo.GetSubmissionInfo(ctx, id)
 	// 检查访问权限
-	isOIModeRunning, hasPermission := uc.checkerPermission(ctx, s.EntityType, s.EntityID, s.ProblemID, s.UserID)
+	isOIModeRunning, isContestRunning, hasPermission := uc.checkerPermission(ctx, s.EntityType, s.EntityID, s.ProblemID, s.UserID)
 	if !hasPermission {
 		return nil, v1.ErrorForbidden("forbidden")
 	}
@@ -211,6 +213,10 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 		s.Time = 0
 		s.Memory = 0
 		s.Score = 0
+		info = nil
+	}
+	// 比赛未结束不返回测试点信息
+	if isContestRunning && s.Verdict != SubmissionVerdictCompileError {
 		info = nil
 	}
 	s.SubmissionInfo = info
