@@ -220,7 +220,7 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 	for _, s := range submissions {
 		// 虚拟竞赛，不返回后面的提交
 		if runningStatus == ContestRunningStatusInProgress && contest.Role == ContestRoleVirtualPlayer {
-			if s.CreatedAt.After(virtualTime) {
+			if s.CreatedAt.After(virtualTime) && s.UserID != uid {
 				continue
 			}
 		}
