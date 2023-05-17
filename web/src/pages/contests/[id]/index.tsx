@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Grid, Slider, Statistic } from '@arco-design/web-react';
-import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings } from '@arco-design/web-react/icon';
+import { Layout, Menu, Typography, Grid, Slider, Statistic, Link } from '@arco-design/web-react';
+import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconUserGroup } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { getContest, listContestProblems } from '@/api/contest';
 import './mock';
@@ -60,6 +60,11 @@ function ContestHeader({contest}: any) {
   return (
     <Header>
       <Typography.Title className={styles.title}>{contest.name}</Typography.Title>
+      {contest.owner.type === 'GROUP' &&
+        <div className={styles['header-owner']}>
+          <Link href={`/groups/${contest.owner.id}`}><IconUserGroup />{contest.owner.name}</Link>
+        </div>
+      }
       <Row className={styles['contest-header-time']}>
         <Col md={8}>
           <div>
