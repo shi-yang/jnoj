@@ -73,7 +73,8 @@ function ContestHeader({contest}: any) {
         </Col>
         <Col md={8}>
           <div style={{textAlign: 'center'}}>
-            <strong>{t['header.now']}</strong> {FormatTime(currentTime)} {contest.virtualStart !== null && <sup>虚拟</sup>}
+            <strong>{t['header.now']}</strong> {FormatTime(currentTime)}
+            {contest.virtualStart !== null && contest.runningStatus !== 'FINISHED' && <sup>虚拟</sup>}
           </div>
         </Col>
         <Col md={8} style={{textAlign: 'right'}}>
