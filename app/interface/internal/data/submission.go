@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -68,6 +69,14 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	if req.UserId != 0 {
 		db.Where("user_id = ?", req.UserId)
 	}
+	if req.Username != "" {
+		subQuery := r.data.db.WithContext(ctx).
+			Select("id").
+			Model(&User{}).
+			Where("username like ?", fmt.Sprintf("%%%s%%", req.Username)).
+			Or("nickname like ?", fmt.Sprintf("%%%s%%", req.Username))
+		db.Where("user_id in (?)", subQuery)
+	}
 	if len(req.Verdict) > 0 {
 		db.Where("verdict in (?)", req.Verdict)
 	}
@@ -81,6 +90,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 		Offset(page.GetOffset()).
 		Order("id desc")
 	db.Find(&res)
+
 	rv := make([]*biz.Submission, 0)
 	for _, v := range res {
 		s := &biz.Submission{
@@ -94,10 +104,17 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 			Language:   v.Language,
 			Score:      v.Score,
 			CreatedAt:  v.CreatedAt,
-			User: biz.User{
-				ID:       v.User.ID,
-				Nickname: v.User.Nickname,
-			},
+			UserID:     v.UserID,
+			Nickname:   v.User.Nickname,
+		}
+		// 查询题目编号
+		if req.EntityType == biz.SubmissionEntityTypeProblemset {
+			r.data.db.WithContext(ctx).Select("`order`").
+				Model(&ProblemsetProblem{}).
+				Where("problemset_id = ?", v.EntityID).
+				Where("problem_id = ?", v.ProblemID).
+				Row().
+				Scan(&s.ProblemNumber)
 		}
 		if len(v.Problem.ProblemStatements) > 0 {
 			s.ProblemName = v.Problem.ProblemStatements[0].Name

@@ -41,20 +41,21 @@ message Submission {
     // 题目ID
     int32 problem_id = 2;
     string problem_name = 3;
+    int32 problem_number = 4;
     // 编程语言
-    int32 language = 4;
+    int32 language = 5;
     // 源码
-    string source = 5;
-    int64 memory = 6;
-    int64 time = 7;
-    int32 verdict = 8;
-    int32 score = 9;
-    int32 user_id = 10;
-    string nickname = 11;
-    int32 entity_id = 12;
-    SubmissionEntityType entity_type = 13;
-    SubmissionInfo info = 14;
-    google.protobuf.Timestamp created_at = 15;
+    string source = 6;
+    int64 memory = 7;
+    int64 time = 8;
+    int32 verdict = 9;
+    int32 score = 10;
+    int32 user_id = 11;
+    string nickname = 12;
+    int32 entity_id = 13;
+    SubmissionEntityType entity_type = 14;
+    SubmissionInfo info = 15;
+    google.protobuf.Timestamp created_at = 16;
 }
 
 message ListSubmissionsRequest {
@@ -63,8 +64,9 @@ message ListSubmissionsRequest {
     int32 entity_type = 3;
     repeated int32 verdict = 4;
     int32 user_id = 5;
-    int32 page = 6;
-    int32 per_page = 7;
+    string username = 6;
+    int32 page = 7;
+    int32 per_page = 8;
 }
 
 message ListSubmissionsResponse {

@@ -274,8 +274,8 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			Time:          v.Time,
 			Memory:        v.Memory,
 			User: ContestUser{
-				ID:   v.User.ID,
-				Name: v.User.Nickname,
+				ID:   v.UserID,
+				Name: v.Nickname,
 			},
 		}
 		// OI 提交之后无反馈

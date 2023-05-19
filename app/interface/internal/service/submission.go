@@ -27,16 +27,20 @@ func (s *SubmissionService) ListSubmissions(ctx context.Context, req *v1.ListSub
 	resp.Data = make([]*v1.Submission, 0)
 	for _, v := range res {
 		resp.Data = append(resp.Data, &v1.Submission{
-			Id:          int64(v.ID),
-			ProblemName: v.ProblemName,
-			Time:        int64(v.Time),
-			Memory:      int64(v.Memory),
-			Language:    int32(v.Language),
-			Verdict:     int32(v.Verdict),
-			Score:       int32(v.Score),
-			EntityId:    int32(v.EntityID),
-			EntityType:  v1.SubmissionEntityType(v.EntityType),
-			CreatedAt:   timestamppb.New(v.CreatedAt),
+			Id:            int64(v.ID),
+			ProblemId:     int32(v.ProblemID),
+			ProblemName:   v.ProblemName,
+			ProblemNumber: int32(v.ProblemNumber),
+			UserId:        int32(v.UserID),
+			Nickname:      v.Nickname,
+			Time:          int64(v.Time),
+			Memory:        int64(v.Memory),
+			Language:      int32(v.Language),
+			Verdict:       int32(v.Verdict),
+			Score:         int32(v.Score),
+			EntityId:      int32(v.EntityID),
+			EntityType:    v1.SubmissionEntityType(v.EntityType),
+			CreatedAt:     timestamppb.New(v.CreatedAt),
 		})
 	}
 	return resp, nil

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps } from '@arco-design/web-react';
+import { Button, Card, Table, TableColumnProps, PaginationProps, Link } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { LanguageMap, listSubmissions } from '@/api/submission';
@@ -67,6 +67,12 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}: Sub
       title: '#',
       dataIndex: 'id',
       align: 'center',
+    },
+    {
+      title: t['user'],
+      dataIndex: 'nickname',
+      align: 'center',
+      render: (col, record) => <Link href={`/u/${record.userId}`}>{col}</Link>
     },
     {
       title: t['problemName'],

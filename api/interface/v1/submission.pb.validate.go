@@ -63,6 +63,8 @@ func (m *Submission) validate(all bool) error {
 
 	// no validation rules for ProblemName
 
+	// no validation rules for ProblemNumber
+
 	// no validation rules for Language
 
 	// no validation rules for Source
@@ -245,6 +247,8 @@ func (m *ListSubmissionsRequest) validate(all bool) error {
 	// no validation rules for EntityType
 
 	// no validation rules for UserId
+
+	// no validation rules for Username
 
 	// no validation rules for Page
 
