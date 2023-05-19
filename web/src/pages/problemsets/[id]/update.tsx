@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button, Card, Divider, Form, Input, InputNumber,
+  Link,
   Message, Modal, PaginationProps, Popconfirm,
   Table, TableColumnProps
 } from '@arco-design/web-react';
@@ -54,7 +55,11 @@ function UpdateProblemset() {
         <title>{`${problemset.name} - ${t['page.title']} - ${settings.name}`}</title>
       </Head>
       <div>
-        <Card title={t['update.form']}>
+        <Card title={(
+          <>
+            {t['update.form']}:<Link href={`/problemsets/${id}`}>{problemset.name}</Link>
+          </>
+        )}>
           <Form
             form={form}
             layout='vertical'

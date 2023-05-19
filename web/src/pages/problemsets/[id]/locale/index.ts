@@ -2,6 +2,7 @@ const i18n = {
   'en-US': {
     'page.title': 'Problem List',
     'header.edit': 'Edit',
+    'header.delete': 'Delete',
     'problemset.title': 'Problem Set',
     'update.form': 'Update Problemset',
     'update.form.name': 'Name',
@@ -20,6 +21,7 @@ const i18n = {
   'zh-CN': {
     'page.title': '题目列表',
     'header.edit': '编辑',
+    'header.delete': '删除',
     'problemset.title': '题单',
     'update.form': '编辑题单',
     'update.form.name': '题单名称',

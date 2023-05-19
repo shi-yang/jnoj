@@ -120,11 +120,22 @@ func (r *ProblemsetRepo) UpdateProblemset(ctx context.Context, b *biz.Problemset
 
 // DeleteProblemset .
 func (r *ProblemsetRepo) DeleteProblemset(ctx context.Context, id int) error {
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Delete(Problemset{ID: id}).
+	tx := r.data.db.WithContext(ctx).Begin()
+	err := tx.Omit(clause.Associations).
+		Delete(&Problemset{ID: id}).
 		Error
-	return err
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Delete(&ProblemsetProblem{}, "problemset_id = ?", id).
+		Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
 }
 
 func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) ([]*biz.ProblemsetProblem, int64) {

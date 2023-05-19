@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Divider, Link, Typography } from '@arco-design/web-react';
+import { Divider, Link, Message, Popconfirm, Typography } from '@arco-design/web-react';
 import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
 import { useRouter } from 'next/router';
-import { getProblemset } from '@/api/problemset';
+import { getProblemset, deleteProblemset } from '@/api/problemset';
 import List from '@/modules/problemsets/list';
 import Head from 'next/head';
 import useLocale from '@/utils/useLocale';
@@ -27,6 +27,12 @@ function Problem() {
         setProblemset(res.data);
       });
   }
+  function onDeleteProblemset() {
+    deleteProblemset(id).then(() => {
+      Message.info('已删除');
+      router.push('/problemsets/all');
+    });
+  }
   return (
     <div className='container'>
       <Head>
@@ -39,7 +45,20 @@ function Problem() {
               {problemset.name}
               {
                 user.id === problemset.userId
-                && <Link href={`/problemsets/${problemset.id}/update`}>{t['header.edit']}</Link>
+                && (
+                  <>
+                    <Link href={`/problemsets/${problemset.id}/update`}>{t['header.edit']}</Link>
+                    <Divider type='vertical' />
+                    <Popconfirm
+                      focusLock
+                      title='Confirm'
+                      content='Are you sure you want to delete?'
+                      onOk={onDeleteProblemset}
+                    >
+                      <Link>删除</Link>
+                    </Popconfirm>
+                  </>
+                )
               }
             </Typography.Title>
           </div>
