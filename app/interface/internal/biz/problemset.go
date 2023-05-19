@@ -107,7 +107,7 @@ func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, req *v1
 		for _, v := range problems {
 			ids = append(ids, v.ProblemID)
 		}
-		statusMap := uc.problemRepo.GetProblemsStatus(ctx, SubmissionEntityTypeProblemset, 0, uid, ids)
+		statusMap := uc.problemRepo.GetProblemsStatus(ctx, SubmissionEntityTypeProblemset, int(req.Id), uid, ids)
 		for k, v := range problems {
 			problems[k].Status = statusMap[v.ProblemID]
 		}
