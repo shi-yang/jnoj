@@ -1381,7 +1381,7 @@ func (m *CreateGroupUserRequest) validate(all bool) error {
 
 	// no validation rules for Gid
 
-	// no validation rules for Uid
+	// no validation rules for Username
 
 	// no validation rules for InvitationCode
 

@@ -148,7 +148,7 @@ message DeleteGroupUserRequest {
 
 message CreateGroupUserRequest {
     int32 gid = 1;
-    int32 uid = 2;
+    string username = 2;
     string invitation_code = 3;
 }
 

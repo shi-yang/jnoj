@@ -226,7 +226,7 @@ function AddUser({group, callback}: any) {
         <Form
           form={form}
         >
-          <Form.Item label={t['people.addUser.form.userId']} required field='uid' rules={[{ required: true }]}>
+          <Form.Item label={t['people.addUser.form.username']} required field='username' rules={[{ required: true }]}>
             <Input placeholder='' />
           </Form.Item>
         </Form>

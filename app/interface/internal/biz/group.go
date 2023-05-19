@@ -134,19 +134,23 @@ func (uc *GroupUsecase) GetGroupUser(ctx context.Context, gid, uid int) (*GroupU
 
 // CreateGroupUser .
 func (uc *GroupUsecase) CreateGroupUser(ctx context.Context, req *v1.CreateGroupUserRequest) (*GroupUser, error) {
-	if _, err := uc.userRepo.FindByID(ctx, int(req.Uid)); err != nil {
+	user, err := uc.userRepo.GetUser(ctx, &User{Username: req.Username})
+	if err != nil {
 		return nil, v1.ErrorBadRequest("user not found")
 	}
-	group, err := uc.repo.GetGroup(ctx, int(req.Gid))
+	group, err := uc.GetGroup(ctx, int(req.Gid))
 	if err != nil {
 		return nil, v1.ErrorBadRequest("group not found")
 	}
 	// 邀请码的方式，需要验证邀请码
-	if group.Membership == GroupMembershipInvitationCode && group.InvitationCode != req.InvitationCode {
+	role := uc.GetGroupRole(ctx, group)
+	if (role != GroupUserRoleAdmin && role != GroupUserRoleManager) &&
+		group.Membership == GroupMembershipInvitationCode &&
+		group.InvitationCode != req.InvitationCode {
 		return nil, v1.ErrorBadRequest("invalid invitation code")
 	}
 	return uc.repo.CreateGroupUser(ctx, &GroupUser{
-		UserID:  int(req.Uid),
+		UserID:  user.ID,
 		GroupID: int(req.Gid),
 		Role:    GroupUserRoleMember,
 	})
