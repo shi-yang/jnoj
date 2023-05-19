@@ -20,6 +20,7 @@ const ContestContext = createContext({
     name: '',
   },
   problems: [],
+  changeProblem: (number: string) => {},
 });
 
 export default ContestContext;

@@ -174,9 +174,16 @@ function Index() {
     }
   };
 
+  const changeProblem = (number:string) => {
+    if (number !== '') {
+      setMenuSelected('problem');
+      setProblemNumber(number);
+    }
+  };
+
   return (
     (!loading &&
-      <ContestContext.Provider value={{...contest, problems: problems}}>
+      <ContestContext.Provider value={{...contest, problems: problems, changeProblem: changeProblem}}>
         <div className={styles['contest-layout-basic']}>
           <Head>
             <title>{`${contest.name} - ${settings.name}`}</title>
@@ -205,7 +212,7 @@ function Index() {
                     <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
                     {contest.role === 'ROLE_ADMIN' && <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>}
                     <SubMenu
-                      key='layout'
+                      key='problem'
                       title={<span><IconSelectAll /> {t['menu.problem']}</span>}
                     >
                       {problems.map(value => 

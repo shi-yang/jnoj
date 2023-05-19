@@ -7,6 +7,7 @@ import {
   Skeleton,
   Table,
   TableColumnProps,
+  Link,
 } from '@arco-design/web-react';
 import { IconCalendar, IconUser } from '@arco-design/web-react/icon';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
@@ -54,9 +55,9 @@ function Info() {
       title: t['info.table.column.problem'],
       dataIndex: 'name',
       render: (col, record, index) => (
-        <>
+        <Link onClick={(e) => contest.changeProblem(String.fromCharCode(65 + record.number))}>
           {String.fromCharCode(65 + record.number)}. {record.name}
-        </>
+        </Link>
       ),
     },
     {
