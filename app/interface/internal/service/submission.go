@@ -27,13 +27,16 @@ func (s *SubmissionService) ListSubmissions(ctx context.Context, req *v1.ListSub
 	resp.Data = make([]*v1.Submission, 0)
 	for _, v := range res {
 		resp.Data = append(resp.Data, &v1.Submission{
-			Id:        int64(v.ID),
-			Time:      int64(v.Time),
-			Memory:    int64(v.Memory),
-			Language:  int32(v.Language),
-			Verdict:   int32(v.Verdict),
-			Score:     int32(v.Score),
-			CreatedAt: timestamppb.New(v.CreatedAt),
+			Id:          int64(v.ID),
+			ProblemName: v.ProblemName,
+			Time:        int64(v.Time),
+			Memory:      int64(v.Memory),
+			Language:    int32(v.Language),
+			Verdict:     int32(v.Verdict),
+			Score:       int32(v.Score),
+			EntityId:    int32(v.EntityID),
+			EntityType:  v1.SubmissionEntityType(v.EntityType),
+			CreatedAt:   timestamppb.New(v.CreatedAt),
 		})
 	}
 	return resp, nil
@@ -87,16 +90,19 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 		}
 	}
 	return &v1.Submission{
-		Id:        int64(res.ID),
-		Source:    res.Source,
-		Memory:    int64(res.Memory),
-		Time:      int64(res.Time),
-		Verdict:   int32(res.Verdict),
-		Language:  int32(res.Language),
-		CreatedAt: timestamppb.New(res.CreatedAt),
-		Info:      infoResp,
-		UserId:    int32(res.UserID),
-		Nickname:  res.Nickname,
+		Id:         int64(res.ID),
+		EntityId:   int32(res.EntityID),
+		EntityType: v1.SubmissionEntityType(res.EntityType),
+		Score:      int32(res.Score),
+		Source:     res.Source,
+		Memory:     int64(res.Memory),
+		Time:       int64(res.Time),
+		Verdict:    int32(res.Verdict),
+		Language:   int32(res.Language),
+		CreatedAt:  timestamppb.New(res.CreatedAt),
+		Info:       infoResp,
+		UserId:     int32(res.UserID),
+		Nickname:   res.Nickname,
 	}, nil
 }
 

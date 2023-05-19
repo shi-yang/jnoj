@@ -61,6 +61,8 @@ func (m *Submission) validate(all bool) error {
 
 	// no validation rules for ProblemId
 
+	// no validation rules for ProblemName
+
 	// no validation rules for Language
 
 	// no validation rules for Source
@@ -76,6 +78,10 @@ func (m *Submission) validate(all bool) error {
 	// no validation rules for UserId
 
 	// no validation rules for Nickname
+
+	// no validation rules for EntityId
+
+	// no validation rules for EntityType
 
 	if all {
 		switch v := interface{}(m.GetInfo()).(type) {

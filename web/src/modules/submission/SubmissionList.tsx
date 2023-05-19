@@ -22,9 +22,10 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}: Sub
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
-    pageSize: 10,
+    pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
+    sizeOptions: [25, 50, 100]
   });
   function fetchData() {
     const { current, pageSize } = pagination;
@@ -65,6 +66,11 @@ const Submission = ({pid=undefined, entityType=undefined, userId=undefined}: Sub
     {
       title: '#',
       dataIndex: 'id',
+      align: 'center',
+    },
+    {
+      title: t['problemName'],
+      dataIndex: 'problemName',
       align: 'center',
     },
     {

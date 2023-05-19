@@ -27,7 +27,7 @@ export default function Submission ({id}: {id: number}) {
         setDescriptionData([
           {label: t['user'], value: <Link href={`/u/${data.userId}`}>{data.nickname}</Link>},
           {label: t['verdict'], value: <SubmissionVerdict verdict={data.verdict} />},
-          {label: t['score'], value: <SubmissionVerdict verdict={data.score} />},
+          {label: t['score'], value: data.score},
           {label: t['time'], value: `${data.time / 1000} ms`},
           {label: t['memory'], value: FormatMemorySize(data.memory)},
           {label: t['language'], value: LanguageMap[data.language]},

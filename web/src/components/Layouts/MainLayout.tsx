@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Divider, Layout } from '@arco-design/web-react';
+import { Divider, Layout, Link } from '@arco-design/web-react';
 import LayoutHeader from './LayoutHeader';
 import styles from './style/main-layouts.module.less';
 import { useAppSelector } from '@/hooks';
@@ -19,18 +19,21 @@ const App = ({ children }: { children: ReactNode }) => {
       </Content>
       <Footer className={styles.footer}>
         <div className='container'>
-          <div style={{padding: '15px 0'}}>
-            &copy; {new Date().getFullYear()} {settings.name}
-            <Divider type='vertical' />
-            Powered by <a href='https://github.com/shi-yang/jnoj' target="_blank" rel='noreferrer'>jnoj</a>
-            {settings.beian && (
-              <>
-                <Divider type='vertical' />
-                <a href="https://beian.miit.gov.cn" target="_blank" rel='noreferrer'>
-                  {settings.beian}
-                </a>
-              </>
-            )}
+          <div className={styles['footer-layout']}>
+            <div>
+              &copy; {new Date().getFullYear()} {settings.name}
+              <Divider type='vertical' />
+              Powered by <a href='https://github.com/shi-yang/jnoj' target="_blank" rel='noreferrer'>jnoj</a>
+              {settings.beian && (
+                <>
+                  <Divider type='vertical' />
+                  <a href="https://beian.miit.gov.cn" target="_blank" rel='noreferrer'>
+                    {settings.beian}
+                  </a>
+                </>
+              )}
+            </div>
+            <Link href='/submissions'>测评队列</Link>
           </div>
         </div>
       </Footer>

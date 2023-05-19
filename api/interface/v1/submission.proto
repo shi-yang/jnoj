@@ -40,18 +40,21 @@ message Submission {
     int64 id = 1;
     // 题目ID
     int32 problem_id = 2;
+    string problem_name = 3;
     // 编程语言
-    int32 language = 3;
+    int32 language = 4;
     // 源码
-    string source = 4;
-    int64 memory = 5;
-    int64 time = 6;
-    int32 verdict = 7;
-    int32 score = 8;
-    int32 user_id = 9;
-    string nickname = 10;
-    SubmissionInfo info = 11;
-    google.protobuf.Timestamp created_at = 12;
+    string source = 5;
+    int64 memory = 6;
+    int64 time = 7;
+    int32 verdict = 8;
+    int32 score = 9;
+    int32 user_id = 10;
+    string nickname = 11;
+    int32 entity_id = 12;
+    SubmissionEntityType entity_type = 13;
+    SubmissionInfo info = 14;
+    google.protobuf.Timestamp created_at = 15;
 }
 
 message ListSubmissionsRequest {

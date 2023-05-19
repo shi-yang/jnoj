@@ -84,14 +84,16 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	rv := make([]*biz.Submission, 0)
 	for _, v := range res {
 		s := &biz.Submission{
-			ID:        v.ID,
-			ProblemID: v.ProblemID,
-			Verdict:   v.Verdict,
-			Memory:    v.Memory,
-			Time:      v.Time,
-			Language:  v.Language,
-			Score:     v.Score,
-			CreatedAt: v.CreatedAt,
+			ID:         v.ID,
+			EntityID:   v.EntityID,
+			EntityType: v.EntityType,
+			ProblemID:  v.ProblemID,
+			Verdict:    v.Verdict,
+			Memory:     v.Memory,
+			Time:       v.Time,
+			Language:   v.Language,
+			Score:      v.Score,
+			CreatedAt:  v.CreatedAt,
 			User: biz.User{
 				ID:       v.User.ID,
 				Nickname: v.User.Nickname,
@@ -118,6 +120,7 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 	}
 	return &biz.Submission{
 		ID:         res.ID,
+		Score:      res.Score,
 		Source:     res.Source,
 		Memory:     res.Memory,
 		Time:       res.Time,

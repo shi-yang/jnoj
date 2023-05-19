@@ -1,7 +1,11 @@
+import SubmissionList from '@/modules/submission/SubmissionList';
+import { Card } from '@arco-design/web-react';
 import React from 'react';
 
-export default function SubmissionList() {
+export default function Index() {
   return (
-    <div>Submission List</div>
+    <Card>
+      <SubmissionList />
+    </Card>
   );
 };
