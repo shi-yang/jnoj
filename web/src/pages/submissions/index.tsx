@@ -51,7 +51,6 @@ const Submission = () => {
     setVisible(true);
   }
   function onChangeTable({ current, pageSize }, sorter, filters) {
-    console.log('fileters', filters)
     setFormParams({...formParams, ...filters});
     setPatination({
       ...pagination,
