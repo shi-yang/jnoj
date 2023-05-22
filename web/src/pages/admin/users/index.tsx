@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Table,
   Card,
@@ -8,23 +8,24 @@ import {
   Typography,
   Link,
   Divider,
+  Input,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import CreateModal from './create';
-import { listProblems } from '@/api/problem';
+import UpdateModal from './update';
 import { useAppSelector } from '@/hooks';
-import { userInfo } from '@/store/reducers/user';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
 import Layout from '../Layout';
+import { listUsers } from '@/api/admin/user';
+import { IconSearch } from '@arco-design/web-react/icon';
 const { Title } = Typography;
 
 function Index() {
   const t = useLocale(locale);
-  const user = useAppSelector(userInfo);
   const settings = useAppSelector<SettingState>(setting);
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -37,6 +38,7 @@ function Index() {
   const [formParams, setFormParams] = useState({});
   const [id, setId] = useState(0);
   const [visible, setVisible] = useState(false);
+  const inputRef = useRef(null);
 
   const columns = [
     {
@@ -50,6 +52,32 @@ function Index() {
       title: t['searchTable.columns.username'],
       dataIndex: 'username',
       align: 'center' as 'center',
+      render: (_, record) => <Link href={`/u/${record.userId}`}>{record.username}</Link>,
+      filterMultiple: false,
+      filterIcon: <IconSearch />,
+      filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+        return (
+          <div className='arco-table-custom-filter'>
+            <Input.Search
+              ref={inputRef}
+              searchButton
+              placeholder='Please enter name'
+              value={filterKeys[0] || ''}
+              onChange={(value) => {
+                setFilterKeys(value ? [value] : []);
+              }}
+              onSearch={() => {
+                confirm();
+              }}
+            />
+          </div>
+        );
+      },
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => inputRef.current.focus(), 150);
+        }
+      },
     },
     {
       title: t['searchTable.columns.nickname'],
@@ -64,14 +92,11 @@ function Index() {
       headerCellStyle: { paddingLeft: '15px' },
       render: (_, record) => (
         <>
-          <Button type='text' size='small'>
-            {t['searchTable.columns.operations.view']}
-          </Button>
           <Button
             type="text"
             size="small"
           >
-            <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.update']}</Link>
+            <Link onClick={(e) => {setVisible(true); setId(record.id)}}>{t['searchTable.columns.operations.update']}</Link>
           </Button>
         </>
       ),
@@ -83,7 +108,7 @@ function Index() {
   function fetchData() {
     const { current, pageSize } = pagination;
     setLoading(true);
-    listProblems({
+    listUsers({
       page: current,
       perPage: pageSize,
       ...formParams,
@@ -129,7 +154,8 @@ function Index() {
           <Divider />
           <div className={styles['button-group']}>
             <Space>
-              <CreateModal />
+              <CreateModal callback={fetchData} />
+              <UpdateModal id={id} visible={visible} setVisible={setVisible} callback={fetchData} />
             </Space>
           </div>
           <Table

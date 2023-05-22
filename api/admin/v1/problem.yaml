@@ -1,0 +1,3 @@
+rules:
+- selector: "/jnoj.interface.v1.ProblemService/ListProblems"
+  middleware: "jnoj/internal/middleware/auth.User()"

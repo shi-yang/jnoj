@@ -1,0 +1,3 @@
+rules:
+- selector: "/jnoj.interface.v1.UserService/GetUserInfo"
+  middleware: "jnoj/internal/middleware/auth.User()"

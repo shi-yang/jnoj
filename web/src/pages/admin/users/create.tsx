@@ -3,11 +3,11 @@ import { Modal, Button, Form, Input, Message } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { createUser } from '@/api/user';
+import { createUser } from '@/api/admin/user';
 import { useRouter } from 'next/router';
 const FormItem = Form.Item;
 
-function App() {
+function App({callback}) {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -20,9 +20,11 @@ function App() {
       createUser(values)
         .then(res => {
           Message.info('创建成功');
+          setVisible(false);
         })
         .finally(() => {
           setConfirmLoading(false);
+          callback();
         });
     });
   }

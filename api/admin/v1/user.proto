@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service UserService {
+    // 获取用户信息
+    rpc GetUser (GetUserRequest) returns (User) {
+        option (google.api.http) = {
+            get: "/users/{id}"
+        };
+    };
+    // 创建用户
+    rpc CreateUser (CreateUserRequest) returns (User) {
+        option (google.api.http) = {
+            post: "/users"
+            body: "*"
+        };
+    };
+    // 修改用户信息
+    rpc UpdateUser (UpdateUserRequest) returns (User) {
+        option (google.api.http) = {
+            put: "/users/{id}"
+            body: "*"
+        };
+    };
+    // 获取用户列表
+    rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
+        option (google.api.http) = {
+            get: "/users"
+        };
+    };
+}
+
+message User {
+    int32 id = 1;
+    string nickname = 2;
+    string username = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message GetUserRequest {
+    int32 id = 1;
+}
+
+message CreateUserRequest {
+    oneof id {
+        // either phone or email must be set.
+        option (validate.required) = true;
+
+        // 手机号
+        string phone = 1 [(validate.rules).string = { pattern: "^1[3456789][0-9]{9}$" }];
+        // 邮箱
+        string email = 2 [(validate.rules).string.email = true];
+    }
+    // 用户名
+    string username = 3 [(validate.rules).string = {
+        // 以字母、数字、下划线，且非纯数字，长度在 5 - 16 位之间
+        pattern:   "^[a-zA-Z][a-zA-Z0-9_-]{4,15}$",
+    }];
+    // 昵称
+    string nickname = 4;
+    // 密码
+    string password = 5 [(validate.rules).string = {min_len: 6, max_len: 16}];
+}
+
+message UpdateUserRequest {
+    int32 id = 1;
+    string username = 2 [(validate.rules).string = {
+        // 以字母、数字、下划线，且非纯数字，长度在 5 - 16 位之间
+        pattern:   "^[a-zA-Z][a-zA-Z0-9_-]{4,15}$",
+    }];
+    string password = 3 [(validate.rules).string = {min_len: 6, max_len: 16}];
+}
+
+message ListUsersResponse {
+    repeated User data = 1;
+    int64 total = 2;
+}
+
+message ListUsersRequest {
+    string username = 1;
+    int32 page = 2;
+    int32 per_page = 3;
+}

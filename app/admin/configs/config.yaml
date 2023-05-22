@@ -1,0 +1,39 @@
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 60s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 5s
+data:
+  database:
+    driver: mysql
+    source: "root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local"
+  redis:
+    addr: "${REDIS_ADDR}"
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+  object_storage:
+    private_bucket:
+      bucket: "private"
+      secret_id: "jnoj_access_key1"
+      secret_key: "jnoj_secret_key1"
+      endpoint: "http://jnoj-s3:8333"
+    public_bucket:
+      bucket: "public"
+      secret_id: "jnoj_access_key1"
+      secret_key: "jnoj_secret_key1"
+      endpoint: "http://jnoj-s3:8333"
+  message_queue:
+    address: "amqp://admin:admin@rabbitmq:5672/"
+service:
+  smtp:
+    ssl: true
+    address: smtp.exmail.qq.com:465
+    username: no-reply@jnoj.dev
+    password: GKce4Jj7F8tBzkYQ
+    host: smtp.exmail.qq.com
+
+consul:
+  address: consul:8500
+  scheme: http

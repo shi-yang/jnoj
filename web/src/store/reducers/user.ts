@@ -8,12 +8,15 @@ export interface UserInfoState {
     username?: string;
     nickname?: string;
     avatar?: string;
+    permissions: Record<string, string[]>;
   };
   isLogged?: boolean;
 }
 
 const initialState: UserInfoState = {
-  userInfo: {},
+  userInfo: {
+    permissions: {}
+  },
   isLogged: false,
 };
 
@@ -33,6 +36,7 @@ const userSlice = createSlice({
         state.userInfo.username = data.username;
         state.userInfo.avatar = data.avatar;
         state.userInfo.nickname = data.nickname;
+        state.userInfo.permissions = data.permissions;
         state.isLogged = true;
       })
       .addCase(getUserInfo.rejected, (state, action) => {

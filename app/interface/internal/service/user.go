@@ -8,6 +8,7 @@ import (
 	"jnoj/internal/middleware/auth"
 
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // UserService is a user service.
@@ -67,10 +68,21 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 	if err != nil {
 		return nil, err
 	}
-	return &v1.GetUserInfoResponse{
+	resp := &v1.GetUserInfoResponse{
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,
-	}, nil
+	}
+	if user.ID == 1 {
+		resp.Permissions = make(map[string]*structpb.ListValue)
+		permissions := &structpb.ListValue{}
+		permissions.Values = append(permissions.Values, &structpb.Value{
+			Kind: &structpb.Value_StringValue{StringValue: "write"},
+		}, &structpb.Value{
+			Kind: &structpb.Value_StringValue{StringValue: "read"},
+		})
+		resp.Permissions["*"] = permissions
+	}
+	return resp, nil
 }
 
 // GetUser 获取用户主页信息
@@ -126,22 +138,4 @@ func (s UserService) GetUserProfileCalendar(ctx context.Context, req *v1.GetUser
 // GetUserProfileProblemSolved 用户主页提交统计
 func (s UserService) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	return s.uc.GetUserProfileProblemSolved(ctx, req)
-}
-
-// CreateUser
-func (s UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.User, error) {
-	if uid, _ := auth.GetUserID(ctx); uid != 1 {
-		return nil, v1.ErrorForbidden("")
-	}
-	u, err := s.uc.CreateUser(ctx, &biz.User{
-		Username: req.Username,
-		Nickname: req.Nickname,
-		Email:    req.GetEmail(),
-		Phone:    req.GetPhone(),
-		Password: req.Password,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &v1.User{Id: int32(u.ID)}, err
 }

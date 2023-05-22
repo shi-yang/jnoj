@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+import "errors/errors.proto";
+
+option go_package = "api/interface/v1;v1";
+
+enum CommonErrorReason {
+    option (errors.default_code) = 500;
+
+    BAD_REQUEST = 0 [(errors.code) = 400];
+    UNAUTHORIZED = 1 [(errors.code) = 401];
+    FORBIDDEN = 3 [(errors.code) = 403];
+    NOT_FOUND = 4 [(errors.code) = 404];
+}

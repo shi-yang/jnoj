@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service ProblemService {
+    // 获取题目列表
+    rpc ListProblems (ListProblemsRequest) returns (ListProblemsResponse) {
+        option (google.api.http) = {
+            get: "/problems"
+        };
+    };
+}
+
+message Problem {
+
+}
+
+message ListProblemsRequest {
+    repeated Problem data = 1;
+    int64 total = 2;
+}
+
+message ListProblemsResponse {
+    string name = 1;
+    int32 page = 2;
+    int32 per_page = 3;
+}

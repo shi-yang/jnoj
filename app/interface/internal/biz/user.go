@@ -8,6 +8,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/conf"
 	"jnoj/internal/middleware/auth"
+	"jnoj/pkg/password"
 	"math/rand"
 	"net/smtp"
 	"time"
@@ -15,7 +16,6 @@ import (
 	"github.com/jordan-wright/email"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // User is a User model.
@@ -173,26 +173,11 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, u *User) (*User, error) {
 }
 
 func (uc *UserUsecase) UpdateUserPassowrd(ctx context.Context, u *User, oldPassword string, newPassword string) (*User, error) {
-	if !validatePassword(u.Password, oldPassword) {
+	if !password.ValidatePassword(u.Password, oldPassword) {
 		return nil, v1.ErrorInvalidUsernameOrPassword("")
 	}
-	password, _ := generatePasswordHash(newPassword)
+	password, _ := password.GeneratePasswordHash(newPassword)
 	return uc.repo.UpdateUser(ctx, &User{ID: u.ID, Password: password})
-}
-
-// generatePasswordHash Generates password hash from password
-func generatePasswordHash(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hash), nil
-}
-
-// validatePassword Verifies a password against a hash.
-func validatePassword(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
 
 func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {

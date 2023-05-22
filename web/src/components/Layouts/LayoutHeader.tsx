@@ -13,6 +13,7 @@ import { useAppDispatch } from '@/hooks';
 import { isLogged } from '@/utils/auth';
 import Logo from '@/assets/logo.png';
 import UserAvatar from './UserAvatar';
+import PermissionWrapper from '../PermissionWrapper';
 
 const MenuItem = Menu.Item;
 
@@ -65,6 +66,13 @@ const LayoutHeader = () => {
         </Menu>
       </div>
       <ul className={styles.right}>
+        <PermissionWrapper
+          requiredPermissions={[{resource: '*', actions: ['read']}]}
+        >
+          <li>
+            <Link href='/admin'>后台</Link>
+          </li>
+        </PermissionWrapper>
         <li>
           <Select
             triggerElement={<IconButton icon={<IconLanguage />} />}
