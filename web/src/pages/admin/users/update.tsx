@@ -6,7 +6,7 @@ import { getUser, updateUser } from '@/api/admin/user';
 import { useRouter } from 'next/router';
 const FormItem = Form.Item;
 
-function App({id, visible, setVisible, callback}) {
+function App({id, visible, setVisible, callback}: {id: number, visible: boolean, setVisible: any, callback: () => void}) {
   const t = useLocale(locale);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();

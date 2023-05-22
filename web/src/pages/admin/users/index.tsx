@@ -96,7 +96,9 @@ function Index() {
             type="text"
             size="small"
           >
-            <Link onClick={(e) => {setVisible(true); setId(record.id)}}>{t['searchTable.columns.operations.update']}</Link>
+            <Link onClick={(e) => {setVisible(true); setId(record.id);}}>
+              {t['searchTable.columns.operations.update']}
+            </Link>
           </Button>
         </>
       ),
