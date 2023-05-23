@@ -8,7 +8,7 @@ server:
 data:
   database:
     driver: mysql
-    source: "root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local"
+    source: "${MYSQL_SOURCE}"
   redis:
     addr: "${REDIS_ADDR}"
     read_timeout: 0.2s
