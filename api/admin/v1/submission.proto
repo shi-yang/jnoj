@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service SubmissionService {
+    // 重判
+    rpc Rejudge(RejudgeRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/rejudge"
+            body: "*"
+        };
+    }
+}
+
+message RejudgeRequest {
+    oneof id {
+        option (validate.required) = true;
+
+        int32 contest_id = 1;
+        int32 problem_id = 2;
+        int32 submission_id = 3;
+    }
+}
+
+enum SubmissionEntityType {
+    PROBLEMSET = 0;
+    CONTEST = 1;
+    PROBLEM_FILE = 2;
+}
+
+message ListSubmissionsRequest {
+    int32 page = 1;
+    int32 per_page = 2;
+    optional SubmissionEntityType entity_type = 3;
+    int32 entity_id = 4;
+    int32 problem_id = 5;
+    repeated int32 ids = 6;
+}

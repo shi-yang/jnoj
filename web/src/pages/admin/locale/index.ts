@@ -6,6 +6,7 @@ const i18n = {
     'header.tab.settings': 'Settings',
     'header.tab.submissions': 'Submissions',
     'header.tab.problems': 'Problems',
+    'header.tab.rejudge': 'Rejudge',
   },
   'zh-CN': {
     'page.title': '后台',
@@ -14,6 +15,7 @@ const i18n = {
     'header.tab.settings': '设置',
     'header.tab.submissions': '提交列表',
     'header.tab.problems': '题目列表',
+    'header.tab.rejudge': '重新测评',
   },
 };
 

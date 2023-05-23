@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package jnoj.interface.v1;
+package jnoj.admin.v1;
 import "errors/errors.proto";
 
-option go_package = "api/interface/v1;v1";
+option go_package = "api/admin/v1;v1";
 
 enum CommonErrorReason {
     option (errors.default_code) = 500;
