@@ -52,7 +52,7 @@ function Index() {
       title: t['searchTable.columns.username'],
       dataIndex: 'username',
       align: 'center' as 'center',
-      render: (_, record) => <Link href={`/u/${record.userId}`}>{record.username}</Link>,
+      render: (_, record) => <Link href={`/u/${record.id}`}>{record.username}</Link>,
       filterMultiple: false,
       filterIcon: <IconSearch />,
       filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
