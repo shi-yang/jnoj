@@ -51,7 +51,7 @@ function Index() {
         </Card>
       </div>
     </>
-  )
+  );
 }
 
 Index.getLayout = Layout;
