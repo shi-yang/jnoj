@@ -225,11 +225,3 @@ func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, id int, uid
 	}
 	return
 }
-
-func (r *contestRepo) AddContestParticipantCount(ctx context.Context, id int, count int) error {
-	return r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Model(&Contest{ID: id}).
-		UpdateColumn("participant_count", gorm.Expr("participant_count + ?", count)).
-		Error
-}

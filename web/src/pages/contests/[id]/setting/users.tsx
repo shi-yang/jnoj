@@ -1,9 +1,10 @@
-import { listContestUsers, updateContestUser } from '@/api/contest';
+import { batchCreateContestUsers, createContestUser, listContestUsers, updateContestUser } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Radio, Table } from '@arco-design/web-react';
+import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Radio, Space, Table } from '@arco-design/web-react';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
 import locale from '../locale';
+import user from '@/store/reducers/user';
 
 enum  ContestUserRole {
   ROLE_OFFICIAL_PLAYER = 'ROLE_OFFICIAL_PLAYER',
@@ -11,6 +12,108 @@ enum  ContestUserRole {
   ROLE_VIRTUAL_PLAYER = 'ROLE_VIRTUAL_PLAYER',
   ROLE_WRITER = 'ROLE_WRITER',
   ROLE_ADMIN = 'ROLE_ADMIN',
+}
+
+function CreateUserModal({callback}: {callback: () => void}) {
+  const contest = useContext(ContestContext);
+  const [visible, setVisible] = useState(false);
+  const t = useLocale(locale);
+  const [form] = Form.useForm();
+  function onOk() {
+    form.validate().then((values) => {
+      const data = {
+        users: [],
+        role: values.role,
+      };
+      const users = values.name.split('\n');
+      users.forEach(item => {
+        const u = item.split(" ");
+        if (u[0] === '') {
+          return;
+        }
+        data.users.push({
+          username: u[0],
+          name: u[1] ?? ''
+        });
+      });
+      batchCreateContestUsers(contest.id, data)
+        .then(res => {
+          if (res.data.failed.length === 0) {
+            Message.success({
+              content: (
+                <div>
+                  所有用户已经成功添加：{res.data.success.length}
+                </div>
+              )
+            });
+          } else {
+            const failed = res.data.failed.map(item => {
+              return item.username + ' ' + item.name;
+            });
+            const failedReason = res.data.failed.map(item => {
+              return item.reason;
+            });
+            Message.error({
+              closable: true,
+              duration: 0,
+              content: (
+                <div>
+                  <p>成功添加：{res.data.success.length}</p>
+                  <p>以下用户添加失败：</p>
+                  <Space>
+                    <div>
+                      <p>失败用户</p>
+                      <Input.TextArea defaultValue={failed.join('\n')} autoSize />
+                    </div>
+                    <div>
+                      <p>失败原因</p>
+                      <Input.TextArea defaultValue={failedReason.join('\n')} autoSize />
+                    </div>
+                  </Space>
+                </div>
+              )
+            });
+          }
+        })
+        .finally(() => {
+          callback();
+        });
+    });
+  }
+  return (
+    <>
+      <Button type='primary' onClick={(e) => setVisible(true)}>添加用户</Button>
+      <Modal
+        visible={visible}
+        onOk={onOk}
+        onCancel={() => setVisible(false)}
+        title='添加用户'
+      >
+        <Form
+          form={form}
+        >
+          <Form.Item
+            label={t['setting.users.name']}
+            required
+            field='name'
+            rules={[{ required: true }]}
+            help='您可在此批量添加参赛用户，批量添加要求：每个参赛用户占一行，在每行中，第一个字符串为用户名，第二个字符串为参赛名称（非必须项，如果没有填写则默认取用户昵称），这两个字符串中间用空格分隔'
+          >
+            <Input.TextArea placeholder='' autoSize={{ minRows: 4 }} />
+          </Form.Item>
+          <Form.Item label={t['setting.users.role']} required field='role' rules={[{ required: true }]} help='请注意：出题人和管理有同样的权限，均可在任何时候查看全部选手的提交记录'>
+            <Radio.Group>
+              {Object.keys(ContestUserRole).map((item, index) =>
+                <Radio key={index} value={item} disabled={item === 'ROLE_VIRTUAL_PLAYER'}>
+                  {t[`setting.users.role.${item}`]}
+                </Radio>
+              )}
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
 }
 
 function UpdateUserModal({visible, record, callback}: any) {
@@ -89,6 +192,11 @@ function Users() {
       render: col => <Link href={`/u/${col}`} target='_blank'>{col}</Link>
     },
     {
+      title: t['setting.users.userNickname'],
+      dataIndex: 'userNickname',
+      align: 'center' as 'center',
+    },
+    {
       title: t['setting.users.name'],
       dataIndex: 'name',
       align: 'center' as 'center',
@@ -142,7 +250,6 @@ function Users() {
       });
   }
   function onChangeTable({ current, pageSize }, sorter, filters) {
-    console.log('filters', filters);
     setFormParams({...formParams, ...filters});
     setPatination({
       ...pagination,
@@ -156,6 +263,7 @@ function Users() {
   }
   return (
     <Card>
+      <CreateUserModal callback={fetchData} />
       <UpdateUserModal visible={updateModal.visible} record={updateModal.record} callback={() => updateCallback()} />
       <Table
         rowKey='id'

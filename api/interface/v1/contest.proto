@@ -86,6 +86,13 @@ service ContestService {
             body: "*"
         };
     }
+    // 批量添加用户
+    rpc BatchCreateContestUsers (BatchCreateContestUsersRequest) returns (BatchCreateContestUsersResponse) {
+        option (google.api.http) = {
+            post: "/contests/{contest_id}/batch_users"
+            body: "*"
+        };
+    } 
     // 修改比赛用户信息
     rpc UpdateContestUser (UpdateContestUserRequest) returns (ContestUser) {
         option (google.api.http) = {
@@ -298,6 +305,26 @@ message CreateContestUserRequest {
     int32 contest_id = 1;
     string invitation_code = 2;
     string name = 3 [(validate.rules).string = {max_len: 64}];
+}
+
+message BatchCreateContestUsersRequest {
+    message ContestUser {
+        string username = 1;
+        string name = 2;
+    }
+    repeated ContestUser users = 1;
+    ContestUserRole role = 2;
+    int32 contest_id = 3;
+}
+
+message BatchCreateContestUsersResponse {
+    message ContestUser {
+        string username = 1;
+        string name = 2;
+        string reason = 3;
+    }
+    repeated ContestUser success = 1;
+    repeated ContestUser failed = 2;
 }
 
 message UpdateContestUserRequest {

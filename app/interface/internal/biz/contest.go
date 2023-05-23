@@ -141,7 +141,6 @@ type ContestRepo interface {
 	CreateContest(context.Context, *Contest) (*Contest, error)
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
-	AddContestParticipantCount(context.Context, int, int) error
 	ListContestAllSubmissions(ctx context.Context, contesId int, userId int) []*ContestSubmission
 	ContestProblemRepo
 	ContestUserRepo
@@ -152,15 +151,22 @@ type ContestUsecase struct {
 	repo           ContestRepo
 	problemRepo    ProblemRepo
 	submissionRepo SubmissionRepo
+	userRepo       UserRepo
 	log            *log.Helper
 }
 
 // NewContestUsecase new a Contest usecase.
-func NewContestUsecase(repo ContestRepo, problemRepo ProblemRepo, submissionRepo SubmissionRepo, logger log.Logger) *ContestUsecase {
+func NewContestUsecase(
+	repo ContestRepo,
+	problemRepo ProblemRepo,
+	submissionRepo SubmissionRepo,
+	userRepo UserRepo,
+	logger log.Logger) *ContestUsecase {
 	return &ContestUsecase{
 		repo:           repo,
 		problemRepo:    problemRepo,
 		submissionRepo: submissionRepo,
+		userRepo:       userRepo,
 		log:            log.NewHelper(logger),
 	}
 }

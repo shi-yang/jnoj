@@ -63,7 +63,7 @@ func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string,
 	if err != nil {
 		return "", v1.ErrorInvalidUsernameOrPassword(err.Error())
 	}
-	if !validatePassword(req.Password, user.Password) {
+	if !password.ValidatePassword(req.Password, user.Password) {
 		return "", v1.ErrorInvalidUsernameOrPassword("")
 	}
 	return auth.GenerateToken(user.ID)
@@ -89,7 +89,7 @@ func (uc *UserUsecase) Register(ctx context.Context, u *User, captcha string) (i
 	if err := uc.VerifyCaptcha(ctx, u.Email, u.Phone, captcha); err != nil {
 		return 0, "", v1.ErrorCaptchaError(err.Error())
 	}
-	u.Password, _ = generatePasswordHash(u.Password)
+	u.Password, _ = password.GeneratePasswordHash(u.Password)
 	user, err := uc.repo.CreateUser(ctx, u)
 	if err != nil {
 		return 0, "", fmt.Errorf(err.Error())

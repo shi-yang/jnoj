@@ -54,6 +54,10 @@ export function createContestUser(id, data = null) {
   return axios.post(`/contests/${id}/users`, data);
 }
 
+export function batchCreateContestUsers(id, data) {
+  return axios.post(`/contests/${id}/batch_users`, data);
+}
+
 export function updateContestUser(id, data) {
   return axios.put(`/contests/${id}/users`, data);
 }

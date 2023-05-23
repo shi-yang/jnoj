@@ -2290,6 +2290,318 @@ var _ interface {
 	ErrorName() string
 } = CreateContestUserRequestValidationError{}
 
+// Validate checks the field values on BatchCreateContestUsersRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *BatchCreateContestUsersRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BatchCreateContestUsersRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// BatchCreateContestUsersRequestMultiError, or nil if none found.
+func (m *BatchCreateContestUsersRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchCreateContestUsersRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetUsers() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchCreateContestUsersRequestValidationError{
+						field:  fmt.Sprintf("Users[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchCreateContestUsersRequestValidationError{
+						field:  fmt.Sprintf("Users[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchCreateContestUsersRequestValidationError{
+					field:  fmt.Sprintf("Users[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Role
+
+	// no validation rules for ContestId
+
+	if len(errors) > 0 {
+		return BatchCreateContestUsersRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchCreateContestUsersRequestMultiError is an error wrapping multiple
+// validation errors returned by BatchCreateContestUsersRequest.ValidateAll()
+// if the designated constraints aren't met.
+type BatchCreateContestUsersRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchCreateContestUsersRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchCreateContestUsersRequestMultiError) AllErrors() []error { return m }
+
+// BatchCreateContestUsersRequestValidationError is the validation error
+// returned by BatchCreateContestUsersRequest.Validate if the designated
+// constraints aren't met.
+type BatchCreateContestUsersRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchCreateContestUsersRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchCreateContestUsersRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchCreateContestUsersRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchCreateContestUsersRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchCreateContestUsersRequestValidationError) ErrorName() string {
+	return "BatchCreateContestUsersRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchCreateContestUsersRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchCreateContestUsersRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchCreateContestUsersRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchCreateContestUsersRequestValidationError{}
+
+// Validate checks the field values on BatchCreateContestUsersResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *BatchCreateContestUsersResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BatchCreateContestUsersResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// BatchCreateContestUsersResponseMultiError, or nil if none found.
+func (m *BatchCreateContestUsersResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchCreateContestUsersResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetSuccess() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchCreateContestUsersResponseValidationError{
+						field:  fmt.Sprintf("Success[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchCreateContestUsersResponseValidationError{
+						field:  fmt.Sprintf("Success[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchCreateContestUsersResponseValidationError{
+					field:  fmt.Sprintf("Success[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetFailed() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchCreateContestUsersResponseValidationError{
+						field:  fmt.Sprintf("Failed[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchCreateContestUsersResponseValidationError{
+						field:  fmt.Sprintf("Failed[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchCreateContestUsersResponseValidationError{
+					field:  fmt.Sprintf("Failed[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return BatchCreateContestUsersResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchCreateContestUsersResponseMultiError is an error wrapping multiple
+// validation errors returned by BatchCreateContestUsersResponse.ValidateAll()
+// if the designated constraints aren't met.
+type BatchCreateContestUsersResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchCreateContestUsersResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchCreateContestUsersResponseMultiError) AllErrors() []error { return m }
+
+// BatchCreateContestUsersResponseValidationError is the validation error
+// returned by BatchCreateContestUsersResponse.Validate if the designated
+// constraints aren't met.
+type BatchCreateContestUsersResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchCreateContestUsersResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchCreateContestUsersResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchCreateContestUsersResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchCreateContestUsersResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchCreateContestUsersResponseValidationError) ErrorName() string {
+	return "BatchCreateContestUsersResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchCreateContestUsersResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchCreateContestUsersResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchCreateContestUsersResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchCreateContestUsersResponseValidationError{}
+
 // Validate checks the field values on UpdateContestUserRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -3706,6 +4018,228 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ContestProblem_SampleTestValidationError{}
+
+// Validate checks the field values on
+// BatchCreateContestUsersRequest_ContestUser with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchCreateContestUsersRequest_ContestUser) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// BatchCreateContestUsersRequest_ContestUser with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// BatchCreateContestUsersRequest_ContestUserMultiError, or nil if none found.
+func (m *BatchCreateContestUsersRequest_ContestUser) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchCreateContestUsersRequest_ContestUser) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Username
+
+	// no validation rules for Name
+
+	if len(errors) > 0 {
+		return BatchCreateContestUsersRequest_ContestUserMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchCreateContestUsersRequest_ContestUserMultiError is an error wrapping
+// multiple validation errors returned by
+// BatchCreateContestUsersRequest_ContestUser.ValidateAll() if the designated
+// constraints aren't met.
+type BatchCreateContestUsersRequest_ContestUserMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchCreateContestUsersRequest_ContestUserMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchCreateContestUsersRequest_ContestUserMultiError) AllErrors() []error { return m }
+
+// BatchCreateContestUsersRequest_ContestUserValidationError is the validation
+// error returned by BatchCreateContestUsersRequest_ContestUser.Validate if
+// the designated constraints aren't met.
+type BatchCreateContestUsersRequest_ContestUserValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchCreateContestUsersRequest_ContestUserValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchCreateContestUsersRequest_ContestUserValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchCreateContestUsersRequest_ContestUserValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchCreateContestUsersRequest_ContestUserValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchCreateContestUsersRequest_ContestUserValidationError) ErrorName() string {
+	return "BatchCreateContestUsersRequest_ContestUserValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchCreateContestUsersRequest_ContestUserValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchCreateContestUsersRequest_ContestUser.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchCreateContestUsersRequest_ContestUserValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchCreateContestUsersRequest_ContestUserValidationError{}
+
+// Validate checks the field values on
+// BatchCreateContestUsersResponse_ContestUser with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchCreateContestUsersResponse_ContestUser) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// BatchCreateContestUsersResponse_ContestUser with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// BatchCreateContestUsersResponse_ContestUserMultiError, or nil if none found.
+func (m *BatchCreateContestUsersResponse_ContestUser) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchCreateContestUsersResponse_ContestUser) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Username
+
+	// no validation rules for Name
+
+	// no validation rules for Reason
+
+	if len(errors) > 0 {
+		return BatchCreateContestUsersResponse_ContestUserMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchCreateContestUsersResponse_ContestUserMultiError is an error wrapping
+// multiple validation errors returned by
+// BatchCreateContestUsersResponse_ContestUser.ValidateAll() if the designated
+// constraints aren't met.
+type BatchCreateContestUsersResponse_ContestUserMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchCreateContestUsersResponse_ContestUserMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchCreateContestUsersResponse_ContestUserMultiError) AllErrors() []error { return m }
+
+// BatchCreateContestUsersResponse_ContestUserValidationError is the validation
+// error returned by BatchCreateContestUsersResponse_ContestUser.Validate if
+// the designated constraints aren't met.
+type BatchCreateContestUsersResponse_ContestUserValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchCreateContestUsersResponse_ContestUserValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchCreateContestUsersResponse_ContestUserValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchCreateContestUsersResponse_ContestUserValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchCreateContestUsersResponse_ContestUserValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchCreateContestUsersResponse_ContestUserValidationError) ErrorName() string {
+	return "BatchCreateContestUsersResponse_ContestUserValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchCreateContestUsersResponse_ContestUserValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchCreateContestUsersResponse_ContestUser.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchCreateContestUsersResponse_ContestUserValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchCreateContestUsersResponse_ContestUserValidationError{}
 
 // Validate checks the field values on
 // ListContestAllSubmissionsResponse_Submission with the rules defined in the

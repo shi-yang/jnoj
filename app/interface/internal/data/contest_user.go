@@ -81,10 +81,20 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 
 // CreateContestUser .
 func (r *contestRepo) CreateContestUser(ctx context.Context, b *biz.ContestUser) (*biz.ContestUser, error) {
-	res := ContestUser{UserID: b.UserID, ContestID: b.ContestID, Role: b.Role, VirtualStart: b.VirtualStart}
+	res := ContestUser{
+		Name:         b.Name,
+		UserID:       b.UserID,
+		ContestID:    b.ContestID,
+		Role:         b.Role,
+		VirtualStart: b.VirtualStart,
+	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error
+	r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Model(&Contest{ID: b.ContestID}).
+		UpdateColumn("participant_count", gorm.Expr("participant_count + ?", 1))
 	return &biz.ContestUser{
 		ID: res.ID,
 	}, err

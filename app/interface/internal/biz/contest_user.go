@@ -61,8 +61,57 @@ func (uc *ContestUsecase) CreateContestUser(ctx context.Context, c *ContestUser,
 	if err != nil {
 		return nil, err
 	}
-	// 比赛人数 + 1
-	_ = uc.repo.AddContestParticipantCount(ctx, c.ContestID, 1)
+	return res, nil
+}
+
+// BatchCreateContestUsers 批量添加比赛用户
+func (uc *ContestUsecase) BatchCreateContestUsers(ctx context.Context, req *v1.BatchCreateContestUsersRequest) (*v1.BatchCreateContestUsersResponse, error) {
+	contest, err := uc.repo.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, ContestPermissionUpdate) {
+		return nil, v1.ErrorForbidden("forbidden")
+	}
+	res := new(v1.BatchCreateContestUsersResponse)
+	for _, v := range req.Users {
+		u, err := uc.userRepo.GetUser(ctx, &User{Username: v.Username})
+		if err != nil {
+			res.Failed = append(res.Failed, &v1.BatchCreateContestUsersResponse_ContestUser{
+				Username: v.Username,
+				Name:     v.Name,
+				Reason:   "user not found",
+			})
+			continue
+		}
+		if contestUser := uc.repo.GetContestUser(ctx, int(req.ContestId), u.ID); contestUser != nil {
+			res.Failed = append(res.Failed, &v1.BatchCreateContestUsersResponse_ContestUser{
+				Username: v.Username,
+				Name:     v.Name,
+				Reason:   "already registered",
+			})
+			continue
+		}
+		c := &ContestUser{
+			UserID:    u.ID,
+			ContestID: int(req.ContestId),
+			Name:      v.Name,
+			Role:      int(req.Role),
+		}
+		_, err = uc.repo.CreateContestUser(ctx, c)
+		if err != nil {
+			res.Failed = append(res.Failed, &v1.BatchCreateContestUsersResponse_ContestUser{
+				Username: v.Username,
+				Name:     v.Name,
+				Reason:   err.Error(),
+			})
+		} else {
+			res.Success = append(res.Success, &v1.BatchCreateContestUsersResponse_ContestUser{
+				Username: v.Username,
+				Name:     v.Name,
+			})
+		}
+	}
 	return res, nil
 }
 

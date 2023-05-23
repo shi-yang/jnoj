@@ -23,6 +23,7 @@ const _ = http.SupportPackageIsVersion1
 
 // auth.
 // auth.
+const OperationContestServiceBatchCreateContestUsers = "/jnoj.interface.v1.ContestService/BatchCreateContestUsers"
 const OperationContestServiceCreateContest = "/jnoj.interface.v1.ContestService/CreateContest"
 const OperationContestServiceCreateContestProblem = "/jnoj.interface.v1.ContestService/CreateContestProblem"
 const OperationContestServiceCreateContestUser = "/jnoj.interface.v1.ContestService/CreateContestUser"
@@ -40,6 +41,7 @@ const OperationContestServiceUpdateContest = "/jnoj.interface.v1.ContestService/
 const OperationContestServiceUpdateContestUser = "/jnoj.interface.v1.ContestService/UpdateContestUser"
 
 type ContestServiceHTTPServer interface {
+	BatchCreateContestUsers(context.Context, *BatchCreateContestUsersRequest) (*BatchCreateContestUsersResponse, error)
 	CreateContest(context.Context, *CreateContestRequest) (*Contest, error)
 	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*ContestProblem, error)
 	CreateContestUser(context.Context, *CreateContestUserRequest) (*ContestUser, error)
@@ -67,6 +69,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/GetContestProblem", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestUser", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/BatchCreateContestUsers", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/UpdateContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestUsers", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestSubmissions", auth.Guest())
@@ -86,6 +89,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.GET("/contests/{id}/problems/{number}/languages/{language}", _ContestService_GetContestProblemLanguage0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
+	r.POST("/contests/{contest_id}/batch_users", _ContestService_BatchCreateContestUsers0_HTTP_Handler(srv))
 	r.PUT("/contests/{contest_id}/users", _ContestService_UpdateContestUser0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
@@ -349,6 +353,28 @@ func _ContestService_CreateContestUser0_HTTP_Handler(srv ContestServiceHTTPServe
 	}
 }
 
+func _ContestService_BatchCreateContestUsers0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in BatchCreateContestUsersRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceBatchCreateContestUsers)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.BatchCreateContestUsers(ctx, req.(*BatchCreateContestUsersRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*BatchCreateContestUsersResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ContestService_UpdateContestUser0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in UpdateContestUserRequest
@@ -416,6 +442,7 @@ func _ContestService_ListContestSubmissions0_HTTP_Handler(srv ContestServiceHTTP
 }
 
 type ContestServiceHTTPClient interface {
+	BatchCreateContestUsers(ctx context.Context, req *BatchCreateContestUsersRequest, opts ...http.CallOption) (rsp *BatchCreateContestUsersResponse, err error)
 	CreateContest(ctx context.Context, req *CreateContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	CreateContestUser(ctx context.Context, req *CreateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
@@ -439,6 +466,19 @@ type ContestServiceHTTPClientImpl struct {
 
 func NewContestServiceHTTPClient(client *http.Client) ContestServiceHTTPClient {
 	return &ContestServiceHTTPClientImpl{client}
+}
+
+func (c *ContestServiceHTTPClientImpl) BatchCreateContestUsers(ctx context.Context, in *BatchCreateContestUsersRequest, opts ...http.CallOption) (*BatchCreateContestUsersResponse, error) {
+	var out BatchCreateContestUsersResponse
+	pattern := "/contests/{contest_id}/batch_users"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContestServiceBatchCreateContestUsers))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *ContestServiceHTTPClientImpl) CreateContest(ctx context.Context, in *CreateContestRequest, opts ...http.CallOption) (*Contest, error) {

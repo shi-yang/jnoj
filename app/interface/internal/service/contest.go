@@ -337,6 +337,11 @@ func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateCo
 	}, nil
 }
 
+// BatchCreateContestUsers 批量添加用户
+func (s *ContestService) BatchCreateContestUsers(ctx context.Context, req *v1.BatchCreateContestUsersRequest) (*v1.BatchCreateContestUsersResponse, error) {
+	return s.uc.BatchCreateContestUsers(ctx, req)
+}
+
 // UpdateContestUser 修改比赛用户信息
 func (s *ContestService) UpdateContestUser(ctx context.Context, req *v1.UpdateContestUserRequest) (*v1.ContestUser, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
