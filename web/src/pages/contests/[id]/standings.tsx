@@ -8,6 +8,8 @@ import locale from './locale';
 import styles from './style/standings.module.less';
 import { FormatTime } from '@/utils/format';
 import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
+import { useAppSelector } from '@/hooks';
+import { userInfo } from '@/store/reducers/user';
 
 enum ContestType {
   ContestTypeICPC = 'ICPC',
@@ -202,6 +204,7 @@ const App = () => {
   });
   const [columns, setColumns] = useState<TableColumnProps[]>([]);
   const [data, setData] = useState([]);
+  const user = useAppSelector(userInfo);
   const contest = useContext(ContestContext);
 
   const processTeamData = (users, problems, submissions) => {
@@ -386,6 +389,7 @@ const App = () => {
         loading={loading}
         pagination={pagination}
         onChange={onChangeTable}
+        rowClassName={(record) => (record.userId === user.id ? styles['info-row'] : '')}
       />
     </div>
   );
