@@ -41,8 +41,8 @@ func (uc *SandboxUsecase) CreateSandbox(ctx context.Context, g *Sandbox) (*Sandb
 	return nil, nil
 }
 
-func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (res *sandboxV1.RunResponse) {
-	res = new(sandboxV1.RunResponse)
+func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (resp *sandboxV1.RunResponse) {
+	resp = new(sandboxV1.RunResponse)
 	u, _ := uuid.NewUUID()
 	workDir := filepath.Join("/tmp/sandbox", u.String())
 	defer os.RemoveAll(workDir)
@@ -50,29 +50,33 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (r
 	err := sandbox.Compile(workDir, req.Source, &sandbox.Languages[req.Language])
 	uc.log.Info("Compile done...", workDir)
 	if err != nil {
-		res.CompileMsg = err.Error()
+		resp.CompileMsg = err.Error()
 		return
 	}
-	uc.log.Info("Run...", workDir)
-	runRes := sandbox.Run(workDir, &sandbox.Languages[req.Language], []byte(req.Stdin), req.MemoryLimit, req.TimeLimit)
-	uc.log.Info("Run done...", workDir)
-	res.ExitCode = int32(runRes.ExitCode)
-	res.Memory = runRes.Memory
-	res.Time = runRes.Time
-	res.Stdout = runRes.Stdout
-	res.Stderr = runRes.Stderr
-	res.ErrMsg = runRes.Err
-	if req.CheckerSource != nil {
-		err := sandbox.Compile(workDir, *req.CheckerSource, checkerLanguage)
-		if err != nil {
-			uc.log.Info("sandbox.Compile err:", err)
+	for _, stdin := range req.Stdin {
+		var res sandboxV1.RunResult
+		uc.log.Info("Run...", workDir)
+		runRes := sandbox.Run(workDir, &sandbox.Languages[req.Language], []byte(stdin), req.MemoryLimit, req.TimeLimit)
+		uc.log.Info("Run done...", workDir)
+		res.ExitCode = int32(runRes.ExitCode)
+		res.Memory = runRes.Memory
+		res.Time = runRes.Time
+		res.Stdout = runRes.Stdout
+		res.Stderr = runRes.Stderr
+		res.ErrMsg = runRes.Err
+		if req.CheckerSource != nil {
+			err := sandbox.Compile(workDir, *req.CheckerSource, checkerLanguage)
+			if err != nil {
+				uc.log.Info("sandbox.Compile err:", err)
+			}
+			_ = os.WriteFile(filepath.Join(workDir, "user.stdout"), []byte(res.Stdout), 0444)
+			_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(stdin), 0444)
+			_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(*req.Answer), 0444)
+			checkerRes := sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 2000)
+			res.CheckerExitCode = int32(checkerRes.ExitCode)
+			res.CheckerStdout = checkerRes.Stderr
 		}
-		_ = os.WriteFile(filepath.Join(workDir, "user.stdout"), []byte(res.Stdout), 0444)
-		_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(req.Stdin), 0444)
-		_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(*req.Answer), 0444)
-		checkerRes := sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 2000)
-		res.CheckerExitCode = int32(checkerRes.ExitCode)
-		res.CheckerStdout = checkerRes.Stderr
+		resp.Result = append(resp.Result, &res)
 	}
 	return
 }

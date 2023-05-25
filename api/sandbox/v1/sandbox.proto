@@ -13,7 +13,7 @@ service SandboxService {
 
 message RunRequest {
     string source = 1;
-    string stdin = 2;
+    repeated string stdin = 2;
     int32 language = 3;
     int64 memory_limit = 4;
     int64 time_limit = 5;
@@ -23,17 +23,21 @@ message RunRequest {
     optional string checker_language = 8;
 }
 
-message RunResponse {
+message RunResult {
     string stdout = 1;
     string stderr = 2;
     int64 time = 3;
     int64 memory = 4;
     int32 exit_code = 5;
-    string compile_msg = 6;
-    string err_msg = 7;
+    string err_msg = 6;
 
-    string checker_stdout = 8;
-    int32 checker_exit_code = 9;
+    string checker_stdout = 7;
+    int32 checker_exit_code = 8;
+}
+
+message RunResponse {
+    repeated RunResult result = 1;
+    string compile_msg = 2;
 }
 
 message RunSubmissionRequest {

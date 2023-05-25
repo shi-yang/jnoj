@@ -63,18 +63,21 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunR
 		// 替换 @@@
 		runRequest.Source = strings.ReplaceAll(lang.MainContent, "@@@", req.Source)
 	}
-	resp, err := uc.sandboxClient.Run(ctx, runRequest)
+	res, err := uc.sandboxClient.Run(ctx, runRequest)
 	if err != nil {
 		return nil, err
 	}
-	return &v1.RunResponse{
-		Stdout:     resp.Stdout,
-		Time:       resp.Time,
-		Memory:     resp.Memory,
-		ExitCode:   resp.ExitCode,
-		CompileMsg: resp.CompileMsg,
-		ErrMsg:     resp.ErrMsg,
-	}, nil
+	results := make([]*v1.RunResult, 0)
+	for _, v := range res.Result {
+		results = append(results, &v1.RunResult{
+			Stdout:   v.Stdout,
+			Time:     v.Time,
+			Memory:   v.Memory,
+			ExitCode: v.ExitCode,
+			ErrMsg:   v.ErrMsg,
+		})
+	}
+	return &v1.RunResponse{Results: results, CompileMsg: res.CompileMsg}, nil
 }
 
 func NewDiscovery(conf *conf.Registry) registry.Discovery {

@@ -20,7 +20,7 @@ message RunRequest {
     // 源码
     string source = 1;
     // 输入
-    string stdin = 2;
+    repeated string stdin = 2;
     // 语言
     int32 language = 3;
     // 针对 函数题，需要查询对应的输入输出主体函数
@@ -29,12 +29,16 @@ message RunRequest {
     int64 time_limit = 6 [(validate.rules).int64 = {gte:250, lte: 15000}];
 }
 
-message RunResponse {
+message RunResult {
     string stdout = 1;
     string stderr = 2;
     int64 time = 3;
     int64 memory = 4;
     int32 exit_code = 5;
-    string compile_msg = 6;
-    string err_msg = 7;
+    string err_msg = 6;
+}
+
+message RunResponse {
+    repeated RunResult results = 1;
+    string compile_msg = 2;
 }

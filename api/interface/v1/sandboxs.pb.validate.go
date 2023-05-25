@@ -59,8 +59,6 @@ func (m *RunRequest) validate(all bool) error {
 
 	// no validation rules for Source
 
-	// no validation rules for Stdin
-
 	// no validation rules for Language
 
 	if val := m.GetMemoryLimit(); val < 4 || val > 1024 {
@@ -166,6 +164,117 @@ var _ interface {
 	ErrorName() string
 } = RunRequestValidationError{}
 
+// Validate checks the field values on RunResult with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *RunResult) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RunResult with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in RunResultMultiError, or nil
+// if none found.
+func (m *RunResult) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RunResult) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Stdout
+
+	// no validation rules for Stderr
+
+	// no validation rules for Time
+
+	// no validation rules for Memory
+
+	// no validation rules for ExitCode
+
+	// no validation rules for ErrMsg
+
+	if len(errors) > 0 {
+		return RunResultMultiError(errors)
+	}
+
+	return nil
+}
+
+// RunResultMultiError is an error wrapping multiple validation errors returned
+// by RunResult.ValidateAll() if the designated constraints aren't met.
+type RunResultMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RunResultMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RunResultMultiError) AllErrors() []error { return m }
+
+// RunResultValidationError is the validation error returned by
+// RunResult.Validate if the designated constraints aren't met.
+type RunResultValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RunResultValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RunResultValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RunResultValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RunResultValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RunResultValidationError) ErrorName() string { return "RunResultValidationError" }
+
+// Error satisfies the builtin error interface
+func (e RunResultValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRunResult.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RunResultValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RunResultValidationError{}
+
 // Validate checks the field values on RunResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -188,19 +297,41 @@ func (m *RunResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Stdout
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
 
-	// no validation rules for Stderr
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, RunResponseValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, RunResponseValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return RunResponseValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
 
-	// no validation rules for Time
-
-	// no validation rules for Memory
-
-	// no validation rules for ExitCode
+	}
 
 	// no validation rules for CompileMsg
-
-	// no validation rules for ErrMsg
 
 	if len(errors) > 0 {
 		return RunResponseMultiError(errors)

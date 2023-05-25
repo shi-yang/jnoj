@@ -198,35 +198,33 @@ function ConsoleComponent({ problem, language, languageId, source }: any, ref) {
     form.validate().then((values) => {
       setCasesResult([]);
       setActiveTab('result');
-      const p = [];
-      cases.forEach(value => {
-        const data: runRequest = {
-          stdin: value,
-          language,
-          source,
-          timeLimit: problem.timeLimit,
-          memoryLimit: problem.memoryLimit,
-        };
-        if (languageId !== 0) {
-          data.languageId = languageId;
-        }
-        p.push(runSandbox(data));
-      });
       setCompileMsg('');
       setLoading(true);
-      Promise.all(p)
-        .then(res => {
-          res.forEach((value, index) => {
-            if (value.data.compileMsg != '') {
-              setCompileMsg(value.data.compileMsg);
-              return;
-            }
-            setCasesResult(v => [...v, { stdin: cases[index], ...value.data }]);
-          });
-        })
-        .finally(() => {
-          setLoading(false);
+      const stdins = [];
+      cases.forEach(item => {
+        stdins.push(item);
+      });
+      const req: runRequest = {
+        stdin: stdins,
+        language,
+        source,
+        timeLimit: problem.timeLimit,
+        memoryLimit: problem.memoryLimit,
+      };
+      if (languageId !== 0) {
+        req.languageId = languageId;
+      }
+      runSandbox(req).then(res => {
+        if (res.data.compileMsg !== '') {
+          setCompileMsg(res.data.compileMsg);
+          return;
+        }
+        res.data.results.forEach((value, index) => {
+          setCasesResult(v => [...v, { stdin: cases[index], ...value }]);
         });
+      }).finally(() => {
+        setLoading(false);
+      });
     }).catch(err => {
       console.log(err);
     });
