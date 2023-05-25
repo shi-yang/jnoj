@@ -192,6 +192,9 @@ func (uc *ContestUsecase) GetContest(ctx context.Context, id int) (*Contest, err
 // CreateContest creates a Contest, and returns the new Contest.
 func (uc *ContestUsecase) CreateContest(ctx context.Context, c *Contest) (*Contest, error) {
 	c.Type = ContestTypeICPC
+	if c.GroupId != 0 {
+		c.Membership = ContestMembershipGroupUser
+	}
 	return uc.repo.CreateContest(ctx, c)
 }
 
