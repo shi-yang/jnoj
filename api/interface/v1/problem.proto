@@ -340,12 +340,13 @@ message ListProblemsRequest {
     int32 id = 1;
     string keyword = 2;
     int32 user_id = 3;
-    repeated int32 status = 4;
-    repeated int32 type = 5;
-    string filter = 6;
-    optional string order_by = 7;
-    int32 page = 8;
-    int32 per_page = 9;
+    string username = 4;
+    repeated int32 status = 5;
+    repeated int32 type = 6;
+    string filter = 7;
+    optional string order_by = 8;
+    int32 page = 9;
+    int32 per_page = 10;
 }
 
 message ListProblemsResponse {

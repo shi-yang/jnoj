@@ -429,6 +429,8 @@ func (m *ListProblemsRequest) validate(all bool) error {
 
 	// no validation rules for UserId
 
+	// no validation rules for Username
+
 	// no validation rules for Filter
 
 	// no validation rules for Page

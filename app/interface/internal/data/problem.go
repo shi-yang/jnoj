@@ -77,6 +77,11 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 			db.Where("status = ?", biz.ProblemStatusPublic)
 		}
 	}
+	if req.Username != "" {
+		db.Where("user_id in (?)",
+			r.data.db.WithContext(ctx).Select("id").
+				Model(&User{}).Where("username like ? or nickname like ?", fmt.Sprintf("%%%s%%", req.Username)), fmt.Sprintf("%%%s%%", req.Username))
+	}
 	if req.Id != 0 {
 		db.Where("problem.id = ?", req.Id)
 	}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Table,
   Card,
@@ -13,8 +13,9 @@ import {
   Tag,
   Tooltip,
   Divider,
+  Input,
 } from '@arco-design/web-react';
-import { IconDownload, IconLanguage } from '@arco-design/web-react/icon';
+import { IconDownload, IconLanguage, IconSearch } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
@@ -46,6 +47,7 @@ export default function Index() {
   const [id, setId] = useState(0);
   const [visible, setVisible] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const inputRef = useRef(null);
 
   const columns = [
     {
@@ -115,9 +117,34 @@ export default function Index() {
     },
     {
       title: t['searchTable.columns.createdBy'],
-      dataIndex: 'nickname',
+      dataIndex: 'username',
       align: 'center' as 'center',
-      render: (_, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>
+      render: (_, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>,
+      filterMultiple: false,
+      filterIcon: <IconSearch />,
+      filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+        return (
+          <div className='arco-table-custom-filter'>
+            <Input.Search
+              ref={inputRef}
+              searchButton
+              placeholder='Please enter name'
+              value={filterKeys[0] || ''}
+              onChange={(value) => {
+                setFilterKeys(value ? [value] : []);
+              }}
+              onSearch={() => {
+                confirm();
+              }}
+            />
+          </div>
+        );
+      },
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => inputRef.current.focus(), 150);
+        }
+      },
     },
     {
       title: t['searchTable.columns.createdAt'],
