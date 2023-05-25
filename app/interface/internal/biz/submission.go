@@ -10,6 +10,11 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
+const (
+	// 每分钟内能提交多少次
+	SubmissionsPerMinute = 3
+)
+
 // Submission is a Submission model.
 type Submission struct {
 	ID             int
@@ -102,6 +107,7 @@ type SubmissionRepo interface {
 	CreateSubmissionInfo(context.Context, int, string) error
 	GetSubmissionInfo(context.Context, int) (*SubmissionResult, error)
 	GetLastSubmission(ctx context.Context, entityType, entityID, userId, problemId int) (*Submission, error)
+	GetLastMinuteSubmissionCount(ctx context.Context, userId int) int
 }
 
 // SubmissionUsecase is a Submission usecase.
@@ -227,6 +233,10 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission) (*Submission, error) {
 	s.UserID, _ = auth.GetUserID(ctx)
 	s.Verdict = SubmissionVerdictPending
+	// 限制每分钟提交次数
+	if count := uc.repo.GetLastMinuteSubmissionCount(ctx, s.UserID); count > SubmissionsPerMinute {
+		return nil, v1.ErrorSubmissionRateLimit("rate limit")
+	}
 	// 处理比赛的提交
 	if s.EntityType == SubmissionEntityTypeContest {
 		// TODO 判断提交权限

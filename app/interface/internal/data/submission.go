@@ -257,3 +257,15 @@ func (r *submissionRepo) GetLastSubmission(ctx context.Context, entityType, enti
 		CreatedAt:  res.CreatedAt,
 	}, err
 }
+
+// GetLastMinuteSubmissionCount 查询最近提交次数
+func (r *submissionRepo) GetLastMinuteSubmissionCount(ctx context.Context, userId int) int {
+	var count int
+	r.data.db.WithContext(ctx).
+		Select("count(*)").
+		Model(&Submission{}).
+		Where("user_id = ?", userId).
+		Where("created_at > ?", time.Now().Add(-time.Minute)).
+		Scan(&count)
+	return count
+}

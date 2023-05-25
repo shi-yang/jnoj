@@ -87,6 +87,10 @@ export default function App() {
     createSubmission(data).then(res => {
       Message.success('已提交');
       setLastSubmissionID(res.data.id);
+    }).catch(err => {
+      if (err.response.data.reason === 'SUBMISSION_RATE_LIMIT') {
+        Message.error('您的提交过于频繁');
+      }
     });
   };
   useEffect(() => {
