@@ -79,7 +79,7 @@ type ProblemRepo interface {
 	CreateProblem(context.Context, *Problem) (*Problem, error)
 	UpdateProblem(context.Context, *Problem) (*Problem, error)
 	DeleteProblem(context.Context, int) error
-	GetProblemsStatus(ctx context.Context, entityType, entityID, userId int, problemId []int) map[int]int
+	GetProblemsStatus(ctx context.Context, entityType int, entityID *int, userId int, problemId []int) map[int]int
 
 	UpdateProblemChecker(context.Context, int, int) error
 	ProblemTestRepo

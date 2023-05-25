@@ -47,7 +47,7 @@ func (uc *ContestUsecase) ListContestProblems(ctx context.Context, contest *Cont
 		for _, v := range problems {
 			ids = append(ids, v.ProblemID)
 		}
-		statusMap := uc.problemRepo.GetProblemsStatus(ctx, SubmissionEntityTypeContest, contest.ID, uid, ids)
+		statusMap := uc.problemRepo.GetProblemsStatus(ctx, SubmissionEntityTypeContest, &contest.ID, uid, ids)
 		isOIMode := contest.Type == ContestTypeOI && contest.GetRunningStatus() != ContestRunningStatusFinished
 		for k, v := range problems {
 			if isOIMode && statusMap[v.ProblemID] != ProblemStatusNotStart {

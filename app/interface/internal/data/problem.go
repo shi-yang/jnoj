@@ -234,17 +234,19 @@ func (r *problemRepo) UpdateProblemChecker(ctx context.Context, id int, checkerI
 }
 
 // GetProblemsStatus 查询题目的解答情况
-func (r *problemRepo) GetProblemsStatus(ctx context.Context, entityType int, entityID int, userId int, problemId []int) map[int]int {
+func (r *problemRepo) GetProblemsStatus(ctx context.Context, entityType int, entityID *int, userId int, problemId []int) map[int]int {
 	res := make(map[int]int)
 	var submissions []Submission
-	r.data.db.WithContext(ctx).
+	db := r.data.db.WithContext(ctx).
 		Model(&Submission{}).
 		Select("verdict, problem_id").
 		Where("user_id = ?", userId).
 		Where("problem_id in (?)", problemId).
-		Where("entity_type = ?", entityType).
-		Where("entity_id = ?", entityID).
-		Find(&submissions)
+		Where("entity_type = ?", entityType)
+	if entityID != nil {
+		db.Where("entity_id = ?", entityID)
+	}
+	db.Find(&submissions)
 	for _, v := range submissions {
 		if res[v.ProblemID] == biz.ProblemStatusSolved {
 			continue
