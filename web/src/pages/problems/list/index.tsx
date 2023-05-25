@@ -27,6 +27,7 @@ import { userInfo } from '@/store/reducers/user';
 import { setting, SettingState } from '@/store/reducers/setting';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import Head from 'next/head';
+import { FormatTime } from '@/utils/format';
 const { Title } = Typography;
 
 export default function Index() {
@@ -117,6 +118,12 @@ export default function Index() {
       dataIndex: 'nickname',
       align: 'center' as 'center',
       render: (_, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>
+    },
+    {
+      title: t['searchTable.columns.createdAt'],
+      dataIndex: 'createdAt',
+      align: 'center' as 'center',
+      render: col => FormatTime(col, 'YYYY-MM-DD')
     },
     {
       title: t['searchTable.columns.operations'],
