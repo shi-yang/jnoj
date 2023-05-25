@@ -92,6 +92,8 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 		} else {
 			db.Order("id")
 		}
+	} else {
+		db.Order("id desc")
 	}
 	db.Count(&count)
 	db.Offset(pager.GetOffset()).
