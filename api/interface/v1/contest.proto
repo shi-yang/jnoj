@@ -336,7 +336,6 @@ message UpdateContestUserRequest {
 
 message ListContestAllSubmissionsRequest {
     int32 contest_id = 1;
-    int32 user_id = 2;
 }
 
 message ListContestAllSubmissionsResponse {

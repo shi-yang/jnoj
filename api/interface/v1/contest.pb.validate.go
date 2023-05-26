@@ -2737,8 +2737,6 @@ func (m *ListContestAllSubmissionsRequest) validate(all bool) error {
 
 	// no validation rules for ContestId
 
-	// no validation rules for UserId
-
 	if len(errors) > 0 {
 		return ListContestAllSubmissionsRequestMultiError(errors)
 	}
