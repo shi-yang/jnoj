@@ -51,9 +51,13 @@ func (uc *ContestUsecase) ListContestProblems(ctx context.Context, contest *Cont
 		isOIMode := contest.Type == ContestTypeOI && contest.GetRunningStatus() != ContestRunningStatusFinished
 		for k, v := range problems {
 			if isOIMode && statusMap[v.ProblemID] != ProblemStatusNotStart {
-				problems[k].Status = ProblemStatusNotStart
+				problems[k].Status = ProblemStatusAttempted
 			} else {
 				problems[k].Status = statusMap[v.ProblemID]
+			}
+			// OI比赛进行中不返回成功数量
+			if isOIMode {
+				problems[k].AcceptedCount = 0
 			}
 		}
 	}
