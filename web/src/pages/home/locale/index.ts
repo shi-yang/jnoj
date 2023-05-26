@@ -1,6 +1,7 @@
 const i18n = {
   'en-US': {
     'easyToUse': 'Easy to Use',
+    'problemList': 'Problem List',
     'features1.description': 'Immersive user experience. Support ICPC, IOI, functional judgment',
     'openSource': 'Open Source',
     'features2.description': 'Can be deployed privately within your own organization',
@@ -10,6 +11,7 @@ const i18n = {
   },
   'zh-CN': {
     'easyToUse': '好用！易用！',
+    'problemList': '题目列表',
     'features1.description': '打造沉浸式刷题体验，支持ICPC、IOI、函数式判题',
     'openSource': '开源，可私有部署',
     'features2.description': '可将其私有部署在自己的组织内',

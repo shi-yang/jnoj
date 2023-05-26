@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
-import { Card } from '@arco-design/web-react';
+import { Card, Link, Space, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown';
+import { IconArrowRight, IconList } from '@arco-design/web-react/icon';
+import useLocale from '@/utils/useLocale';
+import locale from './locale';
+import styles from './style/index.module.less';
 
 const content = `
 ## 什么是 OJ
@@ -29,6 +33,42 @@ export default function About() {
           {content}
         </ReactMarkdown>
       </Card>
+      <Link href='/problems' className={styles['problem-link']}>
+        <Card
+          className={styles['card-with-icon-hover']}
+          hoverable
+          bordered
+        >
+          <Content>
+            <span className={styles['icon-hover']}>
+              <IconArrowRight
+                style={{
+                  cursor: 'pointer',
+                }}
+              />
+            </span>
+          </Content>
+        </Card>
+      </Link>
     </div>
   );
 }
+
+const Content = ({ children }:{ children: ReactNode }) => {
+  const t = useLocale(locale);
+  return (
+    <Space
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Space>
+        <IconList />
+        <Typography.Text>{t['problemList']}</Typography.Text>
+      </Space>
+      {children}
+    </Space>
+  );
+};

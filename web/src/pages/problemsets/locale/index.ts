@@ -1,7 +1,6 @@
 const i18n = {
   'en-US': {
     'page.title': 'Problem List',
-    'problemList': 'Problem List',
     'problem.createProblem': 'Create Problem',
     'problemset.title': 'Problem Set',
     'problemset.sidebar.more': 'More',
@@ -12,7 +11,6 @@ const i18n = {
   },
   'zh-CN': {
     'page.title': '题目列表',
-    'problemList': '题目列表',
     'problem.createProblem': '创建题目',
     'problemset.title': '题单',
     'problemset.sidebar.more': '更多',

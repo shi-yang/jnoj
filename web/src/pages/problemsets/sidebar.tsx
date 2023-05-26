@@ -1,10 +1,10 @@
-import React, { useEffect, useState, ReactNode } from 'react';
-import { Link, Card, List, Space, Typography } from '@arco-design/web-react';
+import React, { useEffect, useState } from 'react';
+import { Link, Card, List } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { listProblemsets } from '@/api/problemset';
-import { IconArrowRight, IconList } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
+import { isLogged } from '@/utils/auth';
 export default function Sidebar() {
   const t = useLocale(locale);
   const [problemSets, setProblemSets] = useState([]);
@@ -23,6 +23,10 @@ export default function Sidebar() {
         data.shift();
         setProblemSets(data);
       });
+  }
+
+  if (!isLogged()) {
+    return;
   }
 
   return (
@@ -44,42 +48,7 @@ export default function Sidebar() {
           }
         />
       </Card>
-      <Link href='/problems' className={styles['problem-link']}>
-        <Card
-          className={styles['card-with-icon-hover']}
-          hoverable
-          bordered
-        >
-          <Content>
-            <span className={styles['icon-hover']}>
-              <IconArrowRight
-                style={{
-                  cursor: 'pointer',
-                }}
-              />
-            </span>
-          </Content>
-        </Card>
-      </Link>
     </div>
   );
 }
 
-const Content = ({ children }:{ children: ReactNode }) => {
-  const t = useLocale(locale);
-  return (
-    <Space
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
-      <Space>
-        <IconList />
-        <Typography.Text>{t['problemList']}</Typography.Text>
-      </Space>
-      {children}
-    </Space>
-  );
-};
