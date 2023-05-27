@@ -375,6 +375,8 @@ func migrateSolution() {
 		}
 		if v.ContestID != 0 {
 			s.EntityType = v2.SubmissionEntityTypeContest
+		} else {
+			s.EntityID = 1
 		}
 		resv2 = append(resv2, s)
 	}
