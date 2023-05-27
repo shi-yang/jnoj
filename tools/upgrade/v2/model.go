@@ -47,6 +47,15 @@ const (
 )
 
 const (
+	ContestRoleGuest            = iota // 游客
+	ContestRoleOfficialPlayer          // 选手，只有正式选手参与排名
+	ContestRoleUnofficialPlayer        // 非正式选手，不参与排名
+	ContestRoleVirtualPlayer           // 虚拟参赛选手
+	ContestRoleWriter                  // 出题人
+	ContestRoleAdmin                   // 管理
+)
+
+const (
 	ContestTypeICPC = iota // ICPC 赛制 International Collegiate Programming Contest
 	ContestTypeIOI         // IOI 赛制 International Olympiad in Informatics
 	ContestTypeOI          // OI 赛制 Olympiad in Informatics
