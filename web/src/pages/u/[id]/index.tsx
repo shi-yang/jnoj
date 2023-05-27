@@ -130,7 +130,7 @@ export default function UserPage() {
               >
                 <Space wrap>
                   {item.problems.map((problem, index) => (
-                    <Link href={`/problemsets/${item.id}/problems/${problem.id}`}><Tag key={index} color={Color[problem.status]}>{problem.id}</Tag></Link>
+                    <Link key={index} href={`/problemsets/${item.id}/problems/${problem.id}`}><Tag color={Color[problem.status]}>{problem.id}</Tag></Link>
                   ))}
                 </Space>
               </Collapse.Item>
