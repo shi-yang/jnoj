@@ -14,7 +14,7 @@ const Color = {
   'NOT_START': 'gray',
   'INCORRECT': 'orange',
   'CORRECT': 'green',
-}
+};
 export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
