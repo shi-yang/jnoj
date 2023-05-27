@@ -103,12 +103,13 @@ type ContestProblem struct {
 }
 
 type ContestUser struct {
-	ID        int
-	ContestID int
-	UserID    int
-	Name      string
-	Role      int
-	CreatedAt time.Time
+	ID           int
+	ContestID    int
+	UserID       int
+	Name         string
+	Role         int
+	VirtualStart *time.Time // 虚拟竞赛开始时间
+	CreatedAt    time.Time
 }
 
 type Contest struct {
