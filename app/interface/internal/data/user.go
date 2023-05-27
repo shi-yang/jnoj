@@ -148,15 +148,17 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 
 func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	res := new(v1.GetUserProfileProblemSolvedResponse)
+	// 题目数量统计
 	var t []struct {
-		ProblemID int
-		Verdict   int
+		ProblemID    int
+		ProblemsetID int
+		Verdict      int
 	}
 	r.data.db.WithContext(ctx).
-		Select("problem_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
+		Select("problem_id, entity_id as problemset_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
 		Table("submission").
 		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeProblemset).
-		Group("problem_id").
+		Group("problem_id, entity_id").
 		Order("problem_id").
 		Scan(&t)
 	for _, v := range t {
@@ -165,9 +167,26 @@ func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetU
 			status = v1.GetUserProfileProblemSolvedResponse_Problem_INCORRECT
 		}
 		res.Problems = append(res.Problems, &v1.GetUserProfileProblemSolvedResponse_Problem{
-			Id:     int32(v.ProblemID),
-			Status: status,
+			Id:           int32(v.ProblemID),
+			Status:       status,
+			ProblemsetId: int32(v.ProblemsetID),
 		})
+	}
+
+	// 题单数量统计
+	var problemsets []Problemset
+	r.data.db.WithContext(ctx).Find(&problemsets)
+	for _, v := range problemsets {
+		var s v1.GetUserProfileProblemSolvedResponse_Problemset
+		r.data.db.WithContext(ctx).Model(&Submission{}).
+			Select("COUNT(DISTINCT(problem_id))").
+			Where("user_id = ?", req.Id).
+			Where("entity_id = ? and entity_type = ?", v.ID, biz.SubmissionEntityTypeProblemset).
+			Scan(&s.Count)
+		s.Total = int32(v.ProblemCount)
+		s.Id = int32(v.ID)
+		s.Name = v.Name
+		res.Problemsets = append(res.Problemsets, &s)
 	}
 	return res, nil
 }

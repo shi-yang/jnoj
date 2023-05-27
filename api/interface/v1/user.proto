@@ -179,6 +179,18 @@ message GetUserProfileProblemSolvedResponse {
         };
         int32 id = 1;
         Status status = 2;
+        int32 problemset_id = 3;
     };
+    message Problemset {
+        // 题单ID
+        int32 id = 1;
+        // 题单名称
+        string name = 2;
+        // 用户完成数
+        int32 count = 3;
+        // 题单总数
+        int32 total = 4;
+    }
     repeated Problem problems = 1;
+    repeated Problemset problemsets = 2;
 }

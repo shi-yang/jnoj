@@ -1810,6 +1810,40 @@ func (m *GetUserProfileProblemSolvedResponse) validate(all bool) error {
 
 	}
 
+	for idx, item := range m.GetProblemsets() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponseValidationError{
+						field:  fmt.Sprintf("Problemsets[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponseValidationError{
+						field:  fmt.Sprintf("Problemsets[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetUserProfileProblemSolvedResponseValidationError{
+					field:  fmt.Sprintf("Problemsets[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return GetUserProfileProblemSolvedResponseMultiError(errors)
 	}
@@ -2033,6 +2067,8 @@ func (m *GetUserProfileProblemSolvedResponse_Problem) validate(all bool) error {
 
 	// no validation rules for Status
 
+	// no validation rules for ProblemsetId
+
 	if len(errors) > 0 {
 		return GetUserProfileProblemSolvedResponse_ProblemMultiError(errors)
 	}
@@ -2114,3 +2150,120 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetUserProfileProblemSolvedResponse_ProblemValidationError{}
+
+// Validate checks the field values on
+// GetUserProfileProblemSolvedResponse_Problemset with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *GetUserProfileProblemSolvedResponse_Problemset) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// GetUserProfileProblemSolvedResponse_Problemset with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// GetUserProfileProblemSolvedResponse_ProblemsetMultiError, or nil if none found.
+func (m *GetUserProfileProblemSolvedResponse_Problemset) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserProfileProblemSolvedResponse_Problemset) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Count
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return GetUserProfileProblemSolvedResponse_ProblemsetMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserProfileProblemSolvedResponse_ProblemsetMultiError is an error
+// wrapping multiple validation errors returned by
+// GetUserProfileProblemSolvedResponse_Problemset.ValidateAll() if the
+// designated constraints aren't met.
+type GetUserProfileProblemSolvedResponse_ProblemsetMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserProfileProblemSolvedResponse_ProblemsetMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserProfileProblemSolvedResponse_ProblemsetMultiError) AllErrors() []error { return m }
+
+// GetUserProfileProblemSolvedResponse_ProblemsetValidationError is the
+// validation error returned by
+// GetUserProfileProblemSolvedResponse_Problemset.Validate if the designated
+// constraints aren't met.
+type GetUserProfileProblemSolvedResponse_ProblemsetValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserProfileProblemSolvedResponse_ProblemsetValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserProfileProblemSolvedResponse_ProblemsetValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e GetUserProfileProblemSolvedResponse_ProblemsetValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserProfileProblemSolvedResponse_ProblemsetValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserProfileProblemSolvedResponse_ProblemsetValidationError) ErrorName() string {
+	return "GetUserProfileProblemSolvedResponse_ProblemsetValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserProfileProblemSolvedResponse_ProblemsetValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserProfileProblemSolvedResponse_Problemset.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserProfileProblemSolvedResponse_ProblemsetValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserProfileProblemSolvedResponse_ProblemsetValidationError{}

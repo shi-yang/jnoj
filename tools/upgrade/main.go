@@ -286,6 +286,8 @@ func migrateProblem() {
 	if err := nDB.Create(problemset).Error; err != nil {
 		log.Println(err)
 	}
+	nDB.Model(&v2.Problemset{ID: 1}).
+		UpdateColumn("problem_count", len(problemset))
 	if err := nDB.Create(problemVerification).Error; err != nil {
 		log.Println(err)
 	}
