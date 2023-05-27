@@ -141,7 +141,7 @@ export default function Statement({problem}: any) {
                 imageUploadedFile={attachmentFiles}
               />
             </FormItem>
-            <FormItem field='input' label={t['input']}>
+            <FormItem field='input' label={t['inputFormat']}>
               <Editor
                 imageRequest={{
                   onUpload: uploadFile,
@@ -150,7 +150,7 @@ export default function Statement({problem}: any) {
                 imageUploadedFile={attachmentFiles}
               />
             </FormItem>
-            <FormItem field='output' label={t['output']}>
+            <FormItem field='output' label={t['outputFormat']}>
               <Editor
                 imageRequest={{
                   onUpload: uploadFile,
