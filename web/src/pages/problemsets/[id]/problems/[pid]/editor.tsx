@@ -12,7 +12,7 @@ import RecentlySubmitted from '@/modules/submission/RecentlySubmitted';
 import { isLogged } from '@/utils/auth';
 import ProblemContext from './context';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
-import Editor from "@monaco-editor/react";
+import Editor from '@/components/Editor';
 import { useRouter } from 'next/router';
 
 const themes = [

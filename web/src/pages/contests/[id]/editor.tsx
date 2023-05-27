@@ -6,7 +6,7 @@ import locale from './locale';
 import { createSubmission } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
 import { IconSkin } from '@arco-design/web-react/icon';
-import Editor from "@monaco-editor/react";
+import Editor from '@/components/Editor';
 import { getContestProblemLanguage, listContestProblemLanguages } from '@/api/contest';
 import RecentlySubmitted from '@/modules/submission/RecentlySubmitted';
 import { isLogged } from '@/utils/auth';
