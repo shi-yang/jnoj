@@ -8,10 +8,12 @@ import { Button, Popover, Spin } from '@arco-design/web-react';
 import { IconCheckCircle, IconCloseCircle } from '@arco-design/web-react/icon';
 import React, { useRef, useState, useEffect } from 'react';
 import locale from './locale';
+import SubmissionModalAnimation from './SubmissionModalAnimation';
 
 interface RecentlySubmittedProps {
   problemId: number,
   lastSubmissionID: number,
+  animation?: boolean,
   entityId?: number,
   entityType?: number,
 }
@@ -24,6 +26,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const [isRunning, setIsRunning] = useState(false);
   const [btnContent, setBtnContent] = useState('');
   const user = useAppSelector(userInfo);
+  const submissionModalAnimationRef = useRef(null);
   // websocket 即时向用户反馈测评进度
   useEffect(() => {
     if (!user.id) {
@@ -37,6 +40,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
       const msg = JSON.parse(e.data);
       if (msg.type === 'SUBMISSION_RESULT') {
         if (msg.message.status === 'running') {
+          props.animation && progressAnimation(msg.message.message);
           setBtnContent(msg.message.message);
           setIsRunning(true);
         } else {
@@ -45,6 +49,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
               setIsRunning(false);
               setSubmission(res.data);
               setBtnContent('');
+              props.animation && submissionModalAnimationRef.current.done(res.data);
             });
         }
       }
@@ -53,6 +58,17 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
       ws.current?.close();
     };
   }, [ws, user]);
+  function progressAnimation(msg: string) {
+    // 处理 testing on 1/3 成进度
+    const str = msg;
+    const regex = /\d+/g;
+    const matches = str.match(regex);
+    if (matches.length == 2) {
+      const current = parseInt(matches[0]);
+      const total = parseInt(matches[1]);
+      submissionModalAnimationRef.current.run(current, total);
+    }
+  }
   function icon() {
     if (isRunning) {
       return <Spin />;
@@ -63,6 +79,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   }
   useEffect(() => {
     if (props.lastSubmissionID && props.lastSubmissionID !== 0) {
+      props.animation && submissionModalAnimationRef.current.start(props.lastSubmissionID);
       setIsRunning(true);
       getSubmission(props.lastSubmissionID)
         .then(res => {
@@ -88,23 +105,28 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
     setVisible(false);
   }
   return (
-    submission.id !== 0 &&
-    <Popover
-      trigger='hover'
-      title={t['recentlySubmitted']}
-      content={
-        <span>
-          <p>{t['submissionID']}: {submission.id}</p>
-          <p>{t['verdict']}: <SubmissionVerdict verdict={submission.verdict} /></p>
-        </span>
+    <>
+      <SubmissionModalAnimation ref={submissionModalAnimationRef} />
+      {
+        submission.id !== 0 &&
+        <Popover
+          trigger='hover'
+          title={t['recentlySubmitted']}
+          content={
+            <span>
+              <p>{t['submissionID']}: {submission.id}</p>
+              <p>{t['verdict']}: <SubmissionVerdict verdict={submission.verdict} /></p>
+            </span>
+          }
+        >
+          <Button type='dashed' icon={icon()} onClick={() => { setVisible(true); }}>
+            {btnContent === '' && <SubmissionVerdict verdict={submission.verdict} />}
+            {btnContent !== '' && <span>{btnContent}</span>}
+          </Button>
+          {visible && <SubmissionDrawer id={submission.id} visible={visible} onCancel={onCancel} />}
+        </Popover>
       }
-    >
-      <Button type='dashed' icon={icon()} onClick={() => { setVisible(true); }}>
-        {btnContent === '' && <SubmissionVerdict verdict={submission.verdict} />}
-        {btnContent !== '' && <span>{btnContent}</span>}
-      </Button>
-      {visible && <SubmissionDrawer id={submission.id} visible={visible} onCancel={onCancel} />}
-    </Popover>
+    </>
   );
 });
 

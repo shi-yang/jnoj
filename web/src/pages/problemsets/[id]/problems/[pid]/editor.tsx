@@ -85,7 +85,6 @@ export default function App() {
       entityType: 'PROBLEMSET'
     };
     createSubmission(data).then(res => {
-      Message.success('已提交');
       setLastSubmissionID(res.data.id);
     }).catch(err => {
       if (err.response.data.reason === 'SUBMISSION_RATE_LIMIT') {
@@ -171,7 +170,7 @@ export default function App() {
           </Button>
         </div>
         <div className={styles.right}>
-          { isLogged() && <RecentlySubmitted problemId={problem.id} lastSubmissionID={lastSubmissionID} /> }
+          { isLogged() && <RecentlySubmitted animation={true} problemId={problem.id} lastSubmissionID={lastSubmissionID} /> }
           <Button type='primary' status='success' icon={<IconShareExternal />} onClick={(e) => onSubmit()}>
             {t['submit']}
           </Button>

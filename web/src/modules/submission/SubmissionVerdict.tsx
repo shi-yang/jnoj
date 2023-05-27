@@ -1,7 +1,8 @@
 import useLocale from '@/utils/useLocale';
-import { Typography } from '@arco-design/web-react';
+import { Spin, Typography } from '@arco-design/web-react';
 import locale from './locale';
 import React from 'react';
+import { IconCheckCircle, IconCloseCircle } from '@arco-design/web-react/icon';
 
 export enum VerdictStatus {
   Pending = 1,
@@ -39,10 +40,20 @@ const VerdictColorMap = {
   9: 'error',
 };
 
-export default function SubmissionVerdict({ verdict }: { verdict: number }) {
+function iconF(verdict: number) {
+  if (verdict === 1) {
+    return <Spin />;
+  } else if (verdict === 4) {
+    return <IconCheckCircle />;
+  }
+  return <IconCloseCircle />;
+}
+
+export default function SubmissionVerdict({ verdict, icon }: { verdict: number, icon?: boolean }) {
   const t = useLocale(locale);
   return (
     <Typography.Text bold type={VerdictColorMap[verdict]}>
+      {icon ? iconF(verdict) : ''}
       {t[VerdictMap[verdict]]}
     </Typography.Text>
   );

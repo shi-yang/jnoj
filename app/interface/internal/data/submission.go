@@ -231,13 +231,13 @@ func (r *submissionRepo) GetLastSubmission(ctx context.Context, entityType, enti
 		subQuery := r.data.db.WithContext(ctx).Select("problem_id").
 			Model(&ContestProblem{}).
 			Where("contest_id = ? and number = ?", entityID, problemId)
-		db.Where("problem_id in (?)", subQuery)
+		db.Where("entity_id = ?", entityID).
+			Where("problem_id in (?)", subQuery)
 	} else {
 		db.Where("problem_id = ?", problemId)
 	}
 
 	err := db.Where("entity_type = ?", entityType).
-		Where("entity_id = ?", entityID).
 		Last(&res).
 		Error
 	if err != nil {
