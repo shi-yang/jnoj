@@ -1776,40 +1776,6 @@ func (m *GetUserProfileProblemSolvedResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetProblems() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetUserProfileProblemSolvedResponseValidationError{
-						field:  fmt.Sprintf("Problems[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, GetUserProfileProblemSolvedResponseValidationError{
-						field:  fmt.Sprintf("Problems[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return GetUserProfileProblemSolvedResponseValidationError{
-					field:  fmt.Sprintf("Problems[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
 	for idx, item := range m.GetProblemsets() {
 		_, _ = idx, item
 
@@ -2067,8 +2033,6 @@ func (m *GetUserProfileProblemSolvedResponse_Problem) validate(all bool) error {
 
 	// no validation rules for Status
 
-	// no validation rules for ProblemsetId
-
 	if len(errors) > 0 {
 		return GetUserProfileProblemSolvedResponse_ProblemMultiError(errors)
 	}
@@ -2182,6 +2146,40 @@ func (m *GetUserProfileProblemSolvedResponse_Problemset) validate(all bool) erro
 	// no validation rules for Count
 
 	// no validation rules for Total
+
+	for idx, item := range m.GetProblems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponse_ProblemsetValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponse_ProblemsetValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetUserProfileProblemSolvedResponse_ProblemsetValidationError{
+					field:  fmt.Sprintf("Problems[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	if len(errors) > 0 {
 		return GetUserProfileProblemSolvedResponse_ProblemsetMultiError(errors)

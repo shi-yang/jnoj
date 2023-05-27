@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getUserProfileCalendar, getUserProfileProblemSolved, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Collapse, Divider, Progress, Radio, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Card, Collapse, Divider, Link, Progress, Radio, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -10,6 +10,11 @@ import SubmissionList from '@/modules/submission/SubmissionList';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 
+const Color = {
+  'NOT_START': 'gray',
+  'INCORRECT': 'orange',
+  'CORRECT': 'green',
+}
 export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
@@ -34,12 +39,6 @@ export default function UserPage() {
         setProfileCalendar(data);
       });
   }
-  function onProblemSolvedTabChange(e) {
-    getUserProfileProblemSolved(id, {type: e})
-      .then(res => {
-        setProfileProblemSolved(res.data.problems);
-      });
-  }
   useEffect(() => {
     getUsers(id)
       .then(res => {
@@ -58,7 +57,6 @@ export default function UserPage() {
       });
     getUserProfileProblemSolved(id, {type: 'problemset'})
       .then(res => {
-        setProfileProblemSolved(res.data.problems);
         setProfileProblemsets(res.data.problemsets);
       });
   }, [id]);
@@ -100,7 +98,7 @@ export default function UserPage() {
             rectSize={22}
             rectRender={(props, data) => {
               return (
-                <Tooltip content={`${data.date}, ${data.count || 0} 次`}>
+                <Tooltip key={data.index} content={`${data.date}, ${data.count || 0} 次`}>
                   <rect {...props} />
                 </Tooltip>
               );
@@ -117,28 +115,24 @@ export default function UserPage() {
         <Card
           title='题单进度'
         >
-          {/* <Tabs
-            type='rounded'
-            style={{marginBottom: '10px'}}
-            onChange={onProblemSolvedTabChange}
-          >
-            <Tabs.TabPane key='problemset' title='题单' />
-            <Tabs.TabPane key='group' title='小组' />
-          </Tabs> */}
           <Collapse accordion bordered={false}>
             {profileProblemsets.map((item, index) => 
-              <Collapse.Item key={index} header={
-                <div style={{display: 'flex'}}>
-                  <div style={{width: '300px'}}>{item.name}</div>
-                  <Progress percent={Number(Number(item.count * 100 / item.total).toFixed(0))} width='300px' />
-                  <div style={{width: '300px', textAlign: 'center'}}>{item.count} / {item.total}</div>
-                </div>
-              } name={item.name}>
-              <Space wrap>
-                {profileProblemSolved.filter(v => v.problemsetId === item.id).map((item, index) => (
-                  <Tag key={index} color={item.status === 'CORRECT' ? 'green' : 'orange'}>{item.id}</Tag>
-                ))}
-              </Space>
+              <Collapse.Item
+                key={index}
+                name={item.name}
+                header={
+                  <div style={{display: 'flex'}}>
+                    <div style={{width: '300px'}}>{item.name}</div>
+                    <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} width='300px' />
+                    <div style={{width: '300px', textAlign: 'center'}}>{item.count} / {item.total}</div>
+                  </div>
+                }
+              >
+                <Space wrap>
+                  {item.problems.map((problem, index) => (
+                    <Link href={`/problemsets/${item.id}/problems/${problem.id}`}><Tag key={index} color={Color[problem.status]}>{problem.id}</Tag></Link>
+                  ))}
+                </Space>
               </Collapse.Item>
             )}
           </Collapse>

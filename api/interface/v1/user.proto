@@ -174,12 +174,12 @@ message GetUserProfileProblemSolvedRequest {
 message GetUserProfileProblemSolvedResponse {
     message Problem {
         enum Status {
-            INCORRECT = 0;
-            CORRECT = 1;
+            NOT_START = 0;
+            INCORRECT = 1;
+            CORRECT = 2;
         };
         int32 id = 1;
         Status status = 2;
-        int32 problemset_id = 3;
     };
     message Problemset {
         // 题单ID
@@ -189,8 +189,8 @@ message GetUserProfileProblemSolvedResponse {
         // 用户完成数
         int32 count = 3;
         // 题单总数
-        int32 total = 4;
+        int32 total = 4; 
+        repeated Problem problems = 5;
     }
-    repeated Problem problems = 1;
     repeated Problemset problemsets = 2;
 }

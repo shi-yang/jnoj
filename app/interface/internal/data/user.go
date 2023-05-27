@@ -149,43 +149,46 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	res := new(v1.GetUserProfileProblemSolvedResponse)
 	// 题目数量统计
-	var t []struct {
-		ProblemID    int
-		ProblemsetID int
-		Verdict      int
+	var submissions []struct {
+		ProblemID int
+		Verdict   int
 	}
 	r.data.db.WithContext(ctx).
-		Select("problem_id, entity_id as problemset_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
+		Select("problem_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
 		Table("submission").
 		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeProblemset).
-		Group("problem_id, entity_id").
-		Order("problem_id").
-		Scan(&t)
-	for _, v := range t {
-		status := v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT
+		Group("problem_id").
+		Scan(&submissions)
+	mp := make(map[int]v1.GetUserProfileProblemSolvedResponse_Problem_Status)
+	for _, v := range submissions {
 		if v.Verdict == 0 {
-			status = v1.GetUserProfileProblemSolvedResponse_Problem_INCORRECT
+			mp[v.ProblemID] = v1.GetUserProfileProblemSolvedResponse_Problem_INCORRECT
+		} else {
+			mp[v.ProblemID] = v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT
 		}
-		res.Problems = append(res.Problems, &v1.GetUserProfileProblemSolvedResponse_Problem{
-			Id:           int32(v.ProblemID),
-			Status:       status,
-			ProblemsetId: int32(v.ProblemsetID),
-		})
 	}
 
-	// 题单数量统计
 	var problemsets []Problemset
-	r.data.db.WithContext(ctx).Find(&problemsets)
-	for _, v := range problemsets {
+	r.data.db.WithContext(ctx).
+		Model(&Problemset{}).
+		Preload("ProblemsetProblems", func(db *gorm.DB) *gorm.DB {
+			return db.Select("`order`, problem_id, problemset_id")
+		}).
+		Find(&problemsets)
+	for _, problemset := range problemsets {
 		var s v1.GetUserProfileProblemSolvedResponse_Problemset
-		r.data.db.WithContext(ctx).Model(&Submission{}).
-			Select("COUNT(DISTINCT(problem_id))").
-			Where("user_id = ?", req.Id).
-			Where("entity_id = ? and entity_type = ?", v.ID, biz.SubmissionEntityTypeProblemset).
-			Scan(&s.Count)
-		s.Total = int32(v.ProblemCount)
-		s.Id = int32(v.ID)
-		s.Name = v.Name
+		for _, problem := range problemset.ProblemsetProblems {
+			if mp[problem.ProblemID] == v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT {
+				s.Count++
+			}
+			s.Problems = append(s.Problems, &v1.GetUserProfileProblemSolvedResponse_Problem{
+				Id:     int32(problem.Order),
+				Status: mp[problem.ProblemID],
+			})
+		}
+		s.Total = int32(len(problemset.ProblemsetProblems))
+		s.Name = problemset.Name
+		s.Id = int32(problemset.ID)
 		res.Problemsets = append(res.Problemsets, &s)
 	}
 	return res, nil

@@ -23,14 +23,15 @@ type ProblemsetRepo struct {
 }
 
 type Problemset struct {
-	ID           int
-	Name         string
-	Description  string
-	UserID       int
-	ProblemCount int
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt
+	ID                 int
+	Name               string
+	Description        string
+	UserID             int
+	ProblemCount       int
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	DeletedAt          gorm.DeletedAt
+	ProblemsetProblems []*ProblemsetProblem `gorm:"ForeignKey:ProblemsetID"`
 }
 
 type ProblemsetProblem struct {
