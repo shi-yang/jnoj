@@ -114,10 +114,8 @@ export default function UserPage() {
           </Space>
         </Card>
         <Divider type='horizontal' />
-        <SubmissionList userId={Number(id)} />
-        <Divider type='horizontal' />
         <Card
-          title='题单做题情况'
+          title='题单进度'
         >
           {/* <Tabs
             type='rounded'
@@ -144,6 +142,10 @@ export default function UserPage() {
               </Collapse.Item>
             )}
           </Collapse>
+        </Card>
+        <Divider type='horizontal' />
+        <Card title='最近提交'>
+          <SubmissionList userId={Number(id)} />
         </Card>
       </div>
     </div>
