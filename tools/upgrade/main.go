@@ -66,11 +66,11 @@ func main() {
 		migrateGroupUser,
 		migrateGroup,
 		migrateProblem,
+		migrateSolution,
+		migrateSolutionInfo,
 		migratePolygonProblem,
 		migratePolygonStatus,
 		migrateSetting,
-		migrateSolution,
-		migrateSolutionInfo,
 		migrateUser,
 		migrateUserProfile,
 	}

@@ -81,3 +81,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.4.0 // indirect
 )
+
+replace github.com/leeqvip/gophp v1.0.0 => github.com/shi-yang/gophp v0.0.0-20230517042715-53819656169c
