@@ -171,8 +171,11 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 // checkerPermission 检查访问权限
 func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, entityId, problemId, submissionUserId int) (
 	isOIModeRunning, isContestRunning, ok bool) {
-	ok = true
 	uid, _ := auth.GetUserID(ctx)
+	if uid == 1 {
+		return false, false, true
+	}
+	// 处理比赛中的提交
 	if entityType == SubmissionEntityTypeContest {
 		contest, err := uc.contestRepo.GetContest(ctx, int(entityId))
 		if err != nil {
@@ -187,15 +190,23 @@ func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, 
 			if contest.Type == ContestTypeOI {
 				isOIModeRunning = true
 			}
-			if (role != ContestRoleAdmin || role != ContestRoleWriter) && int(submissionUserId) != uid {
-				ok = false
+			if role == ContestRoleAdmin || role == ContestRoleWriter || int(submissionUserId) == uid {
+				ok = true
 			}
 		}
 	} else if entityType == SubmissionEntityTypeProblemFile {
 		// 处理提交至出题时的文件
 		problem, _ := uc.problemRepo.GetProblem(ctx, problemId)
-		if !problem.HasPermission(ctx, ProblemPermissionUpdate) {
-			return
+		if problem.HasPermission(ctx, ProblemPermissionUpdate) {
+			ok = true
+		}
+	} else if entityType == SubmissionEntityTypeProblemset {
+		// 处理题单中的提交
+		if submissionUserId != 0 && submissionUserId == uid {
+			ok = true
+		}
+		if submissionUserId == 0 {
+			ok = true
 		}
 	}
 	return
