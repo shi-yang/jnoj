@@ -82,10 +82,10 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
       setIsRunning(true);
       getSubmission(props.lastSubmissionID)
         .then(res => {
-          if (res.data.verdict !== 0) {
+          if (res.data.verdict !== 1) {
             setIsRunning(false);
           } else {
-            props.animation && submissionModalAnimationRef.current.start(props.lastSubmissionID);
+            props.animation && submissionModalAnimationRef.current.start();
           }
           setSubmission(res.data);
         });
