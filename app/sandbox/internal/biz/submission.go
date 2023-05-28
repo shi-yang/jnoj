@@ -435,9 +435,9 @@ func (uc *SubmissionUsecase) runTests(
 				} else {
 					t.Verdict = SubmissionVerdictWrongAnswer
 				}
-				if !problemTest.HasSubtask {
-					t.Score = 100 / float32(problemTest.TotalTest)
-				}
+			}
+			if t.Verdict != SubmissionVerdictAccepted && !problemTest.HasSubtask {
+				t.Score = 100 / float32(problemTest.TotalTest)
 			}
 			subtaskResult.Tests = append(subtaskResult.Tests, &t)
 			// 记录结果
