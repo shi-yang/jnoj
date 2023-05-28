@@ -34,6 +34,10 @@ export function getProblemsetProblem(id, order) {
   return axios.get(`/problemsets/${id}/problems/${order}`);
 }
 
+export function getProblemsetLateralProblem(id, order) {
+  return axios.get(`/problemsets/${id}/problems/${order}/lateral`);
+}
+
 // 添加题目到题单
 export function addProblemToProblemset(id, data) {
   return axios.post(`/problemsets/${id}/problems`, data);

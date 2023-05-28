@@ -875,6 +875,15 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 	return resp, nil
 }
 
+// GetProblemsetProblem 获取题单的题目
+func (s *ProblemService) GetProblemsetLateralProblem(ctx context.Context, req *v1.GetProblemsetLateralProblemRequest) (*v1.GetProblemsetLateralProblemResponse, error) {
+	previous, next := s.problemsetUc.GetProblemsetLateralProblem(ctx, int(req.Id), int(req.Pid))
+	return &v1.GetProblemsetLateralProblemResponse{
+		Previous: int32(previous),
+		Next:     int32(next),
+	}, nil
+}
+
 // CreateProblemset 添加题目到题单
 func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.AddProblemToProblemsetRequest) (*emptypb.Empty, error) {
 	// 题单是否存在

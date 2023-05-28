@@ -44,6 +44,7 @@ const OperationProblemServiceGetProblemStatement = "/jnoj.interface.v1.ProblemSe
 const OperationProblemServiceGetProblemTest = "/jnoj.interface.v1.ProblemService/GetProblemTest"
 const OperationProblemServiceGetProblemVerification = "/jnoj.interface.v1.ProblemService/GetProblemVerification"
 const OperationProblemServiceGetProblemset = "/jnoj.interface.v1.ProblemService/GetProblemset"
+const OperationProblemServiceGetProblemsetLateralProblem = "/jnoj.interface.v1.ProblemService/GetProblemsetLateralProblem"
 const OperationProblemServiceGetProblemsetProblem = "/jnoj.interface.v1.ProblemService/GetProblemsetProblem"
 const OperationProblemServiceListProblemFiles = "/jnoj.interface.v1.ProblemService/ListProblemFiles"
 const OperationProblemServiceListProblemLanguages = "/jnoj.interface.v1.ProblemService/ListProblemLanguages"
@@ -88,6 +89,7 @@ type ProblemServiceHTTPServer interface {
 	GetProblemTest(context.Context, *GetProblemTestRequest) (*ProblemTest, error)
 	GetProblemVerification(context.Context, *GetProblemVerificationRequest) (*ProblemVerification, error)
 	GetProblemset(context.Context, *GetProblemsetRequest) (*Problemset, error)
+	GetProblemsetLateralProblem(context.Context, *GetProblemsetLateralProblemRequest) (*GetProblemsetLateralProblemResponse, error)
 	GetProblemsetProblem(context.Context, *GetProblemsetProblemRequest) (*Problem, error)
 	ListProblemFiles(context.Context, *ListProblemFilesRequest) (*ListProblemFilesResponse, error)
 	ListProblemLanguages(context.Context, *ListProblemLanguagesRequest) (*ListProblemLanguagesResponse, error)
@@ -178,6 +180,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.PUT("/problemsets/{id}", _ProblemService_UpdateProblemset0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems", _ProblemService_ListProblemsetProblems0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems/{pid}", _ProblemService_GetProblemsetProblem0_HTTP_Handler(srv))
+	r.GET("/problemsets/{id}/problems/{pid}/lateral", _ProblemService_GetProblemsetLateralProblem0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/problems", _ProblemService_AddProblemToProblemset0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}/problems/{problem_id}", _ProblemService_DeleteProblemFromProblemset0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/problem/sort", _ProblemService_SortProblemsetProblems0_HTTP_Handler(srv))
@@ -1008,6 +1011,28 @@ func _ProblemService_GetProblemsetProblem0_HTTP_Handler(srv ProblemServiceHTTPSe
 	}
 }
 
+func _ProblemService_GetProblemsetLateralProblem0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetProblemsetLateralProblemRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceGetProblemsetLateralProblem)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetProblemsetLateralProblem(ctx, req.(*GetProblemsetLateralProblemRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetProblemsetLateralProblemResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_AddProblemToProblemset0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in AddProblemToProblemsetRequest
@@ -1115,6 +1140,7 @@ type ProblemServiceHTTPClient interface {
 	GetProblemTest(ctx context.Context, req *GetProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	GetProblemVerification(ctx context.Context, req *GetProblemVerificationRequest, opts ...http.CallOption) (rsp *ProblemVerification, err error)
 	GetProblemset(ctx context.Context, req *GetProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
+	GetProblemsetLateralProblem(ctx context.Context, req *GetProblemsetLateralProblemRequest, opts ...http.CallOption) (rsp *GetProblemsetLateralProblemResponse, err error)
 	GetProblemsetProblem(ctx context.Context, req *GetProblemsetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	ListProblemFiles(ctx context.Context, req *ListProblemFilesRequest, opts ...http.CallOption) (rsp *ListProblemFilesResponse, err error)
 	ListProblemLanguages(ctx context.Context, req *ListProblemLanguagesRequest, opts ...http.CallOption) (rsp *ListProblemLanguagesResponse, err error)
@@ -1411,6 +1437,19 @@ func (c *ProblemServiceHTTPClientImpl) GetProblemset(ctx context.Context, in *Ge
 	pattern := "/problemsets/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceGetProblemset))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) GetProblemsetLateralProblem(ctx context.Context, in *GetProblemsetLateralProblemRequest, opts ...http.CallOption) (*GetProblemsetLateralProblemResponse, error) {
+	var out GetProblemsetLateralProblemResponse
+	pattern := "/problemsets/{id}/problems/{pid}/lateral"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceGetProblemsetLateralProblem))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

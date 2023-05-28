@@ -255,6 +255,12 @@ service ProblemService {
             get: "/problemsets/{id}/problems/{pid}"
         };
     }
+    // 获取旁边的题目，上一题、下一题
+    rpc GetProblemsetLateralProblem (GetProblemsetLateralProblemRequest) returns (GetProblemsetLateralProblemResponse) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}/problems/{pid}/lateral"
+        };
+    };
     // 添加题目到题单
     rpc AddProblemToProblemset (AddProblemToProblemsetRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
@@ -645,6 +651,16 @@ message ListProblemsetProblemsResponse {
 message GetProblemsetProblemRequest {
     int32 id = 1;
     int32 pid = 2;
+}
+
+message GetProblemsetLateralProblemRequest {
+    int32 id = 1;
+    int32 pid = 2;
+}
+
+message GetProblemsetLateralProblemResponse {
+    int32 previous = 1;
+    int32 next = 2;
 }
 
 message AddProblemToProblemsetRequest {

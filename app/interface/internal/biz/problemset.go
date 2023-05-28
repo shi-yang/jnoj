@@ -52,6 +52,7 @@ type ProblemsetRepo interface {
 	DeleteProblemset(context.Context, int) error
 	ListProblemsetProblems(context.Context, *v1.ListProblemsetProblemsRequest) ([]*ProblemsetProblem, int64)
 	GetProblemsetProblem(ctx context.Context, sid int, order int) (*ProblemsetProblem, error)
+	GetProblemsetLateralProblem(context.Context, int, int) (int, int)
 	AddProblemToProblemset(ctx context.Context, sid int, pid int) error
 	DeleteProblemFromProblemset(ctx context.Context, sid int, order int) error
 	SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) error
@@ -117,6 +118,10 @@ func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, req *v1
 
 func (uc *ProblemsetUsecase) GetProblemsetProblem(ctx context.Context, sid int, order int) (*ProblemsetProblem, error) {
 	return uc.repo.GetProblemsetProblem(ctx, sid, order)
+}
+
+func (uc *ProblemsetUsecase) GetProblemsetLateralProblem(ctx context.Context, id int, pid int) (int, int) {
+	return uc.repo.GetProblemsetLateralProblem(ctx, id, pid)
 }
 
 func (uc *ProblemsetUsecase) AddProblemToProblemset(ctx context.Context, sid int, pid int) error {

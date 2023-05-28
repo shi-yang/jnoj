@@ -5,7 +5,7 @@ import styles from './style/description.module.less';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import React, { useContext, useEffect, useState } from 'react';
 import { IconLeft, IconRight } from '@arco-design/web-react/icon';
-import { listProblemsetProblems } from '@/api/problemset';
+import { getProblemsetLateralProblem, listProblemsetProblems } from '@/api/problemset';
 import ProblemContext from './context';
 import { useRouter } from 'next/router';
 import { ProblemStatus } from '@/modules/problemsets/list/constants';
@@ -15,6 +15,17 @@ const Description = ({ problemset }: any) => {
   const t = useLocale(locale);
   const router = useRouter();
   const problemId = router.query.pid;
+  const [previous, setPrevious] = useState(0);
+  const [next, setNext] = useState(0);
+  useEffect(() => {
+    if (problemset.id === 0) {
+      return;
+    }
+    getProblemsetLateralProblem(problemset.id, problemId).then(res => {
+      setPrevious(res.data.previous);
+      setNext(res.data.next);
+    });
+  }, [problemset.id, router.query.pid]);
   function changeProblem(problemId) {
     router.query.pid = problemId;
     const newURL = `/problemsets/${problemset.id}/problems/${problemId}`;
@@ -31,11 +42,11 @@ const Description = ({ problemset }: any) => {
           <Problemset problemset={problemset} />
         </div>
         <div className={styles.right}>
-          <Button disabled={Number(problemId) === 1} onClick={(e) => changeProblem(Number(problemId)-1)}>
+          <Button disabled={previous === 0} onClick={(e) => changeProblem(previous)}>
             <IconLeft />
             {t['description.footer.previous']}
           </Button>
-          <Button disabled={Number(problemId) === problemset.problemCount} onClick={(e) => changeProblem(Number(problemId)+1)}>
+          <Button disabled={next === 0} onClick={(e) => changeProblem(next)}>
             {t['description.footer.next']}<IconRight />
           </Button>
         </div>

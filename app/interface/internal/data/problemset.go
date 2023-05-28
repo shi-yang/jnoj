@@ -214,6 +214,17 @@ func (r *ProblemsetRepo) GetProblemsetProblem(ctx context.Context, sid int, orde
 	}, nil
 }
 
+// GetProblemsetLateralProblem .
+func (r *ProblemsetRepo) GetProblemsetLateralProblem(ctx context.Context, id int, pid int) (int, int) {
+	var previous, next int
+	db := r.data.db.Model(&ProblemsetProblem{}).
+		Select("`order`").
+		Where("problemset_id = ?", id)
+	db.Session(&gorm.Session{}).Where("`order` < ?", pid).Order("`order` desc").Limit(1).Scan(&previous)
+	db.Session(&gorm.Session{}).Where("`order` > ?", pid).Order("`order`").Limit(1).Scan(&next)
+	return previous, next
+}
+
 // AddProblemToProblemset .
 func (r *ProblemsetRepo) AddProblemToProblemset(ctx context.Context, sid int, pid int) error {
 	// 判断是否已经存在
