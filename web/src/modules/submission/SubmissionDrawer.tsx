@@ -1,5 +1,5 @@
 import useLocale from '@/utils/useLocale';
-import { Drawer } from '@arco-design/web-react';
+import { Drawer, Link } from '@arco-design/web-react';
 import React from 'react';
 import locale from './locale';
 import Submission from './Submission';
@@ -9,12 +9,14 @@ export default function SubmissionDrawer ({id, visible, onCancel}: {id: number, 
   return (
     <Drawer
       width={900}
-      title={<span>{t['submission']}: {id}</span>}
+      title={<Link href={`/submissions/${id}`} target='_blank'>{t['submission']}: {id}</Link>}
       visible={visible}
       onCancel={onCancel}
       footer={null}
     >
-      <Submission id={id} />
+      <div style={{padding: 20}}>
+        <Submission id={id} />
+      </div>
     </Drawer>
   );
 }

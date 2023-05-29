@@ -94,19 +94,21 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 		}
 	}
 	return &v1.Submission{
-		Id:         int64(res.ID),
-		EntityId:   int32(res.EntityID),
-		EntityType: v1.SubmissionEntityType(res.EntityType),
-		Score:      int32(res.Score),
-		Source:     res.Source,
-		Memory:     int64(res.Memory),
-		Time:       int64(res.Time),
-		Verdict:    int32(res.Verdict),
-		Language:   int32(res.Language),
-		CreatedAt:  timestamppb.New(res.CreatedAt),
-		Info:       infoResp,
-		UserId:     int32(res.UserID),
-		Nickname:   res.Nickname,
+		Id:            int64(res.ID),
+		EntityId:      int32(res.EntityID),
+		EntityType:    v1.SubmissionEntityType(res.EntityType),
+		ProblemName:   res.ProblemName,
+		ProblemNumber: int32(res.ProblemNumber),
+		Score:         int32(res.Score),
+		Source:        res.Source,
+		Memory:        int64(res.Memory),
+		Time:          int64(res.Time),
+		Verdict:       int32(res.Verdict),
+		Language:      int32(res.Language),
+		CreatedAt:     timestamppb.New(res.CreatedAt),
+		Info:          infoResp,
+		UserId:        int32(res.UserID),
+		Nickname:      res.Nickname,
 	}, nil
 }
 

@@ -1,5 +1,5 @@
 import useLocale from '@/utils/useLocale';
-import { Card, Collapse, Descriptions, Divider, Link, Message, Space, Typography } from '@arco-design/web-react';
+import { Card, Collapse, Descriptions, Divider, Link, Message, Space, Tooltip, Typography } from '@arco-design/web-react';
 import React, { useEffect, useState } from 'react';
 import { LanguageMap, getSubmission } from '@/api/submission';
 import { FormatMemorySize, FormatTime } from '@/utils/format';
@@ -7,6 +7,7 @@ import styles from './style/submission.module.less';
 import Highlight from '@/components/Highlight';
 import locale from './locale';
 import SubmissionVerdict from './SubmissionVerdict';
+import { IconShareInternal } from '@arco-design/web-react/icon';
 
 export default function Submission ({id}: {id: number}) {
   const t = useLocale(locale);
@@ -24,6 +25,12 @@ export default function Submission ({id}: {id: number}) {
       .then(res => {
         const { data } = res;
         setSubmission(data);
+        let problemLink;
+        if (data.entityType === 'PROBLEMSET') {
+          problemLink = <Link href={`/problemsets/${data.entityId}/problems/${data.problemNumber}`}>{`${data.problemNumber} - ${data.problemName}`}</Link>;
+        } else if (data.entityType === 'CONTEST') {
+          problemLink = <Link href={`/contests/${data.entityId}`}>{`${data.problemNumber} - ${String.fromCharCode(65 + data.problemNumber)}`}</Link>;
+        }
         setDescriptionData([
           {label: t['user'], value: <Link href={`/u/${data.userId}`}>{data.nickname}</Link>},
           {label: t['verdict'], value: <SubmissionVerdict verdict={data.verdict} />},
@@ -31,6 +38,7 @@ export default function Submission ({id}: {id: number}) {
           {label: t['time'], value: `${data.time / 1000} ms`},
           {label: t['memory'], value: FormatMemorySize(data.memory)},
           {label: t['language'], value: LanguageMap[data.language]},
+          {label: t['problemName'], value: problemLink},
           {label: t['createdAt'], value: FormatTime(data.createdAt)},
         ]);
       })
@@ -43,12 +51,21 @@ export default function Submission ({id}: {id: number}) {
   }, [id]);
   return (
     <>
-      <Typography.Title heading={4}>{t['submissionID']}:{submission.id}</Typography.Title>
+      <Typography.Title heading={4} copyable={{
+        text: window.location.host + '/submissions/' + submission.id,
+        icon: <IconShareInternal />,
+        tooltips: [
+          <Tooltip key={0}>复制提交链接</Tooltip>,
+          <Tooltip key={1}>已复制</Tooltip>
+        ]
+      }}>
+        {t['submissionID']}:{submission.id}
+      </Typography.Title>
       <Descriptions
         data={descriptionData}
         layout='vertical'
         border
-        column={6}
+        column={5}
         style={{ marginBottom: 20 }}
       />
       <Typography.Title heading={4}>{t['drawer.source']}</Typography.Title>

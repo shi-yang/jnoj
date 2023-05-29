@@ -131,11 +131,14 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, nickname")
 		}).
+		Preload("Problem.ProblemStatements", func(db *gorm.DB) *gorm.DB {
+			return db.Select("problem_id, name")
+		}).
 		First(&res, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Submission{
+	s := &biz.Submission{
 		ID:         res.ID,
 		Score:      res.Score,
 		Source:     res.Source,
@@ -149,7 +152,27 @@ func (r *submissionRepo) GetSubmission(ctx context.Context, id int) (*biz.Submis
 		UserID:     res.UserID,
 		CreatedAt:  res.CreatedAt,
 		Nickname:   res.User.Nickname,
-	}, err
+	}
+	if len(res.Problem.ProblemStatements) > 0 {
+		s.ProblemName = res.Problem.ProblemStatements[0].Name
+	}
+	// 查询题目编号
+	if s.EntityType == biz.SubmissionEntityTypeProblemset {
+		r.data.db.WithContext(ctx).Select("`order`").
+			Model(&ProblemsetProblem{}).
+			Where("problemset_id = ?", s.EntityID).
+			Where("problem_id = ?", s.ProblemID).
+			Row().
+			Scan(&s.ProblemNumber)
+	} else if s.EntityType == biz.SubmissionEntityTypeContest {
+		r.data.db.WithContext(ctx).Select("`number`").
+			Model(&ContestProblem{}).
+			Where("contest_id = ?", s.EntityID).
+			Where("problem_id = ?", s.ProblemID).
+			Row().
+			Scan(&s.ProblemNumber)
+	}
+	return s, err
 }
 
 // CreateSubmission .
