@@ -1,0 +1,7 @@
+rules:
+- selector: "/jnoj.interface.v1.PostService/CreatePost"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.PostService/UpdatePost"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.PostService/DeletePost"
+  middleware: "jnoj/internal/middleware/auth.User()"

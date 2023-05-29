@@ -15,4 +15,5 @@ var ProviderSet = wire.NewSet(
 	NewProblemsetUsecase,
 	NewGroupUsecase,
 	NewRankingUsecase,
+	NewPostUsecase,
 )

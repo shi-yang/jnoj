@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Grid, Slider, Statistic, Link } from '@arco-design/web-react';
-import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconUserGroup } from '@arco-design/web-react/icon';
+import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconUserGroup, IconBook } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { getContest, listContestProblems } from '@/api/contest';
 import './mock';
@@ -21,6 +21,7 @@ const Problem = lazy(() => import('./problem'));
 const Setting = lazy(() => import('./setting'));
 const Standings = lazy(() => import('./standings'));
 const Submission = lazy(() => import('./submission'));
+const Editorial = lazy(() => import('./editorial'));
 
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
@@ -210,6 +211,7 @@ function Index() {
                     <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
                     <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
                     <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
+                    {contest.runningStatus === 'FINISHED' && <MenuItem key='editorial'><IconBook /> {t['menu.editorial']}</MenuItem>}
                     {contest.role === 'ROLE_ADMIN' && <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>}
                     <SubMenu
                       key='problem'
@@ -233,6 +235,7 @@ function Index() {
                     {menuSelected === 'submission' && <Submission />}
                     {menuSelected === 'standings' && <Standings />}
                     {menuSelected === 'problem' && <Problem number={problemNumber} />}
+                    {menuSelected === 'editorial' && <Editorial />}
                   </Suspense>
                 </Content>
               </Layout>

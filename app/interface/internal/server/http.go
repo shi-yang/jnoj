@@ -22,6 +22,7 @@ func NewHTTPServer(c *conf.Server,
 	group *service.GroupService,
 	websocket *service.WebSocketService,
 	ranking *service.RankingService,
+	post *service.PostService,
 	logger log.Logger,
 ) *http.Server {
 	var opts = []http.ServerOption{
@@ -60,5 +61,6 @@ func NewHTTPServer(c *conf.Server,
 	v1.RegisterSandboxsServiceHTTPServer(srv, sandbox)
 	v1.RegisterGroupServiceHTTPServer(srv, group)
 	v1.RegisterRankingServiceHTTPServer(srv, ranking)
+	v1.RegisterPostServiceHTTPServer(srv, post)
 	return srv
 }

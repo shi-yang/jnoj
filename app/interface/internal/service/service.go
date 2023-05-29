@@ -12,4 +12,5 @@ var ProviderSet = wire.NewSet(
 	NewWebSocketService,
 	NewGroupService,
 	NewRankingService,
+	NewPostService,
 )

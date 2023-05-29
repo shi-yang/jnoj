@@ -98,6 +98,45 @@ CREATE TABLE `group_user` (
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `post`
+--
+
+CREATE TABLE `post` (
+  `id` int UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `content` text COLLATE utf8mb4_general_ci NOT NULL,
+  `entity_type` tinyint UNSIGNED NOT NULL,
+  `entity_id` int UNSIGNED NOT NULL,
+  `view_count` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 转储表的索引
+--
+
+--
+-- 表的索引 `post`
+--
+ALTER TABLE `post`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- 在导出的表使用AUTO_INCREMENT
+--
+
+--
+-- 使用表AUTO_INCREMENT `post`
+--
+ALTER TABLE `post`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `problem`
 --
 

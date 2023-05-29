@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package jnoj.interface.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "api/interface/v1;v1";
+
+service PostService {
+    // 获取帖子列表
+    rpc ListPosts (ListPostsRequest) returns (ListPostsResponse) {
+        option (google.api.http) = {
+            get: "/posts"
+        };
+    }
+    rpc GetPost (GetPostRequest) returns (Post) {
+        option (google.api.http) = {
+            get: "/posts/{id}"
+        };
+    }
+    rpc CreatePost (CreatePostRequest) returns (Post) {
+        option (google.api.http) = {
+            post: "/posts"
+            body: "*"
+        };
+    }
+    rpc UpdatePost (UpdatePostRequest) returns (Post) {
+        option (google.api.http) = {
+            put: "/posts/{id}"
+            body: "*"
+        };
+    }
+}
+
+message Post {
+    int32 id = 1;
+    string title = 2;
+    string content = 3;
+    int32 user_id = 4;
+    string user_nicktitle = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+enum PostEntityType {
+    PROBLEM_SOLUTION = 0;
+    CONTEST_EDITORIAL = 1;
+}
+
+message ListPostsRequest {
+    string title = 1;
+    int32 entity_id = 2;
+    PostEntityType entity_type = 3;
+    int32 page = 4;
+    int32 per_page = 5;
+}
+
+message ListPostsResponse {
+    repeated Post data = 1;
+    int64 total = 2;
+}
+
+message GetPostRequest {
+    int32 id = 1;
+}
+
+message CreatePostRequest {
+    string title = 1;
+    string content = 2;
+    int32 entity_id = 3;
+    PostEntityType entity_type = 4;
+}
+
+message UpdatePostRequest {
+    int32 id = 1;
+    string title = 2;
+    string content = 3;
+}

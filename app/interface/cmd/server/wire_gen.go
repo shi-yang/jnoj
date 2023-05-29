@@ -55,7 +55,10 @@ func wireApp(confServer *conf.Server, confData *conf.Data, confService *conf.Ser
 	rankingRepo := data.NewRankingRepo(dataData, logger)
 	rankingUsecase := biz.NewRankingUsecase(rankingRepo, logger)
 	rankingService := service.NewRankingService(rankingUsecase)
-	httpServer := server.NewHTTPServer(confServer, contestService, userService, problemService, submissionService, sandboxService, groupService, webSocketService, rankingService, logger)
+	postRepo := data.NewPostRepo(dataData, logger)
+	postUsecase := biz.NewPostUsecase(postRepo, userRepo, contestRepo, logger)
+	postService := service.NewPostService(postUsecase)
+	httpServer := server.NewHTTPServer(confServer, contestService, userService, problemService, submissionService, sandboxService, groupService, webSocketService, rankingService, postService, logger)
 	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()
