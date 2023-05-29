@@ -10,6 +10,7 @@ import ContestContext from './context';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
 
 const now = Date.now();
 
@@ -87,7 +88,7 @@ export default function Forbidden() {
               <Typography.Text style={{textAlign: 'left'}}>
                 <ReactMarkdown
                   remarkPlugins={[remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
+                  rehypePlugins={[rehypeKatex, rehypeHighlight]}
                 >
                   {contest.description}
                 </ReactMarkdown>

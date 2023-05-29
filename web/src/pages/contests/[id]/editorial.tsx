@@ -5,6 +5,7 @@ import { Empty, Typography } from '@arco-design/web-react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
 
 function Editorial() {
   const [post, setPost] = useState({id: 0, title: '', content: ''});
@@ -29,7 +30,7 @@ function Editorial() {
           <Typography.Paragraph>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
+              rehypePlugins={[rehypeKatex, rehypeHighlight]}
             >
               {post.content}
             </ReactMarkdown>

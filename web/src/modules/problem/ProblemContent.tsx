@@ -3,6 +3,7 @@ import { Divider, Typography } from '@arco-design/web-react';
 import ReactMarkdown from 'react-markdown';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import remarkMath from 'remark-math';
+import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import locale from './locale';
@@ -39,7 +40,7 @@ export default function ProblemContent({problem, language}: any) {
       <Paragraph>
         <ReactMarkdown
           remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex]}
+          rehypePlugins={[rehypeKatex, rehypeHighlight]}
         >
           {problem.statements[language].legend}
         </ReactMarkdown>
@@ -50,7 +51,7 @@ export default function ProblemContent({problem, language}: any) {
           <Paragraph>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
+              rehypePlugins={[rehypeKatex, rehypeHighlight]}
             >
               {problem.statements[language].input}
             </ReactMarkdown>
@@ -63,7 +64,7 @@ export default function ProblemContent({problem, language}: any) {
           <Paragraph>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
+              rehypePlugins={[rehypeKatex, rehypeHighlight]}
             >
               {problem.statements[language].output}
             </ReactMarkdown>
@@ -109,7 +110,7 @@ export default function ProblemContent({problem, language}: any) {
           <Paragraph>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
+              rehypePlugins={[rehypeKatex, rehypeHighlight]}
             >
               {problem.statements[language].note}
             </ReactMarkdown>
@@ -122,7 +123,7 @@ export default function ProblemContent({problem, language}: any) {
           <Paragraph>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
+              rehypePlugins={[rehypeKatex, rehypeHighlight]}
             >
               {problem.source}
             </ReactMarkdown>

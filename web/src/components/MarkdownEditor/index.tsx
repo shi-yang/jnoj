@@ -8,6 +8,7 @@ import * as commands from '@uiw/react-md-editor/lib/commands';
 import { IconClose, IconFaceFrownFill, IconFileAudio, IconUpload } from '@arco-design/web-react/icon';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
 import 'katex/dist/katex.min.css';
 import { UploadItem, UploadRequestReturn } from '@arco-design/web-react/es/Upload';
 import { RequestOptions, UploadRequest } from '@arco-design/web-react/es/Upload/interface';
@@ -87,7 +88,7 @@ const Editor = ({imageRequest, imageUploadedFile, ...props}: JSX.IntrinsicAttrib
       ]}
       previewOptions={{
         remarkPlugins:[[remarkMath]],
-        rehypePlugins:[[rehypeKatex]]
+        rehypePlugins:[[rehypeKatex, rehypeHighlight]]
       }}
     />
   );

@@ -17,6 +17,7 @@ import remarkMath from 'remark-math';
 import ContestContext from './context';
 import locale from './locale';
 import styles from './style/info.module.less';
+import rehypeHighlight from 'rehype-highlight';
 const { Row, Col } = Grid;
 
 type StatisticItemType = {
@@ -133,7 +134,7 @@ function Info() {
         <Table rowKey={r => r.number} columns={columns} data={problems} pagination={false} />
         <ReactMarkdown
           remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex]}
+          rehypePlugins={[rehypeKatex, rehypeHighlight]}
         >
           {contest.description}
         </ReactMarkdown>
