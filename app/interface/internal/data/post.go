@@ -52,6 +52,7 @@ func (r *postRepo) ListPosts(ctx context.Context, req *v1.ListPostsRequest) ([]*
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, nickname")
 		})
+	db.Where("entity_id = ?", req.EntityId)
 	db.Where("entity_type = ?", req.EntityType)
 	if req.Title != "" {
 		db.Where("title like ?", fmt.Sprintf("%%%s%%", req.Title))
