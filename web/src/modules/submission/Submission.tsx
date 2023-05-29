@@ -8,6 +8,7 @@ import Highlight from '@/components/Highlight';
 import locale from './locale';
 import SubmissionVerdict from './SubmissionVerdict';
 import { IconShareInternal } from '@arco-design/web-react/icon';
+import { useRouter } from 'next/router';
 
 export default function Submission ({id}: {id: number}) {
   const t = useLocale(locale);
@@ -18,6 +19,10 @@ export default function Submission ({id}: {id: number}) {
     acceptedTestCount: 0,
     totalTestCount: 0,
   }});
+  const [currentDomain, setCurrentDomain] = useState(null);
+  useEffect(() => {
+    setCurrentDomain(window.location.host);
+  }, []);
   const [descriptionData, setDescriptionData] = useState([]);
 
   function fetchData() {
@@ -52,7 +57,7 @@ export default function Submission ({id}: {id: number}) {
   return (
     <>
       <Typography.Title heading={4} copyable={{
-        text: window.location.host + '/submissions/' + submission.id,
+        text: currentDomain + '/submissions/' + submission.id,
         icon: <IconShareInternal />,
         tooltips: [
           <Tooltip key={0}>复制提交链接</Tooltip>,
