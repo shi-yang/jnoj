@@ -8,6 +8,7 @@ import (
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/internal/middleware/auth"
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -69,12 +70,12 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 	if len(req.Type) > 0 {
 		db.Where("type in (?)", req.Type)
 	}
-	if req.UserId != 1 {
-		if req.UserId != 0 {
-			db.Where("user_id = ?", req.UserId)
-		} else {
-			// 不查自己的，只能查公开的
-			db.Where("status = ?", biz.ProblemStatusPublic)
+	uid, _ := auth.GetUserID(ctx)
+	if req.Author.String() == "ONLYME" {
+		db.Where("user_id = ?", uid)
+	} else {
+		if uid != 1 {
+			db.Where("user_id = ? or status = ?", uid, biz.ProblemStatusPublic)
 		}
 	}
 	if req.Username != "" {

@@ -345,7 +345,11 @@ message ProblemStatement {
 message ListProblemsRequest {
     int32 id = 1;
     string keyword = 2;
-    int32 user_id = 3;
+    enum Author {
+        ALL = 0;
+        ONLYME = 1;
+    }
+    Author author = 3;
     string username = 4;
     repeated int32 status = 5;
     repeated int32 type = 6;

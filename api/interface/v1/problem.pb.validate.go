@@ -427,7 +427,7 @@ func (m *ListProblemsRequest) validate(all bool) error {
 
 	// no validation rules for Keyword
 
-	// no validation rules for UserId
+	// no validation rules for Author
 
 	// no validation rules for Username
 

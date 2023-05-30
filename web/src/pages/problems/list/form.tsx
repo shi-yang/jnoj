@@ -44,12 +44,12 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col flex='300px'>
-            <Form.Item label={t['searchTable.columns.user']} field="userId" >
-              <Radio.Group defaultValue={0} type='button'>
+            <Form.Item label={t['searchTable.columns.user']} field="author" >
+              <Radio.Group defaultValue={'ALL'} type='button'>
                 <Tooltip content={t['searchTable.columns.user.tip']}>
-                  <Radio value={0}>{t['searchTable.columns.user.all']}</Radio>
+                  <Radio value={'ALL'}>{t['searchTable.columns.user.all']}</Radio>
                 </Tooltip>
-                <Radio value={1}>{t['searchTable.columns.user.me']}</Radio>
+                <Radio value={'ONLYME'}>{t['searchTable.columns.user.me']}</Radio>
               </Radio.Group>
             </Form.Item>
           </Col>

@@ -390,6 +390,7 @@ const App = (props: any) => {
   }, [pagination.current, pagination.pageSize]);
   return (
     <Card>
+      <h3>注意：只需上传标准输入，无需上传输出的答案。标准输出在运行“解答文件”时生成</h3>
       <div className={styles['header']}>
         <Grid.Row gutter={24}>
           <Grid.Col span={12}>

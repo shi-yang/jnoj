@@ -34,10 +34,6 @@ func NewProblemService(uc *biz.ProblemUsecase,
 
 // ListProblems 题目列表
 func (s *ProblemService) ListProblems(ctx context.Context, req *v1.ListProblemsRequest) (*v1.ListProblemsResponse, error) {
-	if req.UserId != 0 {
-		u, _ := auth.GetUserID(ctx)
-		req.UserId = int32(u)
-	}
 	data, count := s.uc.ListProblems(ctx, req)
 	resp := new(v1.ListProblemsResponse)
 	resp.Data = make([]*v1.Problem, 0)
