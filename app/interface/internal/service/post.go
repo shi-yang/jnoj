@@ -78,10 +78,6 @@ func (s *PostService) UpdatePost(ctx context.Context, req *v1.UpdatePostRequest)
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
-	uid, _ := auth.GetUserID(ctx)
-	if post.UserID != uid {
-		return nil, v1.ErrorForbidden("")
-	}
 	post.Title = req.Title
 	post.Content = req.Content
 	res, err := s.uc.UpdatePost(ctx, post)
