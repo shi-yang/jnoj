@@ -134,6 +134,11 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 	}
 	// 查询登录用户的角色
 	if uid, ok := auth.GetUserID(ctx); ok {
+		contestUser := r.GetContestUser(ctx, c.ID, uid)
+		if contestUser != nil {
+			res.Role = contestUser.Role
+			res.VirtualStart = contestUser.VirtualStart
+		}
 		// 若比赛属于小组，且登录用户为小组管理，赋予管理权限
 		if c.GroupID != 0 {
 			var gu GroupUser
@@ -145,11 +150,6 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 			if err == nil && (gu.Role == biz.GroupUserRoleAdmin || gu.Role == biz.GroupUserRoleManager) {
 				res.Role = biz.ContestRoleAdmin
 			}
-		}
-		contestUser := r.GetContestUser(ctx, c.ID, uid)
-		if contestUser != nil {
-			res.Role = contestUser.Role
-			res.VirtualStart = contestUser.VirtualStart
 		}
 		if uid == c.UserID {
 			res.Role = biz.ContestRoleAdmin
