@@ -175,23 +175,27 @@ func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, 
 	if uid == 1 {
 		return false, false, true
 	}
+	if int(submissionUserId) == uid {
+		ok = true
+	}
 	// 处理比赛中的提交
 	if entityType == SubmissionEntityTypeContest {
 		contest, err := uc.contestRepo.GetContest(ctx, int(entityId))
 		if err != nil {
 			return
 		}
-		runningStatus := contest.GetRunningStatus()
 		role := contest.Role
-		// 比赛未结束时，仅 比赛管理员 admin 或者当前选手可查看
+		// 比赛管理员可查看
+		if role == ContestRoleAdmin || role == ContestRoleWriter {
+			ok = true
+		}
+		// 比赛未结束时
+		runningStatus := contest.GetRunningStatus()
 		if runningStatus != ContestRunningStatusFinished {
 			isContestRunning = true
 			// OI 提交之后无反馈
 			if contest.Type == ContestTypeOI {
 				isOIModeRunning = true
-			}
-			if role == ContestRoleAdmin || role == ContestRoleWriter || int(submissionUserId) == uid {
-				ok = true
 			}
 		}
 	} else if entityType == SubmissionEntityTypeProblemFile {
