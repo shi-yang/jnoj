@@ -8,6 +8,7 @@ import (
 	"jnoj/app/admin/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm/clause"
 )
 
 type submissionRepo struct {
@@ -79,4 +80,16 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 		rv = append(rv, s)
 	}
 	return rv, count
+}
+
+// UpdateSubmission .
+func (r *submissionRepo) UpdateSubmission(ctx context.Context, s *biz.Submission) (*biz.Submission, error) {
+	res := Submission{
+		ID:      s.ID,
+		Verdict: s.Verdict,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Updates(&res).Error
+	return nil, err
 }

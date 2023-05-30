@@ -94,6 +94,7 @@ const (
 // SubmissionRepo is a Submission repo.
 type SubmissionRepo interface {
 	ListSubmissions(ctx context.Context, req *v1.ListSubmissionsRequest) ([]*Submission, int64)
+	UpdateSubmission(context.Context, *Submission) (*Submission, error)
 }
 
 // SubmissionUsecase is a Submission usecase.
@@ -135,6 +136,8 @@ func (uc *SubmissionUsecase) Rejudge(ctx context.Context, contestId, problemId, 
 		})
 	}
 	for _, v := range submissions {
+		v.Verdict = SubmissionVerdictPending
+		uc.repo.UpdateSubmission(ctx, v)
 		uc.sandboxClient.RunSubmission(ctx, &sandboxV1.RunSubmissionRequest{
 			SubmissionId: int64(v.ID),
 		})
