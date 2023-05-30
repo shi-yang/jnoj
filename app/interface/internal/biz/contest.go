@@ -152,6 +152,7 @@ type ContestUsecase struct {
 	problemRepo    ProblemRepo
 	submissionRepo SubmissionRepo
 	userRepo       UserRepo
+	groupRepo      GroupRepo
 	log            *log.Helper
 }
 
@@ -161,12 +162,14 @@ func NewContestUsecase(
 	problemRepo ProblemRepo,
 	submissionRepo SubmissionRepo,
 	userRepo UserRepo,
+	groupRepo GroupRepo,
 	logger log.Logger) *ContestUsecase {
 	return &ContestUsecase{
 		repo:           repo,
 		problemRepo:    problemRepo,
 		submissionRepo: submissionRepo,
 		userRepo:       userRepo,
+		groupRepo:      groupRepo,
 		log:            log.NewHelper(logger),
 	}
 }

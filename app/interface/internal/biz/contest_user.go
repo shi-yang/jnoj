@@ -42,9 +42,15 @@ func (uc *ContestUsecase) CreateContestUser(ctx context.Context, c *ContestUser,
 		return nil, v1.ErrorBadRequest("invalid invitation code")
 	}
 	// 需要小组成员
-	// TODO
-	// if contest.Membership == ContestMembershipGroupUser {
-	// }
+	if contest.Membership == ContestMembershipGroupUser {
+		group, err := uc.groupRepo.GetGroup(ctx, contest.GroupId)
+		if err != nil {
+			return nil, v1.ErrorBadRequest("invalid group")
+		}
+		if group.Role == GroupUserRoleGuest {
+			return nil, v1.ErrorForbidden("only group user")
+		}
+	}
 	if contestUser := uc.repo.GetContestUser(ctx, c.ContestID, c.UserID); contestUser != nil {
 		return nil, v1.ErrorContestAlreadyRegistered("already registered")
 	}
