@@ -83,6 +83,9 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	if req.EntityId != 0 {
 		db.Where("entity_id = ?", req.EntityId)
 	}
+	if req.Id != 0 {
+		db.Where("id = ?", req.Id)
+	}
 	db.Where("entity_type = ?", req.EntityType)
 	db.Count(&count)
 	db.

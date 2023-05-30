@@ -63,6 +63,31 @@ const Submission = () => {
       title: '#',
       dataIndex: 'id',
       align: 'center',
+      filterMultiple: false,
+      filterIcon: <IconSearch />,
+      filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+        return (
+          <div className='arco-table-custom-filter'>
+            <Input.Search
+              ref={inputRef}
+              searchButton
+              placeholder='输入ID进行搜索'
+              value={filterKeys[0] || ''}
+              onChange={(value) => {
+                setFilterKeys(value ? [value] : []);
+              }}
+              onSearch={() => {
+                confirm();
+              }}
+            />
+          </div>
+        );
+      },
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => inputRef.current.focus(), 150);
+        }
+      },
     },
     {
       title: t['user'],
@@ -77,7 +102,7 @@ const Submission = () => {
             <Input.Search
               ref={inputRef}
               searchButton
-              placeholder='Please enter name'
+              placeholder='输入用户名进行搜索'
               value={filterKeys[0] || ''}
               onChange={(value) => {
                 setFilterKeys(value ? [value] : []);

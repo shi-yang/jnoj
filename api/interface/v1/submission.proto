@@ -59,14 +59,15 @@ message Submission {
 }
 
 message ListSubmissionsRequest {
-    optional int32 problem_id = 1;
-    int32 entity_id = 2;
-    int32 entity_type = 3;
-    repeated int32 verdict = 4;
-    int32 user_id = 5;
-    string username = 6;
-    int32 page = 7;
-    int32 per_page = 8;
+    int32 id = 1;
+    optional int32 problem_id = 2;
+    int32 entity_id = 3;
+    int32 entity_type = 4;
+    repeated int32 verdict = 5;
+    int32 user_id = 6;
+    string username = 7;
+    int32 page = 8;
+    int32 per_page = 9;
 }
 
 message ListSubmissionsResponse {
