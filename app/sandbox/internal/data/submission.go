@@ -270,7 +270,9 @@ func (r *submissionRepo) CreateSubmissionInfo(ctx context.Context, id int, runIn
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Create(&res).Error
+		Where("submission_id = ?", id).
+		Assign(res).
+		FirstOrCreate(&res).Error
 	return err
 }
 
