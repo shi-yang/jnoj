@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Message, Modal, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
+import { Alert, Button, Card, Form, Input, Message, Modal, Popover, Select, Space, Table, TableColumnProps } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import { listProblemFiles, createProblemFile, deleteProblemFile, getProblemFile, updateProblemFile, runProblemFile, listProblemLanguages, getProblemLanguage } from '@/api/problem-file';
 import locale from './locale';
@@ -9,6 +9,17 @@ import SubmissionList from '@/modules/submission/SubmissionList';
 const FormItem = Form.Item;
 import CodeMirror from '@uiw/react-codemirror';
 import { LanguageMap } from '@/api/submission';
+
+const SolutionType = [
+  'MODEL_SOLUTION',
+  'CORRECT',
+  'INCORRECT',
+  'TIME_LIMIT_EXCEEDED',
+  'TIME_LIMIT_EXCEEDED_OR_CORRECT',
+  'TIME_LIMIT_EXCEEDED_OR_MEMORY_LIMIT_EXCEEDED',
+  'WRONG ANSWER',
+  'MEMORY_LIMIT_EXCEEDED'
+];
 
 const App = ({problem}: any) => {
   const t = useLocale(locale);
@@ -39,6 +50,7 @@ const App = ({problem}: any) => {
       title: t['type'],
       dataIndex: 'type',
       align: 'center',
+      render: col => t[`solution.type.${col}`]
     },
     {
       title: t['createdAt'],
@@ -77,10 +89,12 @@ const App = ({problem}: any) => {
                 />
               </FormItem>
               <FormItem field='type' label='类型' required>
-                <Select defaultValue='model_solution'>
-                  <Select.Option key='main' value='model_solution'>
-                    标准解答
-                  </Select.Option>
+                <Select>
+                  {SolutionType.map((item, index) => 
+                    <Select.Option key={index} value={item}>
+                      {t[`solution.type.${item}`]}
+                    </Select.Option>
+                  )}
                 </Select>
               </FormItem>
             </Form>
@@ -160,6 +174,8 @@ const App = ({problem}: any) => {
           Message.success('已保存');
           setVisible(false);
           fetchData();
+        }).catch(err => {
+          Message.error(err.response.data.message);
         });
     });
   }
@@ -175,6 +191,8 @@ const App = ({problem}: any) => {
           Message.success('已保存');
           setEditVisible(false);
           fetchData();
+        }).catch(err => {
+          Message.error(err.response.data.message);
         });
     });
   }
@@ -190,7 +208,13 @@ const App = ({problem}: any) => {
   return (
     <>
       <Card title='解答文件'>
-        <div className={styles['button-group']}>
+        <Alert
+          type='warning'
+          content={
+            <div>注意：您应该保证此处至少有一项且只能有一项类型为“<strong>标准解答</strong>”文件，该“<strong>标准解答</strong>”将用于生成测试点的标准输出。</div>
+          }
+        />
+        <div className={styles['button-group']} style={{marginTop: '10px'}}>
           <Space>
             <Button type='primary' onClick={() => {form.resetFields(); setVisible(true);}}>添加</Button>
             <Modal
@@ -225,17 +249,21 @@ const App = ({problem}: any) => {
                   />
                 </FormItem>
                 <FormItem field='type' label='类型' required>
-                  <Select defaultValue='model_solution'>
-                    <Select.Option key='main' value='model_solution'>
-                      标准解答
-                    </Select.Option>
+                  <Select defaultValue='MODEL_SOLUTION'>
+                    {SolutionType.map((item, index) => 
+                      <Select.Option key={index} value={item}>
+                        {t[`solution.type.${item}`]}
+                      </Select.Option>
+                    )}
                   </Select>
                 </FormItem>
               </Form>
             </Modal>
           </Space>
         </div>
-        <Table rowKey={r => r.id} loading={loading} columns={columns} data={data} />
+        <Table
+          rowKey={r => r.id} loading={loading} columns={columns} data={data}
+        />
       </Card>
       <Card title={'运行信息'}>
         <SubmissionList pid={problem.id} entityType={2} />

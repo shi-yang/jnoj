@@ -191,7 +191,7 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	isGenerateOutput := false
 	if s.EntityType == SubmissionEntityTypeProblemFile {
 		problemFile, err := uc.repo.GetProblemFile(ctx, &ProblemFile{ID: s.EntityID})
-		if err == nil && problemFile.Type == "model_solution" {
+		if err == nil && problemFile.Type == ProblemFileTypeModelSolution {
 			isGenerateOutput = true
 		}
 	}

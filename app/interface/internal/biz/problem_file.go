@@ -42,7 +42,13 @@ const (
 
 const (
 	// TypeSolution
-	ProblemFileTypeModelSolution = "model_solution"
+	ProblemFileTypeModelSolution              = "MODEL_SOLUTION"
+	ProblemFileTypeCorrect                    = "CORRECT"
+	ProblemFileTypeIncorrect                  = "INCORRECT"
+	ProblemFileTypeTimeLimitExceeded          = "TIME_LIMIT_EXCEEDED"
+	ProblemFileTypeTimeLimitExceededOrCorrect = "TIME_LIMIT_EXCEEDED_OR_CORRECT"
+	ProblemFileTypeWrongAnsweer               = "WRONG_ANSWER"
+	ProblemFileTypeMemoryLimitExceeded        = "MEMORY_LIMIT_EXCEEDED"
 )
 
 // ProblemLanguage 语言文件
@@ -76,8 +82,19 @@ func (uc *ProblemUsecase) GetProblemFile(ctx context.Context, id int) (*ProblemF
 func (uc *ProblemUsecase) CreateProblemFile(ctx context.Context, p *ProblemFile) (*ProblemFile, error) {
 	p.UserID, _ = auth.GetUserID(ctx)
 	if p.FileType == string(ProblemFileFileTypeSubtask) {
+		// 校验子任务配置文件是否正确
 		if _, err := uc.GetProblemSubtaskContent(p.Content); err != nil {
 			return nil, v1.ErrorBadRequest(err.Error())
+		}
+	} else if p.FileType == string(ProblemFileFileTypeSolution) {
+		// 需要确保有且只能有一个 model solution
+		_, count := uc.repo.ListProblemFiles(ctx, &v1.ListProblemFilesRequest{
+			Id:       int32(p.ProblemID),
+			Type:     ProblemFileTypeModelSolution,
+			FileType: string(ProblemFileFileTypeSolution),
+		})
+		if count > 0 {
+			return nil, v1.ErrorBadRequest("there is one and only one model solution file")
 		}
 	}
 	return uc.repo.CreateProblemFile(ctx, p)

@@ -1,5 +1,5 @@
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, List, Message, Grid, Tag, Popconfirm } from '@arco-design/web-react';
+import { Button, Card, Form, Input, List, Message, Grid, Tag, Popconfirm, Alert, Typography, Divider } from '@arco-design/web-react';
 import React, { useEffect, useState } from 'react';
 import locale from './locale';
 import CreateStatementModal from './create-statement';
@@ -97,7 +97,18 @@ export default function Statement({problem}: any) {
 
   return (
     <Card>
-      <Row gutter={64}>
+      <Alert
+        type='info'
+        content={
+          <div>
+            题面信息由题目名称、题目描述、输入格式、输出格式描述、提示组成，
+            注意：用户所看到题目中出现的样例从<strong>测试点</strong>选项卡中添加。
+            现在支持中、英两种语言的题面。
+            当您添加不同语言的题面时，用户做题过程中可根据自己需要切换不同语言的题面。
+          </div>
+        }
+      />
+      <Row gutter={64} style={{marginTop: '10px'}}>
         <Col flex='400px'>
           <List
             className={styles['list-actions']}
@@ -109,7 +120,8 @@ export default function Statement({problem}: any) {
                   <div key={index}>
                     <Button onClick={() => editStatement(index)}>
                       <IconEdit />
-                    </Button>,
+                    </Button>
+                    <Divider type='vertical' />
                     <Popconfirm
                       title='Are you sure you want to delete?'
                       onOk={() => deleteStatement(index)}

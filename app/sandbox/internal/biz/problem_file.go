@@ -29,3 +29,14 @@ const (
 	ProblemFileFileTypeLanguage   ProblemFileFileType = "language"   // 语言
 	ProblemFileFileTypeSubtask    ProblemFileFileType = "subtask"    // 子任务定义
 )
+
+const (
+	// TypeSolution
+	ProblemFileTypeModelSolution              = "MODEL_SOLUTION"
+	ProblemFileTypeCorrect                    = "CORRECT"
+	ProblemFileTypeIncorrect                  = "INCORRECT"
+	ProblemFileTypeTimeLimitExceeded          = "TIME_LIMIT_EXCEEDED"
+	ProblemFileTypeTimeLimitExceededOrCorrect = "TIME_LIMIT_EXCEEDED_OR_CORRECT"
+	ProblemFileTypeWrongAnsweer               = "WRONG_ANSWER"
+	ProblemFileTypeMemoryLimitExceeded        = "MEMORY_LIMIT_EXCEEDED"
+)

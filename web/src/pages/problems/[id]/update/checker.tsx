@@ -82,90 +82,101 @@ const App = (props: any) => {
 
   return (
     <Card>
-      <Form style={{ width: 600 }} autoComplete='off'>
-        <FormItem label='选择' help={note}>
-          <Select
-            style={{ width: 500 }}
-            placeholder='Select checker'
-            defaultValue={props.problem.checkerId}
-            dropdownRender={(menu) => (
-              <div>
-                {menu}
-                <Divider style={{ margin: 0 }} />
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '10px 12px',
-                  }}
-                >
-                  <Button
-                    style={{ fontSize: 14, padding: '0 6px' }}
-                    type='text'
-                    size='mini'
-                    onClick={() => setVisible(true)}
+      <Alert
+        type='info'
+        content={
+          <div>
+            裁判程序是用来比较用户的答案和标程的答案，也即俗称的SPJ（Special Judge）。当一道题有多组解时，用来判断答案合法性的程序。
+            每道题均需要有裁判程序，即时您的题目没有多组解，也应该选择一个。如果您不确定选什么，请选择 lcmp.cpp 或者 fcmp.cpp 均可。
+          </div>
+        }
+      />
+      <div style={{marginTop: '10px'}}>
+        <Form style={{ width: 600 }} autoComplete='off'>
+          <FormItem label='选择' help={note}>
+            <Select
+              style={{ width: 500 }}
+              placeholder='Select checker'
+              defaultValue={props.problem.checkerId}
+              dropdownRender={(menu) => (
+                <div>
+                  {menu}
+                  <Divider style={{ margin: 0 }} />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '10px 12px',
+                    }}
                   >
-                    <IconPlus />
-                    Add item
-                  </Button>
-                  <Modal
-                    title='添加'
-                    visible={visible}
-                    onOk={onOk}
-                    onCancel={() => setVisible(false)}
-                    autoFocus={false}
-                    focusLock={true}
-                  >
-                    <Form
-                      form={form}
+                    <Button
+                      style={{ fontSize: 14, padding: '0 6px' }}
+                      type='text'
+                      size='mini'
+                      onClick={() => setVisible(true)}
                     >
-                      <FormItem field='name' label='名称' required>
-                        <Input />
-                      </FormItem>
-                      <FormItem field='content' label='源码' required>
-                        <Input.TextArea rows={10} />
-                      </FormItem>
-                    </Form>
-                  </Modal>
+                      <IconPlus />
+                      Add item
+                    </Button>
+                    <Modal
+                      title='添加'
+                      visible={visible}
+                      onOk={onOk}
+                      onCancel={() => setVisible(false)}
+                      autoFocus={false}
+                      focusLock={true}
+                    >
+                      <Form
+                        form={form}
+                      >
+                        <FormItem field='name' label='名称' required>
+                          <Input />
+                        </FormItem>
+                        <FormItem field='content' label='源码' required>
+                          <Input.TextArea rows={10} />
+                        </FormItem>
+                      </Form>
+                    </Modal>
+                  </div>
                 </div>
-              </div>
-            )}
-            dropdownMenuStyle={{ maxHeight: 200 }}
-            onChange={onSelectedChange}
-          >
-            <Select.OptGroup label='std'>
-              {stdCheckers.map((option, index) => (
-                <Option key={option.id} value={option.id}>
-                  {option.name} - {t[`checker.std.${option.name}.title`]}
-                </Option>
-              ))}
-            </Select.OptGroup>
-            <Select.OptGroup label='user'>
-              {userCheckers.map((option, index) => (
-                <Option key={option.id} value={option.id}>
-                  {option.name}
-                </Option>
-              ))}
-            </Select.OptGroup>
-          </Select>
-        </FormItem>
-        <FormItem wrapperCol={{ offset: 5 }}>
-          <Button type='primary' onClick={onSave}>{t['save']}</Button>
-        </FormItem>
-      </Form>
-      <Divider />
-      <Form style={{ width: 600 }} disabled>
-        <FormItem label='名称'>
-          <Input value={checker.name} />
-        </FormItem>
-        <FormItem label='源码'>
-          <Alert
-            showIcon={false}
-            className={styles['checker-content']}
-            content={<Highlight content={checker.content} />}
-          />
-        </FormItem>
-      </Form>
+              )}
+              dropdownMenuStyle={{ maxHeight: 200 }}
+              onChange={onSelectedChange}
+            >
+              <Select.OptGroup label='std'>
+                {stdCheckers.map((option, index) => (
+                  <Option key={option.id} value={option.id}>
+                    {option.name} - {t[`checker.std.${option.name}.title`]}
+                  </Option>
+                ))}
+              </Select.OptGroup>
+              <Select.OptGroup label='user'>
+                {userCheckers.map((option, index) => (
+                  <Option key={option.id} value={option.id}>
+                    {option.name}
+                  </Option>
+                ))}
+              </Select.OptGroup>
+            </Select>
+          </FormItem>
+          <FormItem wrapperCol={{ offset: 5 }}>
+            <Button type='primary' onClick={onSave}>{t['save']}</Button>
+          </FormItem>
+        </Form>
+        <Divider />
+        <Form style={{ width: 600 }} disabled>
+          <FormItem label='名称'>
+            <Input value={checker.name} />
+          </FormItem>
+          <FormItem label='源码'>
+            <Alert
+              showIcon={false}
+              className={styles['checker-content']}
+              content={<Highlight content={checker.content} />}
+            />
+          </FormItem>
+        </Form>
+      </div>
     </Card>
   );
 };

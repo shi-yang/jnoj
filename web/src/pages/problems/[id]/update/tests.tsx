@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Grid, Input, Message, Modal, PaginationProps, Popover, Radio, Table, TableColumnProps, Upload } from '@arco-design/web-react';
+import { Alert, Button, Card, Form, Grid, Input, Message, Modal, PaginationProps, Popover, Radio, Table, TableColumnProps, Upload } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
@@ -390,8 +390,11 @@ const App = (props: any) => {
   }, [pagination.current, pagination.pageSize]);
   return (
     <Card>
-      <h3>注意：只需上传标准输入，无需上传输出的答案。标准输出在运行“解答文件”时生成</h3>
-      <div className={styles['header']}>
+      <Alert
+        type='warning'
+        content='注意：只需上传标准输入，无需上传输出的答案。标准输出在运行“解答文件-标准解答”时生成。上传测试点后，您可通过拖转表格行，来调整测试点的测评顺序'
+      />
+      <div className={styles['header']} style={{marginTop: '10px'}}>
         <Grid.Row gutter={24}>
           <Grid.Col span={12}>
             <Upload
