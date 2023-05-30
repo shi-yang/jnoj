@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -227,6 +228,12 @@ func (r *groupRepo) CreateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz
 		Role:    g.Role,
 	}
 	err := r.data.db.WithContext(ctx).
+		Where("user_id = ? and group_id = ?", g.UserID, g.GroupID).
+		First(&GroupUser{}).Error
+	if err == nil {
+		return nil, errors.New("already exists")
+	}
+	err = r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		FirstOrCreate(&res, map[string]interface{}{
 			"user_id":  g.UserID,
