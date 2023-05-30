@@ -46,6 +46,7 @@ func (uc *UserUsecase) GetUser(ctx context.Context, u *User) (*User, error) {
 // CreateUser creates a User, and returns the new User.
 func (uc *UserUsecase) CreateUser(ctx context.Context, u *User) (*User, error) {
 	uc.log.WithContext(ctx).Infof("CreateUser: %v", u.Nickname)
+	u.Password, _ = password.GeneratePasswordHash(u.Password)
 	return uc.repo.CreateUser(ctx, u)
 }
 
