@@ -67,8 +67,8 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
 	}
-	uid, ok := auth.GetUserID(ctx)
-	if req.Mygroup != nil && *req.Mygroup && ok {
+	uid, _ := auth.GetUserID(ctx)
+	if req.Mygroup != nil && *req.Mygroup && uid != 0 {
 		db.Joins("INNER JOIN group_user on group_user.group_id=group.ID AND group_user.user_id=?", uid)
 		if req.Sort != "" {
 			if req.Sort == "joinedAt" {

@@ -26,8 +26,18 @@ type User struct {
 	Email     string
 	Phone     string
 	Password  string
+	Role      int
 	CreatedAt time.Time
 }
+
+// 用户角色
+const (
+	UserRoleRegular    = iota // 常规用户
+	UserRoleVIP               // vip用户
+	UserRoleOfficial          // 官方用户
+	UserRoleAdmin             // 管理员
+	UserRoleSuperAdmin        // 超级管理员
+)
 
 // UserRepo is a User repo.
 type UserRepo interface {
@@ -66,7 +76,7 @@ func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string,
 	if !password.ValidatePassword(req.Password, user.Password) {
 		return "", v1.ErrorInvalidUsernameOrPassword("")
 	}
-	return auth.GenerateToken(user.ID)
+	return auth.GenerateToken(user.ID, user.Role)
 }
 
 // Register creates a User, and returns the new User.
@@ -94,7 +104,7 @@ func (uc *UserUsecase) Register(ctx context.Context, u *User, captcha string) (i
 	if err != nil {
 		return 0, "", fmt.Errorf(err.Error())
 	}
-	token, err := auth.GenerateToken(user.ID)
+	token, err := auth.GenerateToken(user.ID, user.Role)
 	return user.ID, token, err
 }
 

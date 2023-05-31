@@ -17,8 +17,17 @@ type User struct {
 	Email     string
 	Phone     string
 	Password  string
+	Role      int
 	CreatedAt time.Time
 }
+
+const (
+	UserRoleRegular    = iota // 常规用户
+	UserRoleVIP               // vip用户
+	UserRoleOfficial          // 官方用户
+	UserRoleAdmin             // 管理员
+	UserRoleSuperAdmin        // 超级管理员
+)
 
 // UserRepo is a User repo.
 type UserRepo interface {

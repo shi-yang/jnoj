@@ -168,8 +168,8 @@ func (uc *GroupUsecase) DeleteGroupUser(ctx context.Context, gid, uid int) error
 // GetGroupRole 获取登录用户角色
 func (uc *GroupUsecase) GetGroupRole(ctx context.Context, group *Group) int {
 	group.Role = GroupUserRoleGuest
-	uid, ok := auth.GetUserID(ctx)
-	if ok {
+	uid, _ := auth.GetUserID(ctx)
+	if uid != 0 {
 		if group.UserID == uid {
 			group.Role = GroupUserRoleAdmin
 		} else {

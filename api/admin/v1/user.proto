@@ -41,7 +41,16 @@ message User {
     int32 id = 1;
     string nickname = 2;
     string username = 3;
-    google.protobuf.Timestamp created_at = 4;
+    UserRole role = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+enum UserRole {
+    REGULAR_USER = 0;
+    VIP_USER = 1;
+    OFFICIAL_USER = 2;
+    ADMIN = 3;
+    SUPER_ADMIN = 4;
 }
 
 message GetUserRequest {
@@ -75,7 +84,9 @@ message UpdateUserRequest {
         // 以字母、数字、下划线，且非纯数字，长度在 5 - 16 位之间
         pattern:   "^[a-zA-Z][a-zA-Z0-9_-]{4,15}$",
     }];
-    string password = 3 [(validate.rules).string = {min_len: 6, max_len: 16}];
+    string nickname = 3;
+    string password = 4 [(validate.rules).string = {min_len: 6, max_len: 16}];
+    UserRole role = 5;
 }
 
 message ListUsersResponse {
@@ -85,6 +96,7 @@ message ListUsersResponse {
 
 message ListUsersRequest {
     string username = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    optional UserRole role = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }

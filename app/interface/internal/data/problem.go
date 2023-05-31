@@ -70,11 +70,11 @@ func (r *problemRepo) ListProblems(ctx context.Context, req *v1.ListProblemsRequ
 	if len(req.Type) > 0 {
 		db.Where("type in (?)", req.Type)
 	}
-	uid, _ := auth.GetUserID(ctx)
+	uid, role := auth.GetUserID(ctx)
 	if req.Author.String() == "ONLYME" {
 		db.Where("user_id = ?", uid)
 	} else {
-		if uid != 1 {
+		if !biz.CheckAccess(role, biz.ResourceSubmission) {
 			db.Where("user_id = ? or status = ?", uid, biz.ProblemStatusPublic)
 		}
 	}

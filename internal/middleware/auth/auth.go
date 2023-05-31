@@ -2,7 +2,8 @@ package auth
 
 import (
 	"context"
-	"log"
+	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -69,30 +70,51 @@ func Guest() middleware.Middleware {
 	}
 }
 
-func GenerateToken(userID int) (string, error) {
+func GenerateToken(userID int, userRole int) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(30 * 24 * time.Hour)
+	expireTime := nowTime.Add(7 * 24 * time.Hour)
 	date := jwt2.NewNumericDate(expireTime)
-
-	tokenClaims := jwt2.NewWithClaims(jwt2.SigningMethodHS256, jwt2.RegisteredClaims{
-		ExpiresAt: date,
-		Issuer:    "jnoj",
-		Subject:   strconv.Itoa(userID),
+	tokenClaims := jwt2.NewWithClaims(jwt2.SigningMethodHS256, jwt2.MapClaims{
+		"userId":   userID,
+		"userRole": userRole,
+		"exp":      date,
 	})
 	return tokenClaims.SignedString([]byte(Key))
 }
 
-func GetUserID(ctx context.Context) (int, bool) {
+func GetUserID(ctx context.Context) (userId int, userRole int) {
 	token, ok := jwt.FromContext(ctx)
 	if !ok {
-		log.Println("token, ok := jwt.FromContext(ctx)")
-		return 0, false
+		return 0, -1
 	}
 	if err := token.Valid(); err != nil {
-		log.Println("err := token.Valid();")
-		return 0, false
+		return 0, -1
 	}
-	m := *(token.(*jwt2.MapClaims))
-	uid, _ := strconv.Atoi(m["sub"].(string))
-	return uid, true
+	claims, ok := token.(*jwt2.MapClaims)
+	if !ok || claims.Valid() != nil {
+		return 0, -1
+	}
+	userId, _ = interfaceToInt((*claims)["userId"])
+	userRole, _ = interfaceToInt((*claims)["userRole"])
+	return
+}
+
+func interfaceToInt(value interface{}) (int, error) {
+	rv := reflect.ValueOf(value)
+	switch rv.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return int(rv.Int()), nil
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return int(rv.Uint()), nil
+	case reflect.Float32, reflect.Float64:
+		return int(rv.Float()), nil
+	case reflect.String:
+		i, err := strconv.Atoi(rv.String())
+		if err != nil {
+			return 0, err
+		}
+		return i, nil
+	default:
+		return 0, fmt.Errorf("cannot convert %v to int", value)
+	}
 }

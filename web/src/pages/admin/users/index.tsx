@@ -22,6 +22,7 @@ import Head from 'next/head';
 import Layout from '../Layout';
 import { listUsers } from '@/api/admin/user';
 import { IconSearch } from '@arco-design/web-react/icon';
+import { UserRole } from './constants';
 const { Title } = Typography;
 
 function Index() {
@@ -83,6 +84,17 @@ function Index() {
       title: t['searchTable.columns.nickname'],
       dataIndex: 'nickname',
       align: 'center' as 'center',
+    },
+    {
+      title: t['searchTable.columns.role'],
+      dataIndex: 'role',
+      align: 'center' as 'center',
+      render: col => t[`user.form.user.role.${col}`],
+      filters: Object.keys(UserRole).map(item => ({
+        text: t[`user.form.user.role.${UserRole[item]}`],
+        value: UserRole[item],
+      })),
+      filterMultiple: false,
     },
     {
       title: t['searchTable.columns.operations'],

@@ -171,8 +171,8 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 // checkerPermission 检查访问权限
 func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, entityId, problemId, submissionUserId int) (
 	isOIModeRunning, isContestRunning, ok bool) {
-	uid, _ := auth.GetUserID(ctx)
-	if uid == 1 {
+	uid, role := auth.GetUserID(ctx)
+	if CheckAccess(role, ResourceSubmission) {
 		return false, false, true
 	}
 	if int(submissionUserId) == uid {

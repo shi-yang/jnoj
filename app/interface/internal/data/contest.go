@@ -133,7 +133,7 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		res.OwnerName = c.User.Nickname
 	}
 	// 查询登录用户的角色
-	if uid, ok := auth.GetUserID(ctx); ok {
+	if uid, role := auth.GetUserID(ctx); uid != 0 {
 		contestUser := r.GetContestUser(ctx, c.ID, uid)
 		if contestUser != nil {
 			res.Role = contestUser.Role
@@ -151,7 +151,7 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 				res.Role = biz.ContestRoleAdmin
 			}
 		}
-		if uid == c.UserID {
+		if uid == c.UserID || biz.CheckAccess(role, biz.ResourceContest) {
 			res.Role = biz.ContestRoleAdmin
 		}
 	}

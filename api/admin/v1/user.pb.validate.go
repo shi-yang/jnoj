@@ -62,6 +62,8 @@ func (m *User) validate(all bool) error {
 
 	// no validation rules for Username
 
+	// no validation rules for Role
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -550,6 +552,8 @@ func (m *UpdateUserRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	// no validation rules for Nickname
+
 	if l := utf8.RuneCountInString(m.GetPassword()); l < 6 || l > 16 {
 		err := UpdateUserRequestValidationError{
 			field:  "Password",
@@ -560,6 +564,8 @@ func (m *UpdateUserRequest) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for Role
 
 	if len(errors) > 0 {
 		return UpdateUserRequestMultiError(errors)
@@ -808,6 +814,10 @@ func (m *ListUsersRequest) validate(all bool) error {
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.Role != nil {
+		// no validation rules for Role
+	}
 
 	if len(errors) > 0 {
 		return ListUsersRequestMultiError(errors)

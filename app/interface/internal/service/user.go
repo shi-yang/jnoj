@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
@@ -60,9 +59,9 @@ func (s *UserService) GetCaptcha(ctx context.Context, req *v1.GetCaptchaRequest)
 
 // GetUserInfo 获取登录用户信息
 func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.GetUserInfoResponse, error) {
-	userID, ok := auth.GetUserID(ctx)
-	if !ok {
-		return nil, fmt.Errorf("not login")
+	userID, role := auth.GetUserID(ctx)
+	if userID == 0 {
+		return nil, v1.ErrorUnauthorized("not login")
 	}
 	user, err := s.uc.GetUser(ctx, userID)
 	if err != nil {
@@ -72,7 +71,7 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,
 	}
-	if user.ID == 1 {
+	if biz.CheckAccess(role, biz.ResourceAdmin) {
 		resp.Permissions = make(map[string]*structpb.ListValue)
 		permissions := &structpb.ListValue{}
 		permissions.Values = append(permissions.Values, &structpb.Value{

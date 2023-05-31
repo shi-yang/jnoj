@@ -41,8 +41,8 @@ type ContestProblemRepo interface {
 func (uc *ContestUsecase) ListContestProblems(ctx context.Context, contest *Contest) ([]*ContestProblem, int64) {
 	problems, count := uc.repo.ListContestProblems(ctx, contest.ID)
 	// 登录用户查询解答情况
-	uid, ok := auth.GetUserID(ctx)
-	if ok {
+	uid, _ := auth.GetUserID(ctx)
+	if uid != 0 {
 		ids := make([]int, 0)
 		for _, v := range problems {
 			ids = append(ids, v.ProblemID)

@@ -30,6 +30,7 @@ func (s UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.U
 		Id:       int32(u.ID),
 		Nickname: u.Nickname,
 		Username: u.Username,
+		Role:     v1.UserRole(u.Role),
 	}, nil
 }
 
@@ -60,6 +61,8 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 		ID:       int(req.Id),
 		Username: req.Username,
 		Password: req.Password,
+		Nickname: req.Nickname,
+		Role:     int(req.Role),
 	}
 	s.uc.UpdateUser(ctx, user)
 	return &v1.User{
@@ -77,6 +80,7 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 			Id:        int32(v.ID),
 			Username:  v.Username,
 			Nickname:  v.Nickname,
+			Role:      v1.UserRole(v.Role),
 			CreatedAt: timestamppb.New(v.CreatedAt),
 		})
 	}
