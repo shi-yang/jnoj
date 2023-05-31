@@ -127,9 +127,17 @@ message GetUserInfoResponse {
 }
 
 message User {
+    enum UserRole {
+        REGULAR_USER = 0;
+        VIP_USER = 1;
+        OFFICIAL_USER = 2;
+        ADMIN = 3;
+        SUPER_ADMIN = 4;
+    }
     int32 id = 1;
     string nickname = 2;
     string username = 3;
+    UserRole role = 4;
 }
 
 message GetUserRequest {

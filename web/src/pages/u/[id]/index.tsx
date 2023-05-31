@@ -2,13 +2,15 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getUserProfileCalendar, getUserProfileProblemSolved, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Collapse, Divider, Link, Progress, Radio, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Card, Collapse, Divider, Link, Progress, Select, Space, Statistic, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
 import SubmissionList from '@/modules/submission/SubmissionList';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
+import styles from './style/index.module.less';
+import PassValidIcon from '@/assets/icon/pass-valid.svg';
 
 const Color = {
   'NOT_START': 'gray',
@@ -19,7 +21,7 @@ export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
   const { id } = router.query;
-  const [user, setUser] = useState({username: '', nickname: ''});
+  const [user, setUser] = useState({username: '', nickname: '', role: ''});
   const settings = useAppSelector<SettingState>(setting);
   const [calendarOptions, setCalendarOptions] = useState([]);
   const [profileCalendar, setProfileCalendar] = useState({
@@ -66,10 +68,17 @@ export default function UserPage() {
         <title>{`${user.username} - ${settings.name}`}</title>
       </Head>
       <div className='container'>
-        <div>
+        <div className={styles['header-container']}>
           <Typography.Title>
             {user.nickname} <Divider type='vertical' /><small>{user.username}</small>
           </Typography.Title>
+          {
+            (user.role === 'ADMIN' || user.role === 'OFFICIAL_USER' || user.role === 'SUPER_ADMIN') &&
+            <Tooltip content={t['officialUser']}>
+              <PassValidIcon style={{width: 30, height: 30}} />
+            </Tooltip>
+          }
+          
         </div>
         <Card 
           extra={
@@ -95,7 +104,7 @@ export default function UserPage() {
             height={250}
             weekLabels={['日','一','二','三','四','五','六']}
             monthLabels={['一','二','三','四','五','六','七','八','九','十','十一','十二']}
-            rectSize={22}
+            rectSize={21}
             rectRender={(props, data) => {
               return (
                 <Tooltip key={data.index} content={`${data.date}, ${data.count || 0} 次`}>

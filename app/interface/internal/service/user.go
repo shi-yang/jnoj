@@ -94,6 +94,7 @@ func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.
 		Id:       int32(res.ID),
 		Nickname: res.Nickname,
 		Username: res.Username,
+		Role:     v1.User_UserRole(res.Role),
 	}, nil
 }
 
