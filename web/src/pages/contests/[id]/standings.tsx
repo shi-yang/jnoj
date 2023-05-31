@@ -1,7 +1,7 @@
 import { listContestProblems, listContestAllSubmissions, listContestUsers, listContestSubmissions } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Badge, Button, Divider, Link, List, Modal, PaginationProps, Table, TableColumnProps } from '@arco-design/web-react';
-import { IconCheckCircle, IconClockCircle, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
+import { Badge, Button, Divider, Link, List, Modal, PaginationProps, Switch, Table, TableColumnProps } from '@arco-design/web-react';
+import { IconCheck, IconCheckCircle, IconClockCircle, IconClose, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
 import locale from './locale';
@@ -55,9 +55,12 @@ const basicColumn = (t: any):TableColumnProps[] => [
     dataIndex: 'who',
     align: 'center',
     render: (_, record) => (
-      <Link href={`/u/${record.userId}`} target='_blank'>
-        {record.who}{record.isVirtual && <sup>虚拟</sup>}
-      </Link>
+      <>
+        <Link href={`/u/${record.userId}`} target='_blank'>
+          {record.who}
+        </Link>
+        {record.isVirtual && <sup>虚拟</sup>}
+      </>
     )
   },
   {
@@ -204,6 +207,7 @@ const App = () => {
   });
   const [columns, setColumns] = useState<TableColumnProps[]>([]);
   const [data, setData] = useState([]);
+  const [result, setResult] = useState([]);
   const user = useAppSelector(userInfo);
   const contest = useContext(ContestContext);
 
@@ -326,6 +330,7 @@ const App = () => {
     }
     setPagination({ ...pagination, total: arr.length });
     setData(arr);
+    setResult(arr);
   };
 
   function fetchData() {
@@ -353,27 +358,45 @@ const App = () => {
     setLoading(false);
   }
 
+  function onShowMatchUsersOnly(e) {
+    if (e) {
+      setData(result.filter(v => !v.isVirtual));
+    } else {
+      setData(result);
+    }
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
   return (
     <div style={{overflow: 'hidden'}}>
-      <div className={styles['table-legend']}>
-        <div>
-          <span className={styles['legend-status'] + ' ' + styles['solved-first']}></span>
-          <p className={styles['legend-label']}>{t['standings.solvedFirst']}</p>
+      <div className={styles['table-header']}>
+        <div className={styles['table-operation']}>
+          {
+            contest.runningStatus === 'FINISHED' &&
+            <span>
+              <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={onShowMatchUsersOnly} /> 过滤虚拟参赛选手
+            </span>
+          }
         </div>
-        <div>
-          <span className={styles['legend-status'] + ' ' + styles['solved']}></span>
-          <p className={styles['legend-label']}>{t['standings.solved']}</p>
-        </div>
-        <div>
-          <span className={styles['legend-status'] + ' ' + styles['attempted']}></span>
-          <p className={styles['legend-label']}>{t['standings.attempted']}</p>
-        </div>
-        <div>
-          <span className={styles['legend-status'] + ' ' + styles['pending']}></span>
-          <p className={styles['legend-label']}>{t['standings.pending']}</p>
+        <div className={styles['table-legend']}>
+          <div>
+            <span className={styles['legend-status'] + ' ' + styles['solved-first']}></span>
+            <p className={styles['legend-label']}>{t['standings.solvedFirst']}</p>
+          </div>
+          <div>
+            <span className={styles['legend-status'] + ' ' + styles['solved']}></span>
+            <p className={styles['legend-label']}>{t['standings.solved']}</p>
+          </div>
+          <div>
+            <span className={styles['legend-status'] + ' ' + styles['attempted']}></span>
+            <p className={styles['legend-label']}>{t['standings.attempted']}</p>
+          </div>
+          <div>
+            <span className={styles['legend-status'] + ' ' + styles['pending']}></span>
+            <p className={styles['legend-label']}>{t['standings.pending']}</p>
+          </div>
         </div>
       </div>
       <Table
