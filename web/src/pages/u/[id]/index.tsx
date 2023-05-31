@@ -11,6 +11,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
 import PassValidIcon from '@/assets/icon/pass-valid.svg';
+import VIPIcon from '@/assets/icon/vip.svg';
 
 const Color = {
   'NOT_START': 'gray',
@@ -75,10 +76,15 @@ export default function UserPage() {
           {
             (user.role === 'ADMIN' || user.role === 'OFFICIAL_USER' || user.role === 'SUPER_ADMIN') &&
             <Tooltip content={t['officialUser']}>
-              <PassValidIcon style={{width: 30, height: 30}} />
+              <PassValidIcon />
             </Tooltip>
           }
-          
+          {
+            user.role === 'VIP_USER' &&
+            <Tooltip content={t['vipUser']}>
+              <VIPIcon />
+            </Tooltip>
+          }
         </div>
         <Card 
           extra={

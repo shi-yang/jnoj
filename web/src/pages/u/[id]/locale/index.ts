@@ -5,6 +5,7 @@ const i18n = {
     'activeDays': 'Active Days',
     'problemSolved': 'Problem Solved',
     'officialUser': 'Official User',
+    'vipUser': 'VIP User',
   },
   'zh-CN': {
     'pastYear': '过去一年',
@@ -12,6 +13,7 @@ const i18n = {
     'activeDays': '活跃天数',
     'problemSolved': '解答题目',
     'officialUser': '官方用户',
+    'vipUser': 'VIP用户',
   },
 };
 
