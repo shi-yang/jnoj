@@ -53,7 +53,7 @@ function App({id, visible, setVisible, callback}: {id: number, visible: boolean,
         <FormItem label='用户名' required field='username' rules={[{ required: true }]}>
           <Input placeholder='' />
         </FormItem>
-        <FormItem label='密码' required field='password'>
+        <FormItem label='密码' field='password'>
           <Input placeholder='' />
         </FormItem>
         <FormItem label='昵称' field='nickname'>
