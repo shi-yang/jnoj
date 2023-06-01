@@ -176,6 +176,7 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 			return db.Select("id, nickname")
 		}).
 		Where("group_id = ?", req.Id).
+		Order("role, id").
 		Find(&res).
 		Count(&count)
 	rv := make([]*biz.GroupUser, 0)
