@@ -41,6 +41,11 @@ type Result struct {
 	ExitCode   int
 }
 
+const (
+	RLIMIT_STACK = 0x3
+	STD_MB       = 1 << 20 // 1MB = 1024*1024B
+)
+
 func sandboxInit() {
 	var r Result
 	basedir := os.Args[1]
@@ -71,6 +76,17 @@ func sandboxInit() {
 		_, _ = os.Stdout.Write(result)
 		os.Exit(0)
 	}
+	// 设置当前进程的栈大小限制为 128MB
+	var rLimit syscall.Rlimit
+	rLimit.Cur = STD_MB << 7
+	rLimit.Max = STD_MB << 7
+	if err := syscall.Setrlimit(RLIMIT_STACK, &rLimit); err != nil {
+		r.Err = err.Error()
+		result, _ := json.Marshal(r)
+		_, _ = os.Stdout.Write(result)
+		os.Exit(0)
+	}
+	// 开始执行
 	var stdout, stderr bytes.Buffer
 	cmd := exec.Command(runCommand[0], runCommand[1:]...)
 	cmd.Stdin = bytes.NewBuffer(input)
