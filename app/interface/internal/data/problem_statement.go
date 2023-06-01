@@ -89,6 +89,7 @@ func (r *problemRepo) UpdateProblemStatement(ctx context.Context, b *biz.Problem
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
+		Select("Name", "Input", "Output", "Legend", "Note").
 		Updates(&res).Error
 	return &biz.ProblemStatement{ID: res.ID}, err
 }
