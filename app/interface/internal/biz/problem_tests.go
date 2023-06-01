@@ -52,12 +52,15 @@ type ProblemTestRepo interface {
 	DeleteProblemTest(context.Context, int) error
 
 	ListProblemTestContent(ctx context.Context, pid int, isSample bool) ([]*Test, error)
-	SortProblemTests(context.Context, []int32)
+	SortProblemTests(context.Context, *v1.SortProblemTestsRequest)
+	IsProblemTestSampleFirst(ctx context.Context, pid int) bool
 }
 
 // ListProblemTests list ProblemTest
-func (uc *ProblemUsecase) ListProblemTests(ctx context.Context, req *v1.ListProblemTestsRequest) ([]*ProblemTest, int64) {
-	return uc.repo.ListProblemTests(ctx, req)
+func (uc *ProblemUsecase) ListProblemTests(ctx context.Context, req *v1.ListProblemTestsRequest) ([]*ProblemTest, int64, bool) {
+	tests, count := uc.repo.ListProblemTests(ctx, req)
+	isSampleFirst := uc.repo.IsProblemTestSampleFirst(ctx, int(req.Id))
+	return tests, count, isSampleFirst
 }
 
 // GetProblemTest get a ProblemTest
@@ -89,6 +92,6 @@ func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid 
 }
 
 // SortProblemTests .
-func (uc *ProblemUsecase) SortProblemTests(ctx context.Context, ids []int32) {
-	uc.repo.SortProblemTests(ctx, ids)
+func (uc *ProblemUsecase) SortProblemTests(ctx context.Context, req *v1.SortProblemTestsRequest) {
+	uc.repo.SortProblemTests(ctx, req)
 }

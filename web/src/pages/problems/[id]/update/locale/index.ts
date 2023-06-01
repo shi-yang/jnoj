@@ -42,6 +42,9 @@ const i18n = {
     'tests.table.outputSize': 'Output Size',
     'tests.table.inputPreview': 'Input Preview',
     'tests.table.outputPreview': 'Output Preview',
+    'tests.sortTestOrderByTestName': 'Sort Test Order By Test Name',
+    'tests.sampleNotFirst': 'Samples are not the first tests of the testset.',
+    'tests.fixSample': 'You can fix it automatically',
 
     'tests.table.name': 'Name',
     'checker.std.fcmp.cpp.title': 'Lines, doesn\'t ignore whitespaces',
@@ -117,6 +120,9 @@ const i18n = {
     'tests.table.outputSize': '输出大小',
     'tests.table.inputPreview': '输入预览',
     'tests.table.outputPreview': '输出预览',
+    'tests.sampleNotFirst': '样例并没有作为优先测试点',
+    'tests.fixSample': '你可以点击自动修复',
+    'tests.sortTestOrderByTestName': '按照测试点名称对测试点进行排序',
 
     'checker.std.fcmp.cpp.title': '行，不忽略空格',
     'checker.std.fcmp.cpp.intro': '按行来比较用户输出和答案。这个检查器非常严格，如果你真的不需要它，请不要使用它。',

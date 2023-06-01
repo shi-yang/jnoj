@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Form, Grid, Input, Message, Modal, PaginationProps, Popover, Radio, Table, TableColumnProps, Upload } from '@arco-design/web-react';
+import { Alert, Button, Card, Divider, Form, Grid, Input, Link, Message, Modal, PaginationProps, Popconfirm, Popover, Radio, Table, TableColumnProps, Upload } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
@@ -100,6 +100,7 @@ const App = (props: any) => {
   const [form] = Form.useForm();
   const [subtask, setSubtask] = useState({id: 0, content: ''});
   const [subtaskVisible, setSubtaskVisible] = useState(false);
+  const [isSampleFirst, setIsSampleFirst] = useState(true);
   const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -119,6 +120,7 @@ const App = (props: any) => {
         pageSize,
         total: res.data.total,
       });
+      setIsSampleFirst(res.data.isSampleFirst);
     }).finally(() => {
       setLoading(false);
     });
@@ -159,6 +161,8 @@ const App = (props: any) => {
           Message.success('已保存');
           setVisible(false);
           fetchData();
+        }).catch(err => {
+          Message.error(err.response.data.message);
         });
     });
   }
@@ -170,6 +174,7 @@ const App = (props: any) => {
       });
       sortProblemTests(props.problem.id, {ids})
         .then(res => {
+          fetchData();
           Message.success('已保存');
         })
         .catch((err) => {
@@ -177,6 +182,33 @@ const App = (props: any) => {
         });
       setData(newData);
     }
+  }
+  function onTableChange({ current, pageSize }) {
+    setPagination({
+      ...pagination,
+      current,
+      pageSize,
+    });
+  }
+  function sortSampleFirst() {
+    sortProblemTests(props.problem.id, {setSampleFirst: true})
+      .then(res => {
+        fetchData();
+        Message.success('已保存');
+      })
+      .catch((err) => {
+        Message.error('保存失败');
+      });
+  }
+  function sortTestByName() {
+    sortProblemTests(props.problem.id, {sortByName: true})
+      .then(res => {
+        fetchData();
+        Message.success('已保存');
+      })
+      .catch((err) => {
+        Message.error('保存失败');
+      });
   }
 
   const DraggableContainer = (props) => (
@@ -243,11 +275,8 @@ const App = (props: any) => {
   const columns: TableColumnProps[] = [
     {
       title: '#',
-      dataIndex: 'id',
+      dataIndex: 'order',
       align: 'center',
-      render: (col, record, index) => {
-        return index + 1;
-      }
     },
     {
       title: t['tests.table.name'],
@@ -327,6 +356,7 @@ const App = (props: any) => {
               </FormItem>
             </Form>
           </Modal>
+          <Divider type='vertical' />
           <Popover
             trigger='click'
             title='你确定要删除吗？'
@@ -449,6 +479,29 @@ const App = (props: any) => {
             </Modal>
           </Grid.Col>
         </Grid.Row>
+        {!isSampleFirst && (
+          <p>
+            {t['tests.sampleNotFirst']}
+            <Popconfirm
+              focusLock
+              title='调整样例测评顺序'
+              content='继续将会调整样例的测评顺序到最先，确定？'
+              onOk={sortSampleFirst}
+            >
+              <Button>{t['tests.fixSample']}</Button>
+            </Popconfirm>
+          </p>
+        )}
+        <p>
+          <Popconfirm
+            focusLock
+            title='调整测评顺序'
+            content='继续将会按照测试点的名称对测试点调整测评顺序，确定？'
+            onOk={sortTestByName}
+          >
+            <Button>{t['tests.sortTestOrderByTestName']}</Button>
+          </Popconfirm>
+        </p>
       </div>
       <Table
         className='drag-table-container'
@@ -458,6 +511,7 @@ const App = (props: any) => {
         columns={columns}
         data={data}
         pagination={pagination}
+        onChange={onTableChange}
         rowSelection={{
           type: 'checkbox',
         }}

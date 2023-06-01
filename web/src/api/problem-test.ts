@@ -13,6 +13,7 @@ export interface ListProblemTetstsResponse {
     remark: string;
   }>;
   total: number;
+  isSampleFirst: boolean;
 }
 export function listProblemTests(id: number, params) {
   return axios.get<ListProblemTetstsResponse>(`/problems/${id}/tests`, {params});

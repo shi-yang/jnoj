@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -181,10 +182,79 @@ func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
 	return nil
 }
 
-func (r *problemRepo) SortProblemTests(ctx context.Context, ids []int32) {
-	for index, id := range ids {
+func (r *problemRepo) IsProblemTestSampleFirst(ctx context.Context, pid int) bool {
+	var sampleOrder []int
+	r.data.db.WithContext(ctx).
+		Select("`order`").
+		Model(&ProblemTest{}).
+		Where("problem_id = ?", pid).
+		Where("is_example = ?", true).
+		Find(&sampleOrder)
+	sort.Slice(sampleOrder, func(i, j int) bool {
+		return sampleOrder[i] < sampleOrder[j]
+	})
+	for index, v := range sampleOrder {
+		if index+1 != v {
+			return false
+		}
+	}
+	return true
+}
+
+func (r *problemRepo) SortProblemTests(ctx context.Context, req *v1.SortProblemTestsRequest) {
+	if req.SetSampleFirst != nil && *req.SetSampleFirst {
+		tests, _ := r.ListProblemTests(ctx, &v1.ListProblemTestsRequest{
+			Id:      req.Id,
+			Page:    -1,
+			PerPage: -1,
+		})
+		sort.Slice(tests, func(i, j int) bool {
+			if tests[i].IsExample {
+				return true
+			}
+			if tests[j].IsExample {
+				return false
+			}
+			return tests[i].Order < tests[j].Order
+		})
+		for index, test := range tests {
+			r.data.db.WithContext(ctx).
+				Model(&ProblemTest{ID: test.ID}).
+				Update("order", index+1)
+		}
+	} else if req.SortByName != nil && *req.SortByName {
+		tests, _ := r.ListProblemTests(ctx, &v1.ListProblemTestsRequest{
+			Id:      req.Id,
+			Page:    -1,
+			PerPage: -1,
+		})
+		sort.Slice(tests, func(i, j int) bool {
+			si, sj := tests[i].Name, tests[j].Name
+			ni, nj := len(si), len(sj)
+			for k := 0; k < ni && k < nj; k++ {
+				ci, cj := si[k], sj[k]
+				if ci != cj {
+					return ci < cj
+				}
+			}
+			return ni < nj
+		})
+		for index, test := range tests {
+			r.data.db.WithContext(ctx).
+				Model(&ProblemTest{ID: test.ID}).
+				Update("order", index+1)
+		}
+	} else if len(req.Ids) > 0 {
+		var orderMin int
 		r.data.db.WithContext(ctx).
-			Model(&ProblemTest{ID: int(id)}).
-			Update("order", index+1)
+			Select("min(`order`)").
+			Model(&ProblemTest{}).
+			Where("id in (?)", req.Ids).
+			Scan(&orderMin)
+		for index, id := range req.Ids {
+			r.data.db.WithContext(ctx).
+				Model(&ProblemTest{ID: int(id)}).
+				Update("order", index+orderMin)
+		}
 	}
 }

@@ -17,16 +17,12 @@ func NewPagination(page, pageSize int32) *Pagination {
 func (p *Pagination) GetOffset() int {
 	if p.page > 0 {
 		return (p.page - 1) * p.GetPageSize()
-	} else if p.page < 0 {
-		return p.page
 	}
-	return 0
+	return p.page
 }
 
 func (p *Pagination) GetPageSize() int {
-	if p.pageSize <= 0 {
-		p.pageSize = 25
-	} else if p.pageSize > MaxPageSize {
+	if p.pageSize > MaxPageSize {
 		p.pageSize = MaxPageSize
 	}
 	return p.pageSize

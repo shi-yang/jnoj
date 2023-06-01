@@ -252,12 +252,14 @@ func (s *ProblemService) ListProblemTests(ctx context.Context, req *v1.ListProbl
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	data, count := s.uc.ListProblemTests(ctx, req)
+	data, count, isSampleFirst := s.uc.ListProblemTests(ctx, req)
 	resp := new(v1.ListProblemTestsResponse)
 	resp.Total = count
+	resp.IsSampleFirst = isSampleFirst
 	for _, v := range data {
 		resp.Data = append(resp.Data, &v1.ProblemTest{
 			Id:            int32(v.ID),
+			Order:         int32(v.Order),
 			Name:          v.Name,
 			InputPreview:  v.InputPreview,
 			InputSize:     v.InputSize,
@@ -374,7 +376,7 @@ func (s *ProblemService) SortProblemTests(ctx context.Context, req *v1.SortProbl
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	s.uc.SortProblemTests(ctx, req.Ids)
+	s.uc.SortProblemTests(ctx, req)
 	return &emptypb.Empty{}, nil
 }
 

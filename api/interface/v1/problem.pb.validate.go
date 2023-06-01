@@ -1954,6 +1954,8 @@ func (m *ListProblemTestsResponse) validate(all bool) error {
 
 	// no validation rules for Total
 
+	// no validation rules for IsSampleFirst
+
 	if len(errors) > 0 {
 		return ListProblemTestsResponseMultiError(errors)
 	}
@@ -2161,6 +2163,8 @@ func (m *ProblemTest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Id
+
+	// no validation rules for Order
 
 	// no validation rules for ProblemId
 
@@ -2664,6 +2668,14 @@ func (m *SortProblemTestsRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Id
+
+	if m.SetSampleFirst != nil {
+		// no validation rules for SetSampleFirst
+	}
+
+	if m.SortByName != nil {
+		// no validation rules for SortByName
+	}
 
 	if len(errors) > 0 {
 		return SortProblemTestsRequestMultiError(errors)
