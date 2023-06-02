@@ -176,7 +176,13 @@ message GetUserProfileCalendarResponse {
 
 message GetUserProfileProblemSolvedRequest {
     int32 id = 1;
-    string type = 2; // problemset group
+    enum Type {
+        PROBLEMSET = 0;
+        CONTEST = 1;
+    }
+    Type type = 2; // problemset contest
+    int32 page = 3;
+    int32 per_page = 4;
 }
 
 message GetUserProfileProblemSolvedResponse {
@@ -200,5 +206,22 @@ message GetUserProfileProblemSolvedResponse {
         int32 total = 4; 
         repeated Problem problems = 5;
     }
-    repeated Problemset problemsets = 2;
+    message Contest {
+        // 比赛ID
+        int32 id = 1;
+        // 比赛名称
+        string name = 2;
+        // 小组名称
+        string group_name = 3;
+        // 小组ID
+        int32 group_id = 4;
+        // 用户完成数
+        int32 count = 5;
+        // 比赛题目总数
+        int32 total = 6; 
+        repeated Problem problems = 7;
+    }
+    repeated Problemset problemsets = 1;
+    repeated Contest contests = 2;
+    int64 total = 3;
 }

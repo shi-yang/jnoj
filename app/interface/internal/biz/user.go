@@ -46,7 +46,8 @@ type UserRepo interface {
 	UpdateUser(context.Context, *User) (*User, error)
 	FindByID(context.Context, int) (*User, error)
 	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
-	GetUserProfileProblemSolved(context.Context, *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error)
+	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error)
+	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 
 	GetCaptcha(ctx context.Context, key string) (string, error)
 	SaveCaptcha(ctx context.Context, key string, value string) error
@@ -195,5 +196,9 @@ func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUs
 }
 
 func (uc *UserUsecase) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
-	return uc.repo.GetUserProfileProblemSolved(ctx, req)
+	if req.Type.String() == "PROBLEMSET" {
+		return uc.repo.GetUserProfileProblemsetProblemSolved(ctx, int(req.Id))
+	}
+
+	return uc.repo.GetUserProfileContestProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
 }

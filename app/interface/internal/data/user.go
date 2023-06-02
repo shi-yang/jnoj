@@ -6,6 +6,7 @@ import (
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
@@ -149,7 +150,7 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 	return res, nil
 }
 
-func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
+func (r *userRepo) GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	res := new(v1.GetUserProfileProblemSolvedResponse)
 	// 题目数量统计
 	var submissions []struct {
@@ -159,7 +160,7 @@ func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetU
 	r.data.db.WithContext(ctx).
 		Select("problem_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
 		Table("submission").
-		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeProblemset).
+		Where("user_id = ? and entity_type = ?", uid, biz.SubmissionEntityTypeProblemset).
 		Group("problem_id").
 		Scan(&submissions)
 	mp := make(map[int]v1.GetUserProfileProblemSolvedResponse_Problem_Status)
@@ -193,6 +194,69 @@ func (r *userRepo) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetU
 		s.Name = problemset.Name
 		s.Id = int32(problemset.ID)
 		res.Problemsets = append(res.Problemsets, &s)
+	}
+	return res, nil
+}
+
+func (r *userRepo) GetUserProfileContestProblemSolved(ctx context.Context, uid int, page, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error) {
+	res := new(v1.GetUserProfileProblemSolvedResponse)
+	// 题目数量统计
+	var submissions []struct {
+		ProblemID int
+		Verdict   int
+	}
+	r.data.db.WithContext(ctx).
+		Select("problem_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
+		Table("submission").
+		Where("user_id = ? and entity_type = ?", uid, biz.SubmissionEntityTypeContest).
+		Group("problem_id").
+		Scan(&submissions)
+	mp := make(map[int]v1.GetUserProfileProblemSolvedResponse_Problem_Status)
+	for _, v := range submissions {
+		if v.Verdict == 0 {
+			mp[v.ProblemID] = v1.GetUserProfileProblemSolvedResponse_Problem_INCORRECT
+		} else {
+			mp[v.ProblemID] = v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT
+		}
+	}
+
+	userContestSubQuery := r.data.db.WithContext(ctx).Select("DISTINCT(contest_id)").Model(&ContestUser{}).Where("user_id = ?", uid)
+	var contests []Contest
+	pager := pagination.NewPagination(int32(page), int32(pageSize))
+	db := r.data.db.WithContext(ctx).
+		Model(&Contest{}).
+		Where("id in (?)", userContestSubQuery).
+		Where("end_time < ?", time.Now()).
+		Preload("Group", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name")
+		}).
+		Preload("ContestProblems", func(db *gorm.DB) *gorm.DB {
+			return db.Select("number, problem_id, contest_id")
+		})
+	db.Count(&res.Total)
+	db.Order("id desc").
+		Offset(pager.GetOffset()).
+		Limit(pager.GetPageSize()).
+		Find(&contests)
+	for _, contest := range contests {
+		var s v1.GetUserProfileProblemSolvedResponse_Contest
+		for _, problem := range contest.ContestProblems {
+			if mp[problem.ProblemID] == v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT {
+				s.Count++
+			}
+			s.Problems = append(s.Problems, &v1.GetUserProfileProblemSolvedResponse_Problem{
+				Id:     int32(problem.Number),
+				Status: mp[problem.ProblemID],
+			})
+		}
+		s.Total = int32(len(contest.ContestProblems))
+		s.Name = contest.Name
+		s.Id = int32(contest.ID)
+		if contest.Group != nil {
+			s.GroupId = int32(contest.Group.ID)
+			s.GroupName = contest.Group.Name
+		}
+		res.Contests = append(res.Contests, &s)
 	}
 	return res, nil
 }
