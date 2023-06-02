@@ -37,8 +37,9 @@ type Contest struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt
-	Group            *Group `json:"group" gorm:"foreignKey:GroupID"`
-	User             *User  `json:"user" gorm:"foreignKey:UserID"`
+	Group            *Group            `json:"group" gorm:"foreignKey:GroupID"`
+	User             *User             `json:"user" gorm:"foreignKey:UserID"`
+	ContestProblems  []*ContestProblem `gorm:"ForeignKey:ContestID"`
 }
 
 // NewContestRepo .
