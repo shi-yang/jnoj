@@ -161,12 +161,13 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 // CreateContest .
 func (r *contestRepo) CreateContest(ctx context.Context, c *biz.Contest) (*biz.Contest, error) {
 	res := Contest{
-		Name:      c.Name,
-		StartTime: c.StartTime,
-		EndTime:   c.EndTime,
-		UserID:    c.UserID,
-		Type:      c.Type,
-		GroupID:   c.GroupId,
+		Name:       c.Name,
+		StartTime:  c.StartTime,
+		EndTime:    c.EndTime,
+		UserID:     c.UserID,
+		Type:       c.Type,
+		GroupID:    c.GroupId,
+		Membership: c.Membership,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
