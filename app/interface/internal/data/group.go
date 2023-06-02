@@ -208,6 +208,9 @@ func (r *groupRepo) GetGroupUser(ctx context.Context, gid int, uid int) (*biz.Gr
 		}).
 		First(&res, "group_id = ? and user_id = ?", gid, uid).
 		Error
+	if err != nil {
+		return nil, err
+	}
 	u := &biz.GroupUser{
 		ID:        res.ID,
 		UserID:    res.UserID,
