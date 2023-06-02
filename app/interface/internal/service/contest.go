@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -420,4 +422,38 @@ func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.Lis
 		})
 	}
 	return resp, nil
+}
+
+// IsContestAllKilled 比赛AK彩蛋
+func (s *ContestService) IsContestAllKilled(ctx context.Context, req *v1.IsContestAllKilledRequest) (*v1.IsContestAllKilledResponse, error) {
+	var res = new(v1.IsContestAllKilledResponse)
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	res.Id = int32(contest.ID)
+	res.Name = contest.Name
+	res.StartTime = timestamppb.New(contest.StartTime)
+	res.ContestDuration = durationpb.New(contest.EndTime.Sub(contest.StartTime))
+	res.UseTime = durationpb.New(time.Since(contest.StartTime))
+	// OI 或者 已经结束的比赛不存在AK
+	if contest.Type == biz.ContestTypeOI || contest.GetRunningStatus() == biz.ContestRunningStatusFinished {
+		return res, nil
+	}
+	problems, _ := s.uc.ListContestProblems(ctx, contest)
+	acceptedCount := 0
+	for _, p := range problems {
+		if p.Status == biz.ProblemStatusSolved {
+			acceptedCount++
+		}
+	}
+	if acceptedCount != len(problems) {
+		return res, nil
+	}
+	// AK
+	res.Ok = true
+	return res, nil
 }
