@@ -1,6 +1,7 @@
 package pagination
 
 const MaxPageSize = 500
+const DefaultPageSize = 25
 
 type Pagination struct {
 	page     int
@@ -24,6 +25,8 @@ func (p *Pagination) GetOffset() int {
 func (p *Pagination) GetPageSize() int {
 	if p.pageSize > MaxPageSize {
 		p.pageSize = MaxPageSize
+	} else if p.pageSize == 0 {
+		p.pageSize = DefaultPageSize
 	}
 	return p.pageSize
 }
