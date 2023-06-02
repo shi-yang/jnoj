@@ -5,6 +5,7 @@ const ContestContext = createContext({
   name: '',
   startTime: new Date(),
   endTime: new Date(),
+  virtualStart: null,
   privacy: '',
   membership: '',
   role: '',
@@ -21,6 +22,7 @@ const ContestContext = createContext({
   },
   problems: [],
   changeProblem: (number: string) => {},
+  updateContest: ({} : any) => {},
 });
 
 export default ContestContext;

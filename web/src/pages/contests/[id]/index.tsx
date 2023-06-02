@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useContext, useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Grid, Slider, Statistic, Link } from '@arco-design/web-react';
 import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconUserGroup, IconBook } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
@@ -33,8 +33,9 @@ const Col = Grid.Col;
 const collapsedWidth = 60;
 const normalWidth = 220;
 
-function ContestHeader({contest}: any) {
+function ContestHeader() {
   const t = useLocale(locale);
+  const contest = useContext(ContestContext);
   const [sliderValue, setSliderValue] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   let timer = null;
@@ -112,6 +113,7 @@ function Index() {
     runningStatus: '',
     invitationCode: '',
     description: '',
+    virtualStart: null,
     owner: {
       id: 0,
       type: '',
@@ -182,15 +184,19 @@ function Index() {
     }
   };
 
+  const updateContest = (newContestData) => {
+    setContest(newContestData);
+  };
+
   return (
     (!loading &&
-      <ContestContext.Provider value={{...contest, problems: problems, changeProblem: changeProblem}}>
+      <ContestContext.Provider value={{...contest, problems: problems, changeProblem: changeProblem, updateContest}}>
         <div className={styles['contest-layout-basic']}>
           <Head>
             <title>{`${contest.name} - ${settings.name}`}</title>
           </Head>
           <Layout style={{height: '100%'}}>
-            <ContestHeader contest={contest} />
+            <ContestHeader />
             {(contest.role === 'ROLE_GUEST' && (contest.privacy === 'PRIVATE' || contest.runningStatus !== 'FINISHED')) || (contest.role !== 'ROLE_ADMIN' && contest.runningStatus === 'NOT_STARTED')
               ? <Forbidden />
               : <Layout style={{height: '100%'}}>

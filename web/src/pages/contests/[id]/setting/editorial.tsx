@@ -107,9 +107,6 @@ const SettingInfo = () => {
     <div>
       <Card title='您可在此编写比赛题解，比赛结束后用户方可查看题解'>
         <Form form={form} autoComplete='off' onSubmit={onSubmit}>
-          <Form.Item label={t['setting.editorial.title']} required field='title' rules={[{ required: true }]}>
-            <Input placeholder='' />
-          </Form.Item>
           <Form.Item label={t['setting.editorial.content']} required field='content' rules={[{ required: true }]}>
             <Editor />
           </Form.Item>

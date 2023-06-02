@@ -95,6 +95,7 @@ const SettingInfo = () => {
       updateContest(contest.id, data)
         .then(res => {
           Message.success('已保存');
+          contest.updateContest({...contest, ...data});
         })
         .finally(() => {
           setConfirmLoading(false);
