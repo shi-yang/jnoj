@@ -115,21 +115,25 @@ const (
 // 4、参赛用户
 func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bool {
 	userID, role := auth.GetUserID(ctx)
-	if t == ContestPermissionUpdate {
-		return c.UserID == userID || c.Role == ContestRoleAdmin || CheckAccess(role, ResourceContest)
-	}
-	// 比赛创建人
-	if c.UserID == userID {
+	// update
+	// 满足以下条件，可以有比赛的任何权限
+	// 1. 比赛创建人
+	// 2. 角色是管理员，角色可能继承自小组管理
+	// 3. 后台分配的特定角色用户
+	if c.UserID == userID || c.Role == ContestRoleAdmin || CheckAccess(role, ResourceContest) {
 		return true
 	}
-	runningStatus := c.GetRunningStatus()
-	// 公开赛比赛结束
-	if c.Privacy == ContestPrivacyPublic && runningStatus == ContestRunningStatusFinished {
-		return true
-	}
-	// 比赛开始后
-	if (c.Role != ContestRoleGuest) && runningStatus != ContestRunningStatusNotStarted {
-		return true
+	// view
+	if t == ContestPermissionView {
+		runningStatus := c.GetRunningStatus()
+		// 公开赛比赛结束
+		if c.Privacy == ContestPrivacyPublic && runningStatus == ContestRunningStatusFinished {
+			return true
+		}
+		// 比赛开始后
+		if (c.Role != ContestRoleGuest) && runningStatus != ContestRunningStatusNotStarted {
+			return true
+		}
 	}
 	return false
 }
