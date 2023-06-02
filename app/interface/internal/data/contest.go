@@ -156,7 +156,7 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 			res.Role = biz.ContestRoleAdmin
 		}
 	}
-	return res, err
+	return res, nil
 }
 
 // CreateContest .

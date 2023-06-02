@@ -29,8 +29,8 @@ export default function Forbidden() {
         Message.success(t['forbidden.registrationFuccessfully']);
         router.reload();
       })
-      .catch(() => {
-        Message.error(t['forbidden.registrationFailed']);
+      .catch((res) => {
+        Message.error(t['forbidden.registrationFailed'] + ':' + res.response.data.message);
       });
   }
   return (
@@ -53,6 +53,9 @@ export default function Forbidden() {
                 {
                   <div>
                     <p>私有比赛需要参赛才能查看比赛信息。您尚未报名参加该比赛，请点击 <Button type='primary' onClick={() => setVisible(true)}>参赛</Button>，开始竞赛</p>
+                    {contest.membership === 'GROUP_USER' && (
+                      <p><Typography.Text type='error' bold>当前比赛仅小组成员才能参加，如果你不是本小组成员，将参加失败</Typography.Text></p>
+                    )}
                     {contest.runningStatus === 'FINISHED' && (
                       <Typography.Text type='error' bold>请注意：由于该比赛当前已经结束，点击参赛您将<strong>立即</strong>开始虚拟竞赛，在虚拟竞赛中，将重现本次比赛的竞赛过程</Typography.Text>
                     )}

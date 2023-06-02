@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/interface/v1"
+	"jnoj/internal/middleware/auth"
 	"time"
 )
 
@@ -47,7 +48,9 @@ func (uc *ContestUsecase) CreateContestUser(ctx context.Context, c *ContestUser,
 		if err != nil {
 			return nil, v1.ErrorBadRequest("invalid group")
 		}
-		if group.Role == GroupUserRoleGuest {
+		uid, role := auth.GetUserID(ctx)
+		_, err = uc.groupRepo.GetGroupUser(ctx, group.ID, uid)
+		if uid != group.UserID && err != nil && !CheckAccess(role, ResourceContest) {
 			return nil, v1.ErrorForbidden("only group user")
 		}
 	}
