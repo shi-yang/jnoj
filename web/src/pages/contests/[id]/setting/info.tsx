@@ -122,7 +122,7 @@ const SettingInfo = () => {
     }
     form.setFieldsValue({
       name: contest.name,
-      time: [contest.startTime, contest.endTime],
+      time: [new Date(contest.startTime), new Date(contest.endTime)],
       type: contest.type,
       privacy: contest.privacy,
       membership: contest.membership,
