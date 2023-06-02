@@ -68,6 +68,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/ListContestProblems", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/GetContestProblem", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestProblem", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/DeleteContestProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/BatchCreateContestUsers", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/UpdateContestUser", auth.User())
