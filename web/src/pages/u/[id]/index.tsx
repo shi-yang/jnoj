@@ -33,8 +33,10 @@ export default function UserPage() {
     start: '',
     end: '',
   });
+  const [problemSolvedProgressTab, setProblemSolvedProgressTab] = useState('problemset');
   const [profileProblemsets, setProfileProblemsets] = useState([]);
   const [profileContests, setProfileContests] = useState([]);
+  const [profileGroups, setProfileGroups] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -58,32 +60,37 @@ export default function UserPage() {
         setProfileCalendar(data);
       });
   }
-  function fetchProfileContestsProblemSolveData() {
+  useEffect(() => {
     const { current, pageSize } = pagination;
-    getUserProfileProblemSolved(id, {type: 'CONTEST', page: current, perPage: pageSize})
-      .then(res => {
-        setProfileContests(res.data.contests);
-        setPagination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
-      });
-  }
-  function onProblemSolvedProgressTabChange(e) {
-    if (e === 'problemset') {
+    if (problemSolvedProgressTab === 'problemset') {
       getUserProfileProblemSolved(id, {type: 'PROBLEMSET'})
         .then(res => {
           setProfileProblemsets(res.data.problemsets);
         });
+    } else if (problemSolvedProgressTab === 'contest') {
+      getUserProfileProblemSolved(id, {type: 'CONTEST', page: current, perPage: pageSize})
+        .then(res => {
+          setProfileContests(res.data.contests);
+          setPagination({
+            ...pagination,
+            current,
+            pageSize,
+            total: res.data.total,
+          });
+        });
     } else {
-      fetchProfileContestsProblemSolveData();
+      getUserProfileProblemSolved(id, {type: 'GROUP', page: current, perPage: pageSize})
+        .then(res => {
+          setProfileGroups(res.data.groups);
+          setPagination({
+            ...pagination,
+            current,
+            pageSize,
+            total: res.data.total,
+          });
+        });
     }
-  }
-  useEffect(() => {
-    fetchProfileContestsProblemSolveData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [problemSolvedProgressTab, pagination.current, pagination.pageSize]);
 
   useEffect(() => {
     getUsers(id)
@@ -173,7 +180,7 @@ export default function UserPage() {
         <Card
           title='做题进度'
         >
-          <Tabs type='rounded' destroyOnHide onChange={onProblemSolvedProgressTabChange}>
+          <Tabs type='rounded' destroyOnHide onChange={e => setProblemSolvedProgressTab(e)}>
             <Tabs.TabPane key='problemset' title='题单进度'>
               <Collapse accordion bordered={false}>
                 {profileProblemsets.map((item, index) => 
@@ -226,6 +233,52 @@ export default function UserPage() {
                         </Link>
                       ))}
                     </Space>
+                  </Collapse.Item>
+                )}
+              </Collapse>
+              <Pagination {...pagination} />
+            </Tabs.TabPane>
+            <Tabs.TabPane key='group' title='小组进度'>
+              <Collapse accordion bordered={false}>
+                {profileGroups.map((item, index) => 
+                  <Collapse.Item
+                    key={index}
+                    name={item.id}
+                    header={
+                      <div style={{display: 'flex'}}>
+                        <div style={{width: '500px'}}>
+                          {<Link href={`/groups/${item.id}`} target='_blank'>{item.name}</Link>}
+                        </div>
+                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} width='300px' />
+                        <div style={{width: '300px', textAlign: 'center'}}>{item.count} / {item.total}</div>
+                      </div>
+                    }
+                  >
+                    <Collapse accordion bordered={false}>
+                      {item.contests.map((contest, index) => 
+                        <Collapse.Item
+                          key={index}
+                          name={contest.id}
+                          header={
+                            <div style={{display: 'flex'}}>
+                              <div style={{width: '500px'}}>
+                                {<Link href={`/contests/${contest.id}`} target='_blank'>{contest.name}</Link>}
+                              </div>
+                              <Progress percent={contest.total === 0 ? 0 : Number(Number(contest.count * 100 / contest.total).toFixed(0))} width='300px' />
+                              <div style={{width: '300px', textAlign: 'center'}}>{contest.count} / {contest.total}</div>
+                            </div>
+                          }
+                        >
+                          <Space wrap>
+                            {contest.problems.map((problem, index) => (
+                              <Link key={index} href={`/contests/${contest.id}`}>
+                                <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
+                              </Link>
+                            ))}
+                          </Space>
+                        </Collapse.Item>
+                      )}
+                    </Collapse>
                   </Collapse.Item>
                 )}
               </Collapse>

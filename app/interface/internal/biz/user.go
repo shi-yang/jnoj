@@ -48,6 +48,7 @@ type UserRepo interface {
 	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
 	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
+	GetUserProfileGroupProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 
 	GetCaptcha(ctx context.Context, key string) (string, error)
 	SaveCaptcha(ctx context.Context, key string, value string) error
@@ -198,7 +199,8 @@ func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUs
 func (uc *UserUsecase) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	if req.Type.String() == "PROBLEMSET" {
 		return uc.repo.GetUserProfileProblemsetProblemSolved(ctx, int(req.Id))
+	} else if req.Type.String() == "CONTEST" {
+		return uc.repo.GetUserProfileContestProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
 	}
-
-	return uc.repo.GetUserProfileContestProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
+	return uc.repo.GetUserProfileGroupProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
 }

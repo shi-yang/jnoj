@@ -32,7 +32,8 @@ type Group struct {
 	UserID         int
 	CreatedAt      time.Time
 
-	User *User `json:"user" gorm:"foreignKey:UserID"`
+	User     *User      `json:"user" gorm:"foreignKey:UserID"`
+	Contests []*Contest `gorm:"GroupID"`
 }
 
 // GroupUser .

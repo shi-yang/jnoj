@@ -1850,6 +1850,40 @@ func (m *GetUserProfileProblemSolvedResponse) validate(all bool) error {
 
 	}
 
+	for idx, item := range m.GetGroups() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponseValidationError{
+						field:  fmt.Sprintf("Groups[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponseValidationError{
+						field:  fmt.Sprintf("Groups[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetUserProfileProblemSolvedResponseValidationError{
+					field:  fmt.Sprintf("Groups[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	// no validation rules for Total
 
 	if len(errors) > 0 {
@@ -2459,3 +2493,151 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetUserProfileProblemSolvedResponse_ContestValidationError{}
+
+// Validate checks the field values on
+// GetUserProfileProblemSolvedResponse_Group with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *GetUserProfileProblemSolvedResponse_Group) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// GetUserProfileProblemSolvedResponse_Group with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// GetUserProfileProblemSolvedResponse_GroupMultiError, or nil if none found.
+func (m *GetUserProfileProblemSolvedResponse_Group) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserProfileProblemSolvedResponse_Group) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Count
+
+	// no validation rules for Total
+
+	for idx, item := range m.GetContests() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponse_GroupValidationError{
+						field:  fmt.Sprintf("Contests[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetUserProfileProblemSolvedResponse_GroupValidationError{
+						field:  fmt.Sprintf("Contests[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetUserProfileProblemSolvedResponse_GroupValidationError{
+					field:  fmt.Sprintf("Contests[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetUserProfileProblemSolvedResponse_GroupMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserProfileProblemSolvedResponse_GroupMultiError is an error wrapping
+// multiple validation errors returned by
+// GetUserProfileProblemSolvedResponse_Group.ValidateAll() if the designated
+// constraints aren't met.
+type GetUserProfileProblemSolvedResponse_GroupMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserProfileProblemSolvedResponse_GroupMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserProfileProblemSolvedResponse_GroupMultiError) AllErrors() []error { return m }
+
+// GetUserProfileProblemSolvedResponse_GroupValidationError is the validation
+// error returned by GetUserProfileProblemSolvedResponse_Group.Validate if the
+// designated constraints aren't met.
+type GetUserProfileProblemSolvedResponse_GroupValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserProfileProblemSolvedResponse_GroupValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserProfileProblemSolvedResponse_GroupValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserProfileProblemSolvedResponse_GroupValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserProfileProblemSolvedResponse_GroupValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserProfileProblemSolvedResponse_GroupValidationError) ErrorName() string {
+	return "GetUserProfileProblemSolvedResponse_GroupValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserProfileProblemSolvedResponse_GroupValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserProfileProblemSolvedResponse_Group.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserProfileProblemSolvedResponse_GroupValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserProfileProblemSolvedResponse_GroupValidationError{}

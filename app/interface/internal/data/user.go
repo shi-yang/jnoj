@@ -226,7 +226,7 @@ func (r *userRepo) GetUserProfileContestProblemSolved(ctx context.Context, uid i
 	db := r.data.db.WithContext(ctx).
 		Model(&Contest{}).
 		Where("id in (?)", userContestSubQuery).
-		Where("end_time < ?", time.Now()).
+		Where("(type = ? and end_time < ?) or type != ?", biz.ContestTypeOI, time.Now(), biz.ContestTypeOI).
 		Preload("Group", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, name")
 		}).
@@ -257,6 +257,76 @@ func (r *userRepo) GetUserProfileContestProblemSolved(ctx context.Context, uid i
 			s.GroupName = contest.Group.Name
 		}
 		res.Contests = append(res.Contests, &s)
+	}
+	return res, nil
+}
+
+func (r *userRepo) GetUserProfileGroupProblemSolved(ctx context.Context, uid int, page, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error) {
+	res := new(v1.GetUserProfileProblemSolvedResponse)
+	// 题目数量统计
+	var submissions []struct {
+		ProblemID int
+		Verdict   int
+	}
+	r.data.db.WithContext(ctx).
+		Select("problem_id, SUM(case when verdict = ? then 1 else 0 end) as verdict", biz.SubmissionVerdictAccepted).
+		Table("submission").
+		Where("user_id = ? and entity_type = ?", uid, biz.SubmissionEntityTypeContest).
+		Group("problem_id").
+		Scan(&submissions)
+	mp := make(map[int]v1.GetUserProfileProblemSolvedResponse_Problem_Status)
+	for _, v := range submissions {
+		if v.Verdict == 0 {
+			mp[v.ProblemID] = v1.GetUserProfileProblemSolvedResponse_Problem_INCORRECT
+		} else {
+			mp[v.ProblemID] = v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT
+		}
+	}
+
+	userGroupSubQuery := r.data.db.WithContext(ctx).Select("DISTINCT(group_id)").Model(&GroupUser{}).Where("user_id = ?", uid)
+	var groups []Group
+	pager := pagination.NewPagination(int32(page), int32(pageSize))
+	db := r.data.db.WithContext(ctx).
+		Model(&Group{}).
+		Where("id in (?)", userGroupSubQuery).
+		Preload("Contests", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name, group_id").Where("(type = ? and end_time < ?) or type != ?", biz.ContestTypeOI, time.Now(), biz.ContestTypeOI)
+		}).
+		Preload("Contests.ContestProblems", func(db *gorm.DB) *gorm.DB {
+			return db.Select("number, problem_id, contest_id")
+		})
+	db.Count(&res.Total)
+	db.Order("id desc").
+		Offset(pager.GetOffset()).
+		Limit(pager.GetPageSize()).
+		Find(&groups)
+	for _, group := range groups {
+		g := v1.GetUserProfileProblemSolvedResponse_Group{
+			Id:   int32(group.ID),
+			Name: group.Name,
+		}
+		// 统计比赛
+		for _, contest := range group.Contests {
+			// 统计比赛的题目
+			c := v1.GetUserProfileProblemSolvedResponse_Contest{
+				Id:    int32(contest.ID),
+				Name:  contest.Name,
+				Total: int32(len(contest.ContestProblems)),
+			}
+			for _, problem := range contest.ContestProblems {
+				if mp[problem.ProblemID] == v1.GetUserProfileProblemSolvedResponse_Problem_CORRECT {
+					c.Count++
+				}
+				c.Problems = append(c.Problems, &v1.GetUserProfileProblemSolvedResponse_Problem{
+					Id:     int32(problem.Number),
+					Status: mp[problem.ProblemID],
+				})
+			}
+			g.Total += c.Total
+			g.Count += c.Count
+			g.Contests = append(g.Contests, &c)
+		}
+		res.Groups = append(res.Groups, &g)
 	}
 	return res, nil
 }

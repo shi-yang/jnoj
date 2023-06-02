@@ -179,6 +179,7 @@ message GetUserProfileProblemSolvedRequest {
     enum Type {
         PROBLEMSET = 0;
         CONTEST = 1;
+        GROUP = 2;
     }
     Type type = 2; // problemset contest
     int32 page = 3;
@@ -221,7 +222,17 @@ message GetUserProfileProblemSolvedResponse {
         int32 total = 6; 
         repeated Problem problems = 7;
     }
+    message Group {
+        int32 id = 1;
+        string name = 2;
+        // 用户完成数
+        int32 count = 3;
+        // 比赛题目总数
+        int32 total = 4;
+        repeated Contest contests = 5;
+    }
     repeated Problemset problemsets = 1;
     repeated Contest contests = 2;
-    int64 total = 3;
+    repeated Group groups = 3;
+    int64 total = 4;
 }
