@@ -114,9 +114,9 @@ const (
 // 3、比赛不是私有
 // 4、参赛用户
 func (c *Contest) HasPermission(ctx context.Context, t ContestPermissionType) bool {
-	userID, _ := auth.GetUserID(ctx)
+	userID, role := auth.GetUserID(ctx)
 	if t == ContestPermissionUpdate {
-		return c.UserID == userID
+		return c.UserID == userID || c.Role == ContestRoleAdmin || CheckAccess(role, ResourceContest)
 	}
 	// 比赛创建人
 	if c.UserID == userID {
