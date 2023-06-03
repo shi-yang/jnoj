@@ -1421,6 +1421,8 @@ func (m *ContestProblem) validate(all bool) error {
 
 	// no validation rules for Source
 
+	// no validation rules for Type
+
 	for idx, item := range m.GetStatements() {
 		_, _ = idx, item
 

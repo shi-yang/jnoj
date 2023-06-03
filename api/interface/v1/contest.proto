@@ -232,7 +232,11 @@ message CreateContestRequest {
     google.protobuf.Timestamp end_time = 8;
 }
 
-message ContestProblem {
+message ContestProblem {// 题目类型：标准输入输出、函数题
+    enum ProblemType {
+        DEFAULT = 0; // 标准输入输出
+        FUNCTION = 1; // 函数题
+    }
     int32 id = 1;
     string name = 2;
     int32 number = 3;
@@ -243,6 +247,7 @@ message ContestProblem {
     int64 time_limit = 8;
     int64 memory_limit = 9;
     string source = 10;
+    ProblemType type = 11;
     message Statement {
         int32 id = 1;
         int32 problem_id = 2;
@@ -253,20 +258,20 @@ message ContestProblem {
         string output = 7;
         string note = 8;
     }
-    repeated Statement statements = 11;
+    repeated Statement statements = 12;
     // 样例
     message SampleTest {
         string input = 1;
         string output = 2;
     }
-    repeated SampleTest sample_tests = 12;
+    repeated SampleTest sample_tests = 13;
     // 解答情况
     enum Status {
         NOT_START = 0;
         ATTEMPTED = 1;
         SOLVED = 2;
     }
-    Status status = 13;
+    Status status = 14;
 }
 
 message CreateContestProblemRequest {

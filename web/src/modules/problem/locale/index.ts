@@ -9,6 +9,11 @@ const i18n = {
     'memoryLimit': 'Memory Limit',
     'copy': 'Copy',
     'copied': 'Copied',
+    'console.testCase': 'Test Case',
+    'console.result': 'Result',
+    'console.result.compileError': 'Compile Error',
+    'console.runCode': 'Run Code',
+    'console.addCase': 'Add Case',
   },
   'zh-CN': {
     'input': '输入',
@@ -20,6 +25,11 @@ const i18n = {
     'memoryLimit': '内存限制',
     'copy': '复制',
     'copied': '已复制',
+    'console.testCase': '测试样例',
+    'console.result': '执行结果',
+    'console.result.compileError': '编译错误',
+    'console.runCode': '运行',
+    'console.addCase': '添加',
   },
 };
 

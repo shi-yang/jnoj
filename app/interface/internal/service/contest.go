@@ -188,6 +188,7 @@ func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetConte
 		AcceptedCount: int32(res.AcceptedCount),
 		TimeLimit:     res.TimeLimit,
 		MemoryLimit:   res.Memory,
+		Type:          v1.ContestProblem_ProblemType(res.Type),
 	}
 	for _, v := range res.Statements {
 		resp.Statements = append(resp.Statements, &v1.ContestProblem_Statement{

@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './style/editor.module.less';
 import { Button, Message, Select } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { createSubmission } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
-import { IconSkin } from '@arco-design/web-react/icon';
+import { IconDown, IconPlayArrow, IconSkin, IconUp } from '@arco-design/web-react/icon';
 import Editor from '@/components/Editor';
 import { getContestProblemLanguage, listContestProblemLanguages } from '@/api/contest';
 import RecentlySubmitted from '@/modules/submission/RecentlySubmitted';
 import { isLogged } from '@/utils/auth';
+import Console from '@/modules/problem/Console';
 
 export default function App(props: any) {
   const t = useLocale(locale);
@@ -18,6 +19,7 @@ export default function App(props: any) {
   const [languageList, setLanguageList] = useState([]);
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
   const [lastSubmissionID, setLastSubmissionID] = useState(0);
+  const [languageId, setLanguageId] = useState(0);
   const themes = [
     'light', 'vs-dark'
   ];
@@ -27,7 +29,15 @@ export default function App(props: any) {
     2: 'java',
     3: 'python'
   };
+  const [consoleVisible, setConsoleVisible] = useState(false);
+  const consoleRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false); 
+  const runCode = () => {
+    setConsoleVisible(true);
+    consoleRef.current.runCode();
+  };
   useEffect(() => {
+    setIsMounted(true);
     getLanguages();
   }, []);
   const onChange = React.useCallback((value, viewUpdate) => {
@@ -35,6 +45,15 @@ export default function App(props: any) {
   }, []);
   const onChangeLanguage = (e) => {
     setLanguage(e);
+    // 函数题需要查询对应的语言模板
+    if (props.problem.type === 'FUNCTION') {
+      const userLang = languageList.find(item => item.languageCode === Number(e));
+      getContestProblemLanguage(props.contest.id, props.problem.number, userLang.id)
+        .then(res => {
+          setLanguageId(userLang.id);
+          setValue(res.data.userContent);
+        });
+    }
   };
   const getLanguages = () => {
     listContestProblemLanguages(props.contest.id, props.problem.number)
@@ -47,6 +66,7 @@ export default function App(props: any) {
         if (userLang.id !== 0 && userLang) {
           getContestProblemLanguage(props.contest.id, props.problem.number, userLang.id)
             .then(res => {
+              setLanguageId(userLang.id);
               setValue(res.data.userContent);
             });
         }
@@ -116,8 +136,28 @@ export default function App(props: any) {
           onChange={onChange}
         />
       </div>
+      {
+        isMounted &&
+        <div style={{display: consoleVisible ? 'block' : 'none'}}>
+          <Console ref={consoleRef} key={props.problem.id} problem={props.problem} language={language} languageId={languageId} source={value} />
+        </div>
+      }
       <div className={styles.footer}>
         <div className={styles.left}>
+          <Button
+            icon={consoleVisible ? <IconUp /> : <IconDown />}
+            onClick={() => setConsoleVisible((v) => !v)}
+          >
+            Console
+          </Button>
+          <Button
+            type='outline'
+            icon={<IconPlayArrow />}
+            status='success'
+            onClick={runCode}
+          >
+            {t['run']}
+          </Button>
         </div>
         <div className={styles.right}>
           { isLogged()
