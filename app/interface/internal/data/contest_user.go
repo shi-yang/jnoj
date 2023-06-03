@@ -46,6 +46,23 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 		return nil, 0
 	}
 	rows, _ := db.Rows()
+	// 查小组备注
+	var groupId int
+	groupNickname := make(map[int]string)
+	r.data.db.WithContext(ctx).Select("group_id").Model(&Contest{ID: int(req.ContestId)}).Scan(&groupId)
+	if groupId != 0 {
+		var groupUsers []struct {
+			UserId   int
+			Nickname string
+		}
+		r.data.db.WithContext(ctx).Select("user_id, nickname").Model(&GroupUser{}).
+			Where("group_id = ?", groupId).
+			Where("nickname != ''").
+			Scan(&groupUsers)
+		for _, v := range groupUsers {
+			groupNickname[v.UserId] = v.Nickname
+		}
+	}
 	rv := make([]*biz.ContestUser, 0)
 	for rows.Next() {
 		var v biz.ContestUser
@@ -53,6 +70,9 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &virtualStart, &v.UserNickname)
 		if virtualStart.Valid {
 			v.VirtualStart = &virtualStart.Time
+		}
+		if name, ok := groupNickname[v.UserID]; ok {
+			v.Name = name
 		}
 		if v.Name == "" {
 			v.Name = v.UserNickname
