@@ -65,11 +65,14 @@ const (
 // 查看权限，需要题目出于公开或者是创建人才能查看
 // 修改权限，仅题目创建人可以看
 func (p *Problem) HasPermission(ctx context.Context, t ProblemPermissionType) bool {
-	userID, _ := auth.GetUserID(ctx)
-	if t == ProblemPermissionView {
-		return p.UserID == userID || p.Status == ProblemStatusPublic
+	userID, role := auth.GetUserID(ctx)
+	if p.UserID == userID || CheckAccess(role, ResourceProblem) {
+		return true
 	}
-	return p.UserID == userID
+	if t == ProblemPermissionView {
+		return p.Status == ProblemStatusPublic
+	}
+	return false
 }
 
 // ProblemRepo is a Problem repo.
