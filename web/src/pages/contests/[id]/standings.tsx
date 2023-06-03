@@ -366,7 +366,7 @@ const App = () => {
 
   useEffect(() => {
     fetchData();
-  }, [showMatchUsersOnly])
+  }, [showMatchUsersOnly]);
   return (
     <div style={{overflow: 'hidden'}}>
       <div className={styles['table-header']}>
