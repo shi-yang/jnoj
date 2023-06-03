@@ -71,15 +71,17 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,
 	}
-	if biz.CheckAccess(role, biz.ResourceAdmin) {
-		resp.Permissions = make(map[string]*structpb.ListValue)
+	// 权限
+	resources := biz.ListRoleResources(role)
+	resp.Permissions = make(map[string]*structpb.ListValue)
+	for _, r := range resources {
 		permissions := &structpb.ListValue{}
 		permissions.Values = append(permissions.Values, &structpb.Value{
 			Kind: &structpb.Value_StringValue{StringValue: "write"},
 		}, &structpb.Value{
 			Kind: &structpb.Value_StringValue{StringValue: "read"},
 		})
-		resp.Permissions["*"] = permissions
+		resp.Permissions[r] = permissions
 	}
 	return resp, nil
 }
