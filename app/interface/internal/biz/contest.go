@@ -145,7 +145,7 @@ type ContestRepo interface {
 	CreateContest(context.Context, *Contest) (*Contest, error)
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
-	ListContestAllSubmissions(ctx context.Context, contesId int) []*ContestSubmission
+	ListContestAllSubmissions(ctx context.Context, contest *Contest, officialContest bool) []*ContestSubmission
 	ContestProblemRepo
 	ContestUserRepo
 }
@@ -216,7 +216,7 @@ func (uc *ContestUsecase) DeleteContest(ctx context.Context, id int) error {
 }
 
 // ListContestSubmissions .
-func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int) []*ContestSubmission {
+func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int, officialContest bool) []*ContestSubmission {
 	contest, err := uc.repo.GetContest(ctx, id)
 	if err != nil {
 		return nil
@@ -224,7 +224,7 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int)
 	if !contest.HasPermission(ctx, ContestPermissionView) {
 		return nil
 	}
-	submissions := uc.repo.ListContestAllSubmissions(ctx, id)
+	submissions := uc.repo.ListContestAllSubmissions(ctx, contest, officialContest)
 	uid, _ := auth.GetUserID(ctx)
 
 	var virtualTime time.Time

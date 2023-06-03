@@ -207,9 +207,9 @@ const App = () => {
   });
   const [columns, setColumns] = useState<TableColumnProps[]>([]);
   const [data, setData] = useState([]);
-  const [result, setResult] = useState([]);
   const user = useAppSelector(userInfo);
   const contest = useContext(ContestContext);
+  const [showMatchUsersOnly, setShowMatchUsersOnly] = useState(false);
 
   const processTeamData = (users, problems, submissions) => {
     let res = {};
@@ -330,14 +330,13 @@ const App = () => {
     }
     setPagination({ ...pagination, total: arr.length });
     setData(arr);
-    setResult(arr);
   };
 
   function fetchData() {
     setLoading(true);
-    const p1 = listContestAllSubmissions(contest.id);
+    const p1 = listContestAllSubmissions(contest.id, {officialContest: showMatchUsersOnly});
     const p2 = listContestProblems(contest.id);
-    const p3 = listContestUsers(contest.id);
+    const p3 = listContestUsers(contest.id, {officialContest: showMatchUsersOnly});
     Promise.all([p1, p2, p3])
       .then((values) => {
         const problems = values[1].data.data;
@@ -358,17 +357,13 @@ const App = () => {
     setLoading(false);
   }
 
-  function onShowMatchUsersOnly(e) {
-    if (e) {
-      setData(result.filter(v => !v.isVirtual));
-    } else {
-      setData(result);
-    }
-  }
-
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [showMatchUsersOnly])
   return (
     <div style={{overflow: 'hidden'}}>
       <div className={styles['table-header']}>
@@ -376,7 +371,7 @@ const App = () => {
           {
             contest.runningStatus === 'FINISHED' &&
             <span>
-              <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={onShowMatchUsersOnly} /> 过滤虚拟参赛选手
+              <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
             </span>
           }
         </div>

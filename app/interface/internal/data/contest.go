@@ -210,16 +210,19 @@ func (r *contestRepo) DeleteContest(ctx context.Context, id int) error {
 	return err
 }
 
-func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, id int) (res []*biz.ContestSubmission) {
+func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, contest *biz.Contest, officialContest bool) (res []*biz.ContestSubmission) {
 	var submissions []Submission
 	db := r.data.db.WithContext(ctx).
 		Select("id, problem_id, user_id, verdict, score, created_at").
-		Where("entity_id = ? and entity_type = ?", id, biz.SubmissionEntityTypeContest)
+		Where("entity_id = ? and entity_type = ?", contest.ID, biz.SubmissionEntityTypeContest)
+	if officialContest {
+		db.Where("created_at <= ?", contest.EndTime)
+	}
 	db.Find(&submissions)
 	var problems []ContestProblem
 	r.data.db.WithContext(ctx).
 		Select("problem_id, number").
-		Where("contest_id = ?", id).
+		Where("contest_id = ?", contest.ID).
 		Find(&problems)
 	var problemMap = make(map[int]int)
 	for _, v := range problems {

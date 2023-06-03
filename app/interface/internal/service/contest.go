@@ -367,7 +367,7 @@ func (s *ContestService) UpdateContestUser(ctx context.Context, req *v1.UpdateCo
 
 // ListContestAllSubmissions 用户比赛提交榜单
 func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.ListContestAllSubmissionsRequest) (*v1.ListContestAllSubmissionsResponse, error) {
-	submissions := s.uc.ListContestAllSubmissions(ctx, int(req.ContestId))
+	submissions := s.uc.ListContestAllSubmissions(ctx, int(req.ContestId), req.OfficialContest)
 	resp := new(v1.ListContestAllSubmissionsResponse)
 	for _, v := range submissions {
 		s := &v1.ListContestAllSubmissionsResponse_Submission{

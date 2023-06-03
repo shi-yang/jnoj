@@ -292,8 +292,9 @@ message ListContestUsersRequest {
     int32 contest_id = 1;
     string name = 2;
     optional ContestUserRole role = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    bool officialContest = 4;
+    int32 page = 5;
+    int32 per_page = 6;
 }
 
 message ListContestUsersResponse {
@@ -336,6 +337,7 @@ message UpdateContestUserRequest {
 
 message ListContestAllSubmissionsRequest {
     int32 contest_id = 1;
+    bool officialContest = 2;
 }
 
 message ListContestAllSubmissionsResponse {

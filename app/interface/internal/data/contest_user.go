@@ -38,6 +38,9 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 	if req.Role != nil {
 		db.Where("c.role = ?", *req.Role)
 	}
+	if req.OfficialContest {
+		db.Where("c.virtual_start is null")
+	}
 	db.Count(&count)
 	if count == 0 {
 		return nil, 0

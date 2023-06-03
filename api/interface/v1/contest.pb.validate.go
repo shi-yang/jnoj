@@ -1947,6 +1947,8 @@ func (m *ListContestUsersRequest) validate(all bool) error {
 
 	// no validation rules for Name
 
+	// no validation rules for OfficialContest
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage
@@ -2736,6 +2738,8 @@ func (m *ListContestAllSubmissionsRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for ContestId
+
+	// no validation rules for OfficialContest
 
 	if len(errors) > 0 {
 		return ListContestAllSubmissionsRequestMultiError(errors)
