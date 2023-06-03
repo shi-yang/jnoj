@@ -1,6 +1,6 @@
 import { listContestProblems, listContestAllSubmissions, listContestUsers, listContestSubmissions } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Badge, Button, Divider, Link, List, Modal, PaginationProps, Switch, Table, TableColumnProps } from '@arco-design/web-react';
+import { Divider, Link, List, Modal, PaginationProps, Switch, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
 import { IconCheck, IconCheckCircle, IconClockCircle, IconClose, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
@@ -193,6 +193,129 @@ function TableCell(props: any) {
   );
 }
 
+const StandingSort = (contest, users, problems, submissions) => {
+  let res = {};
+  // 初始化用户排名数据
+  users.forEach(user => {
+    const initUser = {
+      userId: user.userId,
+      who: user.name,
+      solved: 0,
+      problem: {},
+      isRank: user.role === 'ROLE_OFFICIAL_PLAYER',
+      isVirtual: !!user.virtualStart,
+    };
+    problems.forEach(p => {
+      initUser.problem[p.number] = {
+        attempted: 0,
+        isFirstBlood: false,
+        status: 'UNSUBMIT',
+        score: 0,
+        maxScore: 0,
+      };
+    });
+    res[user.userId] = initUser;
+  });
+  // 记录一血
+  let firstBlood = {};
+  submissions.forEach(submission => {
+    const problemNumber = submission.problem;
+    const uid = submission.userId;
+    if (!res[uid]) {
+      return;
+    }
+    // 已经通过，则直接跳过
+    if (res[uid].problem[problemNumber].status === 'CORRECT') {
+      return;
+    }
+    res[uid].problem[problemNumber].attempted++;
+    if (submission.status === 'CORRECT') {
+      if (!firstBlood[problemNumber]) {
+        firstBlood[problemNumber] = uid;
+        res[uid].problem[problemNumber].isFirstBlood = true;
+      }
+      res[uid].solved++;
+    }
+    // 分数
+    if (contest.type === ContestType.ContestTypeICPC) {
+      // ICPC 尝试次数会有20分罚时，加上本题通过时间，即为分数
+      if (submission.status === 'CORRECT') {
+        res[uid].problem[problemNumber].score = (res[uid].problem[problemNumber].attempted - 1) * 20 + submission.score;
+      }
+    } else if (contest.type === ContestType.ContestTypeIOI) {
+      // IOI 取最大
+      res[uid].problem[problemNumber].score =
+        Math.max(res[uid].problem[problemNumber].score, submission.score);
+    } else if (contest.type === ContestType.ContestTypeOI) {
+      // OI 取最后一次
+      res[uid].problem[problemNumber].score = submission.score;
+      res[uid].problem[problemNumber].maxScore =
+        Math.max(res[uid].problem[problemNumber].maxScore, submission.score);
+    }
+    res[uid].problem[problemNumber].status = submission.status;
+  });
+  const arr:TableContentProps[] = [];
+  Object.keys(res).forEach((key, index) => {
+    const item:TableContentProps = {
+      rank: index,
+      userId: res[key].userId,
+      who: res[key].who,
+      solved: res[key].solved,
+      score: 0,
+      maxScore: 0,
+      problem: {},
+      isRank: res[key].isRank,
+      isVirtual: res[key].isVirtual,
+    };
+    const problems = res[key].problem;
+    // 计算所得总分
+    let score = 0;
+    let maxScore = 0;
+    Object.keys(problems).forEach(k => {
+      item.problem[k] = problems[k];
+      score += problems[k].score;
+      maxScore += problems[k].maxScore;
+      // 不同榜单，显示不同内容
+      if (contest.type === ContestType.ContestTypeICPC) {
+        item.problem[k].first = problems[k].score;
+        item.problem[k].second = problems[k].attempted + (problems[k].attempted == 1 ? ' try' : ' tries');
+      } else if (contest.type === ContestType.ContestTypeIOI) {
+        item.problem[k].first = problems[k].score;
+        item.problem[k].second = problems[k].attempted + (problems[k].attempted == 1 ? ' try' : ' tries');
+      } else {
+        item.problem[k].first = problems[k].score;
+        item.problem[k].second = problems[k].maxScore;
+      }
+    });
+    item.maxScore = maxScore;
+    item.score = score;
+    arr.push(item);
+  });
+  arr.sort((a, b) => {
+    if (contest.type === ContestType.ContestTypeICPC) {
+      if (a.solved !== b.solved) {
+        return b.solved - a.solved;
+      }
+      return a.score - b.score;
+    } else if (contest.type === ContestType.ContestTypeIOI) {
+      return b.score - a.score;
+    } else {
+      if (a.score !== b.score) {
+        return b.score - a.score;
+      }
+      return b.maxScore - a.maxScore;
+    }
+  });
+  let rank = 1;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].isRank) {
+      arr[i].rank = rank;
+      rank++;
+    }
+  }
+  return arr;
+};
+
 const App = () => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(true);
@@ -210,130 +333,7 @@ const App = () => {
   const user = useAppSelector(userInfo);
   const contest = useContext(ContestContext);
   const [showMatchUsersOnly, setShowMatchUsersOnly] = useState(false);
-
-  const processTeamData = (users, problems, submissions) => {
-    let res = {};
-    // 初始化用户排名数据
-    users.forEach(user => {
-      const initUser = {
-        userId: user.userId,
-        who: user.name,
-        solved: 0,
-        problem: {},
-        isRank: user.role === 'ROLE_OFFICIAL_PLAYER',
-        isVirtual: !!user.virtualStart,
-      };
-      problems.forEach(p => {
-        initUser.problem[p.number] = {
-          attempted: 0,
-          isFirstBlood: false,
-          status: 'UNSUBMIT',
-          score: 0,
-          maxScore: 0,
-        };
-      });
-      res[user.userId] = initUser;
-    });
-    // 记录一血
-    let firstBlood = {};
-    submissions.forEach(submission => {
-      const problemNumber = submission.problem;
-      const uid = submission.userId;
-      if (!res[uid]) {
-        return;
-      }
-      // 已经通过，则直接跳过
-      if (res[uid].problem[problemNumber].status === 'CORRECT') {
-        return;
-      }
-      res[uid].problem[problemNumber].attempted++;
-      if (submission.status === 'CORRECT') {
-        if (!firstBlood[problemNumber]) {
-          firstBlood[problemNumber] = uid;
-          res[uid].problem[problemNumber].isFirstBlood = true;
-        }
-        res[uid].solved++;
-      }
-      // 分数
-      if (contest.type === ContestType.ContestTypeICPC) {
-        // ICPC 尝试次数会有20分罚时，加上本题通过时间，即为分数
-        if (submission.status === 'CORRECT') {
-          res[uid].problem[problemNumber].score = (res[uid].problem[problemNumber].attempted - 1) * 20 + submission.score;
-        }
-      } else if (contest.type === ContestType.ContestTypeIOI) {
-        // IOI 取最大
-        res[uid].problem[problemNumber].score =
-          Math.max(res[uid].problem[problemNumber].score, submission.score);
-      } else if (contest.type === ContestType.ContestTypeOI) {
-        // OI 取最后一次
-        res[uid].problem[problemNumber].score = submission.score;
-        res[uid].problem[problemNumber].maxScore =
-          Math.max(res[uid].problem[problemNumber].maxScore, submission.score);
-      }
-      res[uid].problem[problemNumber].status = submission.status;
-    });
-    const arr:TableContentProps[] = [];
-    Object.keys(res).forEach((key, index) => {
-      const item:TableContentProps = {
-        rank: index,
-        userId: res[key].userId,
-        who: res[key].who,
-        solved: res[key].solved,
-        score: 0,
-        maxScore: 0,
-        problem: {},
-        isRank: res[key].isRank,
-        isVirtual: res[key].isVirtual,
-      };
-      const problems = res[key].problem;
-      // 计算所得总分
-      let score = 0;
-      let maxScore = 0;
-      Object.keys(problems).forEach(k => {
-        item.problem[k] = problems[k];
-        score += problems[k].score;
-        maxScore += problems[k].maxScore;
-        // 不同榜单，显示不同内容
-        if (contest.type === ContestType.ContestTypeICPC) {
-          item.problem[k].first = problems[k].score;
-          item.problem[k].second = problems[k].attempted + (problems[k].attempted == 1 ? ' try' : ' tries');
-        } else if (contest.type === ContestType.ContestTypeIOI) {
-          item.problem[k].first = problems[k].score;
-          item.problem[k].second = problems[k].attempted + (problems[k].attempted == 1 ? ' try' : ' tries');
-        } else {
-          item.problem[k].first = problems[k].score;
-          item.problem[k].second = problems[k].maxScore;
-        }
-      });
-      item.maxScore = maxScore;
-      item.score = score;
-      arr.push(item);
-    });
-    arr.sort((a, b) => {
-      if (contest.type === ContestType.ContestTypeICPC) {
-        if (a.solved !== b.solved) {
-          return b.solved - a.solved;
-        }
-        return a.score - b.score;
-      } else if (contest.type === ContestType.ContestTypeIOI) {
-        return b.score - a.score;
-      } else {
-        if (a.score !== b.score) {
-          return b.score - a.score;
-        }
-        return b.maxScore - a.maxScore;
-      }
-    });
-    let rank = 1;
-    for (let i = 0; i < arr.length; i++) {
-      if (arr[i].isRank) {
-        arr[i].rank = rank;
-        rank++;
-      }
-    }
-    setPagination({ ...pagination, total: arr.length });
-    setData(arr);
-  };
+  const [autoRefreshStanding, setAutoRefreshStanding] = useState(false);
 
   function fetchData() {
     setLoading(true);
@@ -346,7 +346,9 @@ const App = () => {
         const users = values[2].data.data;
         const submissions = values[0].data.data;
         setColumns(generateTableColumn(problems, contest.type, t));
-        processTeamData(users, problems, submissions);
+        const arr = StandingSort(contest, users, problems, submissions);
+        setPagination({ ...pagination, total: arr.length });
+        setData(arr);
       })
       .finally(() => {
         setLoading(false);
@@ -367,6 +369,20 @@ const App = () => {
   useEffect(() => {
     fetchData();
   }, [showMatchUsersOnly]);
+
+  let timer = null;
+  useEffect(() => {
+    if (!autoRefreshStanding) {
+      timer && clearInterval(timer);
+      return;
+    }
+    timer = setInterval(() => {
+      fetchData();
+    }, 30000);
+    return () => {
+      timer && clearInterval(timer);
+    };
+  }, [autoRefreshStanding]);
   return (
     <div style={{overflow: 'hidden'}}>
       <div className={styles['table-header']}>
@@ -375,6 +391,14 @@ const App = () => {
             contest.runningStatus === 'FINISHED' &&
             <span>
               <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
+            </span>
+          }
+          {
+            contest.runningStatus === 'IN_PROGRESS' && contest.role === 'ROLE_ADMIN' &&
+            <span>
+              <Tooltip content='勾选将每30s自动更新榜单'>
+                <Typography.Text><Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setAutoRefreshStanding(e)} /> 自动刷新</Typography.Text>
+              </Tooltip>
             </span>
           }
         </div>
