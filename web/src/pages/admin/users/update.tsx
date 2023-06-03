@@ -33,6 +33,7 @@ function App({id, visible, setVisible, callback}: {id: number, visible: boolean,
         form.setFieldsValue({
           nickname: res.data.nickname,
           username: res.data.username,
+          password: '',
           role: res.data.role,
         });
       });

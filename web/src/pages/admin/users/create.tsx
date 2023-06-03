@@ -12,7 +12,6 @@ function App({callback}: {callback: () => void}) {
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
-  const router = useRouter();
 
   function onOk() {
     form.validate().then((values) => {
