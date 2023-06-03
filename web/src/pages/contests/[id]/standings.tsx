@@ -239,6 +239,9 @@ const App = () => {
     submissions.forEach(submission => {
       const problemNumber = submission.problem;
       const uid = submission.userId;
+      if (!res[uid]) {
+        return;
+      }
       // 已经通过，则直接跳过
       if (res[uid].problem[problemNumber].status === 'CORRECT') {
         return;
