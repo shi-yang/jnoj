@@ -45,7 +45,7 @@ export default function UserAvatar() {
   
   return (
     <Dropdown droplist={droplist} position='br'>
-      <Button type='text' style={{width: '100px'}}>
+      <Button type='text'>
         <Avatar size={32} style={{ cursor: 'pointer' }}>
           <IconUser />
         </Avatar>
