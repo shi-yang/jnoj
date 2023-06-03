@@ -1383,6 +1383,8 @@ func (m *CreateGroupUserRequest) validate(all bool) error {
 
 	// no validation rules for Username
 
+	// no validation rules for Nickname
+
 	// no validation rules for InvitationCode
 
 	if len(errors) > 0 {

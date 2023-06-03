@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/internal/middleware/auth"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -134,25 +135,36 @@ func (uc *GroupUsecase) GetGroupUser(ctx context.Context, gid, uid int) (*GroupU
 
 // CreateGroupUser .
 func (uc *GroupUsecase) CreateGroupUser(ctx context.Context, req *v1.CreateGroupUserRequest) (*GroupUser, error) {
-	user, err := uc.userRepo.GetUser(ctx, &User{Username: req.Username})
-	if err != nil {
-		return nil, v1.ErrorBadRequest("user not found")
+	var user *User
+	var err error
+	var uid int
+	if req.Username != "" {
+		user, err = uc.userRepo.GetUser(ctx, &User{Username: req.Username})
+		if err != nil {
+			return nil, v1.ErrorBadRequest("user not found")
+		}
+		uid = user.ID
+	} else {
+		uid, _ = auth.GetUserID(ctx)
 	}
-	group, err := uc.GetGroup(ctx, int(req.Gid))
+	group, err := uc.repo.GetGroup(ctx, int(req.Gid))
 	if err != nil {
 		return nil, v1.ErrorBadRequest("group not found")
 	}
 	// 邀请码的方式，需要验证邀请码
 	role := uc.GetGroupRole(ctx, group)
-	if (role != GroupUserRoleAdmin && role != GroupUserRoleManager) &&
+	if role == GroupUserRoleGuest &&
 		group.Membership == GroupMembershipInvitationCode &&
-		group.InvitationCode != req.InvitationCode {
+		strings.TrimSpace(group.InvitationCode) != strings.TrimSpace(req.InvitationCode) {
+		uc.log.Info(group.InvitationCode)
+		uc.log.Info(req.InvitationCode)
 		return nil, v1.ErrorBadRequest("invalid invitation code")
 	}
 	return uc.repo.CreateGroupUser(ctx, &GroupUser{
-		UserID:  user.ID,
-		GroupID: int(req.Gid),
-		Role:    GroupUserRoleMember,
+		UserID:   uid,
+		GroupID:  int(req.Gid),
+		Role:     GroupUserRoleMember,
+		Nickname: req.Nickname,
 	})
 }
 

@@ -1,12 +1,14 @@
 import { createGroupUser, deleteGroupUser, getGroupUser, listGroupUsers, updateGroupUser } from '@/api/group';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps } from '@arco-design/web-react';
-import { IconPlus } from '@arco-design/web-react/icon';
+import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
+import { IconCloseCircle, IconDelete, IconEdit, IconPlus, IconShareInternal } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
 import context from './context';
 import Layout from './Layout';
 import locale from './locale';
+import { useAppSelector } from '@/hooks';
+import { userInfo } from '@/store/reducers/user';
 
 function People() {
   const t = useLocale(locale);
@@ -30,6 +32,7 @@ function People() {
   });
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [updateUserId, setUpdateUserId] = useState(0);
+  const user = useAppSelector(userInfo);
   function removeUser(userId:number) {
     deleteGroupUser(group.id, userId)
       .then(res => {
@@ -57,7 +60,15 @@ function People() {
       align: 'center' as 'center',
       render: (_, record) => (
         <>
-          { record.role !== 'ADMIN' && (group.role === 'ADMIN' || group.role === 'MANAGER') &&
+          {
+            // 编辑功能：小组创建人不能被编辑，小组管理才有权限编辑
+            record.role !== 'ADMIN' && (group.role === 'ADMIN' || group.role === 'MANAGER') &&
+            <Button type='text' icon={<IconEdit />} onClick={() => {
+              setUpdateUserId(record.userId);
+              setUpdateModalVisible(true);
+            }}>{t['people.column.action.edit']}</Button>
+          }
+          { record.role !== 'ADMIN' && (group.role === 'ADMIN' || group.role === 'MANAGER') && record.userId !== user.id &&
             <Popconfirm
               focusLock
               title={t['people.column.action.remove?']}
@@ -65,15 +76,19 @@ function People() {
                 removeUser(record.userId);
               }}
             >
-              <Button type='text'>{t['people.column.action.remove']}</Button>
+              <Button type='text' icon={<IconDelete />}>{t['people.column.action.remove']}</Button>
             </Popconfirm>
           }
-          {
-            (group.role === 'ADMIN' || group.role === 'MANAGER') && (record.role !== 'ADMIN') &&
-            <Button type='text' onClick={() => {
-              setUpdateUserId(record.userId);
-              setUpdateModalVisible(true);
-            }}>{t['people.column.action.edit']}</Button>
+          { record.role !== 'ADMIN' && !(group.role === 'ADMIN' || group.role === 'MANAGER') && record.userId === user.id &&
+            <Popconfirm
+              focusLock
+              title={t['people.column.action.quit?']}
+              onOk={() => {
+                removeUser(record.userId);
+              }}
+            >
+              <Button type='text' icon={<IconCloseCircle />}>{t['people.column.action.quit']}</Button>
+            </Popconfirm>
           }
         </>
       )
@@ -156,7 +171,6 @@ function UpdateUserModal({visible, gid, uid, callback}: any) {
 
   return (
     <Modal
-      title={t['all.createProblemset']}
       visible={visible}
       onOk={onOk}
       confirmLoading={confirmLoading}
@@ -185,6 +199,11 @@ function AddUser({group, callback}: any) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
+  const [invitationLink, setInvitationLink] = useState('');
+  useEffect(() => {
+    const currentDomain = window.location.host;
+    setInvitationLink(`链接：${currentDomain}/groups/${group.id}/join` + (group.membership === 1 ? `\n邀请码：${group.invitationCode}` : ''));
+  }, []);
 
   function onOk() {
     form.validate().then((values) => {
@@ -207,29 +226,49 @@ function AddUser({group, callback}: any) {
   return (
     <div>
       {
-        group.role !== 'GUEST' ? 
+        (group.role === 'ADMIN' || group.role === 'MANAGER') &&
         <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
           {t['people.addUser']}
         </Button>
-        : 
+      }
+      { group.role === 'GUEST' &&
         <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => router.push(`/groups/${group.id}/join`)}>
           {t['people.joinGroup']}
         </Button>
       }
       <Modal
-        title={t['all.createProblemset']}
+        title='添加用户'
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
         onCancel={() => setVisible(false)}
       >
+        <Typography.Title heading={6}>
+          方式一：直接添加
+        </Typography.Title>
         <Form
           form={form}
         >
           <Form.Item label={t['people.addUser.form.username']} required field='username' rules={[{ required: true }]}>
             <Input placeholder='' />
           </Form.Item>
+          <Form.Item label={t['people.addUser.form.nickname']} field='nickname'>
+            <Input placeholder='' />
+          </Form.Item>
         </Form>
+        <Typography.Title heading={6}>
+          方式二：通过链接邀请
+        </Typography.Title>
+        <Typography.Paragraph copyable={{
+          text: invitationLink,
+          icon: <Link><IconShareInternal />复制</Link>,
+          tooltips: [
+            <Tooltip key={0}>复制邀请链接</Tooltip>,
+            <Tooltip key={1}>已复制</Tooltip>
+          ]
+        }}>
+          {invitationLink}
+        </Typography.Paragraph>
       </Modal>
     </div>
   );

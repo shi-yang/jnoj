@@ -228,9 +228,10 @@ func (r *groupRepo) GetGroupUser(ctx context.Context, gid int, uid int) (*biz.Gr
 // CreateGroupUser .
 func (r *groupRepo) CreateGroupUser(ctx context.Context, g *biz.GroupUser) (*biz.GroupUser, error) {
 	res := GroupUser{
-		UserID:  g.UserID,
-		GroupID: g.GroupID,
-		Role:    g.Role,
+		UserID:   g.UserID,
+		GroupID:  g.GroupID,
+		Role:     g.Role,
+		Nickname: g.Nickname,
 	}
 	err := r.data.db.WithContext(ctx).
 		Where("user_id = ? and group_id = ?", g.UserID, g.GroupID).

@@ -184,8 +184,11 @@ func (s *GroupService) DeleteGroupUser(ctx context.Context, req *v1.DeleteGroupU
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
+	uid, _ := auth.GetUserID(ctx)
+	_, err = s.uc.GetGroupUser(ctx, group.ID, uid)
+	isLoginUserExistGroup := (err == nil && req.Uid == int32(uid))
 	role := s.uc.GetGroupRole(ctx, group)
-	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager {
+	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager && !isLoginUserExistGroup {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.uc.DeleteGroupUser(ctx, int(req.Gid), int(req.Uid))
