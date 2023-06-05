@@ -17,7 +17,7 @@ import PermissionWrapper from '../PermissionWrapper';
 
 const MenuItem = Menu.Item;
 
-const LayoutHeader = () => {
+const LayoutHeader:React.FC = () => {
   const t = useLocale();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -36,9 +36,9 @@ const LayoutHeader = () => {
   return (
     <div className={styles.navbar}>
       <div className={styles.left}>
-        <Menu mode='horizontal' ellipsis={false} defaultSelectedKeys={['1']} onClickMenuItem={onMainClickMenuItem}>
+        <Menu className={styles['arco-menu']} mode='horizontal' onClickMenuItem={onMainClickMenuItem}>
           <MenuItem
-            key='0'
+            key='logo'
             disabled
           >
             <Link href='/'>
@@ -73,7 +73,7 @@ const LayoutHeader = () => {
             <Link href='/admin'>后台</Link>
           </li>
         </PermissionWrapper>
-        <li>
+        <li className='mobile-hide'>
           <Select
             triggerElement={<IconButton icon={<IconLanguage />} />}
             options={[
@@ -86,7 +86,7 @@ const LayoutHeader = () => {
               autoAlignPopupMinWidth: true,
               position: 'br',
             }}
-            trigger="hover"
+            trigger='hover'
             onChange={(value) => {
               setLang(value);
               const nextLang = defaultLocale[value];
@@ -94,7 +94,7 @@ const LayoutHeader = () => {
             }}
           />
         </li>
-        <li>
+        <li className='mobile-hide'>
           <Tooltip
             content={
               theme === 'light'
@@ -118,6 +118,39 @@ const LayoutHeader = () => {
         }
       </ul>
     </div>
+    // <div className={styles.navbar}>
+    //   <div className={styles.left}>
+    //     <Menu mode='horizontal' className={styles['arco-menu-inner']} ellipsis={false} defaultSelectedKeys={['/']} onClickMenuItem={onMainClickMenuItem}>
+    //       <MenuItem
+    //         key='0'
+    //         disabled
+    //       >
+    //         <Link href='/'>
+    //           <img style={{height: 21,  cursor: 'pointer' }} src={Logo.src} alt='logo' />
+    //         </Link>
+    //       </MenuItem>
+    //       <MenuItem key='/'>
+    //         <Link href='/'><IconHome /> { t['menu.home'] }</Link>
+    //       </MenuItem>
+    //       <MenuItem key='/problemsets'>
+    //         <Link href='/problemsets'><IconCodeSquare /> { t['menu.problem'] }</Link>
+    //       </MenuItem>
+    //       <MenuItem key='/groups'>
+    //         <Link href='/groups'><IconUserGroup /> { t['menu.group'] }</Link>
+    //       </MenuItem>
+    //       <MenuItem key='/contests'>
+    //         <Link href='/contests'><IconList />{ t['menu.contest'] }</Link>
+    //       </MenuItem>
+    //       <MenuItem key='/rankings'>
+    //         <Link href='/rankings'><IconTrophy />{ t['menu.ranking'] }</Link>
+    //       </MenuItem>
+    //       <MenuItem key='/home/about'>
+    //         <Link href='/home/about'><IconHeart /> { t['menu.about'] }</Link>
+    //       </MenuItem>
+    //     </Menu>
+    //   </div>
+
+    // </div>
   );
 };
 

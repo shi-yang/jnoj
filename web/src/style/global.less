@@ -51,6 +51,12 @@ img {
   margin-left: auto;
 }
 
+@media screen and (max-width: 767px) {
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
 @media (min-width: 576px) {
 
   .container-sm,
@@ -134,4 +140,8 @@ body[arco-theme='dark'] {
 .cm-editor {
   font-size: 16px;
   line-height: 1.5;
+}
+
+.arco-collapse-item-header-title {
+  width: 100%;
 }

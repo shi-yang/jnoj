@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getUserProfileCalendar, getUserProfileProblemSolved, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Collapse, Divider, Link, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Card, Collapse, Divider, Grid, Link, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -12,6 +12,22 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import PassValidIcon from '@/assets/icon/pass-valid.svg';
 import VIPIcon from '@/assets/icon/vip.svg';
+
+function renderItemWithResponsive(item1: React.ReactNode, item2: React.ReactNode, item3: React.ReactNode) {
+  return (
+    <Grid.Row>
+      <Grid.Col xs={24} sm={16} md={16} lg={12}>
+        {item1}
+      </Grid.Col>
+      <Grid.Col xs={12} sm={4} md={4} lg={6}>
+        {item2}
+      </Grid.Col>
+      <Grid.Col xs={12} sm={4} md={4} lg={6} style={{textAlign: 'center'}}>
+        {item3}
+      </Grid.Col>
+    </Grid.Row>
+  );
+}
 
 const Color = {
   'NOT_START': 'gray',
@@ -114,7 +130,7 @@ export default function UserPage() {
       });
   }, [id]);
   return (
-    <div>
+    <>
       <Head>
         <title>{`${user.username} - ${settings.name}`}</title>
       </Head>
@@ -188,11 +204,11 @@ export default function UserPage() {
                     key={index}
                     name={item.id}
                     header={
-                      <div style={{display: 'flex'}}>
-                        <div style={{width: '500px'}}><Link href={`/problemsets/${item.id}`} target='_blank'>{item.name}</Link></div>
-                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} width='300px' />
-                        <div style={{width: '300px', textAlign: 'center'}}>{item.count} / {item.total}</div>
-                      </div>
+                      renderItemWithResponsive(
+                        <Link href={`/problemsets/${item.id}`} target='_blank'>{item.name}</Link>,
+                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
+                        <span>{item.count} / {item.total}</span>
+                      )
                     }
                   >
                     <Space wrap>
@@ -211,8 +227,8 @@ export default function UserPage() {
                     key={index}
                     name={item.id}
                     header={
-                      <div style={{display: 'flex'}}>
-                        <div style={{width: '500px'}}>
+                      renderItemWithResponsive(
+                        <>
                           {item.groupName !== '' && (
                             <>
                               <Link href={`/groups/${item.groupId}`} target='_blank'>{item.groupName}</Link>
@@ -220,10 +236,10 @@ export default function UserPage() {
                             </>
                           )}
                           {<Link href={`/contests/${item.id}`} target='_blank'>{item.name}</Link>}
-                        </div>
-                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} width='300px' />
-                        <div style={{width: '300px', textAlign: 'center'}}>{item.count} / {item.total}</div>
-                      </div>
+                        </>,
+                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
+                        <span>{item.count} / {item.total}</span>
+                      )
                     }
                   >
                     <Space wrap>
@@ -245,13 +261,11 @@ export default function UserPage() {
                     key={index}
                     name={item.id}
                     header={
-                      <div style={{display: 'flex'}}>
-                        <div style={{width: '500px'}}>
-                          {<Link href={`/groups/${item.id}`} target='_blank'>{item.name}</Link>}
-                        </div>
-                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} width='300px' />
-                        <div style={{width: '300px', textAlign: 'center'}}>{item.count} / {item.total}</div>
-                      </div>
+                      renderItemWithResponsive(
+                        <Link href={`/groups/${item.id}`} target='_blank'>{item.name}</Link>,
+                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
+                        <span>{item.count} / {item.total}</span>
+                      )
                     }
                   >
                     <Collapse accordion bordered={false}>
@@ -260,13 +274,11 @@ export default function UserPage() {
                           key={index}
                           name={contest.id}
                           header={
-                            <div style={{display: 'flex'}}>
-                              <div style={{width: '500px'}}>
-                                {<Link href={`/contests/${contest.id}`} target='_blank'>{contest.name}</Link>}
-                              </div>
-                              <Progress percent={contest.total === 0 ? 0 : Number(Number(contest.count * 100 / contest.total).toFixed(0))} width='300px' />
-                              <div style={{width: '300px', textAlign: 'center'}}>{contest.count} / {contest.total}</div>
-                            </div>
+                            renderItemWithResponsive(
+                              <Link href={`/contests/${contest.id}`} target='_blank'>{contest.name}</Link>,
+                              <Progress percent={contest.total === 0 ? 0 : Number(Number(contest.count * 100 / contest.total).toFixed(0))} />,
+                              <span>{contest.count} / {contest.total}</span>
+                            )
                           }
                         >
                           <Space wrap>
@@ -287,10 +299,10 @@ export default function UserPage() {
           </Tabs>
         </Card>
         <Divider type='horizontal' />
-        <Card title='最近提交'>
+        <Card title='最近提交' className='mobile-hide'>
           <SubmissionList userId={Number(id)} />
         </Card>
       </div>
-    </div>
+    </>
   );
 }

@@ -10,7 +10,15 @@
 .left {
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   width: 100%;
+  .arco-menu {
+    width: 100%;
+    >div {
+      min-width: 215px;
+      overflow-y: auto;
+    }
+  }
 }
 
 .right {
