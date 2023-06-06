@@ -186,7 +186,7 @@ export default function UserPage() {
             }}
             startDate={new Date(profileCalendar.start)}
           />
-          <Space>
+          <Space style={{minWidth: '355px'}}>
             <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
             <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
             <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
