@@ -21,6 +21,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+// auth.
 const OperationPostServiceCreatePost = "/jnoj.interface.v1.PostService/CreatePost"
 const OperationPostServiceGetPost = "/jnoj.interface.v1.PostService/GetPost"
 const OperationPostServiceListPosts = "/jnoj.interface.v1.PostService/ListPosts"
@@ -34,6 +35,7 @@ type PostServiceHTTPServer interface {
 }
 
 func RegisterPostServiceHTTPServer(s *http.Server, srv PostServiceHTTPServer) {
+	s.Use("/jnoj.interface.v1.PostService/ListPosts", auth.Guest())
 	s.Use("/jnoj.interface.v1.PostService/CreatePost", auth.User())
 	s.Use("/jnoj.interface.v1.PostService/UpdatePost", auth.User())
 	s.Use("/jnoj.interface.v1.PostService/DeletePost", auth.User())

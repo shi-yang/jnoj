@@ -1,4 +1,6 @@
 rules:
+- selector: "/jnoj.interface.v1.PostService/ListPosts"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector: "/jnoj.interface.v1.PostService/CreatePost"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.PostService/UpdatePost"
