@@ -61,7 +61,7 @@ func sandboxInit() {
 	// 因此在此处根据题目给出的时间限制加 1s 作为限制 real time 时间
 	timeLimit += 2000
 	// 限制内存时，多给 4 MB
-	memoryLimit += 4
+	memoryLimit += 4 + 2*int64(len(input))/STD_MB
 
 	if err := container.Newcgroup().Install(strconv.Itoa(os.Getpid()), containerID, strconv.FormatInt(memoryLimit, 10)); err != nil {
 		r.Err = err.Error()
