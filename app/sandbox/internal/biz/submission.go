@@ -458,6 +458,8 @@ func (uc *SubmissionUsecase) runTests(
 		if subtaskResult.Verdict == SubmissionVerdictAccepted {
 			result.Score += float32(subtask.Score)
 			subtaskResult.Score = float32(subtask.Score)
+		} else {
+			subtaskResult.Score = 0
 		}
 		if result.Time < subtaskResult.Time {
 			result.Time = subtaskResult.Time
