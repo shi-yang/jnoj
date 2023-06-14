@@ -9,6 +9,8 @@ const GroupContext = createContext({
   membership: 0,
   privacy: 0,
   invitationCode: '',
+  type: '',
+  team: null,
 });
 
 export default GroupContext;

@@ -57,7 +57,14 @@ func (s *GroupService) GetGroup(ctx context.Context, req *v1.GetGroupRequest) (*
 		MemberCount:    int32(res.MemberCount),
 		InvitationCode: res.InvitationCode,
 		Role:           v1.GroupUserRole(res.Role),
+		Type:           v1.GroupType(res.Type),
 		CreatedAt:      timestamppb.New(res.CreatedAt),
+	}
+	if res.Team != nil {
+		g.Team = &v1.Group{
+			Id:   int32(res.Team.ID),
+			Name: res.Team.Name,
+		}
 	}
 	return g, nil
 }
@@ -70,6 +77,8 @@ func (s *GroupService) CreateGroup(ctx context.Context, req *v1.CreateGroupReque
 		Description: req.Description,
 		UserID:      uid,
 		MemberCount: 1,
+		ParentID:    int(req.ParentId),
+		Type:        int(req.Type),
 	}
 	res, err := s.uc.CreateGroup(ctx, group)
 	if err != nil {

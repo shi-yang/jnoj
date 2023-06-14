@@ -76,6 +76,37 @@ func (m *Group) validate(all bool) error {
 
 	// no validation rules for Role
 
+	// no validation rules for Type
+
+	if all {
+		switch v := interface{}(m.GetTeam()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GroupValidationError{
+					field:  "Team",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GroupValidationError{
+					field:  "Team",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTeam()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GroupValidationError{
+				field:  "Team",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -208,12 +239,18 @@ func (m *ListGroupsRequest) validate(all bool) error {
 
 	// no validation rules for Sort
 
+	// no validation rules for Type
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage
 
 	if m.Mygroup != nil {
 		// no validation rules for Mygroup
+	}
+
+	if m.ParentId != nil {
+		// no validation rules for ParentId
 	}
 
 	if len(errors) > 0 {
@@ -558,9 +595,13 @@ func (m *CreateGroupRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for ParentId
+
 	// no validation rules for Name
 
 	// no validation rules for Description
+
+	// no validation rules for Type
 
 	if len(errors) > 0 {
 		return CreateGroupRequestMultiError(errors)

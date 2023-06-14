@@ -9,7 +9,7 @@ import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
 import { getGroup } from '@/api/group';
-import { IconHome, IconSettings, IconUser } from '@arco-design/web-react/icon';
+import { IconHome, IconList, IconSettings, IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 import MainLayout from '@/components/Layouts/MainLayout';
 import GroupContext from './context';
 
@@ -25,7 +25,9 @@ function Layout(page) {
     role: '',
     membership: 0,
     privacy: 0,
-    invitationCode: ''
+    invitationCode: '',
+    type: '',
+    team: null,
   });
   const settings = useAppSelector<SettingState>(setting);
   const user = useAppSelector(userInfo);
@@ -66,8 +68,8 @@ function Layout(page) {
               <Typography.Title>
                 {group.name}
                 {
-                  user.id === group.userId
-                  && <Link href={`/groups/${group.id}/setting`}>{t['header.edit']}</Link>
+                  group.team
+                  && <Link href={`/groups/${group.team.id}`}><IconUserGroup />{group.team.name}</Link>
                 }
               </Typography.Title>
               <div>{group.description}</div>
@@ -76,7 +78,15 @@ function Layout(page) {
                 activeTab={activeTab}
                 onChange={onTabChange}
               >
-                <Tabs.TabPane key='' title={<span><IconHome /> {t['header.tab.overview']}</span>} />
+                {group.type === 'TEAM' &&
+                  <Tabs.TabPane key='' title={<span><IconUserGroup /> {t['header.tab.group']}</span>} />
+                }
+                {group.type === 'TEAM' &&
+                  <Tabs.TabPane key='contest' title={<span><IconList /> {t['header.tab.contest']}</span>} />
+                }
+                {group.type === 'GROUP' &&
+                  <Tabs.TabPane key='' title={<span><IconHome /> {t['header.tab.overview']}</span>} />
+                }
                 <Tabs.TabPane key='people' title={<span><IconUser /> {t['header.tab.people']}</span>} />
                 {(group.role === 'ADMIN' || group.role === 'MANAGER') && 
                   <Tabs.TabPane key='settings' title={<span><IconSettings /> {t['header.tab.settings']}</span>} />

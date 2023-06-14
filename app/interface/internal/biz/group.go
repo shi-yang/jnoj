@@ -13,17 +13,25 @@ import (
 // Group is a Group model.
 type Group struct {
 	ID             int
+	ParentID       int
 	Name           string
 	Description    string
 	Privacy        int    // 隐私设置
 	Membership     int    // 加入资格
 	InvitationCode string // 邀请码
 	MemberCount    int
+	Type           int // 类型：小组、团队
 	Role           int // 当前登录用户的角色
 	UserID         int
 	UserNickname   string
 	CreatedAt      time.Time
+	Team           *Group
 }
+
+const (
+	GroupTypeGroup = iota
+	GroupTypeTeam
+)
 
 // GroupUser .
 type GroupUser struct {

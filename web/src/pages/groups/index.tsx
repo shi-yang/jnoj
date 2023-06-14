@@ -6,7 +6,7 @@ import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
 import {
   Button, Card, Form, Grid, Input, Message,
-  Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty, Select, Space, Avatar
+  Modal, Typography, Link, Pagination, PaginationProps, Tabs, Empty, Select, Space, Avatar, Radio, Switch
 } from '@arco-design/web-react';
 import { IconPlus, IconUser } from '@arco-design/web-react/icon';
 import Head from 'next/head';
@@ -33,6 +33,7 @@ export default function Index() {
     name: '',
     sort: 'joinedAt',
     mygroup: true,
+    type: 'GROUP'
   });
   const [activeTab, setActiveTab] = useState('all');
   const user = useAppSelector(userInfo);
@@ -50,6 +51,7 @@ export default function Index() {
     const params = {
       page: current,
       perPage: pageSize,
+      parentId: 0,
       ...formParams,
     };
     listGroups(params)
@@ -94,6 +96,15 @@ export default function Index() {
             activeTab={activeTab}
             extra={
               <Space>
+                <Radio.Group
+                  type='button'
+                  name='group'
+                  defaultValue='GROUP'
+                  onChange={(value) => setFormParams({...formParams, type: value})}
+                >
+                  <Radio value='GROUP'>小组</Radio>
+                  <Radio value='TEAM'>团队</Radio>
+                </Radio.Group>
                 { activeTab === 'mygroup' &&
                   <Select
                     style={{ width: 120 }}
@@ -196,10 +207,10 @@ function AddGroup() {
   return (
     <div>
       <Button type='outline' icon={<IconPlus />} onClick={() => setVisible(true)}>
-        {t['index.createGroup']}
+        {t['index.create']}
       </Button>
       <Modal
-        title={t['index.createGroup']}
+        title={t['index.create']}
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
@@ -210,6 +221,17 @@ function AddGroup() {
         >
           <Form.Item label={t['index.create.form.name']} required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
+          </Form.Item>
+          <Form.Item label={t['index.create.form.type']} required field='type' rules={[{ required: true}]}
+            help='创建后不可修改。小组与团队的区别：一个团队可以包含多个小组，即在团队下还可以创建多个小组'
+          >
+            <Radio.Group
+              type='button'
+              defaultValue='GROUP'
+            >
+              <Radio value='GROUP'>小组</Radio>
+              <Radio value='TEAM'>团队</Radio>
+            </Radio.Group>
           </Form.Item>
           <Form.Item label={t['index.create.form.description']} field='description'>
             <Input.TextArea placeholder='' />

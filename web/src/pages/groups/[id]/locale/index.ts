@@ -3,6 +3,8 @@ const i18n = {
     'page.title': 'Group',
     'header.tab.overview': 'Overview',
     'header.tab.people': 'People',
+    'header.tab.group': 'Group',
+    'header.tab.contest': 'Contest',
     'header.tab.settings': 'Settings',
     'settings.form.name': 'Name',
     'settings.form.privacy': 'Privacy',
@@ -38,12 +40,18 @@ const i18n = {
     'invitationCode': 'Invitation Code',
     'privateGroup': 'Private Group',
     'publicGroup': 'Public Group',
-    'joinMsg': 'You need an invitation code to invite to join'
+    'joinMsg': 'You need an invitation code to invite to join',
+    'index.create.form.name': 'Name',
+    'index.create.form.description': 'Description',
+    'index.create.form.type': 'Type',
+    'index.create.savedSuccessfully': 'Saved successfully',
   },
   'zh-CN': {
     'page.title': '小组',
     'header.tab.overview': '概览',
     'header.tab.people': '成员',
+    'header.tab.group': '小组',
+    'header.tab.contest': '比赛',
     'header.tab.settings': '设置',
     'settings.form.name': '名称',
     'settings.form.privacy': '隐私设置',
@@ -79,7 +87,11 @@ const i18n = {
     'invitationCode': '邀请码',
     'privateGroup': '私有小组',
     'publicGroup': '公开小组',
-    'joinMsg': '需要邀请码邀请才能加入'
+    'joinMsg': '需要邀请码邀请才能加入',
+    'index.create.form.name': '名称',
+    'index.create.form.description': '描述',
+    'index.create.form.type': '类型',
+    'index.create.savedSuccessfully': '创建成功',
   },
 };
 

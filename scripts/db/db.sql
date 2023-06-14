@@ -77,6 +77,8 @@ CREATE TABLE `group` (
   `description` text COLLATE utf8mb4_general_ci NOT NULL,
   `member_count` int UNSIGNED NOT NULL DEFAULT '0',
   `user_id` int UNSIGNED NOT NULL,
+  `parent_id` int UNSIGNED NOT NULL DEFAULT '0',
+  `type` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -351,6 +353,7 @@ CREATE TABLE `user` (
   `password` char(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(255) NOT NULL DEFAULT '',
   `phone` char(11) NOT NULL DEFAULT '',
+  `role` tinyint UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL

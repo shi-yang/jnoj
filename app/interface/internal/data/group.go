@@ -23,15 +23,18 @@ type groupRepo struct {
 
 type Group struct {
 	ID             int
+	ParentID       int
 	Name           string
 	Description    string
 	Privacy        int    // 隐私设置
 	Membership     int    // 加入资格
 	InvitationCode string // 邀请码
+	Type           int    // 类型：小组、团队
 	MemberCount    int
 	UserID         int
 	CreatedAt      time.Time
 
+	Team     *Group     `gorm:"foreignKey:ParentID"`
 	User     *User      `json:"user" gorm:"foreignKey:UserID"`
 	Contests []*Contest `gorm:"GroupID"`
 }
@@ -79,6 +82,10 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 			}
 		}
 	}
+	if req.ParentId != nil {
+		db.Where("parent_id = ?", *req.ParentId)
+	}
+	db.Where("type = ?", int(req.Type))
 	db.Count(&count)
 	db.Offset(page.GetOffset()).
 		Limit(page.GetPageSize()).
@@ -105,12 +112,16 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 // GetGroup .
 func (r *groupRepo) GetGroup(ctx context.Context, id int) (*biz.Group, error) {
 	var res Group
-	err := r.data.db.Model(Group{}).
-		First(&res, "id = ?", id).Error
+	err := r.data.db.Model(&Group{}).
+		First(&res, "id = ?", id).
+		Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Group{
+	if res.ParentID != 0 {
+		r.data.db.Model(&Group{}).First(&res.Team, "id = ?", res.ParentID)
+	}
+	g := &biz.Group{
 		ID:             res.ID,
 		Name:           res.Name,
 		Description:    res.Description,
@@ -119,8 +130,16 @@ func (r *groupRepo) GetGroup(ctx context.Context, id int) (*biz.Group, error) {
 		InvitationCode: res.InvitationCode,
 		MemberCount:    res.MemberCount,
 		UserID:         res.UserID,
+		Type:           res.Type,
 		CreatedAt:      res.CreatedAt,
-	}, err
+	}
+	if res.Team != nil {
+		g.Team = &biz.Group{
+			ID:   res.Team.ID,
+			Name: res.Team.Name,
+		}
+	}
+	return g, err
 }
 
 // CreateGroup .
@@ -129,6 +148,8 @@ func (r *groupRepo) CreateGroup(ctx context.Context, g *biz.Group) (*biz.Group, 
 		Name:        g.Name,
 		Description: g.Description,
 		UserID:      g.UserID,
+		ParentID:    g.ParentID,
+		Type:        g.Type,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

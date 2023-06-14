@@ -66,6 +66,11 @@ service GroupService {
     }
 }
 
+enum GroupType {
+    GROUP = 0;
+    TEAM = 1;
+}
+
 message Group {
     int32 id = 1;
     string name = 2;
@@ -77,15 +82,19 @@ message Group {
     int32 user_id = 8;
     string user_nickname = 9;
     GroupUserRole role = 10;
-    google.protobuf.Timestamp created_at = 11;
+    GroupType type = 11;
+    Group team = 12;
+    google.protobuf.Timestamp created_at = 13;
 }
 
 message ListGroupsRequest {
     string name = 1;
     optional bool mygroup = 2;
     string sort = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    optional int32 parent_id = 4;
+    GroupType type = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 
 message ListGroupsResponse {
@@ -98,8 +107,10 @@ message GetGroupRequest {
 }
 
 message CreateGroupRequest {
-    string name = 1;
-    string description = 2;
+    int32 parent_id = 1;
+    string name = 2;
+    string description = 3;
+    GroupType type = 4;
 }
 
 message UpdateGroupRequest {
