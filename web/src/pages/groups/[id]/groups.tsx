@@ -74,7 +74,6 @@ function Groups() {
   const [formParams, setFormParams] = useState({
     name: '',
     sort: 'joinedAt',
-    mygroup: true,
     type: 'GROUP'
   });
   useEffect(() => {
