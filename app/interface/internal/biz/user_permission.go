@@ -2,7 +2,6 @@ package biz
 
 // 定义资源常量
 const (
-	ResourceAll        = "*"          // 所有
 	ResourceAdmin      = "admin"      // 后台
 	ResourceSubmission = "submission" // 提交
 	ResourceProblem    = "problem"    // 题目
@@ -30,7 +29,11 @@ func NewAccessControl() *AccessControl {
 	}
 	// 设置 超级管理员 可访问资源
 	ac.roleToResources[UserRoleSuperAdmin] = []string{
-		ResourceAll,
+		ResourceAdmin,
+		ResourceSubmission,
+		ResourceProblem,
+		ResourceContest,
+		ResourceGroup,
 	}
 
 	// 设置 管理员 可访问资源
@@ -44,8 +47,6 @@ func NewAccessControl() *AccessControl {
 	// 设置 官方用户可访问资源
 	ac.roleToResources[UserRoleOfficial] = []string{
 		ResourceSubmission,
-		ResourceContest,
-		ResourceGroup,
 	}
 	return ac
 }
@@ -59,7 +60,7 @@ func CheckAccess(role int, resource string) bool {
 	}
 
 	for _, r := range resources {
-		if r == resource || r == ResourceAll {
+		if r == resource {
 			// 如果指定资源在可访问资源列表中，则有权限访问该资源
 			return true
 		}

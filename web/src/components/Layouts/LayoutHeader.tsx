@@ -67,7 +67,7 @@ const LayoutHeader:React.FC = () => {
       </div>
       <ul className={styles.right}>
         <PermissionWrapper
-          requiredPermissions={[{resource: '*', actions: ['read']}]}
+          requiredPermissions={[{resource: 'admin', actions: ['read']}]}
         >
           <li>
             <Link href='/admin'>后台</Link>
@@ -118,39 +118,6 @@ const LayoutHeader:React.FC = () => {
         }
       </ul>
     </div>
-    // <div className={styles.navbar}>
-    //   <div className={styles.left}>
-    //     <Menu mode='horizontal' className={styles['arco-menu-inner']} ellipsis={false} defaultSelectedKeys={['/']} onClickMenuItem={onMainClickMenuItem}>
-    //       <MenuItem
-    //         key='0'
-    //         disabled
-    //       >
-    //         <Link href='/'>
-    //           <img style={{height: 21,  cursor: 'pointer' }} src={Logo.src} alt='logo' />
-    //         </Link>
-    //       </MenuItem>
-    //       <MenuItem key='/'>
-    //         <Link href='/'><IconHome /> { t['menu.home'] }</Link>
-    //       </MenuItem>
-    //       <MenuItem key='/problemsets'>
-    //         <Link href='/problemsets'><IconCodeSquare /> { t['menu.problem'] }</Link>
-    //       </MenuItem>
-    //       <MenuItem key='/groups'>
-    //         <Link href='/groups'><IconUserGroup /> { t['menu.group'] }</Link>
-    //       </MenuItem>
-    //       <MenuItem key='/contests'>
-    //         <Link href='/contests'><IconList />{ t['menu.contest'] }</Link>
-    //       </MenuItem>
-    //       <MenuItem key='/rankings'>
-    //         <Link href='/rankings'><IconTrophy />{ t['menu.ranking'] }</Link>
-    //       </MenuItem>
-    //       <MenuItem key='/home/about'>
-    //         <Link href='/home/about'><IconHeart /> { t['menu.about'] }</Link>
-    //       </MenuItem>
-    //     </Menu>
-    //   </div>
-
-    // </div>
   );
 };
 
