@@ -16,6 +16,7 @@ import locale from './locale';
 import styles from './style/all.module.less';
 import './mock';
 import { isLogged } from '@/utils/auth';
+import PermissionWrapper from '@/components/PermissionWrapper';
 
 export default function Index() {
   const t = useLocale(locale);
@@ -85,9 +86,11 @@ export default function Index() {
         <Card
           title={t['page.title']}
           extra={
-            <div>
-              { user.id && <AddGroup />}
-            </div>
+            <PermissionWrapper
+              requiredPermissions={[{resource: 'group', actions: ['write']}]}
+            >
+              <AddGroup />
+            </PermissionWrapper>
           }
         >
           <Tabs
