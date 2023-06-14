@@ -52,7 +52,6 @@ export default function Index() {
     const params = {
       page: current,
       perPage: pageSize,
-      parentId: 0,
       ...formParams,
     };
     listGroups(params)
