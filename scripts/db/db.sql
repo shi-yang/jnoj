@@ -354,6 +354,7 @@ CREATE TABLE `user` (
   `email` varchar(255) NOT NULL DEFAULT '',
   `phone` char(11) NOT NULL DEFAULT '',
   `role` tinyint UNSIGNED NOT NULL,
+  `status` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL
