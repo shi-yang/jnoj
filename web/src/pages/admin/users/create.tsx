@@ -30,7 +30,7 @@ function App({callback}: {callback: () => void}) {
 
   return (
     <div>
-      <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
+      <Button type='primary' icon={<IconPlus />} onClick={() => setVisible(true)}>
         {t['searchTable.operations.add']}
       </Button>
       <Modal

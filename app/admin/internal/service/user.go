@@ -7,6 +7,7 @@ import (
 	"jnoj/app/admin/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -89,4 +90,53 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 	}
 	resp.Total = count
 	return resp, nil
+}
+
+// CreateUserExpiration 创建用户有效期
+func (s UserService) CreateUserExpiration(ctx context.Context, req *v1.CreateUserExpirationRequest) (*emptypb.Empty, error) {
+	expiration := &biz.UserExpiration{
+		UserID:    int(req.UserId),
+		StartTime: req.StartTime.AsTime(),
+		EndTime:   req.EndTime.AsTime(),
+		Type:      int(req.Type),
+	}
+	if req.Type == v1.UserExpirationType_ROLE {
+		expiration.PeriodValue = int(v1.UserRole_value[req.PeriodValue])
+		expiration.EndValue = int(v1.UserRole_value[req.EndValue])
+	} else {
+		expiration.PeriodValue = int(v1.UserStatus_value[req.PeriodValue])
+		expiration.EndValue = int(v1.UserStatus_value[req.EndValue])
+	}
+	err := s.uc.CreateUserExpiration(ctx, expiration)
+	return nil, err
+}
+
+// ListUserExpirations 用户有效期列表
+func (s UserService) ListUserExpirations(ctx context.Context, req *v1.ListUserExpirationsRequest) (*v1.ListUserExpirationsResponse, error) {
+	res := s.uc.ListUserExpirations(ctx, int(req.UserId))
+	resp := new(v1.ListUserExpirationsResponse)
+	for _, v := range res {
+		ue := &v1.UserExpiration{
+			Id:        int32(v.ID),
+			UserId:    int32(v.UserID),
+			Type:      v1.UserExpirationType(v.Type),
+			StartTime: timestamppb.New(v.StartTime),
+			EndTime:   timestamppb.New(v.EndTime),
+		}
+		if v.Type == biz.UserExpirationTypeRole {
+			ue.PeriodValue = v1.UserRole_name[int32(v.PeriodValue)]
+			ue.EndValue = v1.UserRole_name[int32(v.EndValue)]
+		} else {
+			ue.PeriodValue = v1.UserStatus_name[int32(v.PeriodValue)]
+			ue.EndValue = v1.UserStatus_name[int32(v.EndValue)]
+		}
+		resp.Data = append(resp.Data, ue)
+	}
+	return resp, nil
+}
+
+// DeleteUserExpiration 删除用户有效期
+func (s UserService) DeleteUserExpiration(ctx context.Context, req *v1.DeleteUserExpirationRequest) (*emptypb.Empty, error) {
+	err := s.uc.DeleteUserExpiration(ctx, int(req.Id))
+	return &emptypb.Empty{}, err
 }

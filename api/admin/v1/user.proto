@@ -5,6 +5,7 @@ package jnoj.admin.v1;
 import "google/api/annotations.proto";
 import "validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "api/admin/v1;v1";
 
@@ -33,6 +34,25 @@ service UserService {
     rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
         option (google.api.http) = {
             get: "/users"
+        };
+    };
+    // 创建用户有效期
+    rpc CreateUserExpiration(CreateUserExpirationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/users/{user_id}/user_expirations"
+            body: "*"
+        };
+    };
+    // 删除用户有效期
+    rpc DeleteUserExpiration(DeleteUserExpirationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/user_expirations/{id}"
+        };
+    };
+    // 用户有效期列表
+    rpc ListUserExpirations(ListUserExpirationsRequest) returns (ListUserExpirationsResponse) {
+        option (google.api.http) = {
+            get: "/users/{user_id}/user_expirations"
         };
     };
 }
@@ -107,4 +127,42 @@ message ListUsersRequest {
     optional UserStatus status = 3;
     int32 page = 4;
     int32 per_page = 5;
+}
+
+
+enum UserExpirationType {
+    ROLE = 0;
+    STATUS = 1;
+}
+
+message UserExpiration {
+    int32 id = 1;
+    int32 user_id = 2;
+    UserExpirationType type = 3;
+    string period_value = 4;
+    string end_value = 5;
+    google.protobuf.Timestamp start_time = 6;
+    google.protobuf.Timestamp end_time = 7;
+}
+
+message CreateUserExpirationRequest {
+    int32 user_id = 1;
+    UserExpirationType type = 2;
+    string period_value = 3;
+    string end_value = 4;
+    google.protobuf.Timestamp start_time = 5;
+    google.protobuf.Timestamp end_time = 6;
+
+}
+
+message DeleteUserExpirationRequest {
+    int32 id = 1;
+}
+
+message ListUserExpirationsRequest {
+    int32 user_id = 1;
+}
+
+message ListUserExpirationsResponse {
+    repeated UserExpiration data = 1;
 }

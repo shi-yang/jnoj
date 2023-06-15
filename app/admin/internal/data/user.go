@@ -41,6 +41,19 @@ type User struct {
 	DeletedAt gorm.DeletedAt
 }
 
+// UserExpiration 用户有效期
+type UserExpiration struct {
+	ID          int
+	UserID      int
+	Type        int // 类型：角色、可用状态
+	PeriodValue int // 期间的值
+	EndValue    int // 结束后的值
+	Status      int // 有效期事件状态
+	StartTime   time.Time
+	EndTime     time.Time
+	CreatedAt   time.Time
+}
+
 func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	res := User{}
 	err := r.data.db.WithContext(ctx).
@@ -92,9 +105,15 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 		Role:     u.Role,
 		Status:   u.Status,
 	}
-	updateColumn := []string{"id", "username", "nickname", "role", "status"}
+	updateColumn := []string{"id", "role", "status"}
 	if update.Password != "" {
 		updateColumn = append(updateColumn, "password")
+	}
+	if update.Nickname != "" {
+		updateColumn = append(updateColumn, "nickname")
+	}
+	if update.Username != "" {
+		updateColumn = append(updateColumn, "username")
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
@@ -137,4 +156,65 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 		rv = append(rv, u)
 	}
 	return rv, count
+}
+
+// CreateUserExpiration 创建用户有效期
+func (r *userRepo) CreateUserExpiration(ctx context.Context, e *biz.UserExpiration) error {
+	userExpiration := UserExpiration{
+		UserID:      e.UserID,
+		Type:        e.Type,
+		PeriodValue: e.PeriodValue,
+		EndValue:    e.EndValue,
+		StartTime:   e.StartTime,
+		EndTime:     e.EndTime,
+		Status:      e.Status,
+	}
+	return r.data.db.WithContext(ctx).Create(&userExpiration).Error
+}
+
+// DeleteUserExpiration 删除用户有效期
+func (r *userRepo) DeleteUserExpiration(ctx context.Context, id int) error {
+	return r.data.db.WithContext(ctx).Delete(&UserExpiration{ID: id}).Error
+}
+
+// ListUserExpirations 获取用户有效期列表
+func (r *userRepo) ListUserExpirations(ctx context.Context, userID *int, statuses []int) []*biz.UserExpiration {
+	res := []UserExpiration{}
+	db := r.data.db.WithContext(ctx).
+		Model(&UserExpiration{})
+	if len(statuses) > 0 {
+		db.Where("status in (?)", statuses)
+	}
+	if userID != nil {
+		db.Where("user_id = ?", userID)
+	}
+	db.Find(&res)
+	rv := make([]*biz.UserExpiration, 0)
+	for _, v := range res {
+		rv = append(rv, &biz.UserExpiration{
+			ID:          v.ID,
+			UserID:      v.UserID,
+			Type:        v.Type,
+			PeriodValue: v.PeriodValue,
+			EndValue:    v.EndValue,
+			StartTime:   v.StartTime,
+			EndTime:     v.EndTime,
+			Status:      v.Status,
+		})
+	}
+	return rv
+}
+
+// UpdateUserExpiration 更新用户有效期
+func (r *userRepo) UpdateUserExpiration(ctx context.Context, e *biz.UserExpiration) error {
+	update := UserExpiration{
+		ID:     e.ID,
+		Status: e.Status,
+	}
+	updateColumn := []string{"id", "status"}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Select(updateColumn).
+		Updates(&update).Error
+	return err
 }

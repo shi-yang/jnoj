@@ -904,3 +904,686 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListUsersRequestValidationError{}
+
+// Validate checks the field values on UserExpiration with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UserExpiration) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserExpiration with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in UserExpirationMultiError,
+// or nil if none found.
+func (m *UserExpiration) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserExpiration) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for UserId
+
+	// no validation rules for Type
+
+	// no validation rules for PeriodValue
+
+	// no validation rules for EndValue
+
+	if all {
+		switch v := interface{}(m.GetStartTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UserExpirationValidationError{
+					field:  "StartTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UserExpirationValidationError{
+					field:  "StartTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UserExpirationValidationError{
+				field:  "StartTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetEndTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UserExpirationValidationError{
+					field:  "EndTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UserExpirationValidationError{
+					field:  "EndTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UserExpirationValidationError{
+				field:  "EndTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UserExpirationMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserExpirationMultiError is an error wrapping multiple validation errors
+// returned by UserExpiration.ValidateAll() if the designated constraints
+// aren't met.
+type UserExpirationMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserExpirationMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserExpirationMultiError) AllErrors() []error { return m }
+
+// UserExpirationValidationError is the validation error returned by
+// UserExpiration.Validate if the designated constraints aren't met.
+type UserExpirationValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserExpirationValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserExpirationValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserExpirationValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserExpirationValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserExpirationValidationError) ErrorName() string { return "UserExpirationValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserExpirationValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserExpiration.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserExpirationValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserExpirationValidationError{}
+
+// Validate checks the field values on CreateUserExpirationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateUserExpirationRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateUserExpirationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateUserExpirationRequestMultiError, or nil if none found.
+func (m *CreateUserExpirationRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateUserExpirationRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	// no validation rules for Type
+
+	// no validation rules for PeriodValue
+
+	// no validation rules for EndValue
+
+	if all {
+		switch v := interface{}(m.GetStartTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateUserExpirationRequestValidationError{
+					field:  "StartTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateUserExpirationRequestValidationError{
+					field:  "StartTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateUserExpirationRequestValidationError{
+				field:  "StartTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetEndTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateUserExpirationRequestValidationError{
+					field:  "EndTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateUserExpirationRequestValidationError{
+					field:  "EndTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateUserExpirationRequestValidationError{
+				field:  "EndTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return CreateUserExpirationRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateUserExpirationRequestMultiError is an error wrapping multiple
+// validation errors returned by CreateUserExpirationRequest.ValidateAll() if
+// the designated constraints aren't met.
+type CreateUserExpirationRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateUserExpirationRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateUserExpirationRequestMultiError) AllErrors() []error { return m }
+
+// CreateUserExpirationRequestValidationError is the validation error returned
+// by CreateUserExpirationRequest.Validate if the designated constraints
+// aren't met.
+type CreateUserExpirationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateUserExpirationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateUserExpirationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateUserExpirationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateUserExpirationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateUserExpirationRequestValidationError) ErrorName() string {
+	return "CreateUserExpirationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateUserExpirationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateUserExpirationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateUserExpirationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateUserExpirationRequestValidationError{}
+
+// Validate checks the field values on DeleteUserExpirationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteUserExpirationRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteUserExpirationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteUserExpirationRequestMultiError, or nil if none found.
+func (m *DeleteUserExpirationRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteUserExpirationRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteUserExpirationRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteUserExpirationRequestMultiError is an error wrapping multiple
+// validation errors returned by DeleteUserExpirationRequest.ValidateAll() if
+// the designated constraints aren't met.
+type DeleteUserExpirationRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteUserExpirationRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteUserExpirationRequestMultiError) AllErrors() []error { return m }
+
+// DeleteUserExpirationRequestValidationError is the validation error returned
+// by DeleteUserExpirationRequest.Validate if the designated constraints
+// aren't met.
+type DeleteUserExpirationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteUserExpirationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteUserExpirationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteUserExpirationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteUserExpirationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteUserExpirationRequestValidationError) ErrorName() string {
+	return "DeleteUserExpirationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteUserExpirationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteUserExpirationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteUserExpirationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteUserExpirationRequestValidationError{}
+
+// Validate checks the field values on ListUserExpirationsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListUserExpirationsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListUserExpirationsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListUserExpirationsRequestMultiError, or nil if none found.
+func (m *ListUserExpirationsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListUserExpirationsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	if len(errors) > 0 {
+		return ListUserExpirationsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListUserExpirationsRequestMultiError is an error wrapping multiple
+// validation errors returned by ListUserExpirationsRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ListUserExpirationsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListUserExpirationsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListUserExpirationsRequestMultiError) AllErrors() []error { return m }
+
+// ListUserExpirationsRequestValidationError is the validation error returned
+// by ListUserExpirationsRequest.Validate if the designated constraints aren't met.
+type ListUserExpirationsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListUserExpirationsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListUserExpirationsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListUserExpirationsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListUserExpirationsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListUserExpirationsRequestValidationError) ErrorName() string {
+	return "ListUserExpirationsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListUserExpirationsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListUserExpirationsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListUserExpirationsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListUserExpirationsRequestValidationError{}
+
+// Validate checks the field values on ListUserExpirationsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListUserExpirationsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListUserExpirationsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListUserExpirationsResponseMultiError, or nil if none found.
+func (m *ListUserExpirationsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListUserExpirationsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListUserExpirationsResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListUserExpirationsResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListUserExpirationsResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ListUserExpirationsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListUserExpirationsResponseMultiError is an error wrapping multiple
+// validation errors returned by ListUserExpirationsResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ListUserExpirationsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListUserExpirationsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListUserExpirationsResponseMultiError) AllErrors() []error { return m }
+
+// ListUserExpirationsResponseValidationError is the validation error returned
+// by ListUserExpirationsResponse.Validate if the designated constraints
+// aren't met.
+type ListUserExpirationsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListUserExpirationsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListUserExpirationsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListUserExpirationsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListUserExpirationsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListUserExpirationsResponseValidationError) ErrorName() string {
+	return "ListUserExpirationsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListUserExpirationsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListUserExpirationsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListUserExpirationsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListUserExpirationsResponseValidationError{}

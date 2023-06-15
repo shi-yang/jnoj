@@ -360,6 +360,19 @@ CREATE TABLE `user` (
   `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+CREATE TABLE `user_expiration` (
+  `id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `type` tinyint UNSIGNED NOT NULL,
+  `period_value` int UNSIGNED NOT NULL,
+  `end_value` int UNSIGNED NOT NULL,
+  `status` tinyint UNSIGNED NOT NULL,
+  `start_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `end_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- 转储表的索引
 --
@@ -481,6 +494,12 @@ ALTER TABLE `user`
   ADD UNIQUE KEY `uk_username` (`username`);
 
 --
+-- 表的索引 `user_expiration`
+--
+ALTER TABLE `user_expiration`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- 在导出的表使用AUTO_INCREMENT
 --
 
@@ -580,3 +599,9 @@ ALTER TABLE `submission`
 ALTER TABLE `user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10000;
 COMMIT;
+
+--
+-- 使用表AUTO_INCREMENT `user_expiration`
+--
+ALTER TABLE `user_expiration`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
