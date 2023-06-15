@@ -1,0 +1,3 @@
+rules:
+- selector: "/jnoj.admin.v1.AdminService/ListServiceStatuses"
+  middleware: "jnoj/internal/middleware/auth.User()"

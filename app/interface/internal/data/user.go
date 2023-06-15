@@ -34,6 +34,7 @@ type User struct {
 	Email     string
 	Phone     string
 	Role      int
+	Status    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
@@ -59,6 +60,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 		Email:    res.Email,
 		Phone:    res.Phone,
 		Role:     res.Role,
+		Status:   res.Status,
 		Password: res.Password,
 	}, nil
 }
@@ -103,6 +105,7 @@ func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 		Username: o.Username,
 		Nickname: o.Nickname,
 		Role:     o.Role,
+		Status:   o.Status,
 	}, nil
 }
 

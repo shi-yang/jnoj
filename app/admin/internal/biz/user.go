@@ -18,6 +18,7 @@ type User struct {
 	Phone     string
 	Password  string
 	Role      int
+	Status    int
 	CreatedAt time.Time
 }
 
@@ -27,6 +28,12 @@ const (
 	UserRoleOfficial          // 官方用户
 	UserRoleAdmin             // 管理员
 	UserRoleSuperAdmin        // 超级管理员
+)
+
+// 用户状态
+const (
+	UserStatusEnable  = iota // 可用
+	UserStatusDisable        // 禁用
 )
 
 // UserRepo is a User repo.

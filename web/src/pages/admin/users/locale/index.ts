@@ -37,6 +37,8 @@ const i18n = {
     'user.form.user.role.tip.OFFICIAL_USER': 'Usually the official operators of a website, with unique authentication identifiers, or representatives of trusted organizations or brands, they have management and oversight authority over the platform. Official users can view submission details, data, and statistical information, among other things.',
     'user.form.user.role.tip.ADMIN': 'Primarily responsible for managing and maintaining the operations of the entire platform. Admins can manage user accounts, review and publish content, configure site or application settings, process user feedback, and perform other tasks.',
     'user.form.user.role.tip.SUPER_ADMIN': 'The highest level of user, with all admin permissions, and the ability to access sensitive data and management operations. Super admins are typically only held by user "admin".',
+    'user.form.user.status.ENABLE': 'enable',
+    'user.form.user.status.DISABLE': 'disable',
   },
   'zh-CN': {
     'page.title': '用户列表',
@@ -76,6 +78,8 @@ const i18n = {
     'user.form.user.role.tip.OFFICIAL_USER': '通常是网站官方的运营人员，拥有独特的认证标识，也可以是受信任的组织或品牌代表，他们拥有对平台的管理和监督权限。官方用户可以查看提交详情数据和统计信息等。',
     'user.form.user.role.tip.ADMIN': '主要负责管理和维护整个平台的运营。管理员可以管理用户账户、审核和发布内容、配置网站或应用程序的设置、处理用户反馈等任务。',
     'user.form.user.role.tip.SUPER_ADMIN': '最高级别的用户，具有所有管理员权限，并且能够访问敏感数据和管理操作。超级管理员通常只有admin可以拥有。',
+    'user.form.user.status.ENABLE': '启用',
+    'user.form.user.status.DISABLE': '禁用',
   },
 };
 

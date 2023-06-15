@@ -67,6 +67,9 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 	if err != nil {
 		return nil, err
 	}
+	if user.Status == biz.UserStatusDisable {
+		return nil, v1.ErrorUserDisable("")
+	}
 	resp := &v1.GetUserInfoResponse{
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,

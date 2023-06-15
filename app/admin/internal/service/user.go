@@ -31,6 +31,7 @@ func (s UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.U
 		Nickname: u.Nickname,
 		Username: u.Username,
 		Role:     v1.UserRole(u.Role),
+		Status:   v1.UserStatus(u.Status),
 	}, nil
 }
 
@@ -63,6 +64,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 		Password: req.Password,
 		Nickname: req.Nickname,
 		Role:     int(req.Role),
+		Status:   int(req.Status),
 	}
 	s.uc.UpdateUser(ctx, user)
 	return &v1.User{
@@ -81,6 +83,7 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 			Username:  v.Username,
 			Nickname:  v.Nickname,
 			Role:      v1.UserRole(v.Role),
+			Status:    v1.UserStatus(v.Status),
 			CreatedAt: timestamppb.New(v.CreatedAt),
 		})
 	}

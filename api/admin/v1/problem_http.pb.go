@@ -21,14 +21,14 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
-const OperationProblemServiceListProblems = "/jnoj.interface.v1.ProblemService/ListProblems"
+const OperationProblemServiceListProblems = "/jnoj.admin.v1.ProblemService/ListProblems"
 
 type ProblemServiceHTTPServer interface {
 	ListProblems(context.Context, *ListProblemsRequest) (*ListProblemsResponse, error)
 }
 
 func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServer) {
-	s.Use("/jnoj.interface.v1.ProblemService/ListProblems", auth.User())
+	s.Use("/jnoj.admin.v1.ProblemService/ListProblems", auth.User())
 	r := s.Route("/")
 	r.GET("/problems", _ProblemService_ListProblems0_HTTP_Handler(srv))
 }

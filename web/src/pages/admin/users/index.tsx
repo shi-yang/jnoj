@@ -9,6 +9,7 @@ import {
   Link,
   Divider,
   Input,
+  Badge,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -22,7 +23,7 @@ import Head from 'next/head';
 import Layout from '../Layout';
 import { listUsers } from '@/api/admin/user';
 import { IconSearch } from '@arco-design/web-react/icon';
-import { UserRole } from './constants';
+import { UserRole, UserStatus } from './constants';
 const { Title } = Typography;
 
 function Index() {
@@ -93,6 +94,22 @@ function Index() {
       filters: Object.keys(UserRole).map(item => ({
         text: t[`user.form.user.role.${UserRole[item]}`],
         value: UserRole[item],
+      })),
+      filterMultiple: false,
+    },
+    {
+      title: t['searchTable.columns.status'],
+      dataIndex: 'status',
+      align: 'center' as 'center',
+      render: col => {
+        if (col === 'ENABLE') {
+          return <Badge status='success' text={t[`user.form.user.status.${col}`]} />;
+        }
+        return <Badge status='error' text={t[`user.form.user.status.${col}`]} />;
+      },
+      filters: Object.keys(UserStatus).map(item => ({
+        text: t[`user.form.user.status.${UserStatus[item]}`],
+        value: UserStatus[item],
       })),
       filterMultiple: false,
     },

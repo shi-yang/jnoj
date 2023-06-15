@@ -35,6 +35,7 @@ type User struct {
 	Email     string
 	Phone     string
 	Role      int
+	Status    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
@@ -62,6 +63,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 		Phone:    res.Phone,
 		Password: res.Password,
 		Role:     res.Role,
+		Status:   res.Status,
 	}, nil
 }
 
@@ -88,11 +90,16 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 		Password: u.Password,
 		Nickname: u.Nickname,
 		Role:     u.Role,
+		Status:   u.Status,
+	}
+	updateColumn := []string{"id", "username", "nickname", "role", "status"}
+	if update.Password != "" {
+		updateColumn = append(updateColumn, "password")
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
+		Select(updateColumn).
 		Updates(&update).Error
-	r.data.db.WithContext(ctx).Model(&User{ID: u.ID}).UpdateColumn("role", update.Role)
 	return u, err
 }
 
@@ -109,6 +116,9 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 	if req.Role != nil {
 		db.Where("role in (?)", int(*req.Role))
 	}
+	if req.Status != nil {
+		db.Where("status in (?)", int(*req.Status))
+	}
 	db.Count(&count)
 	db.Order("id desc")
 	db.Offset(page.GetOffset()).
@@ -121,6 +131,7 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 			Nickname:  v.Nickname,
 			Username:  v.Username,
 			Role:      v.Role,
+			Status:    v.Status,
 			CreatedAt: v.CreatedAt,
 		}
 		rv = append(rv, u)

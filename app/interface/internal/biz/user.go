@@ -27,6 +27,7 @@ type User struct {
 	Phone     string
 	Password  string
 	Role      int
+	Status    int
 	CreatedAt time.Time
 }
 
@@ -37,6 +38,12 @@ const (
 	UserRoleOfficial          // 官方用户
 	UserRoleAdmin             // 管理员
 	UserRoleSuperAdmin        // 超级管理员
+)
+
+// 用户状态
+const (
+	UserStatusEnable  = iota // 可用
+	UserStatusDisable        // 禁用
 )
 
 // UserRepo is a User repo.
@@ -77,6 +84,9 @@ func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string,
 	}
 	if !password.ValidatePassword(req.Password, user.Password) {
 		return "", v1.ErrorInvalidUsernameOrPassword("")
+	}
+	if user.Status == UserStatusDisable {
+		return "", v1.ErrorUserDisable("")
 	}
 	return auth.GenerateToken(user.ID, user.Role)
 }

@@ -46,8 +46,12 @@ export default function LoginForm() {
         setAccessToken(res.data.token);
         afterLoginSuccess(params);
       })
-      .catch(() => {
-        Message.error(t['login.form.login.errMsg']);
+      .catch((res) => {
+        if (res.response.data.reason === 'USER_DISABLE') {
+          Message.error(t['login.form.login.errMsg2']);
+        } else {
+          Message.error(t['login.form.login.errMsg']);
+        }
       })
       .finally(() => {
         setLoading(false);

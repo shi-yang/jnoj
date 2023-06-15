@@ -5,3 +5,8 @@ export enum UserRole {
   ADMIN = 'ADMIN', // 管理员
   SUPER_ADMIN = 'SUPER_ADMIN', // 超级管理员
 };
+
+export enum UserStatus {
+  ENABLE = 'ENABLE', // 启用
+  DISABLE = 'DISABLE', // 禁用
+};

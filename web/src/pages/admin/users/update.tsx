@@ -3,7 +3,7 @@ import { Modal, Form, Input, Message, Radio } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { getUser, updateUser } from '@/api/admin/user';
-import { UserRole } from './constants';
+import { UserRole, UserStatus } from './constants';
 const FormItem = Form.Item;
 
 function App({id, visible, setVisible, callback}: {id: number, visible: boolean, setVisible: any, callback: () => void}) {
@@ -35,6 +35,7 @@ function App({id, visible, setVisible, callback}: {id: number, visible: boolean,
           username: res.data.username,
           password: '',
           role: res.data.role,
+          status: res.data.status,
         });
       });
     }
@@ -65,11 +66,22 @@ function App({id, visible, setVisible, callback}: {id: number, visible: boolean,
             type='button'
             name='lang'
             onChange={e => setRole(e)}
-            style={{ marginRight: 20, marginBottom: 20 }}
           >
             {Object.keys(UserRole).map(key => (
               <Radio key={key} value={UserRole[key]} disabled={UserRole[key] === 'SUPER_ADMIN'}>
                 {t[`user.form.user.role.${UserRole[key]}`]}
+              </Radio>
+            ))}
+          </Radio.Group>
+        </FormItem>
+        <FormItem label='状态' field='status'>
+          <Radio.Group
+            type='button'
+            onChange={e => setRole(e)}
+          >
+            {Object.keys(UserStatus).map(key => (
+              <Radio key={key} value={UserStatus[key]}>
+                {t[`user.form.user.status.${UserStatus[key]}`]}
               </Radio>
             ))}
           </Radio.Group>

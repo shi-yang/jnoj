@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package jnoj.interface.v1;
+package jnoj.admin.v1;
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "api/interface/v1;v1";
+option go_package = "api/admin/v1;v1";
 
 service UserService {
     // 获取用户信息
@@ -42,7 +42,13 @@ message User {
     string nickname = 2;
     string username = 3;
     UserRole role = 4;
-    google.protobuf.Timestamp created_at = 5;
+    UserStatus status = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+enum UserStatus {
+    ENABLE = 0;
+    DISABLE = 1;
 }
 
 enum UserRole {
@@ -87,6 +93,7 @@ message UpdateUserRequest {
     string nickname = 3;
     string password = 4 [(validate.rules).string = {min_len: 6, max_len: 16}];
     UserRole role = 5;
+    UserStatus status = 6;
 }
 
 message ListUsersResponse {
@@ -97,6 +104,7 @@ message ListUsersResponse {
 message ListUsersRequest {
     string username = 1;
     optional UserRole role = 2;
-    int32 page = 3;
-    int32 per_page = 4;
+    optional UserStatus status = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }

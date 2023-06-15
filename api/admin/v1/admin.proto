@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package jnoj.admin.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/admin/v1;v1";
+
+service AdminService {
+    // 获取题目列表
+    rpc ListServiceStatuses (ListServiceStatusesRequest) returns (ListServiceStatusesResponse) {
+        option (google.api.http) = {
+            get: "/service_statuses"
+        };
+    };
+}
+
+message ListServiceStatusesRequest {
+}
+
+message ListServiceStatusesResponse {
+}

@@ -46,3 +46,15 @@ func IsInvalidUsernameOrPassword(err error) bool {
 func ErrorInvalidUsernameOrPassword(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, UserErrorReason_INVALID_USERNAME_OR_PASSWORD.String(), fmt.Sprintf(format, args...))
 }
+
+func IsUserDisable(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_USER_DISABLE.String() && e.Code == 403
+}
+
+func ErrorUserDisable(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, UserErrorReason_USER_DISABLE.String(), fmt.Sprintf(format, args...))
+}

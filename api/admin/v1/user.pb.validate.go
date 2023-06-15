@@ -64,6 +64,8 @@ func (m *User) validate(all bool) error {
 
 	// no validation rules for Role
 
+	// no validation rules for Status
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -567,6 +569,8 @@ func (m *UpdateUserRequest) validate(all bool) error {
 
 	// no validation rules for Role
 
+	// no validation rules for Status
+
 	if len(errors) > 0 {
 		return UpdateUserRequestMultiError(errors)
 	}
@@ -817,6 +821,10 @@ func (m *ListUsersRequest) validate(all bool) error {
 
 	if m.Role != nil {
 		// no validation rules for Role
+	}
+
+	if m.Status != nil {
+		// no validation rules for Status
 	}
 
 	if len(errors) > 0 {

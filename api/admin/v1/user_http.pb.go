@@ -21,10 +21,10 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
-const OperationUserServiceCreateUser = "/jnoj.interface.v1.UserService/CreateUser"
-const OperationUserServiceGetUser = "/jnoj.interface.v1.UserService/GetUser"
-const OperationUserServiceListUsers = "/jnoj.interface.v1.UserService/ListUsers"
-const OperationUserServiceUpdateUser = "/jnoj.interface.v1.UserService/UpdateUser"
+const OperationUserServiceCreateUser = "/jnoj.admin.v1.UserService/CreateUser"
+const OperationUserServiceGetUser = "/jnoj.admin.v1.UserService/GetUser"
+const OperationUserServiceListUsers = "/jnoj.admin.v1.UserService/ListUsers"
+const OperationUserServiceUpdateUser = "/jnoj.admin.v1.UserService/UpdateUser"
 
 type UserServiceHTTPServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
@@ -34,7 +34,7 @@ type UserServiceHTTPServer interface {
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
-	s.Use("/jnoj.interface.v1.UserService/GetUserInfo", auth.User())
+	s.Use("/jnoj.admin.v1.UserService/GetUserInfo", auth.User())
 	r := s.Route("/")
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.POST("/users", _UserService_CreateUser0_HTTP_Handler(srv))
