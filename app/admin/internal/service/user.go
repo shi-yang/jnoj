@@ -94,26 +94,32 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 
 // CreateUserExpiration 创建用户有效期
 func (s UserService) CreateUserExpiration(ctx context.Context, req *v1.CreateUserExpirationRequest) (*emptypb.Empty, error) {
-	expiration := &biz.UserExpiration{
-		UserID:    int(req.UserId),
-		StartTime: req.StartTime.AsTime(),
-		EndTime:   req.EndTime.AsTime(),
-		Type:      int(req.Type),
+	for _, uid := range req.UserId {
+		expiration := &biz.UserExpiration{
+			UserID:    int(uid),
+			StartTime: req.StartTime.AsTime(),
+			EndTime:   req.EndTime.AsTime(),
+			Type:      int(req.Type),
+		}
+		if req.Type == v1.UserExpirationType_ROLE {
+			expiration.PeriodValue = int(v1.UserRole_value[req.PeriodValue])
+			expiration.EndValue = int(v1.UserRole_value[req.EndValue])
+		} else {
+			expiration.PeriodValue = int(v1.UserStatus_value[req.PeriodValue])
+			expiration.EndValue = int(v1.UserStatus_value[req.EndValue])
+		}
+		s.uc.CreateUserExpiration(ctx, expiration)
 	}
-	if req.Type == v1.UserExpirationType_ROLE {
-		expiration.PeriodValue = int(v1.UserRole_value[req.PeriodValue])
-		expiration.EndValue = int(v1.UserRole_value[req.EndValue])
-	} else {
-		expiration.PeriodValue = int(v1.UserStatus_value[req.PeriodValue])
-		expiration.EndValue = int(v1.UserStatus_value[req.EndValue])
-	}
-	err := s.uc.CreateUserExpiration(ctx, expiration)
-	return nil, err
+	return nil, nil
 }
 
 // ListUserExpirations 用户有效期列表
 func (s UserService) ListUserExpirations(ctx context.Context, req *v1.ListUserExpirationsRequest) (*v1.ListUserExpirationsResponse, error) {
-	res := s.uc.ListUserExpirations(ctx, int(req.UserId))
+	uids := make([]int, 0)
+	for _, uid := range req.UserId {
+		uids = append(uids, int(uid))
+	}
+	res := s.uc.ListUserExpirations(ctx, uids)
 	resp := new(v1.ListUserExpirationsResponse)
 	for _, v := range res {
 		ue := &v1.UserExpiration{

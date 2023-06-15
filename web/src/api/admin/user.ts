@@ -16,12 +16,12 @@ export function updateUser(id, data) {
   return axios.put(`/users/${id}`, data);
 }
 
-export function listUserExpirations(userId: number) {
-  return axios.get(`/users/${userId}/user_expirations`);
+export function listUserExpirations(params: any) {
+  return axios.get(`/user_expirations`, {params});
 }
 
-export function createUserExpiration(userId: number, data) {
-  return axios.post(`/users/${userId}/user_expirations`, data);
+export function createUserExpiration(data) {
+  return axios.post(`/user_expirations`, data);
 }
 
 export function deleteUserExpiration(id: number) {

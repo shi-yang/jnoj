@@ -39,7 +39,7 @@ service UserService {
     // 创建用户有效期
     rpc CreateUserExpiration(CreateUserExpirationRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/users/{user_id}/user_expirations"
+            post: "/user_expirations"
             body: "*"
         };
     };
@@ -52,7 +52,7 @@ service UserService {
     // 用户有效期列表
     rpc ListUserExpirations(ListUserExpirationsRequest) returns (ListUserExpirationsResponse) {
         option (google.api.http) = {
-            get: "/users/{user_id}/user_expirations"
+            get: "/user_expirations"
         };
     };
 }
@@ -146,7 +146,7 @@ message UserExpiration {
 }
 
 message CreateUserExpirationRequest {
-    int32 user_id = 1;
+    repeated int32 user_id = 1;
     UserExpirationType type = 2;
     string period_value = 3;
     string end_value = 4;
@@ -160,7 +160,7 @@ message DeleteUserExpirationRequest {
 }
 
 message ListUserExpirationsRequest {
-    int32 user_id = 1;
+    repeated int32 user_id = 1;
 }
 
 message ListUserExpirationsResponse {

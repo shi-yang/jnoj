@@ -47,9 +47,9 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/users", _UserService_CreateUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
 	r.GET("/users", _UserService_ListUsers0_HTTP_Handler(srv))
-	r.POST("/users/{user_id}/user_expirations", _UserService_CreateUserExpiration0_HTTP_Handler(srv))
+	r.POST("/user_expirations", _UserService_CreateUserExpiration0_HTTP_Handler(srv))
 	r.DELETE("/user_expirations/{id}", _UserService_DeleteUserExpiration0_HTTP_Handler(srv))
-	r.GET("/users/{user_id}/user_expirations", _UserService_ListUserExpirations0_HTTP_Handler(srv))
+	r.GET("/user_expirations", _UserService_ListUserExpirations0_HTTP_Handler(srv))
 }
 
 func _UserService_GetUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
@@ -140,9 +140,6 @@ func _UserService_CreateUserExpiration0_HTTP_Handler(srv UserServiceHTTPServer) 
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
 		http.SetOperation(ctx, OperationUserServiceCreateUserExpiration)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.CreateUserExpiration(ctx, req.(*CreateUserExpirationRequest))
@@ -182,9 +179,6 @@ func _UserService_ListUserExpirations0_HTTP_Handler(srv UserServiceHTTPServer) f
 	return func(ctx http.Context) error {
 		var in ListUserExpirationsRequest
 		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationUserServiceListUserExpirations)
@@ -233,7 +227,7 @@ func (c *UserServiceHTTPClientImpl) CreateUser(ctx context.Context, in *CreateUs
 
 func (c *UserServiceHTTPClientImpl) CreateUserExpiration(ctx context.Context, in *CreateUserExpirationRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/users/{user_id}/user_expirations"
+	pattern := "/user_expirations"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUserServiceCreateUserExpiration))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -272,7 +266,7 @@ func (c *UserServiceHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequ
 
 func (c *UserServiceHTTPClientImpl) ListUserExpirations(ctx context.Context, in *ListUserExpirationsRequest, opts ...http.CallOption) (*ListUserExpirationsResponse, error) {
 	var out ListUserExpirationsResponse
-	pattern := "/users/{user_id}/user_expirations"
+	pattern := "/user_expirations"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceListUserExpirations))
 	opts = append(opts, http.PathTemplate(pattern))

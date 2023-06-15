@@ -6,37 +6,149 @@ import { createUserExpiration, deleteUserExpiration, getUser, listUserExpiration
 import { UserRole, UserStatus } from './constants';
 import { FormatTime } from '@/utils/format';
 import { IconDelete } from '@arco-design/web-react/icon';
+import dayjs from 'dayjs';
 const FormItem = Form.Item;
 
-function UserExpirations({userId}: {userId: number}) {
-  const [visible, setVisible] = useState(false);
-  const [userExpirations, setUserExpirations] = useState<any[]>([]);
+function CreateUserExpirationModal({userIds, visible, setVisible, callback}: {userIds: number[], visible: boolean, setVisible: (visible: boolean) => void, callback: () => void}) {
   const [form] = Form.useForm();
   const t = useLocale(locale);
   function onOk() {
     form.validate().then((values) => {
       const data = {
+        userId: userIds,
         type: values.type,
         startTime: new Date(values.time[0]).toISOString(),
         endTime: new Date(values.time[1]).toISOString(),
         periodValue: values.periodValue,
         endValue: values.endValue,
       };
-      createUserExpiration(userId, data)
-        .then(res => {
-          fetchData();
-          setVisible(false);
-        });
+      createUserExpiration(data).then(() => {
+        callback();
+        setVisible(false);
+        Message.success('添加成功');
+      });
     });
   }
+  return (
+    <Modal
+      visible={visible}
+      title='添加有效期事件'
+      onOk={onOk}
+      onCancel={() => setVisible(false)}
+      style={{width: 800}}
+    >
+      <Form
+        form={form}
+      >
+        <FormItem label='类型' required field='type' rules={[{ required: true }]}>
+          <Radio.Group
+            type='button'
+          >
+            <Radio value='ROLE'>角色</Radio>
+            <Radio value='STATUS'>状态</Radio>
+          </Radio.Group>
+        </FormItem>
+        <FormItem label='时间范围' required field='time' rules={[{ required: true }]}>
+          <DatePicker.RangePicker
+            showTime={{
+              format: 'HH:mm:ss',
+            }}
+            format='YYYY-MM-DD HH:mm:ss'
+            shortcutsPlacementLeft
+            shortcuts={[
+              {
+                text: 'next 2 days',
+                value: () => [dayjs(), dayjs().add(2, 'day')],
+              },
+              {
+                text: 'next 7 days',
+                value: () => [dayjs(), dayjs().add(1, 'week')],
+              },
+              {
+                text: 'next 30 days',
+                value: () => [dayjs(), dayjs().add(1, 'month')],
+              },
+              {
+                text: 'next 6 months',
+                value: () => [dayjs(), dayjs().add(6, 'month')],
+              },
+              {
+                text: 'next 12 months',
+                value: () => [dayjs(), dayjs().add(1, 'year')],
+              },
+              {
+                text: 'next 10 years',
+                value: () => [dayjs(), dayjs().add(10, 'year')],
+              },
+            ]}
+          />
+        </FormItem>
+        <FormItem label='时间范围期间的值' shouldUpdate required field='periodValue' rules={[{ required: true }]}>
+          {(values) => {
+            return values.type === 'ROLE' ? (
+              <Radio.Group
+                type='button'
+              >
+                {Object.keys(UserRole).map(key => (
+                  <Radio key={key} value={UserRole[key]} disabled={UserRole[key] === 'SUPER_ADMIN'}>
+                    {t[`user.form.user.role.${UserRole[key]}`]}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            ) : (
+              <Radio.Group
+                type='button'
+              >
+                {Object.keys(UserStatus).map(key => (
+                  <Radio key={key} value={UserStatus[key]}>
+                    {t[`user.form.user.status.${UserStatus[key]}`]}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            );
+          }}
+        </FormItem>
+        <FormItem label='结束后的值' shouldUpdate required field='endValue' rules={[{ required: true }]}>
+          {(values) => {
+            return values.type === 'ROLE' ? (
+              <Radio.Group
+                type='button'
+              >
+                {Object.keys(UserRole).map(key => (
+                  <Radio key={key} value={UserRole[key]} disabled={UserRole[key] === 'SUPER_ADMIN'}>
+                    {t[`user.form.user.role.${UserRole[key]}`]}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            ) : (
+              <Radio.Group
+                type='button'
+              >
+                {Object.keys(UserStatus).map(key => (
+                  <Radio key={key} value={UserStatus[key]}>
+                    {t[`user.form.user.status.${UserStatus[key]}`]}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            );
+          }}
+        </FormItem>
+      </Form>
+    </Modal>
+  );
+}
+
+function UserExpirationList({userId}: {userId: number}) {
+  const [visible, setVisible] = useState(false);
+  const [userExpirations, setUserExpirations] = useState<any[]>([]);
+  const t = useLocale(locale);
   function onDelete(id) {
     deleteUserExpiration(id).then(res => {
       fetchData();
     });
   }
-  
   function fetchData() {
-    listUserExpirations(userId).then(res => {
+    listUserExpirations({userId: [userId]}).then(res => {
       setUserExpirations(res.data.data);
     });
   }
@@ -55,84 +167,7 @@ function UserExpirations({userId}: {userId: number}) {
             <Button type='primary' onClick={() => setVisible(true)}>添加</Button>
           </Space>
           <div style={{fontSize: 12, color: 'var(--color-neutral-6)'}}>有效期事件用于设定用户角色、状态的可用时间，在规定时间后自动变更状态</div>
-          <Modal
-            visible={visible}
-            title='添加有效期事件'
-            onOk={onOk}
-            onCancel={() => setVisible(false)}
-            style={{width: 800}}
-          >
-            <Form
-              form={form}
-            >
-              <FormItem label='类型' required field='type' rules={[{ required: true }]}>
-                <Radio.Group
-                  type='button'
-                >
-                  <Radio value='ROLE'>角色</Radio>
-                  <Radio value='STATUS'>状态</Radio>
-                </Radio.Group>
-              </FormItem>
-              <FormItem label='时间范围' required field='time' rules={[{ required: true }]}>
-                <DatePicker.RangePicker
-                  showTime={{
-                    format: 'HH:mm:ss',
-                  }}
-                  format='YYYY-MM-DD HH:mm:ss'
-                />
-              </FormItem>
-              <FormItem label='时间范围期间的值' shouldUpdate required field='periodValue' rules={[{ required: true }]}>
-                {(values) => {
-                  return values.type === 'ROLE' ? (
-                    <Radio.Group
-                      type='button'
-                    >
-                      {Object.keys(UserRole).map(key => (
-                        <Radio key={key} value={UserRole[key]} disabled={UserRole[key] === 'SUPER_ADMIN'}>
-                          {t[`user.form.user.role.${UserRole[key]}`]}
-                        </Radio>
-                      ))}
-                    </Radio.Group>
-                  ) : (
-                    <Radio.Group
-                      type='button'
-                    >
-                      {Object.keys(UserStatus).map(key => (
-                        <Radio key={key} value={UserStatus[key]}>
-                          {t[`user.form.user.status.${UserStatus[key]}`]}
-                        </Radio>
-                      ))}
-                    </Radio.Group>
-                  );
-                }}
-              </FormItem>
-              <FormItem label='结束后的值' shouldUpdate required field='endValue' rules={[{ required: true }]}>
-                {(values) => {
-                  return values.type === 'ROLE' ? (
-                    <Radio.Group
-                      type='button'
-                    >
-                      {Object.keys(UserRole).map(key => (
-                        <Radio key={key} value={UserRole[key]} disabled={UserRole[key] === 'SUPER_ADMIN'}>
-                          {t[`user.form.user.role.${UserRole[key]}`]}
-                        </Radio>
-                      ))}
-                    </Radio.Group>
-                  ) : (
-                    <Radio.Group
-                      type='button'
-                    >
-                      {Object.keys(UserStatus).map(key => (
-                        <Radio key={key} value={UserStatus[key]}>
-                          {t[`user.form.user.status.${UserStatus[key]}`]}
-                        </Radio>
-                      ))}
-                    </Radio.Group>
-                  );
-                }}
-              </FormItem>
-            </Form>
-          </Modal>
+          <CreateUserExpirationModal userIds={[userId]} visible={visible} setVisible={setVisible} callback={fetchData}  />
         </div>
       }
       dataSource={userExpirations}
@@ -238,9 +273,11 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
         </FormItem>
       </Form>
       <Divider />
-      <UserExpirations userId={id} />
+      <UserExpirationList userId={id} />
     </Modal>
   );
 }
 
-export default UpdateModal;
+export {UpdateModal, CreateUserExpirationModal};
+
+export default () => {};

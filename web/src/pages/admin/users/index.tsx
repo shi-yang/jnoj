@@ -16,7 +16,7 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import CreateModal from './create';
-import UpdateModal from './update';
+import { UpdateModal, CreateUserExpirationModal } from './modal';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
@@ -40,8 +40,9 @@ function Index() {
   const [formParams, setFormParams] = useState({});
   const [id, setId] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [createUserExpirationModalVisible, setCreateUserExpirationModalVisible] = useState(false);
   const inputRef = useRef(null);
-
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const columns = [
     {
       title: t['searchTable.columns.id'],
@@ -185,6 +186,8 @@ function Index() {
           <Divider />
           <div className={styles['button-group']}>
             <Space>
+              <Button disabled={selectedRowKeys.length === 0} onClick={() => setCreateUserExpirationModalVisible(true)}>添加有效期事件</Button>
+              <CreateUserExpirationModal userIds={selectedRowKeys} visible={createUserExpirationModalVisible} setVisible={setCreateUserExpirationModalVisible} callback={fetchData} />
               <CreateModal callback={fetchData} />
               <UpdateModal id={id} visible={visible} setVisible={setVisible} callback={fetchData} />
             </Space>
@@ -196,6 +199,13 @@ function Index() {
             pagination={pagination}
             columns={columns}
             data={data}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys,
+              onChange: (selectedRowKeys, selectedRows) => {
+                setSelectedRowKeys(selectedRowKeys);
+              },
+            }}
           />
         </Card>
       </div>

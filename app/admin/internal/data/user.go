@@ -178,15 +178,15 @@ func (r *userRepo) DeleteUserExpiration(ctx context.Context, id int) error {
 }
 
 // ListUserExpirations 获取用户有效期列表
-func (r *userRepo) ListUserExpirations(ctx context.Context, userID *int, statuses []int) []*biz.UserExpiration {
+func (r *userRepo) ListUserExpirations(ctx context.Context, userID []int, statuses []int) []*biz.UserExpiration {
 	res := []UserExpiration{}
 	db := r.data.db.WithContext(ctx).
 		Model(&UserExpiration{})
 	if len(statuses) > 0 {
 		db.Where("status in (?)", statuses)
 	}
-	if userID != nil {
-		db.Where("user_id = ?", userID)
+	if len(userID) > 0 {
+		db.Where("user_id in (?)", userID)
 	}
 	db.Find(&res)
 	rv := make([]*biz.UserExpiration, 0)

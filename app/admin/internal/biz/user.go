@@ -69,7 +69,7 @@ type UserRepo interface {
 	UpdateUser(context.Context, *User) (*User, error)
 	ListUsers(context.Context, *v1.ListUsersRequest) ([]*User, int64)
 	CreateUserExpiration(context.Context, *UserExpiration) error
-	ListUserExpirations(ctx context.Context, userId *int, statuses []int) []*UserExpiration
+	ListUserExpirations(ctx context.Context, userId []int, statuses []int) []*UserExpiration
 	DeleteUserExpiration(context.Context, int) error
 	UpdateUserExpiration(context.Context, *UserExpiration) error
 }
@@ -126,8 +126,8 @@ func (uc *UserUsecase) DeleteUserExpiration(ctx context.Context, id int) error {
 }
 
 // ListUserExpirations 用户有效期列表
-func (uc *UserUsecase) ListUserExpirations(ctx context.Context, uid int) []*UserExpiration {
-	return uc.repo.ListUserExpirations(ctx, &uid, nil)
+func (uc *UserUsecase) ListUserExpirations(ctx context.Context, uid []int) []*UserExpiration {
+	return uc.repo.ListUserExpirations(ctx, uid, nil)
 }
 
 // CronCheckUserExpiration 定期检查用户有效期
