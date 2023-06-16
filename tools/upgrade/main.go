@@ -386,9 +386,9 @@ func migrateProblem() {
 				o.InputPreview = string(in[:32]) + "..."
 			}
 			if len(out) < 32 {
-				o.InputPreview = string(out)
+				o.OutputPreview = string(out)
 			} else {
-				o.InputPreview = string(out[:32]) + "..."
+				o.OutputPreview = string(out[:32]) + "..."
 			}
 			err = nDB.Create(o).Error
 			if err != nil {
@@ -593,9 +593,9 @@ func migratePolygonProblem() {
 				o.InputPreview = string(in[:32]) + "..."
 			}
 			if len(out) < 32 {
-				o.InputPreview = string(out)
+				o.OutputPreview = string(out)
 			} else {
-				o.InputPreview = string(out[:32]) + "..."
+				o.OutputPreview = string(out[:32]) + "..."
 			}
 			err = nDB.Create(o).Error
 			if err != nil {
