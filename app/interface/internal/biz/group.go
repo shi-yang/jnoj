@@ -68,7 +68,7 @@ type GroupRepo interface {
 	UpdateGroup(context.Context, *Group) (*Group, error)
 	DeleteGroup(context.Context, int) error
 	ListGroupUsers(context.Context, *v1.ListGroupUsersRequest) ([]*GroupUser, int64)
-	GetGroupUser(ctx context.Context, gid int, uid int) (*GroupUser, error)
+	GetGroupUser(ctx context.Context, group *Group, uid int) (*GroupUser, error)
 	DeleteGroupUser(ctx context.Context, groupID int, userID int) error
 	CreateGroupUser(context.Context, *GroupUser) (*GroupUser, error)
 	UpdateGroupUser(context.Context, *GroupUser) (*GroupUser, error)
@@ -137,8 +137,8 @@ func (uc *GroupUsecase) ListGroupUsers(ctx context.Context, req *v1.ListGroupUse
 }
 
 // GetGroupUser .
-func (uc *GroupUsecase) GetGroupUser(ctx context.Context, gid, uid int) (*GroupUser, error) {
-	return uc.repo.GetGroupUser(ctx, gid, uid)
+func (uc *GroupUsecase) GetGroupUser(ctx context.Context, group *Group, uid int) (*GroupUser, error) {
+	return uc.repo.GetGroupUser(ctx, group, uid)
 }
 
 // CreateGroupUser .
@@ -193,7 +193,7 @@ func (uc *GroupUsecase) GetGroupRole(ctx context.Context, group *Group) int {
 		if group.UserID == uid {
 			group.Role = GroupUserRoleAdmin
 		} else {
-			gu, err := uc.repo.GetGroupUser(ctx, group.ID, uid)
+			gu, err := uc.repo.GetGroupUser(ctx, group, uid)
 			if err == nil {
 				group.Role = gu.Role
 			}

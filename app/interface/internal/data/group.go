@@ -220,17 +220,18 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 }
 
 // GetGroupUser .
-func (r *groupRepo) GetGroupUser(ctx context.Context, gid int, uid int) (*biz.GroupUser, error) {
+func (r *groupRepo) GetGroupUser(ctx context.Context, group *biz.Group, uid int) (*biz.GroupUser, error) {
 	var res GroupUser
 	err := r.data.db.WithContext(ctx).
 		Model(&GroupUser{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, nickname")
 		}).
-		First(&res, "group_id = ? and user_id = ?", gid, uid).
+		First(&res, "group_id = ? and user_id = ?", group.ID, uid).
 		Error
-	if err != nil {
-		return nil, err
+	// 小组没找到，往小组所属团队查找角色
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return r.GetGroupUser(ctx, group.Team, uid)
 	}
 	u := &biz.GroupUser{
 		ID:        res.ID,

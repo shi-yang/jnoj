@@ -134,7 +134,11 @@ func (s *GroupService) ListGroupUsers(ctx context.Context, req *v1.ListGroupUser
 
 // GetGroupUser .
 func (s *GroupService) GetGroupUser(ctx context.Context, req *v1.GetGroupUserRequest) (*v1.GroupUser, error) {
-	u, err := s.uc.GetGroupUser(ctx, int(req.Gid), int(req.Uid))
+	group, err := s.uc.GetGroup(ctx, int(req.Gid))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	u, err := s.uc.GetGroupUser(ctx, group, int(req.Uid))
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
@@ -194,7 +198,7 @@ func (s *GroupService) DeleteGroupUser(ctx context.Context, req *v1.DeleteGroupU
 		return nil, v1.ErrorNotFound(err.Error())
 	}
 	uid, _ := auth.GetUserID(ctx)
-	_, err = s.uc.GetGroupUser(ctx, group.ID, uid)
+	_, err = s.uc.GetGroupUser(ctx, group, uid)
 	isLoginUserExistGroup := (err == nil && req.Uid == int32(uid))
 	role := s.uc.GetGroupRole(ctx, group)
 	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager && !isLoginUserExistGroup {

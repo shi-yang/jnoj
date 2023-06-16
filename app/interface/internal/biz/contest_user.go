@@ -49,7 +49,7 @@ func (uc *ContestUsecase) CreateContestUser(ctx context.Context, c *ContestUser,
 			return nil, v1.ErrorBadRequest("invalid group")
 		}
 		uid, role := auth.GetUserID(ctx)
-		_, err = uc.groupRepo.GetGroupUser(ctx, group.ID, uid)
+		_, err = uc.groupRepo.GetGroupUser(ctx, group, uid)
 		if uid != group.UserID && err != nil && !CheckAccess(role, ResourceContest) {
 			return nil, v1.ErrorForbidden("only group user")
 		}
