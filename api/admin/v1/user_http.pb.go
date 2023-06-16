@@ -22,6 +22,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+const OperationUserServiceBatchCreateUser = "/jnoj.admin.v1.UserService/BatchCreateUser"
 const OperationUserServiceCreateUser = "/jnoj.admin.v1.UserService/CreateUser"
 const OperationUserServiceCreateUserExpiration = "/jnoj.admin.v1.UserService/CreateUserExpiration"
 const OperationUserServiceDeleteUserExpiration = "/jnoj.admin.v1.UserService/DeleteUserExpiration"
@@ -31,6 +32,7 @@ const OperationUserServiceListUsers = "/jnoj.admin.v1.UserService/ListUsers"
 const OperationUserServiceUpdateUser = "/jnoj.admin.v1.UserService/UpdateUser"
 
 type UserServiceHTTPServer interface {
+	BatchCreateUser(context.Context, *BatchCreateUserRequest) (*BatchCreateUserResponse, error)
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	CreateUserExpiration(context.Context, *CreateUserExpirationRequest) (*emptypb.Empty, error)
 	DeleteUserExpiration(context.Context, *DeleteUserExpirationRequest) (*emptypb.Empty, error)
@@ -45,6 +47,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r := s.Route("/")
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.POST("/users", _UserService_CreateUser0_HTTP_Handler(srv))
+	r.POST("/batch_users", _UserService_BatchCreateUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
 	r.GET("/users", _UserService_ListUsers0_HTTP_Handler(srv))
 	r.POST("/user_expirations", _UserService_CreateUserExpiration0_HTTP_Handler(srv))
@@ -89,6 +92,25 @@ func _UserService_CreateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 			return err
 		}
 		reply := out.(*User)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_BatchCreateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in BatchCreateUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceBatchCreateUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.BatchCreateUser(ctx, req.(*BatchCreateUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*BatchCreateUserResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -195,6 +217,7 @@ func _UserService_ListUserExpirations0_HTTP_Handler(srv UserServiceHTTPServer) f
 }
 
 type UserServiceHTTPClient interface {
+	BatchCreateUser(ctx context.Context, req *BatchCreateUserRequest, opts ...http.CallOption) (rsp *BatchCreateUserResponse, err error)
 	CreateUser(ctx context.Context, req *CreateUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	CreateUserExpiration(ctx context.Context, req *CreateUserExpirationRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteUserExpiration(ctx context.Context, req *DeleteUserExpirationRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -210,6 +233,19 @@ type UserServiceHTTPClientImpl struct {
 
 func NewUserServiceHTTPClient(client *http.Client) UserServiceHTTPClient {
 	return &UserServiceHTTPClientImpl{client}
+}
+
+func (c *UserServiceHTTPClientImpl) BatchCreateUser(ctx context.Context, in *BatchCreateUserRequest, opts ...http.CallOption) (*BatchCreateUserResponse, error) {
+	var out BatchCreateUserResponse
+	pattern := "/batch_users"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceBatchCreateUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *UserServiceHTTPClientImpl) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...http.CallOption) (*User, error) {

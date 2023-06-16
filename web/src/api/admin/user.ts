@@ -12,6 +12,10 @@ export function createUser(data) {
   return axios.post('/users', data);
 }
 
+export function batchCreateUser(data) {
+  return axios.post('/batch_users', data);
+}
+
 export function updateUser(id, data) {
   return axios.put(`/users/${id}`, data);
 }

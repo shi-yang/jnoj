@@ -23,6 +23,13 @@ service UserService {
             body: "*"
         };
     };
+    // 批量创建用户
+    rpc BatchCreateUser (BatchCreateUserRequest) returns (BatchCreateUserResponse) {
+        option (google.api.http) = {
+            post: "/batch_users"
+            body: "*"
+        };
+    };
     // 修改用户信息
     rpc UpdateUser (UpdateUserRequest) returns (User) {
         option (google.api.http) = {
@@ -102,6 +109,24 @@ message CreateUserRequest {
     string nickname = 4;
     // 密码
     string password = 5 [(validate.rules).string = {min_len: 6, max_len: 16}];
+}
+
+message BatchCreateUserRequest {
+    message User {
+        string username = 1;
+        string nickname = 2;
+    }
+    repeated User users = 1;
+}
+
+message BatchCreateUserResponse {
+    message User {
+        string username = 1;
+        string password = 2;
+        string reason = 3;
+    }
+    repeated User success = 1;
+    repeated User failed = 2;
 }
 
 message UpdateUserRequest {

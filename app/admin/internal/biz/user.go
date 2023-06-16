@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "jnoj/api/admin/v1"
 	"jnoj/pkg/password"
+	"math/rand"
 	"sort"
 	"time"
 
@@ -100,6 +101,54 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, u *User) (*User, error) {
 	uc.log.WithContext(ctx).Infof("CreateUser: %v", u.Nickname)
 	u.Password, _ = password.GeneratePasswordHash(u.Password)
 	return uc.repo.CreateUser(ctx, u)
+}
+
+// BatchCreateUser 批量创建用户
+func (uc *UserUsecase) BatchCreateUser(ctx context.Context, req *v1.BatchCreateUserRequest) (*v1.BatchCreateUserResponse, error) {
+	res := new(v1.BatchCreateUserResponse)
+	// 生成长度为8，包含数字和小写字母、不含易混淆字符的密码
+	newPassword := func() string {
+		rand.Seed(time.Now().UnixNano())
+		var letterRunes = []rune("23456789abcdefghijkmnpqrstuvwxyz")
+		b := make([]rune, 8)
+		for i := range b {
+			b[i] = letterRunes[rand.Intn(len(letterRunes))]
+		}
+		return string(b)
+	}
+	for _, v := range req.Users {
+		// 查询用户是否已经存在
+		_, err := uc.repo.GetUser(ctx, &User{Username: v.Username})
+		if err == nil {
+			res.Failed = append(res.Failed, &v1.BatchCreateUserResponse_User{
+				Username: v.Username,
+				Reason:   "user already exists",
+			})
+			continue
+		}
+		passwd := newPassword()
+		newUser := &User{
+			Username: v.Username,
+			Nickname: v.Nickname,
+		}
+		newUser.Password, _ = password.GeneratePasswordHash(passwd)
+		if newUser.Nickname == "" {
+			newUser.Nickname = v.Username
+		}
+		_, err = uc.repo.CreateUser(ctx, newUser)
+		if err != nil {
+			res.Failed = append(res.Failed, &v1.BatchCreateUserResponse_User{
+				Username: newUser.Username,
+				Reason:   err.Error(),
+			})
+		} else {
+			res.Success = append(res.Success, &v1.BatchCreateUserResponse_User{
+				Username: newUser.Username,
+				Password: passwd,
+			})
+		}
+	}
+	return res, nil
 }
 
 // UpdateUser updates a User, and returns the updated User.

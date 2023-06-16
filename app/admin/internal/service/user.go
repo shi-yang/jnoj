@@ -57,6 +57,11 @@ func (s UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) 
 	return &v1.User{Id: int32(u.ID)}, err
 }
 
+// BatchCreateUser 批量创建用户
+func (s UserService) BatchCreateUser(ctx context.Context, req *v1.BatchCreateUserRequest) (*v1.BatchCreateUserResponse, error) {
+	return s.uc.BatchCreateUser(ctx, req)
+}
+
 // UpdateUser 修改用户信息
 func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.User, error) {
 	user := &biz.User{
