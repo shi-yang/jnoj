@@ -13,6 +13,7 @@ import changeTheme from '@/utils/changeTheme';
 import cookies from 'next-cookies';
 import { Provider } from 'react-redux';
 import '../style/global.less';
+import Head from 'next/head';
 
 interface RenderConfig {
   arcoLang?: string;
@@ -93,6 +94,9 @@ function MyApp({ renderConfig, Component, ...rest }: { renderConfig: RenderConfi
         Table: {border: false},
       }}
     >
+      <Head>
+        <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+      </Head>
       <Provider store={store}>
         <GlobalContext.Provider value={contextValue}>
           <PageLayout Component={Component} pageProps={pageProps} />
