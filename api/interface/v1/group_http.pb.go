@@ -25,6 +25,7 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 const OperationGroupServiceCreateGroup = "/jnoj.interface.v1.GroupService/CreateGroup"
 const OperationGroupServiceCreateGroupUser = "/jnoj.interface.v1.GroupService/CreateGroupUser"
+const OperationGroupServiceDeleteGroup = "/jnoj.interface.v1.GroupService/DeleteGroup"
 const OperationGroupServiceDeleteGroupUser = "/jnoj.interface.v1.GroupService/DeleteGroupUser"
 const OperationGroupServiceGetGroup = "/jnoj.interface.v1.GroupService/GetGroup"
 const OperationGroupServiceGetGroupUser = "/jnoj.interface.v1.GroupService/GetGroupUser"
@@ -36,6 +37,7 @@ const OperationGroupServiceUpdateGroupUser = "/jnoj.interface.v1.GroupService/Up
 type GroupServiceHTTPServer interface {
 	CreateGroup(context.Context, *CreateGroupRequest) (*Group, error)
 	CreateGroupUser(context.Context, *CreateGroupUserRequest) (*GroupUser, error)
+	DeleteGroup(context.Context, *DeleteGroupRequest) (*emptypb.Empty, error)
 	DeleteGroupUser(context.Context, *DeleteGroupUserRequest) (*emptypb.Empty, error)
 	GetGroup(context.Context, *GetGroupRequest) (*Group, error)
 	GetGroupUser(context.Context, *GetGroupUserRequest) (*GroupUser, error)
@@ -50,6 +52,7 @@ func RegisterGroupServiceHTTPServer(s *http.Server, srv GroupServiceHTTPServer) 
 	s.Use("/jnoj.interface.v1.GroupService/ListGroups", auth.Guest())
 	s.Use("/jnoj.interface.v1.GroupService/UpdateGroup", auth.User())
 	s.Use("/jnoj.interface.v1.GroupService/GetGroup", auth.Guest())
+	s.Use("/jnoj.interface.v1.GroupService/DeleteGroup", auth.User())
 	s.Use("/jnoj.interface.v1.GroupService/DeleteGroupUser", auth.User())
 	s.Use("/jnoj.interface.v1.GroupService/CreateGroupUser", auth.User())
 	s.Use("/jnoj.interface.v1.GroupService/UpdateGroupUser", auth.User())
@@ -58,6 +61,7 @@ func RegisterGroupServiceHTTPServer(s *http.Server, srv GroupServiceHTTPServer) 
 	r.GET("/groups/{id}", _GroupService_GetGroup0_HTTP_Handler(srv))
 	r.POST("/groups", _GroupService_CreateGroup0_HTTP_Handler(srv))
 	r.PUT("/groups/{id}", _GroupService_UpdateGroup0_HTTP_Handler(srv))
+	r.DELETE("/groups/{id}", _GroupService_DeleteGroup0_HTTP_Handler(srv))
 	r.GET("/groups/{id}/users", _GroupService_ListGroupUsers0_HTTP_Handler(srv))
 	r.GET("/groups/{gid}/users/{uid}", _GroupService_GetGroupUser0_HTTP_Handler(srv))
 	r.POST("/groups/{gid}/users", _GroupService_CreateGroupUser0_HTTP_Handler(srv))
@@ -143,6 +147,28 @@ func _GroupService_UpdateGroup0_HTTP_Handler(srv GroupServiceHTTPServer) func(ct
 			return err
 		}
 		reply := out.(*Group)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _GroupService_DeleteGroup0_HTTP_Handler(srv GroupServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteGroupRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationGroupServiceDeleteGroup)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteGroup(ctx, req.(*DeleteGroupRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -260,6 +286,7 @@ func _GroupService_DeleteGroupUser0_HTTP_Handler(srv GroupServiceHTTPServer) fun
 type GroupServiceHTTPClient interface {
 	CreateGroup(ctx context.Context, req *CreateGroupRequest, opts ...http.CallOption) (rsp *Group, err error)
 	CreateGroupUser(ctx context.Context, req *CreateGroupUserRequest, opts ...http.CallOption) (rsp *GroupUser, err error)
+	DeleteGroup(ctx context.Context, req *DeleteGroupRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteGroupUser(ctx context.Context, req *DeleteGroupUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetGroup(ctx context.Context, req *GetGroupRequest, opts ...http.CallOption) (rsp *Group, err error)
 	GetGroupUser(ctx context.Context, req *GetGroupUserRequest, opts ...http.CallOption) (rsp *GroupUser, err error)
@@ -297,6 +324,19 @@ func (c *GroupServiceHTTPClientImpl) CreateGroupUser(ctx context.Context, in *Cr
 	opts = append(opts, http.Operation(OperationGroupServiceCreateGroupUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *GroupServiceHTTPClientImpl) DeleteGroup(ctx context.Context, in *DeleteGroupRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/groups/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationGroupServiceDeleteGroup))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

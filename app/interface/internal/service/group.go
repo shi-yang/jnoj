@@ -113,6 +113,21 @@ func (s *GroupService) UpdateGroup(ctx context.Context, req *v1.UpdateGroupReque
 	}, nil
 }
 
+// DeleteGroup 删除小组
+func (s *GroupService) DeleteGroup(ctx context.Context, req *v1.DeleteGroupRequest) (*emptypb.Empty, error) {
+	group, err := s.uc.GetGroup(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	role := s.uc.GetGroupRole(ctx, group)
+	_, userRole := auth.GetUserID(ctx)
+	if role != biz.GroupUserRoleAdmin && !biz.CheckAccess(userRole, biz.ResourceGroup) {
+		return nil, v1.ErrorForbidden("permission denied")
+	}
+	err = s.uc.DeleteGroup(ctx, group.ID)
+	return &emptypb.Empty{}, err
+}
+
 // ListGroupUsers .
 func (s *GroupService) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRequest) (*v1.ListGroupUsersResponse, error) {
 	data, count := s.uc.ListGroupUsers(ctx, req)

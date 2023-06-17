@@ -182,11 +182,55 @@ func (r *groupRepo) UpdateGroup(ctx context.Context, g *biz.Group) (*biz.Group, 
 
 // DeleteGroup .
 func (r *groupRepo) DeleteGroup(ctx context.Context, id int) error {
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Delete(Group{ID: id}).
+	tx := r.data.db.WithContext(ctx).Begin()
+	err := tx.Omit(clause.Associations).
+		Unscoped().
+		Delete(&Group{ID: id}).
 		Error
-	return err
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// 删除小组用户关系
+	err = tx.Omit(clause.Associations).
+		Unscoped().
+		Delete(&GroupUser{}, "group_id = ?", id).
+		Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// 查询比赛ID
+	contestIds := tx.Select("id").Model(&Contest{}).Where("group_id = ?", id)
+	// 删除小组比赛的提交
+	err = tx.Omit(clause.Associations).
+		Unscoped().
+		Where("entity_type = ? and entity_id in (?)", biz.SubmissionEntityTypeContest, contestIds).
+		Delete(&Submission{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// 删除比赛用户
+	err = tx.Omit(clause.Associations).
+		Unscoped().
+		Where("contest_id in (?)", contestIds).
+		Delete(&ContestUser{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// 删除比赛
+	err = tx.Omit(clause.Associations).
+		Unscoped().
+		Where("group_id = ?", id).
+		Delete(&Contest{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
 }
 
 // ListGroupUsers .

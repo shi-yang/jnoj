@@ -1,16 +1,18 @@
-import { updateGroup } from '@/api/group';
+import { deleteGroup, updateGroup } from '@/api/group';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Message, Radio } from '@arco-design/web-react';
+import { Alert, Button, Card, Divider, Form, Input, Message, Popconfirm, Radio } from '@arco-design/web-react';
 import React, { useContext, useEffect, useState } from 'react';
 import context from './context';
 import Layout from './Layout';
 import locale from './locale';
+import { useRouter } from 'next/router';
 
 function Settings() {
   const group = useContext(context);
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const router = useRouter();
   function onSubmit() {
     form.validate().then((values) => {
       setConfirmLoading(true);
@@ -21,6 +23,12 @@ function Settings() {
         .finally(() => {
           setConfirmLoading(false);
         });
+    });
+  }
+  function onDelete() {
+    deleteGroup(group.id).then(res => {
+      Message.success('已删除');
+      router.push('/groups');
     });
   }
   useEffect(() => {
@@ -76,6 +84,28 @@ function Settings() {
           <Button loading={confirmLoading} type='primary' htmlType='submit'>{t['save']}</Button>
         </Form.Item>
       </Form>
+      {
+        group.role === 'ADMIN' && (
+          <>
+            <Divider />
+            <Alert
+              style={{ marginBottom: 20 }}
+              type='warning'
+              title='危险区域'
+              content={
+                <Popconfirm
+                  focusLock
+                  title='确定删除？'
+                  content='此操作将删除此小组极其关联的所有比赛及对应的提交记录，删除后数据不可恢复'
+                  onOk={onDelete}
+                >
+                  <Button type='primary' status='danger'>删除小组</Button>
+                </Popconfirm>
+              }
+            />
+          </>
+        )
+      }
     </Card>
   );
 }

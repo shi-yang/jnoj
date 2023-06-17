@@ -33,6 +33,11 @@ service GroupService {
             body: "*"
         };
     }
+    rpc DeleteGroup (DeleteGroupRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/groups/{id}"
+        };
+    }
     // 获取小组用户列表
     rpc ListGroupUsers (ListGroupUsersRequest) returns (ListGroupUsersResponse) {
         option (google.api.http) = {
@@ -120,6 +125,10 @@ message UpdateGroupRequest {
     int32 membership = 4;
     string invitation_code = 5 [(validate.rules).string = {max_len: 16}];
     string description = 6;
+}
+
+message DeleteGroupRequest {
+    int32 id = 1;
 }
 
 enum GroupUserRole {

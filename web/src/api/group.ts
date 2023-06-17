@@ -16,6 +16,10 @@ export function updateGroup(id, data) {
   return axios.put(`/groups/${id}`, data);
 }
 
+export function deleteGroup(id: number) {
+  return axios.delete(`/groups/${id}`);
+}
+
 export function listGroupUsers(id, params) {
   return axios.get(`/groups/${id}/users`, { params });
 }
