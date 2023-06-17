@@ -2,7 +2,7 @@ import { createContestUser } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
 import { Button, Typography, Modal, Divider, Input, Message } from '@arco-design/web-react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import locale from './locale';
 
 export default function RegisterContest({contest}) {
