@@ -18,6 +18,7 @@ import ContestContext from './context';
 import locale from './locale';
 import styles from './style/info.module.less';
 import rehypeHighlight from 'rehype-highlight';
+import RegisterContest from '@/modules/contest/RegisterContest';
 const { Row, Col } = Grid;
 
 type StatisticItemType = {
@@ -138,6 +139,12 @@ function Info() {
         >
           {contest.description}
         </ReactMarkdown>
+        <Divider />
+        {
+          contest.role === 'ROLE_GUEST' && contest.runningStatus === 'FINISHED' && (
+            <p>比赛已结束，您可选择 <RegisterContest contest={contest} /></p>
+          )
+        }
       </div>
     </div>
   );
