@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import locale from './locale';
 
-export default function RegisterContest({contest}) {
+export default function RegisterContest({contest}: {contest: any}) {
   const t = useLocale(locale);
   const router = useRouter();
   const [code, setCode] = useState('');
