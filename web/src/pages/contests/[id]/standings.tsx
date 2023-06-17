@@ -100,6 +100,11 @@ const generateTableColumn = (problems, contestType, t) => {
     });
   } else if (contestType === ContestType.ContestTypeOI) {
     columns.push({
+      title: t['standings.table.score'],
+      dataIndex: 'score',
+      align: 'center',
+    });
+    columns.push({
       title: t['standings.table.maxScore'],
       dataIndex: 'maxScore',
       align: 'center',
