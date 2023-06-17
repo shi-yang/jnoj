@@ -224,6 +224,7 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 	if !contest.HasPermission(ctx, ContestPermissionView) {
 		return nil
 	}
+	isContestManager := contest.HasPermission(ctx, ContestPermissionUpdate)
 	submissions := uc.repo.ListContestAllSubmissions(ctx, contest, officialContest)
 	uid, _ := auth.GetUserID(ctx)
 
@@ -244,7 +245,7 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 		if contest.Type == ContestTypeICPC {
 			s.Score = int(s.CreatedAt.Sub(contest.StartTime).Minutes())
 		}
-		if contest.Type == ContestTypeOI && runningStatus != ContestRunningStatusFinished {
+		if !isContestManager && contest.Type == ContestTypeOI && runningStatus != ContestRunningStatusFinished {
 			s.Verdict = SubmissionVerdictPending
 			s.Time = 0
 			s.Memory = 0
@@ -278,6 +279,7 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 		ProblemId:  reqProblemID,
 		UserId:     req.UserId,
 	})
+	isContestManager := contest.HasPermission(ctx, ContestPermissionUpdate)
 	runningStatus := contest.GetRunningStatus()
 	for _, v := range submissions {
 		cs := &ContestSubmission{
@@ -296,7 +298,7 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			},
 		}
 		// OI 提交之后无反馈
-		if runningStatus != ContestRunningStatusFinished && contest.Type == ContestTypeOI {
+		if !isContestManager && runningStatus != ContestRunningStatusFinished && contest.Type == ContestTypeOI {
 			cs.Verdict = SubmissionVerdictPending
 			cs.Time = 0
 			cs.Memory = 0
