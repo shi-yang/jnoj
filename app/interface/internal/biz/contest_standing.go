@@ -141,6 +141,11 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 			p.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
 			// ICPC 尝试次数会有20分罚时，加上本题通过时间，即为分数
 			p.Score = 20*(p.Attempted-1) + p.SolvedAt
+			// 虚拟比赛计分换算
+			if userMap[uid].VirtualStart != nil && isInComp {
+				p.SolvedAt = int(submission.CreatedAt.Sub(*userMap[uid].VirtualStart).Minutes())
+				p.Score = 20*(p.Attempted-1) + int(submission.CreatedAt.Sub(*userMap[uid].VirtualStart).Minutes())
+			}
 			userMap[uid].Score += p.Score
 			userMap[uid].Solved += 1
 		}
