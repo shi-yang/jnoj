@@ -592,6 +592,420 @@ var _ interface {
 	ErrorName() string
 } = UpdateContestRequestValidationError{}
 
+// Validate checks the field values on GetContestStandingRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetContestStandingRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetContestStandingRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetContestStandingRequestMultiError, or nil if none found.
+func (m *GetContestStandingRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetContestStandingRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for IsVirtualIncluded
+
+	// no validation rules for IsOfficial
+
+	// no validation rules for Page
+
+	// no validation rules for PerPage
+
+	if len(errors) > 0 {
+		return GetContestStandingRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetContestStandingRequestMultiError is an error wrapping multiple validation
+// errors returned by GetContestStandingRequest.ValidateAll() if the
+// designated constraints aren't met.
+type GetContestStandingRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetContestStandingRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetContestStandingRequestMultiError) AllErrors() []error { return m }
+
+// GetContestStandingRequestValidationError is the validation error returned by
+// GetContestStandingRequest.Validate if the designated constraints aren't met.
+type GetContestStandingRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetContestStandingRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetContestStandingRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetContestStandingRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetContestStandingRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetContestStandingRequestValidationError) ErrorName() string {
+	return "GetContestStandingRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetContestStandingRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetContestStandingRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetContestStandingRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetContestStandingRequestValidationError{}
+
+// Validate checks the field values on ContestStandingUser with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ContestStandingUser) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ContestStandingUser with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ContestStandingUserMultiError, or nil if none found.
+func (m *ContestStandingUser) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ContestStandingUser) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Rank
+
+	// no validation rules for Who
+
+	// no validation rules for UserId
+
+	// no validation rules for Solved
+
+	// no validation rules for IsRank
+
+	// no validation rules for IsVirtual
+
+	// no validation rules for Score
+
+	// no validation rules for MaxScore
+
+	{
+		sorted_keys := make([]int32, len(m.GetProblem()))
+		i := 0
+		for key := range m.GetProblem() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetProblem()[key]
+			_ = val
+
+			// no validation rules for Problem[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, ContestStandingUserValidationError{
+							field:  fmt.Sprintf("Problem[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, ContestStandingUserValidationError{
+							field:  fmt.Sprintf("Problem[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return ContestStandingUserValidationError{
+						field:  fmt.Sprintf("Problem[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	if len(errors) > 0 {
+		return ContestStandingUserMultiError(errors)
+	}
+
+	return nil
+}
+
+// ContestStandingUserMultiError is an error wrapping multiple validation
+// errors returned by ContestStandingUser.ValidateAll() if the designated
+// constraints aren't met.
+type ContestStandingUserMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ContestStandingUserMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ContestStandingUserMultiError) AllErrors() []error { return m }
+
+// ContestStandingUserValidationError is the validation error returned by
+// ContestStandingUser.Validate if the designated constraints aren't met.
+type ContestStandingUserValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ContestStandingUserValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ContestStandingUserValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ContestStandingUserValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ContestStandingUserValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ContestStandingUserValidationError) ErrorName() string {
+	return "ContestStandingUserValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ContestStandingUserValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sContestStandingUser.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ContestStandingUserValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ContestStandingUserValidationError{}
+
+// Validate checks the field values on GetContestStandingResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetContestStandingResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetContestStandingResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetContestStandingResponseMultiError, or nil if none found.
+func (m *GetContestStandingResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetContestStandingResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetContestStandingResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetContestStandingResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetContestStandingResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return GetContestStandingResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetContestStandingResponseMultiError is an error wrapping multiple
+// validation errors returned by GetContestStandingResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetContestStandingResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetContestStandingResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetContestStandingResponseMultiError) AllErrors() []error { return m }
+
+// GetContestStandingResponseValidationError is the validation error returned
+// by GetContestStandingResponse.Validate if the designated constraints aren't met.
+type GetContestStandingResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetContestStandingResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetContestStandingResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetContestStandingResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetContestStandingResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetContestStandingResponseValidationError) ErrorName() string {
+	return "GetContestStandingResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetContestStandingResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetContestStandingResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetContestStandingResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetContestStandingResponseValidationError{}
+
 // Validate checks the field values on Contest with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -1949,8 +2363,6 @@ func (m *ListContestUsersRequest) validate(all bool) error {
 
 	// no validation rules for Name
 
-	// no validation rules for OfficialContest
-
 	// no validation rules for Page
 
 	// no validation rules for PerPage
@@ -2740,8 +3152,6 @@ func (m *ListContestAllSubmissionsRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for ContestId
-
-	// no validation rules for OfficialContest
 
 	if len(errors) > 0 {
 		return ListContestAllSubmissionsRequestMultiError(errors)
@@ -3691,6 +4101,123 @@ var _ interface {
 	ErrorName() string
 } = GetContestProblemLanguageRequestValidationError{}
 
+// Validate checks the field values on ContestStandingUser_Problem with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ContestStandingUser_Problem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ContestStandingUser_Problem with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ContestStandingUser_ProblemMultiError, or nil if none found.
+func (m *ContestStandingUser_Problem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ContestStandingUser_Problem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Attempted
+
+	// no validation rules for IsFirstBlood
+
+	// no validation rules for Status
+
+	// no validation rules for Score
+
+	// no validation rules for SolvedAt
+
+	// no validation rules for MaxScore
+
+	// no validation rules for IsInComp
+
+	if len(errors) > 0 {
+		return ContestStandingUser_ProblemMultiError(errors)
+	}
+
+	return nil
+}
+
+// ContestStandingUser_ProblemMultiError is an error wrapping multiple
+// validation errors returned by ContestStandingUser_Problem.ValidateAll() if
+// the designated constraints aren't met.
+type ContestStandingUser_ProblemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ContestStandingUser_ProblemMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ContestStandingUser_ProblemMultiError) AllErrors() []error { return m }
+
+// ContestStandingUser_ProblemValidationError is the validation error returned
+// by ContestStandingUser_Problem.Validate if the designated constraints
+// aren't met.
+type ContestStandingUser_ProblemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ContestStandingUser_ProblemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ContestStandingUser_ProblemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ContestStandingUser_ProblemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ContestStandingUser_ProblemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ContestStandingUser_ProblemValidationError) ErrorName() string {
+	return "ContestStandingUser_ProblemValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ContestStandingUser_ProblemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sContestStandingUser_Problem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ContestStandingUser_ProblemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ContestStandingUser_ProblemValidationError{}
+
 // Validate checks the field values on Contest_Owner with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -4278,6 +4805,8 @@ func (m *ListContestAllSubmissionsResponse_Submission) validate(all bool) error 
 	// no validation rules for UserId
 
 	// no validation rules for Score
+
+	// no validation rules for InComp
 
 	if len(errors) > 0 {
 		return ListContestAllSubmissionsResponse_SubmissionMultiError(errors)

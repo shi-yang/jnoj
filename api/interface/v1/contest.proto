@@ -36,6 +36,12 @@ service ContestService {
             body: "*"
         };
     };
+    // 获取比赛榜单
+    rpc GetContestStanding (GetContestStandingRequest) returns (GetContestStandingResponse) {
+        option (google.api.http) = {
+            get: "/contests/{id}/standing"
+        };
+    };
     // 获取比赛题目列表
     rpc ListContestProblems (ListContestProblemsRequest) returns (ListContestProblemsResponse) {
         option (google.api.http) = {
@@ -100,7 +106,7 @@ service ContestService {
             body: "*"
         };     
     }
-    // 获取比赛榜单
+    // 获取全部提交列表
     rpc ListContestAllSubmissions (ListContestAllSubmissionsRequest) returns (ListContestAllSubmissionsResponse) {
         option (google.api.http) = {
             get: "/contests/{contest_id}/all_submissions"
@@ -161,6 +167,45 @@ message UpdateContestRequest {
     ContestPrivacy privacy = 8;
     ContestMembership membership = 9;
     string invitation_code = 10;
+}
+
+message GetContestStandingRequest {
+    int32 id = 1;
+    bool is_virtual_included = 2;
+    bool is_official = 3;
+    int32 page = 4;
+    int32 per_page = 5;
+}
+
+message ContestStandingUser {
+    enum Status {
+        PENDING = 0;
+        INCORRECT = 1;
+        CORRECT = 2;
+    };
+    message Problem {
+        int32 attempted = 1;
+        bool is_first_blood = 2;
+        Status status = 3;
+        int32 score = 4; // 题目得分
+        int32 solved_at = 5; // 在比赛开始多少分钟解决的
+        int32 max_score = 6; 
+        bool is_in_comp = 7; // 是否处于比赛期间的提交
+    }
+    int32 rank = 1;
+    string who = 2;
+    int32 user_id = 3;
+    int32 solved = 4;
+    bool is_rank = 5;
+    bool is_virtual = 6;
+    int32 score = 7;
+    int32 max_score = 8;
+    map<int32, Problem> problem = 9;
+}
+
+message GetContestStandingResponse {
+    repeated ContestStandingUser data = 1;
+    int32 total = 2;
 }
 
 enum ContestType {
@@ -297,9 +342,8 @@ message ListContestUsersRequest {
     int32 contest_id = 1;
     string name = 2;
     optional ContestUserRole role = 3;
-    bool officialContest = 4;
-    int32 page = 5;
-    int32 per_page = 6;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListContestUsersResponse {
@@ -342,7 +386,6 @@ message UpdateContestUserRequest {
 
 message ListContestAllSubmissionsRequest {
     int32 contest_id = 1;
-    bool officialContest = 2;
 }
 
 message ListContestAllSubmissionsResponse {
@@ -357,6 +400,7 @@ message ListContestAllSubmissionsResponse {
         Status status = 3;
         int32 user_id = 4;
         int32 score = 5;
+        int32 inComp = 6;
     }
     repeated Submission data = 1;
 }

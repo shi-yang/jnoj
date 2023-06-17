@@ -145,7 +145,7 @@ type ContestRepo interface {
 	CreateContest(context.Context, *Contest) (*Contest, error)
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
-	ListContestAllSubmissions(ctx context.Context, contest *Contest, officialContest bool) []*ContestSubmission
+	ListContestAllSubmissions(ctx context.Context, contest *Contest) []*ContestSubmission
 	ContestProblemRepo
 	ContestUserRepo
 }
@@ -215,17 +215,36 @@ func (uc *ContestUsecase) DeleteContest(ctx context.Context, id int) error {
 	return uc.repo.DeleteContest(ctx, id)
 }
 
-// ListContestSubmissions .
-func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int, officialContest bool) []*ContestSubmission {
-	contest, err := uc.repo.GetContest(ctx, id)
-	if err != nil {
-		return nil
+// GetContestStanding 获取比赛榜单
+func (uc *ContestUsecase) GetContestStanding(ctx context.Context, contest *Contest, page int, pageSize int, isOfficial bool, isVirtualPlayersIncluded bool) ([]*StandingUser, int) {
+	users, _ := uc.repo.ListContestUsers(ctx, &v1.ListContestUsersRequest{ContestId: int32(contest.ID)})
+	submissions := uc.ListContestAllSubmissions(ctx, contest)
+	problems, _ := uc.repo.ListContestProblems(ctx, contest.ID)
+	var sorter ContestStandingSorter
+	if contest.Type == ContestTypeICPC {
+		sorter = NewContestStandingICPC(WithOnlyOfficial(isOfficial), WithVirtualIncluded(isVirtualPlayersIncluded))
+	} else if contest.Type == ContestTypeIOI {
+		sorter = NewContestStandingIOI(WithOnlyOfficial(isOfficial), WithVirtualIncluded(isVirtualPlayersIncluded))
+	} else if contest.Type == ContestTypeOI {
+		sorter = NewContestStandingOI(WithOnlyOfficial(isOfficial), WithVirtualIncluded(isVirtualPlayersIncluded))
 	}
-	if !contest.HasPermission(ctx, ContestPermissionView) {
-		return nil
+	standings := sorter.Sort(contest, users, problems, submissions)
+	count := len(standings)
+	if pageSize <= 0 {
+		return standings, count
 	}
+	startIndex := (page - 1) * pageSize
+	endIndex := startIndex + pageSize
+	if endIndex > count {
+		endIndex = count
+	}
+	return standings[startIndex:endIndex], count
+}
+
+// ListContestAllSubmissions 获取全部提交记录
+func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, contest *Contest) []*ContestSubmission {
 	isContestManager := contest.HasPermission(ctx, ContestPermissionUpdate)
-	submissions := uc.repo.ListContestAllSubmissions(ctx, contest, officialContest)
+	submissions := uc.repo.ListContestAllSubmissions(ctx, contest)
 	uid, _ := auth.GetUserID(ctx)
 
 	var virtualTime time.Time
@@ -236,16 +255,14 @@ func (uc *ContestUsecase) ListContestAllSubmissions(ctx context.Context, id int,
 	runningStatus := contest.GetRunningStatus()
 	var res []*ContestSubmission
 	for _, s := range submissions {
-		// 虚拟竞赛，不返回后面的提交
+		// 正在进行虚拟竞赛，不返回后面的提交
 		if runningStatus == ContestRunningStatusInProgress && contest.Role == ContestRoleVirtualPlayer {
 			if s.CreatedAt.After(virtualTime) && s.UserID != uid {
 				continue
 			}
 		}
-		if contest.Type == ContestTypeICPC {
-			s.Score = int(s.CreatedAt.Sub(contest.StartTime).Minutes())
-		}
-		if !isContestManager && contest.Type == ContestTypeOI && runningStatus != ContestRunningStatusFinished {
+		// OI 未结束前不返回结果
+		if contest.Type == ContestTypeOI && !isContestManager && runningStatus != ContestRunningStatusFinished {
 			s.Verdict = SubmissionVerdictPending
 			s.Time = 0
 			s.Memory = 0
@@ -298,7 +315,7 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			},
 		}
 		// OI 提交之后无反馈
-		if !isContestManager && runningStatus != ContestRunningStatusFinished && contest.Type == ContestTypeOI {
+		if contest.Type == ContestTypeOI && !isContestManager && runningStatus != ContestRunningStatusFinished {
 			cs.Verdict = SubmissionVerdictPending
 			cs.Time = 0
 			cs.Memory = 0

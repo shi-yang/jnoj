@@ -31,6 +31,7 @@ const OperationContestServiceDeleteContestProblem = "/jnoj.interface.v1.ContestS
 const OperationContestServiceGetContest = "/jnoj.interface.v1.ContestService/GetContest"
 const OperationContestServiceGetContestProblem = "/jnoj.interface.v1.ContestService/GetContestProblem"
 const OperationContestServiceGetContestProblemLanguage = "/jnoj.interface.v1.ContestService/GetContestProblemLanguage"
+const OperationContestServiceGetContestStanding = "/jnoj.interface.v1.ContestService/GetContestStanding"
 const OperationContestServiceListContestAllSubmissions = "/jnoj.interface.v1.ContestService/ListContestAllSubmissions"
 const OperationContestServiceListContestProblemLanguages = "/jnoj.interface.v1.ContestService/ListContestProblemLanguages"
 const OperationContestServiceListContestProblems = "/jnoj.interface.v1.ContestService/ListContestProblems"
@@ -49,6 +50,7 @@ type ContestServiceHTTPServer interface {
 	GetContest(context.Context, *GetContestRequest) (*Contest, error)
 	GetContestProblem(context.Context, *GetContestProblemRequest) (*ContestProblem, error)
 	GetContestProblemLanguage(context.Context, *GetContestProblemLanguageRequest) (*ContestProblemLanguage, error)
+	GetContestStanding(context.Context, *GetContestStandingRequest) (*GetContestStandingResponse, error)
 	ListContestAllSubmissions(context.Context, *ListContestAllSubmissionsRequest) (*ListContestAllSubmissionsResponse, error)
 	ListContestProblemLanguages(context.Context, *ListContestProblemLanguagesRequest) (*ListContestProblemLanguagesResponse, error)
 	ListContestProblems(context.Context, *ListContestProblemsRequest) (*ListContestProblemsResponse, error)
@@ -82,6 +84,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))
 	r.POST("/contests", _ContestService_CreateContest0_HTTP_Handler(srv))
 	r.PUT("/contests/{id}", _ContestService_UpdateContest0_HTTP_Handler(srv))
+	r.GET("/contests/{id}/standing", _ContestService_GetContestStanding0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems", _ContestService_ListContestProblems0_HTTP_Handler(srv))
 	r.GET("/contests/{id}/problems/{number}", _ContestService_GetContestProblem0_HTTP_Handler(srv))
 	r.POST("/contests/{id}/problems", _ContestService_CreateContestProblem0_HTTP_Handler(srv))
@@ -174,6 +177,28 @@ func _ContestService_UpdateContest0_HTTP_Handler(srv ContestServiceHTTPServer) f
 			return err
 		}
 		reply := out.(*Contest)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ContestService_GetContestStanding0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetContestStandingRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceGetContestStanding)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetContestStanding(ctx, req.(*GetContestStandingRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetContestStandingResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -451,6 +476,7 @@ type ContestServiceHTTPClient interface {
 	GetContest(ctx context.Context, req *GetContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	GetContestProblem(ctx context.Context, req *GetContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	GetContestProblemLanguage(ctx context.Context, req *GetContestProblemLanguageRequest, opts ...http.CallOption) (rsp *ContestProblemLanguage, err error)
+	GetContestStanding(ctx context.Context, req *GetContestStandingRequest, opts ...http.CallOption) (rsp *GetContestStandingResponse, err error)
 	ListContestAllSubmissions(ctx context.Context, req *ListContestAllSubmissionsRequest, opts ...http.CallOption) (rsp *ListContestAllSubmissionsResponse, err error)
 	ListContestProblemLanguages(ctx context.Context, req *ListContestProblemLanguagesRequest, opts ...http.CallOption) (rsp *ListContestProblemLanguagesResponse, err error)
 	ListContestProblems(ctx context.Context, req *ListContestProblemsRequest, opts ...http.CallOption) (rsp *ListContestProblemsResponse, err error)
@@ -565,6 +591,19 @@ func (c *ContestServiceHTTPClientImpl) GetContestProblemLanguage(ctx context.Con
 	pattern := "/contests/{id}/problems/{number}/languages/{language}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceGetContestProblemLanguage))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) GetContestStanding(ctx context.Context, in *GetContestStandingRequest, opts ...http.CallOption) (*GetContestStandingResponse, error) {
+	var out GetContestStandingResponse
+	pattern := "/contests/{id}/standing"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationContestServiceGetContestStanding))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

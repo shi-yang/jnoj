@@ -141,6 +141,50 @@ func (s *ContestService) CreateContest(ctx context.Context, req *v1.CreateContes
 	}, nil
 }
 
+// GetContestStanding 获取比赛榜单
+func (s *ContestService) GetContestStanding(ctx context.Context, req *v1.GetContestStandingRequest) (*v1.GetContestStandingResponse, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	res, count := s.uc.GetContestStanding(ctx, contest, int(req.Page), int(req.PerPage), req.IsOfficial, req.IsVirtualIncluded)
+	resp := new(v1.GetContestStandingResponse)
+	for _, v := range res {
+		u := &v1.ContestStandingUser{
+			Rank:      int32(v.Rank),
+			Who:       v.Who,
+			UserId:    int32(v.UserId),
+			Solved:    int32(v.Solved),
+			IsRank:    v.IsRank,
+			IsVirtual: v.VirtualStart != nil,
+			Score:     int32(v.Score),
+			MaxScore:  int32(v.MaxScore),
+		}
+		u.Problem = make(map[int32]*v1.ContestStandingUser_Problem)
+		for k, p := range v.Problem {
+			key := int32(k)
+			u.Problem[key] = &v1.ContestStandingUser_Problem{}
+			u.Problem[key].Attempted = int32(p.Attempted)
+			u.Problem[key].IsFirstBlood = p.IsFirstBlood
+			u.Problem[key].IsInComp = p.IsInComp
+			u.Problem[key].MaxScore = int32(p.MaxScore)
+			u.Problem[key].Score = int32(p.Score)
+			u.Problem[key].SolvedAt = int32(p.SolvedAt)
+			switch p.Status {
+			case biz.SubmissionVerdictPending:
+				u.Problem[key].Status = v1.ContestStandingUser_PENDING
+			case biz.SubmissionVerdictAccepted:
+				u.Problem[key].Status = v1.ContestStandingUser_CORRECT
+			default:
+				u.Problem[key].Status = v1.ContestStandingUser_INCORRECT
+			}
+		}
+		resp.Data = append(resp.Data, u)
+	}
+	resp.Total = int32(count)
+	return resp, nil
+}
+
 // ListContestProblems 获取比赛题目列表
 func (s *ContestService) ListContestProblems(ctx context.Context, req *v1.ListContestProblemsRequest) (*v1.ListContestProblemsResponse, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.Id))
@@ -366,9 +410,16 @@ func (s *ContestService) UpdateContestUser(ctx context.Context, req *v1.UpdateCo
 	}, nil
 }
 
-// ListContestAllSubmissions 用户比赛提交榜单
+// ListContestAllSubmissions 用户比赛全部提交列表
 func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.ListContestAllSubmissionsRequest) (*v1.ListContestAllSubmissionsResponse, error) {
-	submissions := s.uc.ListContestAllSubmissions(ctx, int(req.ContestId), req.OfficialContest)
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+		return nil, v1.ErrorForbidden("permission denied")
+	}
+	submissions := s.uc.ListContestAllSubmissions(ctx, contest)
 	resp := new(v1.ListContestAllSubmissionsResponse)
 	for _, v := range submissions {
 		s := &v1.ListContestAllSubmissionsResponse_Submission{

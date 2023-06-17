@@ -16,6 +16,10 @@ export function updateContest(id, data) {
   return axios.put(`/contests/${id}`, data);
 }
 
+export function getContestStanding(id, params) {
+  return axios.get(`/contests/${id}/standing`, { params });
+}
+
 export function listContestAllSubmissions(id, params=undefined) {
   return axios.get(`/contests/${id}/all_submissions`, {params});
 }

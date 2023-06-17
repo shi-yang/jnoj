@@ -1,6 +1,6 @@
-import { listContestProblems, listContestAllSubmissions, listContestUsers, listContestSubmissions } from '@/api/contest';
+import { listContestProblems, listContestSubmissions, getContestStanding } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Divider, Link, List, Modal, PaginationProps, Switch, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
+import { Divider, Link, List, Modal, PaginationProps, Space, Switch, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
 import { IconCheck, IconCheckCircle, IconClockCircle, IconClose, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
@@ -84,6 +84,35 @@ const getCellColorClassName = (col) => {
   return '';
 };
 
+const getTableCellContent = (contestType, col) => {
+  if (contestType === ContestType.ContestTypeICPC) {
+    return (
+      <>
+        <strong>{col.isInComp ? col.solvedAt : '-' }</strong>
+        <br />
+        <small>{col.attempted} {col.attempted == 1 ? ' try' : ' tries'}</small>
+      </>
+    );
+  } else if (contestType === ContestType.ContestTypeIOI) {
+    return (
+      <>
+        <strong>{col.score}</strong>
+        <br />
+        <small>{col.solvedAt}</small>
+      </>
+    );
+  } else if (contestType === ContestType.ContestTypeOI) {
+    return (
+      <>
+        <strong>{col.score}</strong>
+        <br />
+        <small>{col.maxScore}</small>
+      </>
+    );
+  }
+  return '';
+};
+
 const generateTableColumn = (problems, contestType, t) => {
   const columns = [...basicColumn(t)];
   if (contestType === ContestType.ContestTypeICPC) {
@@ -122,7 +151,7 @@ const generateTableColumn = (problems, contestType, t) => {
       editable: true,
       render: (col, record) => (
         <>
-          {col.status !== 'UNSUBMIT' && (
+          {col && col.status !== 'UNSUBMIT' && (
             <div className={styles['table-cell'] + ' ' + getCellColorClassName(col)}>
               {col.status === 'CORRECT' && (
                 <IconCheckCircle className={styles['table-cell-icon']} />
@@ -134,9 +163,7 @@ const generateTableColumn = (problems, contestType, t) => {
                 <IconCloseCircle className={styles['table-cell-icon']} />
               )}
               <span className={styles['table-cell-text']}>
-                <strong>{col.first}</strong>
-                <br />
-                <small>{col.second}</small>
+                {getTableCellContent(contestType, col)}
               </span>
             </div>
           )}
@@ -198,129 +225,6 @@ function TableCell(props: any) {
   );
 }
 
-const StandingSort = (contest, users, problems, submissions) => {
-  let res = {};
-  // 初始化用户排名数据
-  users.forEach(user => {
-    const initUser = {
-      userId: user.userId,
-      who: user.name,
-      solved: 0,
-      problem: {},
-      isRank: user.role === 'ROLE_OFFICIAL_PLAYER',
-      isVirtual: !!user.virtualStart,
-    };
-    problems.forEach(p => {
-      initUser.problem[p.number] = {
-        attempted: 0,
-        isFirstBlood: false,
-        status: 'UNSUBMIT',
-        score: 0,
-        maxScore: 0,
-      };
-    });
-    res[user.userId] = initUser;
-  });
-  // 记录一血
-  let firstBlood = {};
-  submissions.forEach(submission => {
-    const problemNumber = submission.problem;
-    const uid = submission.userId;
-    if (!res[uid]) {
-      return;
-    }
-    // 已经通过，则直接跳过
-    if (res[uid].problem[problemNumber].status === 'CORRECT') {
-      return;
-    }
-    res[uid].problem[problemNumber].attempted++;
-    if (submission.status === 'CORRECT') {
-      if (!firstBlood[problemNumber]) {
-        firstBlood[problemNumber] = uid;
-        res[uid].problem[problemNumber].isFirstBlood = true;
-      }
-      res[uid].solved++;
-    }
-    // 分数
-    if (contest.type === ContestType.ContestTypeICPC) {
-      // ICPC 尝试次数会有20分罚时，加上本题通过时间，即为分数
-      if (submission.status === 'CORRECT') {
-        res[uid].problem[problemNumber].score = (res[uid].problem[problemNumber].attempted - 1) * 20 + submission.score;
-      }
-    } else if (contest.type === ContestType.ContestTypeIOI) {
-      // IOI 取最大
-      res[uid].problem[problemNumber].score =
-        Math.max(res[uid].problem[problemNumber].score, submission.score);
-    } else if (contest.type === ContestType.ContestTypeOI) {
-      // OI 取最后一次
-      res[uid].problem[problemNumber].score = submission.score;
-      res[uid].problem[problemNumber].maxScore =
-        Math.max(res[uid].problem[problemNumber].maxScore, submission.score);
-    }
-    res[uid].problem[problemNumber].status = submission.status;
-  });
-  const arr:TableContentProps[] = [];
-  Object.keys(res).forEach((key, index) => {
-    const item:TableContentProps = {
-      rank: index,
-      userId: res[key].userId,
-      who: res[key].who,
-      solved: res[key].solved,
-      score: 0,
-      maxScore: 0,
-      problem: {},
-      isRank: res[key].isRank,
-      isVirtual: res[key].isVirtual,
-    };
-    const problems = res[key].problem;
-    // 计算所得总分
-    let score = 0;
-    let maxScore = 0;
-    Object.keys(problems).forEach(k => {
-      item.problem[k] = problems[k];
-      score += problems[k].score;
-      maxScore += problems[k].maxScore;
-      // 不同榜单，显示不同内容
-      if (contest.type === ContestType.ContestTypeICPC) {
-        item.problem[k].first = problems[k].score;
-        item.problem[k].second = problems[k].attempted + (problems[k].attempted == 1 ? ' try' : ' tries');
-      } else if (contest.type === ContestType.ContestTypeIOI) {
-        item.problem[k].first = problems[k].score;
-        item.problem[k].second = problems[k].attempted + (problems[k].attempted == 1 ? ' try' : ' tries');
-      } else {
-        item.problem[k].first = problems[k].score;
-        item.problem[k].second = problems[k].maxScore;
-      }
-    });
-    item.maxScore = maxScore;
-    item.score = score;
-    arr.push(item);
-  });
-  arr.sort((a, b) => {
-    if (contest.type === ContestType.ContestTypeICPC) {
-      if (a.solved !== b.solved) {
-        return b.solved - a.solved;
-      }
-      return a.score - b.score;
-    } else if (contest.type === ContestType.ContestTypeIOI) {
-      return b.score - a.score;
-    } else {
-      if (a.score !== b.score) {
-        return b.score - a.score;
-      }
-      return b.maxScore - a.maxScore;
-    }
-  });
-  let rank = 1;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].isRank) {
-      arr[i].rank = rank;
-      rank++;
-    }
-  }
-  return arr;
-};
-
 const App = () => {
   const t = useLocale(locale);
   const [loading, setLoading] = useState(true);
@@ -338,22 +242,25 @@ const App = () => {
   const user = useAppSelector(userInfo);
   const contest = useContext(ContestContext);
   const [showMatchUsersOnly, setShowMatchUsersOnly] = useState(false);
+  const [showVirtualUser, setShowVirtualUser] = useState(true);
   const [autoRefreshStanding, setAutoRefreshStanding] = useState(false);
 
   function fetchData() {
     setLoading(true);
-    const p1 = listContestAllSubmissions(contest.id, {officialContest: showMatchUsersOnly});
+    const p1 = getContestStanding(contest.id, {
+      page: pagination.current,
+      perPage: pagination.pageSize,
+      isVirtualIncluded: showVirtualUser,
+      isOfficial: showMatchUsersOnly,
+    });
     const p2 = listContestProblems(contest.id);
-    const p3 = listContestUsers(contest.id, {officialContest: showMatchUsersOnly});
-    Promise.all([p1, p2, p3])
+    Promise.all([p1, p2])
       .then((values) => {
+        const standing = values[0].data;
         const problems = values[1].data.data;
-        const users = values[2].data.data;
-        const submissions = values[0].data.data;
         setColumns(generateTableColumn(problems, contest.type, t));
-        const arr = StandingSort(contest, users, problems, submissions);
-        setPagination({ ...pagination, total: arr.length });
-        setData(arr);
+        setPagination({ ...pagination, total: standing.total });
+        setData(standing.data);
       })
       .finally(() => {
         setLoading(false);
@@ -373,7 +280,7 @@ const App = () => {
 
   useEffect(() => {
     fetchData();
-  }, [showMatchUsersOnly]);
+  }, [showMatchUsersOnly, showVirtualUser, pagination.current, pagination.pageSize]);
 
   let timer = null;
   useEffect(() => {
@@ -393,10 +300,16 @@ const App = () => {
       <div className={styles['table-header']}>
         <div className={styles['table-operation']}>
           {
-            contest.runningStatus === 'FINISHED' &&
-            <span>
-              <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
-            </span>
+            contest.runningStatus === 'FINISHED' && (
+              <Space>
+                <span>
+                  <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
+                </span>
+                <span>
+                  <Switch defaultChecked checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowVirtualUser(e)} /> 含虚拟参赛
+                </span>
+              </Space>
+            )
           }
           {
             contest.runningStatus === 'IN_PROGRESS' && contest.role === 'ROLE_ADMIN' &&

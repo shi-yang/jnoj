@@ -210,14 +210,11 @@ func (r *contestRepo) DeleteContest(ctx context.Context, id int) error {
 	return err
 }
 
-func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, contest *biz.Contest, officialContest bool) (res []*biz.ContestSubmission) {
+func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, contest *biz.Contest) (res []*biz.ContestSubmission) {
 	var submissions []Submission
 	db := r.data.db.WithContext(ctx).
 		Select("id, problem_id, user_id, verdict, score, created_at").
 		Where("entity_id = ? and entity_type = ?", contest.ID, biz.SubmissionEntityTypeContest)
-	if officialContest {
-		db.Where("created_at <= ?", contest.EndTime)
-	}
 	db.Find(&submissions)
 	var problems []ContestProblem
 	r.data.db.WithContext(ctx).
