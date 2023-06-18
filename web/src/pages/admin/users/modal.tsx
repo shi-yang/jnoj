@@ -219,6 +219,7 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
         form.setFieldsValue({
           nickname: res.data.nickname,
           username: res.data.username,
+          realname: res.data.realname,
           password: '',
           role: res.data.role,
           status: res.data.status,
@@ -246,6 +247,9 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
           <Input placeholder='' />
         </FormItem>
         <FormItem label='昵称' field='nickname'>
+          <Input placeholder='' />
+        </FormItem>
+        <FormItem label='真实姓名' field='realname'>
           <Input placeholder='' />
         </FormItem>
         <FormItem label='角色' field='role' help={t[`user.form.user.role.tip.${UserRole[role]}`]}>

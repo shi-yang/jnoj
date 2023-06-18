@@ -137,7 +137,8 @@ message User {
     int32 id = 1;
     string nickname = 2;
     string username = 3;
-    UserRole role = 4;
+    string realname = 4;
+    UserRole role = 5;
 }
 
 message GetUserRequest {

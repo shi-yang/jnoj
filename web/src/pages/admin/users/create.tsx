@@ -133,6 +133,9 @@ function App({callback}: {callback: () => void}) {
                 <FormItem label='昵称' field='nickname'>
                   <Input placeholder='' />
                 </FormItem>
+                <FormItem label='真实姓名' field='realname'>
+                  <Input placeholder='' />
+                </FormItem>
                 <FormItem label='手机号' field='phone'>
                   <Input placeholder='' />
                 </FormItem>

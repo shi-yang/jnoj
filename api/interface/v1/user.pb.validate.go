@@ -997,6 +997,8 @@ func (m *User) validate(all bool) error {
 
 	// no validation rules for Username
 
+	// no validation rules for Realname
+
 	// no validation rules for Role
 
 	if len(errors) > 0 {

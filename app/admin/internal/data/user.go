@@ -31,6 +31,7 @@ type User struct {
 	ID        int
 	Username  string
 	Nickname  string
+	Realname  string
 	Password  string
 	Email     string
 	Phone     string
@@ -72,6 +73,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 		ID:       res.ID,
 		Username: res.Username,
 		Nickname: res.Nickname,
+		Realname: res.Realname,
 		Email:    res.Email,
 		Phone:    res.Phone,
 		Password: res.Password,
@@ -83,6 +85,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	res := User{
 		Username: u.Username,
+		Realname: u.Realname,
 		Password: u.Password,
 		Email:    u.Email,
 		Nickname: u.Nickname,
@@ -100,6 +103,7 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	update := User{
 		ID:       u.ID,
 		Username: u.Username,
+		Realname: u.Realname,
 		Password: u.Password,
 		Nickname: u.Nickname,
 		Role:     u.Role,
@@ -114,6 +118,9 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	}
 	if update.Username != "" {
 		updateColumn = append(updateColumn, "username")
+	}
+	if update.Realname != "" {
+		updateColumn = append(updateColumn, "realname")
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
@@ -132,6 +139,13 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 	if req.Username != "" {
 		db.Where("username like ?", fmt.Sprintf("%%%s%%", req.Username))
 	}
+	if req.Nickname != "" {
+		db.Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname))
+	}
+	if req.Realname != "" {
+		db.Where("realname like ?", fmt.Sprintf("%%%s%%", req.Realname))
+	}
+
 	if req.Role != nil {
 		db.Where("role in (?)", int(*req.Role))
 	}
@@ -149,6 +163,7 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 			ID:        v.ID,
 			Nickname:  v.Nickname,
 			Username:  v.Username,
+			Realname:  v.Realname,
 			Role:      v.Role,
 			Status:    v.Status,
 			CreatedAt: v.CreatedAt,

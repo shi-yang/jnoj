@@ -31,6 +31,7 @@ func (s UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.U
 		Id:       int32(u.ID),
 		Nickname: u.Nickname,
 		Username: u.Username,
+		Realname: u.Realname,
 		Role:     v1.UserRole(u.Role),
 		Status:   v1.UserStatus(u.Status),
 	}, nil
@@ -47,6 +48,7 @@ func (s UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) 
 	u, err := s.uc.CreateUser(ctx, &biz.User{
 		Username: req.Username,
 		Nickname: req.Nickname,
+		Realname: req.Realname,
 		Email:    req.GetEmail(),
 		Phone:    req.GetPhone(),
 		Password: req.Password,
@@ -69,6 +71,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 		Username: req.Username,
 		Password: req.Password,
 		Nickname: req.Nickname,
+		Realname: req.Realname,
 		Role:     int(req.Role),
 		Status:   int(req.Status),
 	}
@@ -88,6 +91,7 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 			Id:        int32(v.ID),
 			Username:  v.Username,
 			Nickname:  v.Nickname,
+			Realname:  v.Realname,
 			Role:      v1.UserRole(v.Role),
 			Status:    v1.UserStatus(v.Status),
 			CreatedAt: timestamppb.New(v.CreatedAt),

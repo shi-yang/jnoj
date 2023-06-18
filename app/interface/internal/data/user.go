@@ -30,6 +30,7 @@ type User struct {
 	ID        int
 	Username  string
 	Nickname  string
+	Realname  string
 	Password  string
 	Email     string
 	Phone     string
@@ -57,6 +58,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 		ID:       res.ID,
 		Username: res.Username,
 		Nickname: res.Nickname,
+		Realname: res.Realname,
 		Email:    res.Email,
 		Phone:    res.Phone,
 		Role:     res.Role,
@@ -104,6 +106,7 @@ func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 		ID:       o.ID,
 		Username: o.Username,
 		Nickname: o.Nickname,
+		Realname: o.Realname,
 		Role:     o.Role,
 		Status:   o.Status,
 	}, nil

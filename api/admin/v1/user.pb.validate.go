@@ -62,6 +62,8 @@ func (m *User) validate(all bool) error {
 
 	// no validation rules for Username
 
+	// no validation rules for Realname
+
 	// no validation rules for Role
 
 	// no validation rules for Status
@@ -308,6 +310,8 @@ func (m *CreateUserRequest) validate(all bool) error {
 	}
 
 	// no validation rules for Nickname
+
+	// no validation rules for Realname
 
 	if l := utf8.RuneCountInString(m.GetPassword()); l < 6 || l > 16 {
 		err := CreateUserRequestValidationError{
@@ -862,6 +866,8 @@ func (m *UpdateUserRequest) validate(all bool) error {
 
 	// no validation rules for Nickname
 
+	// no validation rules for Realname
+
 	if l := utf8.RuneCountInString(m.GetPassword()); l < 6 || l > 16 {
 		err := UpdateUserRequestValidationError{
 			field:  "Password",
@@ -1120,6 +1126,10 @@ func (m *ListUsersRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Username
+
+	// no validation rules for Nickname
+
+	// no validation rules for Realname
 
 	// no validation rules for Page
 

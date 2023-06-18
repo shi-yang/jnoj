@@ -68,9 +68,10 @@ message User {
     int32 id = 1;
     string nickname = 2;
     string username = 3;
-    UserRole role = 4;
-    UserStatus status = 5;
-    google.protobuf.Timestamp created_at = 6;
+    string realname = 4;
+    UserRole role = 5;
+    UserStatus status = 6;
+    google.protobuf.Timestamp created_at = 7;
 }
 
 enum UserStatus {
@@ -107,8 +108,10 @@ message CreateUserRequest {
     }];
     // 昵称
     string nickname = 4;
+    // 真实姓名
+    string realname = 5;
     // 密码
-    string password = 5 [(validate.rules).string = {min_len: 6, max_len: 16}];
+    string password = 6 [(validate.rules).string = {min_len: 6, max_len: 16}];
 }
 
 message BatchCreateUserRequest {
@@ -136,9 +139,10 @@ message UpdateUserRequest {
         pattern:   "^[a-zA-Z][a-zA-Z0-9_-]{4,15}$",
     }];
     string nickname = 3;
-    string password = 4 [(validate.rules).string = {min_len: 6, max_len: 16}];
-    UserRole role = 5;
-    UserStatus status = 6;
+    string realname = 4;
+    string password = 5 [(validate.rules).string = {min_len: 6, max_len: 16}];
+    UserRole role = 6;
+    UserStatus status = 7;
 }
 
 message ListUsersResponse {
@@ -148,10 +152,12 @@ message ListUsersResponse {
 
 message ListUsersRequest {
     string username = 1;
-    optional UserRole role = 2;
-    optional UserStatus status = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    string nickname = 2;
+    string realname = 3;
+    optional UserRole role = 4;
+    optional UserStatus status = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 
 
