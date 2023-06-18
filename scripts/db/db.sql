@@ -350,6 +350,7 @@ CREATE TABLE `user` (
   `id` int UNSIGNED NOT NULL,
   `username` varchar(32) NOT NULL,
   `nickname` varchar(32) NOT NULL,
+  `realname` varchar(32) NOT NULL,
   `password` char(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(255) NOT NULL DEFAULT '',
   `phone` char(11) NOT NULL DEFAULT '',
