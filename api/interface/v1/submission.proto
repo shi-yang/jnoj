@@ -83,6 +83,7 @@ enum SubmissionEntityType {
     PROBLEMSET = 0;
     CONTEST = 1;
     PROBLEM_FILE = 2;
+    PROBLEM_VERIFY = 3;
 }
 
 message CreateSubmissionRequest {

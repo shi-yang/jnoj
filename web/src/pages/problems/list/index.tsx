@@ -14,21 +14,29 @@ import {
   Tooltip,
   Divider,
   Input,
+  List,
+  Modal,
+  Form,
+  Alert,
 } from '@arco-design/web-react';
-import { IconDownload, IconLanguage, IconSearch } from '@arco-design/web-react/icon';
+import { IconDownload, IconLanguage, IconPlus, IconSearch } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import CreateModal from './create';
-import { downloadProblems, getProblem, listProblems } from '@/api/problem';
+import { downloadProblems, getProblem, getProblemVerification, listProblems } from '@/api/problem';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
 import { setting, SettingState } from '@/store/reducers/setting';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import Head from 'next/head';
 import { FormatTime } from '@/utils/format';
+import SubmissionList from '@/modules/submission/SubmissionList';
+import CodeMirror from '@uiw/react-codemirror';
+import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
+import { createSubmission } from '@/api/submission';
 const { Title } = Typography;
 
 export default function Index() {
@@ -291,39 +299,87 @@ export default function Index() {
 }
 
 function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onCancel?: (e: MouseEvent | Event) => void;}) {
-  const [data, setData] = useState({
+  const [problem, setProblem] = useState({
     id: 0,
     name: '',
+    type: '',
     statements: [],
     sampleTests: []
   });
   const [language, setLanguage] = useState(0);
+  const [statementLanguageOptions, setStatementLanguageOptions] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [form] = Form.useForm();
   const [languageOptions, setLanguageOptions] = useState([]);
-  useEffect(() => {
-    if (id !== 0) {
-      getProblem(id)
-      .then(res => {
-        setData(res.data);
-        const langs = res.data.statements.map((item, index) => {
-          return {
-            label: item.language,
-            value: index,
-          };
+  const [lastSubmissionID, setLastSubmissionID] = useState(0);
+  const [verification, setVerification] = useState({verificationStatus: 0, verificaitonInfo: []});
+  const ref = useRef(null);
+  function onOk() {
+    form.validate().then((values) => {
+      const data = {
+        problemNumber: problem.id,
+        source: values.content,
+        language: language,
+        entityId: problem.id,
+        entityType: 'PROBLEM_VERIFY'
+      };
+      createSubmission(data).then(res => {
+        Message.success('已提交');
+        setLastSubmissionID(res.data.id);
+        setModalVisible(false);
+        ref.current.fetchData();
+      }).catch(err => {
+        if (err.response.data.reason === 'SUBMISSION_RATE_LIMIT') {
+          Message.error('您的提交过于频繁');
+        }
+      });
+    });
+  }
+  function onLanguageChange(e) {
+    if (problem.type === 'FUNCTION') {
+      const lang = languageOptions.find(item => {
+        return item.languageCode === Number(e);
+      });
+      getProblemLanguage(problem.id, lang.id)
+        .then(res => {
+          form.setFieldValue('content', res.data.userContent);
         });
+    }
+  }
+  useEffect(() => {
+    if (id === 0) {
+      return;
+    }
+    getProblem(id).then(res => {
+      setProblem(res.data);
+      const langs = res.data.statements.map((item, index) => {
+        return {
+          label: item.language,
+          value: index,
+        };
+      });
+      setStatementLanguageOptions(langs);
+    });
+    listProblemLanguages(id)
+      .then(res => {
+        const langs = res.data.data;
         setLanguageOptions(langs);
       });
-    }
+    getProblemVerification(id)
+      .then(res => {
+        setVerification(res.data);
+      });
   }, [id]);
   return (
     <Drawer
-      width={800}
-      title={<span>{data.id} - {data.name}</span>}
+      width={1100}
+      title={<span>{problem.id} - {problem.name}</span>}
       visible={visible}
       footer={null}
       onCancel={onCancel}
     >
-      { 
-        languageOptions.length > 0 &&
+      {
+        statementLanguageOptions.length > 0 &&
         <div>
           <Select
             bordered={false}
@@ -339,18 +395,63 @@ function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onC
             }}
             triggerElement={
               <span className={styles['header-language']}>
-                <IconLanguage /> {languageOptions[language].label}
+                <IconLanguage /> {statementLanguageOptions[language].label}
               </span>
             }
           >
-            {languageOptions.map((option, index) => (
+            {statementLanguageOptions.map((option, index) => (
               <Select.Option key={index} value={option.value}>
                 {option.label}
               </Select.Option>
             ))}
           </Select>
-          <Typography.Title heading={4}>{data.statements[language].name}</Typography.Title>
-          <ProblemContent problem={data} language={language} />
+          <Typography.Title heading={4}>{problem.statements[language].name}</Typography.Title>
+          <ProblemContent problem={problem} language={language} />
+          <Divider />
+          <Typography.Title heading={4}>测试-验题区域</Typography.Title>
+          {
+            verification.verificationStatus !== 3 ? (
+              <Alert
+                type='warning'
+                content='本题目尚未通过校验，请先到题目基本信息页进行题目校验，通过校验后方可进行测试'
+              />
+            ) : (
+              <div>
+                <Button type='primary' icon={<IconPlus />} onClick={() => setModalVisible(true)}>提交代码</Button>
+                <Modal
+                  title='添加'
+                  style={{width: '800px'}}
+                  visible={modalVisible}
+                  onOk={onOk}
+                  onCancel={() => setModalVisible(false)}
+                  autoFocus={false}
+                  focusLock={true}
+                >
+                  <Form
+                    form={form}
+                  >
+                    <Form.Item field='language' label='语言' required>
+                      <Select onChange={onLanguageChange}>
+                        {languageOptions.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={`${item.languageCode}`}>
+                              {item.languageName}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item field='content' label='源码' required>
+                      <CodeMirror
+                        height="400px"
+                      />
+                    </Form.Item>
+                  </Form>
+                </Modal>
+                <SubmissionList ref={ref} pid={problem.id} entityType={3} />
+              </div>
+            )
+          }
         </div>
       }
     </Drawer>

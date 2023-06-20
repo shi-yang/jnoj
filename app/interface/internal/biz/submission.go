@@ -83,9 +83,14 @@ const (
 )
 
 const (
+	// 题单提交
 	SubmissionEntityTypeProblemset = iota
+	// 比赛提交
 	SubmissionEntityTypeContest
+	// 题目文件提交
 	SubmissionEntityTypeProblemFile
+	// 题目验题提交
+	SubmissionEntityTypeProblemVerify
 )
 
 const (
@@ -212,6 +217,12 @@ func (uc *SubmissionUsecase) checkerPermission(ctx context.Context, entityType, 
 		if submissionUserId == 0 {
 			ok = true
 		}
+	} else if entityType == SubmissionEntityTypeProblemVerify {
+		// 处理验题中的提交
+		problem, _ := uc.problemRepo.GetProblem(ctx, problemId)
+		if problem.HasPermission(ctx, ProblemPermissionUpdate) {
+			ok = true
+		}
 	}
 	return
 }
@@ -275,12 +286,21 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		uc.contestRepo.UpdateContestProblem(ctx, contestProblem)
 		s.ProblemID = contestProblem.ProblemID
 	} else if s.EntityType == SubmissionEntityTypeProblemset {
-		// 提交至题目
+		// 提交至题单
 		p, err := uc.problemsetRepo.GetProblemsetProblem(ctx, s.EntityID, s.ProblemNumber)
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
 		}
 		problem, err := uc.problemRepo.GetProblem(ctx, p.ProblemID)
+		if err != nil {
+			return nil, v1.ErrorNotFound(err.Error())
+		}
+		problem.SubmitCount += 1
+		uc.problemRepo.UpdateProblem(ctx, problem)
+		s.ProblemID = problem.ID
+	} else if s.EntityType == SubmissionEntityTypeProblemVerify {
+		// 提交至验题
+		problem, err := uc.problemRepo.GetProblem(ctx, s.ProblemNumber)
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
 		}
