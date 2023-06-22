@@ -16,6 +16,7 @@ import (
 	_ "github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/robfig/cron/v3"
 
 	queueV1 "jnoj/api/queue/v1"
 )
@@ -119,6 +120,8 @@ const (
 	CheckerVerdictSystemError
 )
 
+const CheckerPath = "/tmp/sandbox/checker/%d"
+
 // ProblemLanguage 语言文件
 type ProblemLanguage struct {
 	UserContent string
@@ -175,6 +178,11 @@ func NewSubmissionUsecase(c *conf.Sandbox, repo SubmissionRepo, sandboxRepo Sand
 	if err != nil {
 		log.Fatal(err)
 	}
+	cr := cron.New()
+	cr.AddFunc("@hourly", func() {
+		uc.CronCheckUserExpiration(context.TODO())
+	})
+	cr.Start()
 	return s
 }
 
@@ -476,10 +484,12 @@ func (uc *SubmissionUsecase) runTests(
 }
 
 func (uc *SubmissionUsecase) prepareChecker(workDir string, problem *Problem) error {
-	// 放到 checker 目录下存在
-	checkerPath := filepath.Join("/tmp/sandbox/checker", fmt.Sprintf("%d", problem.ID))
-	_, err := os.Stat(filepath.Join(checkerPath, "checker.exe"))
-	if err != nil {
+	// checker 将放到 tmp 临时目录下
+	checkerPath := fmt.Sprintf(CheckerPath, problem.ID)
+	tmpChecker, err := os.ReadFile(filepath.Join(checkerPath, "checker.txt"))
+	// checker 内容有变化，重新编译
+	if err != nil || (err == nil && string(tmpChecker) != problem.Checker) {
+		os.WriteFile(filepath.Join(checkerPath, "checker.txt"), []byte(problem.Checker), 0444)
 		// 编译一个checker
 		if err = sandbox.Compile(checkerPath, problem.Checker, checkerLanguage); err != nil {
 			return err
