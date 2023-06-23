@@ -37,6 +37,7 @@ import SubmissionList from '@/modules/submission/SubmissionList';
 import CodeMirror from '@uiw/react-codemirror';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 import { createSubmission } from '@/api/submission';
+import useStorage from '@/utils/useStorage';
 const { Title } = Typography;
 
 export default function Index() {
@@ -306,6 +307,7 @@ function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onC
     statements: [],
     sampleTests: []
   });
+  const [codeLanguage, setCodeLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [language, setLanguage] = useState(0);
   const [statementLanguageOptions, setStatementLanguageOptions] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -319,7 +321,7 @@ function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onC
       const data = {
         problemNumber: problem.id,
         source: values.content,
-        language: language,
+        language: codeLanguage,
         entityId: problem.id,
         entityType: 'PROBLEM_VERIFY'
       };
@@ -336,6 +338,7 @@ function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onC
     });
   }
   function onLanguageChange(e) {
+    setCodeLanguage(e);
     if (problem.type === 'FUNCTION') {
       const lang = languageOptions.find(item => {
         return item.languageCode === Number(e);
