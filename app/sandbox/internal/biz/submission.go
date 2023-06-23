@@ -16,7 +16,6 @@ import (
 	_ "github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
-	"github.com/robfig/cron/v3"
 
 	queueV1 "jnoj/api/queue/v1"
 )
@@ -178,11 +177,6 @@ func NewSubmissionUsecase(c *conf.Sandbox, repo SubmissionRepo, sandboxRepo Sand
 	if err != nil {
 		log.Fatal(err)
 	}
-	cr := cron.New()
-	cr.AddFunc("@hourly", func() {
-		uc.CronCheckUserExpiration(context.TODO())
-	})
-	cr.Start()
 	return s
 }
 
