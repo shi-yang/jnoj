@@ -203,6 +203,7 @@ function Index() {
                 <Sider
                   collapsible
                   theme='light'
+                  className={menuSelected === 'problem' ? styles['sider-problem'] : ''}
                   style={{height: '100%'}}
                   onCollapse={onCollapse}
                   collapsed={collapsed}
