@@ -111,6 +111,11 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 
 // CreateProblem 创建题目
 func (s *ProblemService) CreateProblem(ctx context.Context, req *v1.CreateProblemRequest) (*v1.CreateProblemResponse, error) {
+	_, role := auth.GetUserID(ctx)
+	// 创建题目的权限
+	if !biz.CheckAccess(role, biz.ResourceProblem) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	data, err := s.uc.CreateProblem(ctx, &biz.Problem{
 		Name: req.Name,
 		Type: int(req.Type),
