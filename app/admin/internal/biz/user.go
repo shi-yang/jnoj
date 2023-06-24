@@ -74,6 +74,7 @@ type UserRepo interface {
 	ListUserExpirations(ctx context.Context, userId []int, statuses []int) []*UserExpiration
 	DeleteUserExpiration(context.Context, int) error
 	UpdateUserExpiration(context.Context, *UserExpiration) error
+	UserBadgeRepo
 }
 
 // UserUsecase is a User usecase.

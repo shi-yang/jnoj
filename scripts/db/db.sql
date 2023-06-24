@@ -374,6 +374,22 @@ CREATE TABLE `user_expiration` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `user_badge` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `type` tinyint UNSIGNED NOT NULL,
+  `image` varchar(255) NOT NULL DEFAULT '',
+  `image_gif` varchar(255) NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `user_user_badge` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` int UNSIGNED NOT NULL,
+  `badge_id` int UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- 转储表的索引
 --

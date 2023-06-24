@@ -47,6 +47,7 @@ function Layout(page) {
             >
               <Tabs.TabPane key='' title={<span><IconHome /> {t['header.tab.overview']}</span>} />
               <Tabs.TabPane key='users' title={<span><IconUser /> {t['header.tab.user']}</span>} />
+              <Tabs.TabPane key='user-badge' title={<span><IconUser /> {t['header.tab.userBadge']}</span>} />
               <Tabs.TabPane key='problems' title={<span><IconCodeSquare /> {t['header.tab.problems']}</span>} />
               <Tabs.TabPane key='rejudge' title={<span><IconSync /> {t['header.tab.rejudge']}</span>} />
             </Tabs>

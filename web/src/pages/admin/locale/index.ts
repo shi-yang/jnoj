@@ -3,6 +3,7 @@ const i18n = {
     'page.title': 'Admin',
     'header.tab.overview': 'Overview',
     'header.tab.user': 'User',
+    'header.tab.userBadge': 'User Badge',
     'header.tab.settings': 'Settings',
     'header.tab.submissions': 'Submissions',
     'header.tab.problems': 'Problems',
@@ -11,7 +12,8 @@ const i18n = {
   'zh-CN': {
     'page.title': '后台',
     'header.tab.overview': '概览',
-    'header.tab.user': '用户列表',
+    'header.tab.user': '用户管理',
+    'header.tab.userBadge': '用户勋章',
     'header.tab.settings': '设置',
     'header.tab.submissions': '提交列表',
     'header.tab.problems': '题目列表',

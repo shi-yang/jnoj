@@ -62,6 +62,38 @@ service UserService {
             get: "/user_expirations"
         };
     };
+    // 用户勋章成就列表
+    rpc ListUserBadges(ListUserBadgesRequest) returns (ListUserBadgesResponse) {
+        option (google.api.http) = {
+            get: "/user_badges"
+        };
+    };
+    // 用户勋章详情
+    rpc GetUserBadge(GetUserBadgeRequest) returns (UserBadge) {
+        option (google.api.http) = {
+            get: "/user_badges/{id}"
+        };
+    };
+    // 新增用户勋章
+    rpc CreateUserBadge(CreateUserBadgeRequest) returns (UserBadge) {
+        option (google.api.http) = {
+            post: "/user_badges_json"
+            body: "*"
+        };
+    };
+    // 删除用户勋章
+    rpc DeleteUserBadge(DeleteUserBadgeRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/user_badges/{id}"
+        };
+    };
+    // 修改用户勋章
+    rpc UpdateUserBadge(UpdateUserBadgeRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/user_badges_json/{id}"
+            body: "*"
+        };
+    };
 }
 
 message User {
@@ -196,4 +228,54 @@ message ListUserExpirationsRequest {
 
 message ListUserExpirationsResponse {
     repeated UserExpiration data = 1;
+}
+
+enum UserBadgeType {
+    ACTIVITY = 0;
+    LEVEL = 1;
+    CONTEST = 2;
+}
+
+message UserBadge {
+    int32 id = 1;
+    string name = 2;
+    string image = 3;
+    string image_gif = 4;
+    UserBadgeType type = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message ListUserBadgesRequest {
+    string name = 1;
+    optional UserBadgeType type = 2;
+    int32 page = 3;
+    int32 per_page = 4;
+}
+
+message GetUserBadgeRequest {
+    int32 id = 1;
+}
+
+message ListUserBadgesResponse {
+    repeated UserBadge data = 1;
+    int64 total = 2;
+}
+
+message CreateUserBadgeRequest {
+    string name = 1;
+    bytes image = 2;
+    bytes image_gif = 3;
+    UserBadgeType type = 4;
+}
+
+message DeleteUserBadgeRequest {
+    int32 id = 1;
+}
+
+message UpdateUserBadgeRequest {
+    int32 id = 1;
+    string name = 2;
+    bytes image = 3;
+    bytes image_gif = 4;
+    UserBadgeType type = 5;
 }

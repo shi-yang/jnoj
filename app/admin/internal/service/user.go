@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"io"
 
 	v1 "jnoj/api/admin/v1"
 	"jnoj/app/admin/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -154,4 +156,148 @@ func (s UserService) ListUserExpirations(ctx context.Context, req *v1.ListUserEx
 func (s UserService) DeleteUserExpiration(ctx context.Context, req *v1.DeleteUserExpirationRequest) (*emptypb.Empty, error) {
 	err := s.uc.DeleteUserExpiration(ctx, int(req.Id))
 	return &emptypb.Empty{}, err
+}
+
+// ListUserBadges 用户勋章成就列表
+func (s UserService) ListUserBadges(ctx context.Context, req *v1.ListUserBadgesRequest) (*v1.ListUserBadgesResponse, error) {
+	res, count := s.uc.ListUserBadges(ctx, req)
+	resp := new(v1.ListUserBadgesResponse)
+	resp.Total = count
+	for _, v := range res {
+		resp.Data = append(resp.Data, &v1.UserBadge{
+			Id:       int32(v.ID),
+			Type:     v1.UserBadgeType(v.Type),
+			Name:     v.Name,
+			Image:    string(v.ImageURL),
+			ImageGif: v.ImageGifURL,
+		})
+	}
+	return resp, nil
+}
+
+// GetUserBadge 用户勋章详情
+func (s UserService) GetUserBadge(ctx context.Context, req *v1.GetUserBadgeRequest) (*v1.UserBadge, error) {
+	res, err := s.uc.GetUserBadge(ctx, int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	return &v1.UserBadge{
+		Id:       int32(res.ID),
+		Name:     res.Name,
+		Type:     v1.UserBadgeType(res.Type),
+		Image:    res.ImageURL,
+		ImageGif: res.ImageGifURL,
+	}, nil
+}
+
+// CreateUserBadge 新增用户勋章
+func (s UserService) CreateUserBadge(ctx context.Context, req *v1.CreateUserBadgeRequest) (*v1.UserBadge, error) {
+	badge := &biz.UserBadge{
+		Name:     req.Name,
+		Type:     int(req.Type),
+		Image:    req.Image,
+		ImageGif: req.ImageGif,
+	}
+	s.uc.CreateUserBadge(ctx, badge)
+	return &v1.UserBadge{}, nil
+}
+
+// CreateUserBadgeWithFile 处理用户勋章图片上传
+func (s UserService) CreateUserBadgeWithFile(ctx http.Context) error {
+	var in v1.CreateUserBadgeRequest
+	imageFile, _, err := ctx.Request().FormFile("image")
+	if err != nil {
+		return err
+	}
+	fileContent, err := io.ReadAll(imageFile)
+	if err != nil {
+		return err
+	}
+	defer imageFile.Close()
+	imageGifFile, _, err := ctx.Request().FormFile("imageGif")
+	if err != nil {
+		return err
+	}
+	imageGifFileContent, err := io.ReadAll(imageGifFile)
+	if err != nil {
+		return err
+	}
+	defer imageGifFile.Close()
+	in.Image = fileContent
+	in.ImageGif = imageGifFileContent
+	if err := ctx.BindVars(&in); err != nil {
+		return err
+	}
+	if err := ctx.BindForm(&in); err != nil {
+		return err
+	}
+	http.SetOperation(ctx, v1.OperationUserServiceCreateUserBadge)
+	h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+		return s.CreateUserBadge(ctx, req.(*v1.CreateUserBadgeRequest))
+	})
+	out, err := h(ctx, &in)
+	if err != nil {
+		return err
+	}
+	reply := out.(*v1.UserBadge)
+	return ctx.Result(200, reply)
+}
+
+// DeleteUserBadge 删除用户勋章
+func (s UserService) DeleteUserBadge(ctx context.Context, req *v1.DeleteUserBadgeRequest) (*emptypb.Empty, error) {
+	err := s.uc.DeleteUserBadge(ctx, int(req.Id))
+	return &emptypb.Empty{}, err
+}
+
+// UpdateUserBadge 修改用户勋章
+func (s UserService) UpdateUserBadge(ctx context.Context, req *v1.UpdateUserBadgeRequest) (*emptypb.Empty, error) {
+	_, err := s.uc.UpdateUserBadge(ctx, &biz.UserBadge{
+		ID:       int(req.Id),
+		Name:     req.Name,
+		Image:    req.Image,
+		ImageGif: req.ImageGif,
+		Type:     int(req.Type),
+	})
+	return &emptypb.Empty{}, err
+}
+
+// UpdateUserBadgeWithFile 处理用户勋章图片上传
+func (s UserService) UpdateUserBadgeWithFile(ctx http.Context) error {
+	var in v1.UpdateUserBadgeRequest
+	imageFile, _, err := ctx.Request().FormFile("image")
+	if err != nil {
+		return err
+	}
+	fileContent, err := io.ReadAll(imageFile)
+	if err != nil {
+		return err
+	}
+	defer imageFile.Close()
+	imageGifFile, _, err := ctx.Request().FormFile("imageGif")
+	if err != nil {
+		return err
+	}
+	imageGifFileContent, err := io.ReadAll(imageGifFile)
+	if err != nil {
+		return err
+	}
+	defer imageGifFile.Close()
+	in.Image = fileContent
+	in.ImageGif = imageGifFileContent
+	if err := ctx.BindVars(&in); err != nil {
+		return err
+	}
+	if err := ctx.BindForm(&in); err != nil {
+		return err
+	}
+	http.SetOperation(ctx, v1.OperationUserServiceUpdateUserBadge)
+	h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+		return s.UpdateUserBadge(ctx, req.(*v1.UpdateUserBadgeRequest))
+	})
+	out, err := h(ctx, &in)
+	if err != nil {
+		return err
+	}
+	reply := out.(*v1.UserBadge)
+	return ctx.Result(200, reply)
 }

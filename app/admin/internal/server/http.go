@@ -43,10 +43,16 @@ func NewHTTPServer(c *conf.Server,
 	if c.Http.Timeout != nil {
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
+
 	srv := http.NewServer(opts...)
 	v1.RegisterUserServiceHTTPServer(srv, user)
 	v1.RegisterSubmissionServiceHTTPServer(srv, submission)
 	v1.RegisterAdminServiceHTTPServer(srv, admin)
+
+	// 处理用户勋章上传文件
+	route := srv.Route("/")
+	route.POST("/user_badges", user.CreateUserBadgeWithFile)
+	route.PUT("/user_badges/{id}", user.UpdateUserBadgeWithFile)
 	return srv
 }
 

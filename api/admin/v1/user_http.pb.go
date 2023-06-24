@@ -24,22 +24,32 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 const OperationUserServiceBatchCreateUser = "/jnoj.admin.v1.UserService/BatchCreateUser"
 const OperationUserServiceCreateUser = "/jnoj.admin.v1.UserService/CreateUser"
+const OperationUserServiceCreateUserBadge = "/jnoj.admin.v1.UserService/CreateUserBadge"
 const OperationUserServiceCreateUserExpiration = "/jnoj.admin.v1.UserService/CreateUserExpiration"
+const OperationUserServiceDeleteUserBadge = "/jnoj.admin.v1.UserService/DeleteUserBadge"
 const OperationUserServiceDeleteUserExpiration = "/jnoj.admin.v1.UserService/DeleteUserExpiration"
 const OperationUserServiceGetUser = "/jnoj.admin.v1.UserService/GetUser"
+const OperationUserServiceGetUserBadge = "/jnoj.admin.v1.UserService/GetUserBadge"
+const OperationUserServiceListUserBadges = "/jnoj.admin.v1.UserService/ListUserBadges"
 const OperationUserServiceListUserExpirations = "/jnoj.admin.v1.UserService/ListUserExpirations"
 const OperationUserServiceListUsers = "/jnoj.admin.v1.UserService/ListUsers"
 const OperationUserServiceUpdateUser = "/jnoj.admin.v1.UserService/UpdateUser"
+const OperationUserServiceUpdateUserBadge = "/jnoj.admin.v1.UserService/UpdateUserBadge"
 
 type UserServiceHTTPServer interface {
 	BatchCreateUser(context.Context, *BatchCreateUserRequest) (*BatchCreateUserResponse, error)
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
+	CreateUserBadge(context.Context, *CreateUserBadgeRequest) (*UserBadge, error)
 	CreateUserExpiration(context.Context, *CreateUserExpirationRequest) (*emptypb.Empty, error)
+	DeleteUserBadge(context.Context, *DeleteUserBadgeRequest) (*emptypb.Empty, error)
 	DeleteUserExpiration(context.Context, *DeleteUserExpirationRequest) (*emptypb.Empty, error)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
+	GetUserBadge(context.Context, *GetUserBadgeRequest) (*UserBadge, error)
+	ListUserBadges(context.Context, *ListUserBadgesRequest) (*ListUserBadgesResponse, error)
 	ListUserExpirations(context.Context, *ListUserExpirationsRequest) (*ListUserExpirationsResponse, error)
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
+	UpdateUserBadge(context.Context, *UpdateUserBadgeRequest) (*emptypb.Empty, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
@@ -53,6 +63,11 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/user_expirations", _UserService_CreateUserExpiration0_HTTP_Handler(srv))
 	r.DELETE("/user_expirations/{id}", _UserService_DeleteUserExpiration0_HTTP_Handler(srv))
 	r.GET("/user_expirations", _UserService_ListUserExpirations0_HTTP_Handler(srv))
+	r.GET("/user_badges", _UserService_ListUserBadges0_HTTP_Handler(srv))
+	r.GET("/user_badges/{id}", _UserService_GetUserBadge0_HTTP_Handler(srv))
+	r.POST("/user_badges_json", _UserService_CreateUserBadge0_HTTP_Handler(srv))
+	r.DELETE("/user_badges/{id}", _UserService_DeleteUserBadge0_HTTP_Handler(srv))
+	r.PUT("/user_badges_json/{id}", _UserService_UpdateUserBadge0_HTTP_Handler(srv))
 }
 
 func _UserService_GetUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
@@ -216,15 +231,124 @@ func _UserService_ListUserExpirations0_HTTP_Handler(srv UserServiceHTTPServer) f
 	}
 }
 
+func _UserService_ListUserBadges0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListUserBadgesRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceListUserBadges)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListUserBadges(ctx, req.(*ListUserBadgesRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListUserBadgesResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_GetUserBadge0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserBadgeRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceGetUserBadge)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserBadge(ctx, req.(*GetUserBadgeRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserBadge)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_CreateUserBadge0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateUserBadgeRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceCreateUserBadge)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateUserBadge(ctx, req.(*CreateUserBadgeRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserBadge)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_DeleteUserBadge0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteUserBadgeRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceDeleteUserBadge)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteUserBadge(ctx, req.(*DeleteUserBadgeRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_UpdateUserBadge0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateUserBadgeRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceUpdateUserBadge)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateUserBadge(ctx, req.(*UpdateUserBadgeRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserServiceHTTPClient interface {
 	BatchCreateUser(ctx context.Context, req *BatchCreateUserRequest, opts ...http.CallOption) (rsp *BatchCreateUserResponse, err error)
 	CreateUser(ctx context.Context, req *CreateUserRequest, opts ...http.CallOption) (rsp *User, err error)
+	CreateUserBadge(ctx context.Context, req *CreateUserBadgeRequest, opts ...http.CallOption) (rsp *UserBadge, err error)
 	CreateUserExpiration(ctx context.Context, req *CreateUserExpirationRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteUserBadge(ctx context.Context, req *DeleteUserBadgeRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteUserExpiration(ctx context.Context, req *DeleteUserExpirationRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
+	GetUserBadge(ctx context.Context, req *GetUserBadgeRequest, opts ...http.CallOption) (rsp *UserBadge, err error)
+	ListUserBadges(ctx context.Context, req *ListUserBadgesRequest, opts ...http.CallOption) (rsp *ListUserBadgesResponse, err error)
 	ListUserExpirations(ctx context.Context, req *ListUserExpirationsRequest, opts ...http.CallOption) (rsp *ListUserExpirationsResponse, err error)
 	ListUsers(ctx context.Context, req *ListUsersRequest, opts ...http.CallOption) (rsp *ListUsersResponse, err error)
 	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *User, err error)
+	UpdateUserBadge(ctx context.Context, req *UpdateUserBadgeRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type UserServiceHTTPClientImpl struct {
@@ -261,6 +385,19 @@ func (c *UserServiceHTTPClientImpl) CreateUser(ctx context.Context, in *CreateUs
 	return &out, err
 }
 
+func (c *UserServiceHTTPClientImpl) CreateUserBadge(ctx context.Context, in *CreateUserBadgeRequest, opts ...http.CallOption) (*UserBadge, error) {
+	var out UserBadge
+	pattern := "/user_badges_json"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceCreateUserBadge))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *UserServiceHTTPClientImpl) CreateUserExpiration(ctx context.Context, in *CreateUserExpirationRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/user_expirations"
@@ -268,6 +405,19 @@ func (c *UserServiceHTTPClientImpl) CreateUserExpiration(ctx context.Context, in
 	opts = append(opts, http.Operation(OperationUserServiceCreateUserExpiration))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) DeleteUserBadge(ctx context.Context, in *DeleteUserBadgeRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/user_badges/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceDeleteUserBadge))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -292,6 +442,32 @@ func (c *UserServiceHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequ
 	pattern := "/users/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceGetUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) GetUserBadge(ctx context.Context, in *GetUserBadgeRequest, opts ...http.CallOption) (*UserBadge, error) {
+	var out UserBadge
+	pattern := "/user_badges/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceGetUserBadge))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) ListUserBadges(ctx context.Context, in *ListUserBadgesRequest, opts ...http.CallOption) (*ListUserBadgesResponse, error) {
+	var out ListUserBadgesResponse
+	pattern := "/user_badges"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceListUserBadges))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -331,6 +507,19 @@ func (c *UserServiceHTTPClientImpl) UpdateUser(ctx context.Context, in *UpdateUs
 	pattern := "/users/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUserServiceUpdateUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) UpdateUserBadge(ctx context.Context, in *UpdateUserBadgeRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/user_badges_json/{id}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceUpdateUserBadge))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

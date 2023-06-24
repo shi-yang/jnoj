@@ -31,3 +31,31 @@ export function createUserExpiration(data) {
 export function deleteUserExpiration(id: number) {
   return axios.delete(`/user_expirations/${id}`);
 }
+
+export function listUserBadges(params: any) {
+  return axios.get(`/user_badges`, {params});
+}
+
+export function getUserBadge(id: number) {
+  return axios.get(`/user_badges/${id}`);
+}
+
+export function createUserBadge(data) {
+  return axios.post(`/user_badges`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data;charset=UTF-8'
+    }
+  });
+}
+
+export function updateUserBadge(id, data) {
+  return axios.put(`/user_badges/${id}`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data;charset=UTF-8'
+    }
+  });
+}
+
+export function deleteUserBadge(id: number) {
+  return axios.delete(`/user_badges/${id}`);
+}
