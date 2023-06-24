@@ -16,6 +16,7 @@ type ContestUser struct {
 	Role         int
 	UserNickname string
 	VirtualStart *time.Time // 虚拟竞赛开始时间
+	VirtualEnd   *time.Time // 虚拟竞赛结束事件
 }
 
 // ContestUserRepo is a ContestUser repo.
@@ -30,6 +31,11 @@ type ContestUserRepo interface {
 // ListContestUsers list ContestUser
 func (uc *ContestUsecase) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) ([]*ContestUser, int64) {
 	return uc.repo.ListContestUsers(ctx, req)
+}
+
+// GetContestUser gets a ContestUser by id.
+func (uc *ContestUsecase) GetContestUser(ctx context.Context, cid int, uid int) *ContestUser {
+	return uc.repo.GetContestUser(ctx, cid, uid)
 }
 
 // CreateContestUser creates a ContestUser, and returns the new ContestUser.

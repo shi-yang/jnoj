@@ -139,6 +139,7 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		if contestUser != nil {
 			res.Role = contestUser.Role
 			res.VirtualStart = contestUser.VirtualStart
+			res.VirtualEnd = contestUser.VirtualEnd
 		}
 		// 若比赛属于小组，且登录用户为小组管理，赋予管理权限
 		if c.GroupID != 0 {

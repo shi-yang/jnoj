@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
@@ -79,6 +80,9 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 	}
 	if res.VirtualStart != nil {
 		resp.VirtualStart = timestamppb.New(*res.VirtualStart)
+	}
+	if res.VirtualEnd != nil {
+		resp.VirtualEnd = timestamppb.New(*res.VirtualEnd)
 	}
 	resp.Owner = &v1.Contest_Owner{
 		Name: res.OwnerName,
@@ -387,21 +391,49 @@ func (s *ContestService) BatchCreateContestUsers(ctx context.Context, req *v1.Ba
 	return s.uc.BatchCreateContestUsers(ctx, req)
 }
 
+// ExitVirtualContest 退出虚拟比赛
+func (s *ContestService) ExitVirtualContest(ctx context.Context, req *v1.ExitVirtualContestRequest) (*emptypb.Empty, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if contest.VirtualStart == nil || contest.Role == biz.ContestRoleGuest {
+		return nil, v1.ErrorBadRequest("did not participate in virtual contest")
+	}
+	if contest.VirtualEnd != nil || contest.GetRunningStatus() == biz.ContestRunningStatusFinished {
+		return nil, v1.ErrorBadRequest("the virtual contest has ended")
+	}
+	now := time.Now()
+	uid, _ := auth.GetUserID(ctx)
+	contestUser := s.uc.GetContestUser(ctx, int(req.ContestId), uid)
+	if contestUser == nil {
+		return nil, v1.ErrorBadRequest("did not participate in virtual contest")
+	}
+	contestUser.VirtualEnd = &now
+	s.uc.UpdateContestUser(ctx, contestUser)
+	return &emptypb.Empty{}, nil
+}
+
 // UpdateContestUser 修改比赛用户信息
 func (s *ContestService) UpdateContestUser(ctx context.Context, req *v1.UpdateContestUserRequest) (*v1.ContestUser, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+	uid, _ := auth.GetUserID(ctx)
+	if uid != int(req.UserId) && !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	res, err := s.uc.UpdateContestUser(ctx, &biz.ContestUser{
+	if (req.Role == v1.ContestUserRole_ROLE_ADMIN || req.Role == v1.ContestUserRole_ROLE_WRITER) && !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	update := &biz.ContestUser{
 		ContestID: int(req.ContestId),
 		UserID:    int(req.UserId),
 		Name:      req.Name,
 		Role:      int(req.Role),
-	})
+	}
+	res, err := s.uc.UpdateContestUser(ctx, update)
 	if err != nil {
 		return nil, err
 	}

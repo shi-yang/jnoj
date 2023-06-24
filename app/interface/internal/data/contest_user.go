@@ -20,6 +20,7 @@ type ContestUser struct {
 	Name         string
 	Role         int
 	VirtualStart *time.Time // 虚拟竞赛开始时间
+	VirtualEnd   *time.Time // 虚拟竞赛结束时间
 	CreatedAt    time.Time
 	User         *User `json:"user" gorm:"foreignKey:UserID"`
 }
@@ -28,7 +29,7 @@ type ContestUser struct {
 func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) ([]*biz.ContestUser, int64) {
 	count := int64(0)
 	db := r.data.db.WithContext(ctx).
-		Select("c.id, c.user_id, c.name, c.role, c.virtual_start, user.nickname").
+		Select("c.id, c.user_id, c.name, c.role, c.virtual_start, c.virtual_end, user.nickname").
 		Table("contest_user as c").
 		Joins("LEFT JOIN user on user.id = c.user_id").
 		Where("c.contest_id = ?", req.ContestId)
@@ -64,9 +65,13 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 	for rows.Next() {
 		var v biz.ContestUser
 		var virtualStart sql.NullTime
-		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &virtualStart, &v.UserNickname)
+		var virtualEnd sql.NullTime
+		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &virtualStart, &virtualEnd, &v.UserNickname)
 		if virtualStart.Valid {
 			v.VirtualStart = &virtualStart.Time
+		}
+		if virtualEnd.Valid {
+			v.VirtualEnd = &virtualEnd.Time
 		}
 		if name, ok := groupNickname[v.UserID]; ok {
 			v.Name = name
@@ -92,9 +97,12 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 	}
 	return &biz.ContestUser{
 		ID:           res.ID,
+		ContestID:    res.ContestID,
+		UserID:       res.UserID,
 		Name:         res.Name,
 		Role:         res.Role,
 		VirtualStart: res.VirtualStart,
+		VirtualEnd:   res.VirtualEnd,
 		UserNickname: res.Name,
 	}
 }
@@ -122,14 +130,19 @@ func (r *contestRepo) CreateContestUser(ctx context.Context, b *biz.ContestUser)
 
 func (r *contestRepo) UpdateContestUser(ctx context.Context, c *biz.ContestUser) (*biz.ContestUser, error) {
 	res := ContestUser{
-		ID:        c.ID,
-		ContestID: c.ContestID,
-		UserID:    c.UserID,
-		Name:      c.Name,
-		Role:      c.Role,
+		ID:         c.ID,
+		ContestID:  c.ContestID,
+		UserID:     c.UserID,
+		Name:       c.Name,
+		Role:       c.Role,
+		VirtualEnd: c.VirtualEnd,
+	}
+	updateColumns := []string{"name", "role"}
+	if c.VirtualEnd != nil {
+		updateColumns = append(updateColumns, "virtual_end")
 	}
 	err := r.data.db.WithContext(ctx).
-		Select("Name", "Role").
+		Select(updateColumns).
 		Omit(clause.Associations).
 		Where("contest_id = ? and user_id = ?", c.ContestID, c.UserID).
 		Updates(&res).

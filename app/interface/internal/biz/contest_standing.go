@@ -41,6 +41,7 @@ type StandingUser struct {
 	IsRank bool
 	// 虚拟参赛
 	VirtualStart *time.Time
+	VirtualEnd   *time.Time
 	// 分数 OI、IOI模式
 	// ICPC, score = 罚时
 	// OI, score = 最后一次提交
@@ -89,6 +90,7 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 			Who:          user.Name,
 			IsRank:       user.Role == ContestRoleOfficialPlayer,
 			VirtualStart: user.VirtualStart,
+			VirtualEnd:   user.VirtualEnd,
 		}
 		userMap[user.UserID] = u
 	}
@@ -119,6 +121,10 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 		// 判断是否比赛中的提交：虚拟比赛
 		if userMap[uid].VirtualStart != nil && submission.CreatedAt.Sub(*userMap[uid].VirtualStart) < contest.EndTime.Sub(contest.StartTime) {
 			isInComp = true
+			// 提前退出虚拟比赛，提交时间在退出虚拟比赛后则不算是比赛中的提交
+			if userMap[uid].VirtualEnd != nil && submission.CreatedAt.After(*userMap[uid].VirtualEnd) {
+				isInComp = false
+			}
 		}
 		if isInComp && submission.Verdict == SubmissionVerdictAccepted {
 			p.IsInComp = isInComp
@@ -229,6 +235,10 @@ func (c *ContestStandingIOI) Sort(contest *Contest, users []*ContestUser, proble
 		// 判断是否比赛中的提交：虚拟比赛
 		if userMap[uid].VirtualStart != nil && submission.CreatedAt.Sub(*userMap[uid].VirtualStart) < contest.EndTime.Sub(contest.StartTime) {
 			isInComp = true
+			// 提前退出虚拟比赛，提交时间在退出虚拟比赛后则不算是比赛中的提交
+			if userMap[uid].VirtualEnd != nil && submission.CreatedAt.After(*userMap[uid].VirtualEnd) {
+				isInComp = false
+			}
 		}
 		if isInComp && submission.Verdict == SubmissionVerdictAccepted {
 			p.IsInComp = isInComp
@@ -337,6 +347,10 @@ func (c *ContestStandingOI) Sort(contest *Contest, users []*ContestUser, problem
 		// 判断是否比赛中的提交：虚拟比赛
 		if userMap[uid].VirtualStart != nil && submission.CreatedAt.Sub(*userMap[uid].VirtualStart) < contest.EndTime.Sub(contest.StartTime) {
 			isInComp = true
+			// 提前退出虚拟比赛，提交时间在退出虚拟比赛后则不算是比赛中的提交
+			if userMap[uid].VirtualEnd != nil && submission.CreatedAt.After(*userMap[uid].VirtualEnd) {
+				isInComp = false
+			}
 		}
 		if isInComp && submission.Verdict == SubmissionVerdictAccepted {
 			p.IsInComp = isInComp

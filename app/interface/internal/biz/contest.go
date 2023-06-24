@@ -25,7 +25,8 @@ type Contest struct {
 	UserNickname     string     // 创建人名称
 	ParticipantCount int        // 参与人数
 	Role             int        // 登录用户角色
-	VirtualStart     *time.Time // 登录用户比赛虚拟开始时间
+	VirtualStart     *time.Time // 登录用户虚拟比赛开始时间
+	VirtualEnd       *time.Time // 登录用户虚拟比赛结束时间
 	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
@@ -90,7 +91,7 @@ func (c *Contest) GetRunningStatus() int {
 		return ContestRunningStatusInProgress
 	}
 	// 虚拟竞赛比赛状态
-	if c.VirtualStart != nil {
+	if c.VirtualStart != nil && c.VirtualEnd == nil {
 		if now.Sub(*c.VirtualStart) < c.EndTime.Sub(c.StartTime) {
 			return ContestRunningStatusInProgress
 		}

@@ -28,6 +28,7 @@ const OperationContestServiceCreateContest = "/jnoj.interface.v1.ContestService/
 const OperationContestServiceCreateContestProblem = "/jnoj.interface.v1.ContestService/CreateContestProblem"
 const OperationContestServiceCreateContestUser = "/jnoj.interface.v1.ContestService/CreateContestUser"
 const OperationContestServiceDeleteContestProblem = "/jnoj.interface.v1.ContestService/DeleteContestProblem"
+const OperationContestServiceExitVirtualContest = "/jnoj.interface.v1.ContestService/ExitVirtualContest"
 const OperationContestServiceGetContest = "/jnoj.interface.v1.ContestService/GetContest"
 const OperationContestServiceGetContestProblem = "/jnoj.interface.v1.ContestService/GetContestProblem"
 const OperationContestServiceGetContestProblemLanguage = "/jnoj.interface.v1.ContestService/GetContestProblemLanguage"
@@ -47,6 +48,7 @@ type ContestServiceHTTPServer interface {
 	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*ContestProblem, error)
 	CreateContestUser(context.Context, *CreateContestUserRequest) (*ContestUser, error)
 	DeleteContestProblem(context.Context, *DeleteContestProblemRequest) (*emptypb.Empty, error)
+	ExitVirtualContest(context.Context, *ExitVirtualContestRequest) (*emptypb.Empty, error)
 	GetContest(context.Context, *GetContestRequest) (*Contest, error)
 	GetContestProblem(context.Context, *GetContestProblemRequest) (*ContestProblem, error)
 	GetContestProblemLanguage(context.Context, *GetContestProblemLanguageRequest) (*ContestProblemLanguage, error)
@@ -74,6 +76,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/CreateContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/BatchCreateContestUsers", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/UpdateContestUser", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/ExitVirtualContest", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestUsers", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestAllSubmissions", auth.Guest())
@@ -95,6 +98,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.POST("/contests/{contest_id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/batch_users", _ContestService_BatchCreateContestUsers0_HTTP_Handler(srv))
 	r.PUT("/contests/{contest_id}/users", _ContestService_UpdateContestUser0_HTTP_Handler(srv))
+	r.POST("/contests/{contest_id}/exit_virtual", _ContestService_ExitVirtualContest0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
 }
@@ -423,6 +427,28 @@ func _ContestService_UpdateContestUser0_HTTP_Handler(srv ContestServiceHTTPServe
 	}
 }
 
+func _ContestService_ExitVirtualContest0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ExitVirtualContestRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceExitVirtualContest)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ExitVirtualContest(ctx, req.(*ExitVirtualContestRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListContestAllSubmissionsRequest
@@ -473,6 +499,7 @@ type ContestServiceHTTPClient interface {
 	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	CreateContestUser(ctx context.Context, req *CreateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
 	DeleteContestProblem(ctx context.Context, req *DeleteContestProblemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	ExitVirtualContest(ctx context.Context, req *ExitVirtualContestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetContest(ctx context.Context, req *GetContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	GetContestProblem(ctx context.Context, req *GetContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	GetContestProblemLanguage(ctx context.Context, req *GetContestProblemLanguageRequest, opts ...http.CallOption) (rsp *ContestProblemLanguage, err error)
@@ -554,6 +581,19 @@ func (c *ContestServiceHTTPClientImpl) DeleteContestProblem(ctx context.Context,
 	opts = append(opts, http.Operation(OperationContestServiceDeleteContestProblem))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) ExitVirtualContest(ctx context.Context, in *ExitVirtualContestRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/contests/{contest_id}/exit_virtual"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContestServiceExitVirtualContest))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

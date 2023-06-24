@@ -106,6 +106,13 @@ service ContestService {
             body: "*"
         };     
     }
+    // 退出虚拟竞赛
+    rpc ExitVirtualContest (ExitVirtualContestRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/contests/{contest_id}/exit_virtual"
+            body: "*"
+        };
+    }
     // 获取全部提交列表
     rpc ListContestAllSubmissions (ListContestAllSubmissionsRequest) returns (ListContestAllSubmissionsResponse) {
         option (google.api.http) = {
@@ -229,8 +236,10 @@ message Contest {
     int32 user_id = 12;
     // 当前登录用户的角色
     ContestUserRole role = 13;
-    // 登录用户虚拟参赛时间
+    // 登录用户虚拟参赛开始时间
     google.protobuf.Timestamp virtual_start = 14;
+    // 登录用户虚拟参赛结束时间
+    google.protobuf.Timestamp virtual_end = 15;
     enum RunningStatus {
         // 尚未开始
         NOT_STARTED = 0;
@@ -242,7 +251,7 @@ message Contest {
         FINISHED = 3;
     }
     // 运行状态
-    RunningStatus running_status = 15;
+    RunningStatus running_status = 16;
     message Owner {
         enum OwnerType {
             GROUP = 0;
@@ -253,7 +262,7 @@ message Contest {
         string name = 3;
         string user_nickname = 4;
     }
-    Owner owner = 16;
+    Owner owner = 17;
 }
 
 message ListContestProblemsRequest {
@@ -382,6 +391,10 @@ message UpdateContestUserRequest {
     int32 user_id = 2;
     string name = 3;
     ContestUserRole role = 4;
+}
+
+message ExitVirtualContestRequest {
+    int32 contest_id = 1;
 }
 
 message ListContestAllSubmissionsRequest {

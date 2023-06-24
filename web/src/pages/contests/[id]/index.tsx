@@ -1,8 +1,8 @@
 import React, { lazy, Suspense, useContext, useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Grid, Slider, Statistic, Link } from '@arco-design/web-react';
+import { Layout, Menu, Typography, Grid, Slider, Statistic, Link, Popconfirm, Message, Button, Divider } from '@arco-design/web-react';
 import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconUserGroup, IconBook } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
-import { getContest, listContestProblems } from '@/api/contest';
+import { exitVirtualContest, getContest, listContestProblems } from '@/api/contest';
 import './mock';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -36,6 +36,7 @@ const normalWidth = 220;
 function ContestHeader() {
   const t = useLocale(locale);
   const contest = useContext(ContestContext);
+  const router = useRouter();
   const [sliderValue, setSliderValue] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   let timer = null;
@@ -52,6 +53,14 @@ function ContestHeader() {
       setSliderValue(diff / contestDuration * 100);
       setCurrentTime(t);
     }, 1000);
+  };
+  const onExitVirtualContest = () => {
+    exitVirtualContest(contest.id).then(() => {
+      Message.success({
+        content: '已退出虚拟竞赛',
+      });
+      router.reload();
+    });
   };
   useEffect(() => {
     updateTime(contest.startTime, contest.endTime);
@@ -76,7 +85,25 @@ function ContestHeader() {
         <Col md={8}>
           <div style={{textAlign: 'center'}}>
             <strong>{t['header.now']}</strong> {FormatTime(currentTime)}
-            {contest.virtualStart !== null && contest.runningStatus !== 'FINISHED' && <sup>虚拟</sup>}
+            {contest.virtualStart !== null && contest.runningStatus !== 'FINISHED' && (
+              <>
+                <sup>虚拟</sup>
+                <Divider type='vertical' />
+                <Popconfirm
+                  focusLock
+                  title='退出虚拟竞赛'
+                  content='你确定提前退出吗？退出后将不可再次进入虚拟竞赛'
+                  onOk={() => onExitVirtualContest() }
+                  onCancel={() => {
+                    Message.error({
+                      content: 'cancel',
+                    });
+                  }}
+                >
+                  <Button size='mini'>退出虚拟</Button>
+                </Popconfirm>
+              </>
+            )}
           </div>
         </Col>
         <Col md={8} style={{textAlign: 'right'}}>

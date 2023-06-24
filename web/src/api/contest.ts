@@ -64,6 +64,10 @@ export function updateContestUser(id, data) {
   return axios.put(`/contests/${id}/users`, data);
 }
 
+export function exitVirtualContest(id) {
+  return axios.post(`/contests/${id}/exit_virtual`, {});
+}
+
 export function getContestProblem(id, pkey) {
   return axios.get(`/contests/${id}/problems/${pkey}`);
 }
