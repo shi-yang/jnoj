@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormatTime } from '@/utils/format';
-import { Link } from '@arco-design/web-react';
+import { Link, Tag } from '@arco-design/web-react';
 import { IconLock, IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 
 export function getColumns(
@@ -14,9 +14,14 @@ export function getColumns(
       dataIndex: 'name',
       align: 'left' as 'left',
       render: (value, record) => (
-        <Link href={`/contests/${record.id}`}>
-          { record.privacy === 'PRIVATE' && <IconLock /> } {value}
-        </Link>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <Link href={`/contests/${record.id}`}>
+            { record.privacy === 'PRIVATE' && <IconLock /> } {value}
+          </Link>
+          {record.feature.includes('rated') && (
+            <Tag color='red'>Rated</Tag>
+          )}
+        </div>
       )
     },
     {
@@ -63,9 +68,6 @@ export function getColumns(
           ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
           : <Link href={`/u/${col.id}`}>{col.name}</Link>;
       }
-      // render: col => col.type === 'GROUP'
-      //   ? <Link href={`/groups/${col.id}`}><IconUserGroup /> {col.name}</Link>
-      //   : <Link href={`/u/${col.id}`}>{col.name}</Link>
     }
   ];
 }

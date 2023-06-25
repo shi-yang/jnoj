@@ -20,6 +20,7 @@ const ContestContext = createContext({
     type: '',
     name: '',
   },
+  feature: '',
   problems: [],
   changeProblem: (number: string) => {},
   updateContest: ({} : any) => {},

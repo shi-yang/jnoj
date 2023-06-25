@@ -1,7 +1,7 @@
 import { createContestProblem, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
 import Editor from '@/components/MarkdownEditor';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid } from '@arco-design/web-react';
+import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import ContestContext from '../context';
 import locale from '../locale';
 const { RangePicker } = DatePicker;
 import styles from '../style/setting.module.less';
+import PermissionWrapper from '@/components/PermissionWrapper';
 
 const AddProblem = ({contestId, callback}: {contestId: number, callback: () => void}) => {
   const t = useLocale(locale);
@@ -90,6 +91,7 @@ const SettingInfo = () => {
         membership: values.membership,
         invitationCode: values.invitationCode,
         description: values.description,
+        feature: values.feature.join(','),
       };
       setConfirmLoading(true);
       updateContest(contest.id, data)
@@ -129,6 +131,7 @@ const SettingInfo = () => {
       membership: contest.membership,
       invitationCode: invitationCode,
       description: contest.description,
+      feature: contest.feature.split(','),
     });
     listProblems();
   }, []);
@@ -224,6 +227,24 @@ const SettingInfo = () => {
                   })}
                 </Radio.Group>
               </Form.Item>
+              <PermissionWrapper
+                requiredPermissions={[{resource: 'contest', actions: ['write']}]}
+              >
+                <Form.Item label={t['setting.info.feature']} field='feature'>
+                  <Select
+                    mode='multiple'
+                    style={{ width: 345 }}
+                    renderFormat={(option, value) => {
+                      return <span>{option.value}</span>;
+                    }}
+                    allowClear
+                  >
+                    <Select.Option value={'rated'}>
+                      {'rated'} : 比赛结束后可对本场参赛人员计分
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </PermissionWrapper>
             </Grid.Col>
             <Grid.Col span={12}>
               <Form.Item label={t['setting.info.description']} field='description'>
@@ -232,7 +253,7 @@ const SettingInfo = () => {
             </Grid.Col>
           </Grid.Row>
           <Form.Item wrapperCol={{ offset: 5 }}>
-            <Button type='primary' htmlType='submit'>{t['save']}</Button>
+            <Button loading={confirmLoading} type='primary' htmlType='submit'>{t['save']}</Button>
           </Form.Item>
         </Form>
       </Card>

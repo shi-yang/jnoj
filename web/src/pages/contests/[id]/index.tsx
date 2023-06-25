@@ -141,12 +141,13 @@ function Index() {
     invitationCode: '',
     description: '',
     virtualStart: null,
+    feature: '',
     owner: {
       id: 0,
       type: '',
       name: '',
     },
-    problems: []
+    problems: [],
   });
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);

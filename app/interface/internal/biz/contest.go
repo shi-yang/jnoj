@@ -27,6 +27,7 @@ type Contest struct {
 	Role             int        // 登录用户角色
 	VirtualStart     *time.Time // 登录用户虚拟比赛开始时间
 	VirtualEnd       *time.Time // 登录用户虚拟比赛结束时间
+	Feature          string     // 特性：rated
 	GroupId          int
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
@@ -40,6 +41,10 @@ const (
 	ContestRoleVirtualPlayer           // 虚拟参赛选手
 	ContestRoleWriter                  // 出题人
 	ContestRoleAdmin                   // 管理
+)
+
+const (
+	ContestFeatureRated = "rated" // 计分
 )
 
 const (

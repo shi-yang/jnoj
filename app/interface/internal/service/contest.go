@@ -41,6 +41,7 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			Privacy:          v1.ContestPrivacy(v.Privacy),
 			Membership:       v1.ContestMembership(v.Membership),
 			UserId:           int32(v.UserID),
+			Feature:          v.Feature,
 		}
 		c.Owner = &v1.Contest_Owner{
 			Name:         v.OwnerName,
@@ -77,6 +78,7 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		EndTime:          timestamppb.New(res.EndTime),
 		RunningStatus:    v1.Contest_RunningStatus(res.GetRunningStatus()),
 		Role:             v1.ContestUserRole(res.Role),
+		Feature:          res.Feature,
 	}
 	if res.VirtualStart != nil {
 		resp.VirtualStart = timestamppb.New(*res.VirtualStart)
@@ -106,6 +108,11 @@ func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContes
 	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
+	_, role := auth.GetUserID(ctx)
+	// 仅管理员有权限编辑 rated
+	if req.Feature != "" && !biz.CheckAccess(role, biz.ResourceContest) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
 	res, err := s.uc.UpdateContest(ctx, &biz.Contest{
 		ID:             int(req.Id),
 		Name:           req.Name,
@@ -116,6 +123,7 @@ func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContes
 		Privacy:        int(req.Privacy),
 		Membership:     int(req.Membership),
 		InvitationCode: req.InvitationCode,
+		Feature:        req.Feature,
 	})
 	if err != nil {
 		return nil, err

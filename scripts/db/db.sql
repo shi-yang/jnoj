@@ -24,6 +24,7 @@ CREATE TABLE `contest` (
   `invitation_code` varchar(16) COLLATE utf8mb4_general_ci NOT NULL,
   `participant_count` mediumint UNSIGNED NOT NULL DEFAULT '0',
   `user_id` int UNSIGNED NOT NULL,
+  `feature` varchar(64) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL

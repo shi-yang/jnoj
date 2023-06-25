@@ -34,6 +34,7 @@ type Contest struct {
 	GroupID          int
 	UserID           int
 	ParticipantCount int
+	Feature          string // 特性：rated
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt
@@ -89,6 +90,7 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 			Privacy:          v.Privacy,
 			UserNickname:     v.User.Nickname,
 			OwnerName:        v.User.Nickname,
+			Feature:          v.Feature,
 		}
 		if v.Group != nil {
 			c.OwnerName = v.Group.Name
@@ -125,6 +127,7 @@ func (r *contestRepo) GetContest(ctx context.Context, id int) (*biz.Contest, err
 		Description:      c.Description,
 		ParticipantCount: c.ParticipantCount,
 		UserID:           c.UserID,
+		Feature:          c.Feature,
 		GroupId:          c.GroupID,
 		CreatedAt:        c.CreatedAt,
 	}
@@ -192,10 +195,11 @@ func (r *contestRepo) UpdateContest(ctx context.Context, c *biz.Contest) (*biz.C
 		Privacy:        c.Privacy,
 		Membership:     c.Membership,
 		InvitationCode: c.InvitationCode,
+		Feature:        c.Feature,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Select("Name", "StartTime", "EndTime", "FrozenTime", "Type", "Description", "Privacy", "Membership", "InvitationCode").
+		Select("Name", "StartTime", "EndTime", "FrozenTime", "Type", "Description", "Privacy", "Membership", "InvitationCode", "Feature").
 		Updates(&res).Error
 	return &biz.Contest{
 		ID: res.ID,

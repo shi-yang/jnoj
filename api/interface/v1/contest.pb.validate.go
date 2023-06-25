@@ -512,6 +512,8 @@ func (m *UpdateContestRequest) validate(all bool) error {
 
 	// no validation rules for InvitationCode
 
+	// no validation rules for Feature
+
 	if len(errors) > 0 {
 		return UpdateContestRequestMultiError(errors)
 	}
@@ -1231,6 +1233,8 @@ func (m *Contest) validate(all bool) error {
 			}
 		}
 	}
+
+	// no validation rules for Feature
 
 	if len(errors) > 0 {
 		return ContestMultiError(errors)
