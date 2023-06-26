@@ -21,6 +21,9 @@ type ContestUser struct {
 	Role         int
 	VirtualStart *time.Time // 虚拟竞赛开始时间
 	VirtualEnd   *time.Time // 虚拟竞赛结束时间
+	OldRating    int        // 上场比赛竞赛积分
+	NewRating    int        // 本场比赛竞赛积分
+	RatedAt      *time.Time // 竞赛积分计算时间
 	CreatedAt    time.Time
 	User         *User `json:"user" gorm:"foreignKey:UserID"`
 }
@@ -29,7 +32,7 @@ type ContestUser struct {
 func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) ([]*biz.ContestUser, int64) {
 	count := int64(0)
 	db := r.data.db.WithContext(ctx).
-		Select("c.id, c.user_id, c.name, c.role, c.virtual_start, c.virtual_end, user.nickname").
+		Select("c.id, c.user_id, c.name, c.role, c.virtual_start, c.virtual_end, c.old_rating, c.new_rating, c.rated_at, user.nickname").
 		Table("contest_user as c").
 		Joins("LEFT JOIN user on user.id = c.user_id").
 		Where("c.contest_id = ?", req.ContestId)
@@ -66,12 +69,18 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 		var v biz.ContestUser
 		var virtualStart sql.NullTime
 		var virtualEnd sql.NullTime
-		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &virtualStart, &virtualEnd, &v.UserNickname)
+		var ratedAt sql.NullTime
+		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &virtualStart,
+			&virtualEnd, &v.OldRating, &v.NewRating, &ratedAt, &v.UserNickname)
+		v.RatingChanged = v.NewRating - v.OldRating
 		if virtualStart.Valid {
 			v.VirtualStart = &virtualStart.Time
 		}
 		if virtualEnd.Valid {
 			v.VirtualEnd = &virtualEnd.Time
+		}
+		if ratedAt.Valid {
+			v.RatedAt = &ratedAt.Time
 		}
 		if name, ok := groupNickname[v.UserID]; ok {
 			v.Name = name
@@ -96,14 +105,17 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 		return nil
 	}
 	return &biz.ContestUser{
-		ID:           res.ID,
-		ContestID:    res.ContestID,
-		UserID:       res.UserID,
-		Name:         res.Name,
-		Role:         res.Role,
-		VirtualStart: res.VirtualStart,
-		VirtualEnd:   res.VirtualEnd,
-		UserNickname: res.Name,
+		ID:            res.ID,
+		ContestID:     res.ContestID,
+		UserID:        res.UserID,
+		Name:          res.Name,
+		Role:          res.Role,
+		VirtualStart:  res.VirtualStart,
+		VirtualEnd:    res.VirtualEnd,
+		UserNickname:  res.Name,
+		OldRating:     res.OldRating,
+		NewRating:     res.NewRating,
+		RatingChanged: res.NewRating - res.OldRating,
 	}
 }
 
@@ -160,4 +172,39 @@ func (r *contestRepo) DeleteContestUser(ctx context.Context, id int) error {
 		Delete(ContestUser{ID: id}).
 		Error
 	return err
+}
+
+// GetContestUserRating 查询用户积分
+func (r *contestRepo) GetContestUserRating(ctx context.Context, uid int) int {
+	var user ContestUser
+	err := r.data.db.WithContext(ctx).
+		Select("new_rating").
+		Model(&ContestUser{}).
+		Where("user_id = ?", uid).
+		Where("rated_at is not null").
+		Order("rated_at desc").
+		First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return -1
+	}
+	return user.NewRating
+}
+
+// SaveContestRating .
+func (r *contestRepo) SaveContestRating(ctx context.Context, users []*biz.ContestUser) error {
+	tx := r.data.db.WithContext(ctx)
+	for _, user := range users {
+		err := r.data.db.WithContext(ctx).
+			Omit(clause.Associations).
+			Select("OldRating", "NewRating", "RatedAt").
+			Where("contest_id = ? and user_id = ?", user.ContestID, user.UserID).
+			Updates(&user).
+			Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	tx.Commit()
+	return nil
 }

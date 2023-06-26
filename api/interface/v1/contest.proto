@@ -125,6 +125,13 @@ service ContestService {
             get: "/contests/{contest_id}/submissions"
         };
     }
+    // 计算比赛积分
+    rpc CalculateContestRating (CalculateContestRatingRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/contests/{contest_id}/calculate_rating"
+            body: "*"
+        };
+    }
 }
 
 message ListContestsRequest {
@@ -346,7 +353,9 @@ message ContestUser {
     int32 user_id = 3;
     string user_nickname = 4;
     google.protobuf.Timestamp virtual_start = 5;
-    ContestUserRole role = 6;
+    int32 old_rating = 6;
+    int32 new_rating = 7;
+    ContestUserRole role = 8;
 }
 
 message ListContestUsersRequest {
@@ -473,4 +482,8 @@ message GetContestProblemLanguageRequest {
     int32 id = 1;
     int32 number = 2;
     int32 language = 3;
+}
+
+message CalculateContestRatingRequest {
+    int32 contest_id = 1;
 }

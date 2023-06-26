@@ -2291,6 +2291,10 @@ func (m *ContestUser) validate(all bool) error {
 		}
 	}
 
+	// no validation rules for OldRating
+
+	// no validation rules for NewRating
+
 	// no validation rules for Role
 
 	if len(errors) > 0 {
@@ -4237,6 +4241,111 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetContestProblemLanguageRequestValidationError{}
+
+// Validate checks the field values on CalculateContestRatingRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CalculateContestRatingRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CalculateContestRatingRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CalculateContestRatingRequestMultiError, or nil if none found.
+func (m *CalculateContestRatingRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CalculateContestRatingRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ContestId
+
+	if len(errors) > 0 {
+		return CalculateContestRatingRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CalculateContestRatingRequestMultiError is an error wrapping multiple
+// validation errors returned by CalculateContestRatingRequest.ValidateAll()
+// if the designated constraints aren't met.
+type CalculateContestRatingRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CalculateContestRatingRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CalculateContestRatingRequestMultiError) AllErrors() []error { return m }
+
+// CalculateContestRatingRequestValidationError is the validation error
+// returned by CalculateContestRatingRequest.Validate if the designated
+// constraints aren't met.
+type CalculateContestRatingRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CalculateContestRatingRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CalculateContestRatingRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CalculateContestRatingRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CalculateContestRatingRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CalculateContestRatingRequestValidationError) ErrorName() string {
+	return "CalculateContestRatingRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CalculateContestRatingRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCalculateContestRatingRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CalculateContestRatingRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CalculateContestRatingRequestValidationError{}
 
 // Validate checks the field values on ContestStandingUser_Problem with the
 // rules defined in the proto definition for this message. If any rules are

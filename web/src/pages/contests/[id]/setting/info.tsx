@@ -91,7 +91,7 @@ const SettingInfo = () => {
         membership: values.membership,
         invitationCode: values.invitationCode,
         description: values.description,
-        feature: values.feature.join(','),
+        feature: values.feature.filter(v => v != '').join(','),
       };
       setConfirmLoading(true);
       updateContest(contest.id, data)
@@ -131,7 +131,7 @@ const SettingInfo = () => {
       membership: contest.membership,
       invitationCode: invitationCode,
       description: contest.description,
-      feature: contest.feature.split(','),
+      feature: contest.feature != '' ? contest.feature.split(',') : [],
     });
     listProblems();
   }, []);
@@ -235,7 +235,13 @@ const SettingInfo = () => {
                     mode='multiple'
                     style={{ width: 345 }}
                     renderFormat={(option, value) => {
-                      return <span>{option.value}</span>;
+                      return option ? (
+                        <span>
+                          {` ${option.value} `}
+                        </span>
+                      ) : (
+                        null
+                      );
                     }}
                     allowClear
                   >

@@ -75,3 +75,7 @@ export function getContestProblem(id, pkey) {
 export function listContestSubmissions(id, params) {
   return axios.get(`/contests/${id}/submissions`, {params});
 }
+
+export function calculateContestRating(id: number) {
+  return axios.post(`/contests/${id}/calculate_rating`, {});
+}

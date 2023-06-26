@@ -85,6 +85,10 @@ const (
 	ContestRunningStatusFinished               // 已结束
 )
 
+const (
+	ContestInitialRating = 1500 // 比赛第一次参赛默认积分
+)
+
 // GetRunningStatus 获取比赛的状态，是否开始、进行中、封榜、已结束
 func (c *Contest) GetRunningStatus() int {
 	now := time.Now()
@@ -330,4 +334,38 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 		res = append(res, cs)
 	}
 	return res, count
+}
+
+// CalculateContestRating .
+func (c *ContestUsecase) CalculateContestRating(ctx context.Context, contest *Contest) error {
+	users, _ := c.GetContestStanding(ctx, contest, -1, -1, true, false)
+	players := make([]*ContestRatedPlayer, 0)
+	contestUsers := make([]*ContestUser, 0)
+	for _, user := range users {
+		if !user.IsRank {
+			continue
+		}
+		oldRating := c.repo.GetContestUserRating(ctx, user.UserId)
+		if oldRating < 0 {
+			oldRating = ContestInitialRating
+		}
+		player := &ContestRatedPlayer{
+			UserID:    user.UserId,
+			Rank:      user.Rank,
+			OldRating: oldRating,
+		}
+		players = append(players, player)
+	}
+	ContestRated(players)
+	now := time.Now()
+	for _, player := range players {
+		contestUsers = append(contestUsers, &ContestUser{
+			UserID:    player.UserID,
+			ContestID: contest.ID,
+			NewRating: player.NewRating,
+			OldRating: player.OldRating,
+			RatedAt:   &now,
+		})
+	}
+	return c.repo.SaveContestRating(ctx, contestUsers)
 }

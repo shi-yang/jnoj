@@ -9,14 +9,18 @@ import (
 
 // ContestUser is a ContestUser model.
 type ContestUser struct {
-	ID           int
-	UserID       int
-	ContestID    int
-	Name         string // 自定义参赛名称
-	Role         int
-	UserNickname string
-	VirtualStart *time.Time // 虚拟竞赛开始时间
-	VirtualEnd   *time.Time // 虚拟竞赛结束事件
+	ID            int
+	UserID        int
+	ContestID     int
+	Name          string // 自定义参赛名称
+	Role          int
+	UserNickname  string
+	OldRating     int        // 上场比赛竞赛积分
+	NewRating     int        // 本场比赛竞赛积分
+	RatingChanged int        // 积分增减
+	RatedAt       *time.Time // 竞赛积分计算时间
+	VirtualStart  *time.Time // 虚拟竞赛开始时间
+	VirtualEnd    *time.Time // 虚拟竞赛结束时间
 }
 
 // ContestUserRepo is a ContestUser repo.
@@ -26,6 +30,8 @@ type ContestUserRepo interface {
 	DeleteContestUser(context.Context, int) error
 	GetContestUser(context.Context, int, int) *ContestUser
 	UpdateContestUser(context.Context, *ContestUser) (*ContestUser, error)
+	SaveContestRating(ctx context.Context, users []*ContestUser) error
+	GetContestUserRating(ctx context.Context, uid int) int
 }
 
 // ListContestUsers list ContestUser

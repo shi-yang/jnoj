@@ -24,6 +24,7 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 // auth.
 const OperationContestServiceBatchCreateContestUsers = "/jnoj.interface.v1.ContestService/BatchCreateContestUsers"
+const OperationContestServiceCalculateContestRating = "/jnoj.interface.v1.ContestService/CalculateContestRating"
 const OperationContestServiceCreateContest = "/jnoj.interface.v1.ContestService/CreateContest"
 const OperationContestServiceCreateContestProblem = "/jnoj.interface.v1.ContestService/CreateContestProblem"
 const OperationContestServiceCreateContestUser = "/jnoj.interface.v1.ContestService/CreateContestUser"
@@ -44,6 +45,7 @@ const OperationContestServiceUpdateContestUser = "/jnoj.interface.v1.ContestServ
 
 type ContestServiceHTTPServer interface {
 	BatchCreateContestUsers(context.Context, *BatchCreateContestUsersRequest) (*BatchCreateContestUsersResponse, error)
+	CalculateContestRating(context.Context, *CalculateContestRatingRequest) (*emptypb.Empty, error)
 	CreateContest(context.Context, *CreateContestRequest) (*Contest, error)
 	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*ContestProblem, error)
 	CreateContestUser(context.Context, *CreateContestUserRequest) (*ContestUser, error)
@@ -82,6 +84,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/ListContestAllSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestProblemLanguages", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/GetContestProblemLanguage", auth.Guest())
+	s.Use("/jnoj.interface.v1.ContestService/CalculateContestRating", auth.User())
 	r := s.Route("/")
 	r.GET("/contests", _ContestService_ListContests0_HTTP_Handler(srv))
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))
@@ -101,6 +104,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.POST("/contests/{contest_id}/exit_virtual", _ContestService_ExitVirtualContest0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
+	r.POST("/contests/{contest_id}/calculate_rating", _ContestService_CalculateContestRating0_HTTP_Handler(srv))
 }
 
 func _ContestService_ListContests0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
@@ -493,8 +497,31 @@ func _ContestService_ListContestSubmissions0_HTTP_Handler(srv ContestServiceHTTP
 	}
 }
 
+func _ContestService_CalculateContestRating0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CalculateContestRatingRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceCalculateContestRating)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CalculateContestRating(ctx, req.(*CalculateContestRatingRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ContestServiceHTTPClient interface {
 	BatchCreateContestUsers(ctx context.Context, req *BatchCreateContestUsersRequest, opts ...http.CallOption) (rsp *BatchCreateContestUsersResponse, err error)
+	CalculateContestRating(ctx context.Context, req *CalculateContestRatingRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	CreateContest(ctx context.Context, req *CreateContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	CreateContestUser(ctx context.Context, req *CreateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
@@ -527,6 +554,19 @@ func (c *ContestServiceHTTPClientImpl) BatchCreateContestUsers(ctx context.Conte
 	pattern := "/contests/{contest_id}/batch_users"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationContestServiceBatchCreateContestUsers))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) CalculateContestRating(ctx context.Context, in *CalculateContestRatingRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/contests/{contest_id}/calculate_rating"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContestServiceCalculateContestRating))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

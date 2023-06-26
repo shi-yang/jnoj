@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -368,6 +369,8 @@ func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListConte
 			UserNickname: v.UserNickname,
 			Name:         v.Name,
 			Role:         v1.ContestUserRole(v.Role),
+			OldRating:    int32(v.OldRating),
+			NewRating:    int32(v.NewRating),
 		}
 		if v.VirtualStart != nil {
 			u.VirtualStart = timestamppb.New(*v.VirtualStart)
@@ -512,4 +515,19 @@ func (s *ContestService) ListContestSubmissions(ctx context.Context, req *v1.Lis
 		})
 	}
 	return resp, nil
+}
+
+// CalculateContestRating 计算比赛积分
+func (s *ContestService) CalculateContestRating(ctx context.Context, req *v1.CalculateContestRatingRequest) (*emptypb.Empty, error) {
+	_, role := auth.GetUserID(ctx)
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	// 仅管理员有权限计算比赛积分
+	if !biz.CheckAccess(role, biz.ResourceContest) || !strings.Contains(contest.Feature, biz.ContestFeatureRated) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.uc.CalculateContestRating(ctx, contest)
+	return &emptypb.Empty{}, err
 }

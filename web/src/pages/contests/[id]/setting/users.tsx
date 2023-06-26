@@ -1,10 +1,11 @@
-import { batchCreateContestUsers, createContestUser, listContestUsers, updateContestUser } from '@/api/contest';
+import { batchCreateContestUsers, calculateContestRating, createContestUser, listContestUsers, updateContestUser } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Radio, Space, Table } from '@arco-design/web-react';
+import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Space, Table, Typography } from '@arco-design/web-react';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
 import locale from '../locale';
 import user from '@/store/reducers/user';
+import PermissionWrapper from '@/components/PermissionWrapper';
 
 enum  ContestUserRole {
   ROLE_OFFICIAL_PLAYER = 'ROLE_OFFICIAL_PLAYER',
@@ -215,6 +216,29 @@ function Users() {
       filterMultiple: false,
     },
     {
+      title: 'Δ',
+      dataIndex: 'newRating',
+      align: 'center' as 'center',
+      render: (_, record) => {
+        const changed = record.newRating - record.oldRating;
+        return changed > 0 ? (
+          <Typography.Text type='success' bold>+{changed}</Typography.Text>
+        ) : (
+          <Typography.Text type='secondary' bold>{changed}</Typography.Text>
+        );
+      }
+    },
+    {
+      title: t['setting.users.rating'],
+      dataIndex: 'rating',
+      align: 'center' as 'center',
+      render: (_, record) => (
+        <div>
+          <span>{record.oldRating} → {record.newRating}</span>
+        </div>
+      ),
+    },
+    {
       title: t['setting.users.operation'],
       dataIndex: 'operation',
       align: 'center' as 'center',
@@ -261,10 +285,36 @@ function Users() {
     setUpdateModal({visible: false, record: {}});
     fetchData();
   }
+  function onCalculateRating() {
+    calculateContestRating(contest.id).then(res => {
+      Message.success('已更新');
+      fetchData();
+    });
+  }
   return (
     <Card>
-      <CreateUserModal callback={fetchData} />
-      <UpdateUserModal visible={updateModal.visible} record={updateModal.record} callback={() => updateCallback()} />
+      <div style={{marginBottom: '10px'}}>
+        <Space>
+          <CreateUserModal callback={fetchData} />
+          <UpdateUserModal visible={updateModal.visible} record={updateModal.record} callback={() => updateCallback()} />
+          {
+            contest.feature.includes('rated') && (
+              <PermissionWrapper
+                requiredPermissions={[{resource: 'contest', actions: ['write']}]}
+              >
+                <Popconfirm
+                  focusLock
+                  title='Rated'
+                  content='确定将计算本场比赛参赛用户的积分'
+                  onOk={onCalculateRating}
+                >
+                  <Button type='primary' status='warning'>Rated</Button>
+                </Popconfirm>
+              </PermissionWrapper>
+            )
+          }
+        </Space>
+      </div>
       <Table
         rowKey='id'
         loading={loading}
