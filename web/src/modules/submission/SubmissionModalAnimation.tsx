@@ -44,9 +44,11 @@ const SubmissionModalAnimation = function(props: any, ref: any) {
       onCancel={onCancel}
     >
       <h2 style={{textAlign: 'center'}}><SubmissionVerdict icon={true} verdict={submission.verdict}/></h2>
-      <Progress percent={status.total === 0 ? 0 : parseInt((status.current * 100 / status.total).toFixed(0))} width='100%' />
-      { !isRunning && (
-        <Link href={`/submissions/${submission.id}`} target='_blank'>查看详情</Link>
+      {isRunning && <Progress percent={status.total === 0 ? 0 : parseInt((status.current * 100 / status.total).toFixed(0))} width='100%' />}
+      {!isRunning && (
+        <div style={{textAlign: 'center'}}>
+          <Link href={`/submissions/${submission.id}`} target='_blank'>查看详情</Link>
+        </div>
       )}
     </Modal>
   );

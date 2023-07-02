@@ -397,6 +397,29 @@ func (s *ContestService) CreateContestUser(ctx context.Context, req *v1.CreateCo
 	}, nil
 }
 
+// GetContestUser 获取比赛用户
+func (s *ContestService) GetContestUser(ctx context.Context, req *v1.GetContestUserRequest) (*v1.ContestUser, error) {
+	_, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	contestUser := s.uc.GetContestUser(ctx, int(req.ContestId), int(req.UserId))
+	if contestUser == nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	cu := &v1.ContestUser{
+		Id:             int32(contestUser.ID),
+		Name:           contestUser.Name,
+		UserId:         int32(contestUser.UserID),
+		UserNickname:   contestUser.UserNickname,
+		SpecialEffects: contestUser.SpecialEffects,
+		Role:           v1.ContestUserRole(contestUser.Role),
+		OldRating:      int32(contestUser.OldRating),
+		NewRating:      int32(contestUser.NewRating),
+	}
+	return cu, nil
+}
+
 // BatchCreateContestUsers 批量添加用户
 func (s *ContestService) BatchCreateContestUsers(ctx context.Context, req *v1.BatchCreateContestUsersRequest) (*v1.BatchCreateContestUsersResponse, error) {
 	return s.uc.BatchCreateContestUsers(ctx, req)
@@ -530,4 +553,13 @@ func (s *ContestService) CalculateContestRating(ctx context.Context, req *v1.Cal
 	}
 	err = s.uc.CalculateContestRating(ctx, contest)
 	return &emptypb.Empty{}, err
+}
+
+// QueryContestSpecialEffects 查询比赛特效
+func (s *ContestService) QueryContestSpecialEffects(ctx context.Context, req *v1.QueryContestSpecialEffectsRequest) (*v1.QueryContestSpecialEffectsResponse, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	return s.uc.QueryContestSpecialEffects(ctx, contest)
 }

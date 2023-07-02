@@ -64,6 +64,10 @@ export function updateContestUser(id, data) {
   return axios.put(`/contests/${id}/users`, data);
 }
 
+export function getContestUser(contestId: number, userId: number) {
+  return axios.get(`/contests/${contestId}/users/${userId}`);
+}
+
 export function exitVirtualContest(id) {
   return axios.post(`/contests/${id}/exit_virtual`, {});
 }
@@ -78,4 +82,8 @@ export function listContestSubmissions(id, params) {
 
 export function calculateContestRating(id: number) {
   return axios.post(`/contests/${id}/calculate_rating`, {});
+}
+
+export function queryContestSpecialEffects(id: number) {
+  return axios.get(`/contests/${id}/special_effects`);
 }

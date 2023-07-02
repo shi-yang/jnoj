@@ -4,9 +4,11 @@ import (
 	"context"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/internal/middleware/auth"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // Contest is a Contest model.
@@ -368,4 +370,47 @@ func (c *ContestUsecase) CalculateContestRating(ctx context.Context, contest *Co
 		})
 	}
 	return c.repo.SaveContestRating(ctx, contestUsers)
+}
+
+// QueryContestSpecialEffects .
+func (c *ContestUsecase) QueryContestSpecialEffects(ctx context.Context, contest *Contest) (*v1.QueryContestSpecialEffectsResponse, error) {
+	userId, _ := auth.GetUserID(ctx)
+	uc := c.repo.GetContestUser(ctx, contest.ID, userId)
+	if uc == nil || contest.Type == ContestTypeOI {
+		return nil, nil
+	}
+	res := &v1.QueryContestSpecialEffectsResponse{
+		ContestName:     contest.Name,
+		UserName:        uc.Name,
+		ContestDuration: durationpb.New(contest.EndTime.Sub(contest.StartTime)),
+	}
+	if res.UserName == "" {
+		res.UserName = uc.UserNickname
+	}
+	if strings.Contains(uc.SpecialEffects, ContestUserSpecialEffects) {
+		return nil, nil
+	}
+	// 判断是否满足AK条件
+	submissions, _ := c.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
+		UserId:     int32(userId),
+		EntityId:   int32(contest.ID),
+		EntityType: SubmissionEntityTypeContest,
+		Verdict:    []int32{SubmissionVerdictAccepted},
+	})
+	var akTime time.Time
+	submissionProblem := make(map[int]struct{})
+	for _, s := range submissions {
+		submissionProblem[s.ProblemID] = struct{}{}
+		// 记录AK时间
+		if s.CreatedAt.Before(contest.EndTime) && akTime.Before(s.CreatedAt) {
+			akTime = s.CreatedAt
+		}
+	}
+	problems, _ := c.repo.ListContestProblems(ctx, contest.ID)
+	if len(problems) == len(submissionProblem) {
+		uc.SpecialEffects = ContestUserSpecialEffects
+		res.AkTime = durationpb.New(akTime.Sub(contest.StartTime))
+		c.repo.UpdateContestUser(ctx, uc)
+	}
+	return res, nil
 }

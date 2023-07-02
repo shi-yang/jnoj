@@ -34,12 +34,14 @@ const OperationContestServiceGetContest = "/jnoj.interface.v1.ContestService/Get
 const OperationContestServiceGetContestProblem = "/jnoj.interface.v1.ContestService/GetContestProblem"
 const OperationContestServiceGetContestProblemLanguage = "/jnoj.interface.v1.ContestService/GetContestProblemLanguage"
 const OperationContestServiceGetContestStanding = "/jnoj.interface.v1.ContestService/GetContestStanding"
+const OperationContestServiceGetContestUser = "/jnoj.interface.v1.ContestService/GetContestUser"
 const OperationContestServiceListContestAllSubmissions = "/jnoj.interface.v1.ContestService/ListContestAllSubmissions"
 const OperationContestServiceListContestProblemLanguages = "/jnoj.interface.v1.ContestService/ListContestProblemLanguages"
 const OperationContestServiceListContestProblems = "/jnoj.interface.v1.ContestService/ListContestProblems"
 const OperationContestServiceListContestSubmissions = "/jnoj.interface.v1.ContestService/ListContestSubmissions"
 const OperationContestServiceListContestUsers = "/jnoj.interface.v1.ContestService/ListContestUsers"
 const OperationContestServiceListContests = "/jnoj.interface.v1.ContestService/ListContests"
+const OperationContestServiceQueryContestSpecialEffects = "/jnoj.interface.v1.ContestService/QueryContestSpecialEffects"
 const OperationContestServiceUpdateContest = "/jnoj.interface.v1.ContestService/UpdateContest"
 const OperationContestServiceUpdateContestUser = "/jnoj.interface.v1.ContestService/UpdateContestUser"
 
@@ -55,12 +57,14 @@ type ContestServiceHTTPServer interface {
 	GetContestProblem(context.Context, *GetContestProblemRequest) (*ContestProblem, error)
 	GetContestProblemLanguage(context.Context, *GetContestProblemLanguageRequest) (*ContestProblemLanguage, error)
 	GetContestStanding(context.Context, *GetContestStandingRequest) (*GetContestStandingResponse, error)
+	GetContestUser(context.Context, *GetContestUserRequest) (*ContestUser, error)
 	ListContestAllSubmissions(context.Context, *ListContestAllSubmissionsRequest) (*ListContestAllSubmissionsResponse, error)
 	ListContestProblemLanguages(context.Context, *ListContestProblemLanguagesRequest) (*ListContestProblemLanguagesResponse, error)
 	ListContestProblems(context.Context, *ListContestProblemsRequest) (*ListContestProblemsResponse, error)
 	ListContestSubmissions(context.Context, *ListContestSubmissionsRequest) (*ListContestSubmissionsResponse, error)
 	ListContestUsers(context.Context, *ListContestUsersRequest) (*ListContestUsersResponse, error)
 	ListContests(context.Context, *ListContestsRequest) (*ListContestsResponse, error)
+	QueryContestSpecialEffects(context.Context, *QueryContestSpecialEffectsRequest) (*QueryContestSpecialEffectsResponse, error)
 	UpdateContest(context.Context, *UpdateContestRequest) (*Contest, error)
 	UpdateContestUser(context.Context, *UpdateContestUserRequest) (*ContestUser, error)
 }
@@ -80,11 +84,13 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ContestService/UpdateContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ExitVirtualContest", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestUsers", auth.Guest())
+	s.Use("/jnoj.interface.v1.ContestService/GetContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestAllSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/ListContestProblemLanguages", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/GetContestProblemLanguage", auth.Guest())
 	s.Use("/jnoj.interface.v1.ContestService/CalculateContestRating", auth.User())
+	s.Use("/jnoj.interface.v1.ContestService/QueryContestSpecialEffects", auth.User())
 	r := s.Route("/")
 	r.GET("/contests", _ContestService_ListContests0_HTTP_Handler(srv))
 	r.GET("/contests/{id}", _ContestService_GetContest0_HTTP_Handler(srv))
@@ -99,12 +105,14 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.GET("/contests/{id}/problems/{number}/languages/{language}", _ContestService_GetContestProblemLanguage0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
+	r.GET("/contests/{contest_id}/users/{user_id}", _ContestService_GetContestUser0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/batch_users", _ContestService_BatchCreateContestUsers0_HTTP_Handler(srv))
 	r.PUT("/contests/{contest_id}/users", _ContestService_UpdateContestUser0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/exit_virtual", _ContestService_ExitVirtualContest0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/all_submissions", _ContestService_ListContestAllSubmissions0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/submissions", _ContestService_ListContestSubmissions0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/calculate_rating", _ContestService_CalculateContestRating0_HTTP_Handler(srv))
+	r.GET("/contests/{contest_id}/special_effects", _ContestService_QueryContestSpecialEffects0_HTTP_Handler(srv))
 }
 
 func _ContestService_ListContests0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
@@ -387,6 +395,28 @@ func _ContestService_CreateContestUser0_HTTP_Handler(srv ContestServiceHTTPServe
 	}
 }
 
+func _ContestService_GetContestUser0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetContestUserRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceGetContestUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetContestUser(ctx, req.(*GetContestUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ContestUser)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ContestService_BatchCreateContestUsers0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in BatchCreateContestUsersRequest
@@ -519,6 +549,28 @@ func _ContestService_CalculateContestRating0_HTTP_Handler(srv ContestServiceHTTP
 	}
 }
 
+func _ContestService_QueryContestSpecialEffects0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in QueryContestSpecialEffectsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceQueryContestSpecialEffects)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.QueryContestSpecialEffects(ctx, req.(*QueryContestSpecialEffectsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*QueryContestSpecialEffectsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ContestServiceHTTPClient interface {
 	BatchCreateContestUsers(ctx context.Context, req *BatchCreateContestUsersRequest, opts ...http.CallOption) (rsp *BatchCreateContestUsersResponse, err error)
 	CalculateContestRating(ctx context.Context, req *CalculateContestRatingRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -531,12 +583,14 @@ type ContestServiceHTTPClient interface {
 	GetContestProblem(ctx context.Context, req *GetContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	GetContestProblemLanguage(ctx context.Context, req *GetContestProblemLanguageRequest, opts ...http.CallOption) (rsp *ContestProblemLanguage, err error)
 	GetContestStanding(ctx context.Context, req *GetContestStandingRequest, opts ...http.CallOption) (rsp *GetContestStandingResponse, err error)
+	GetContestUser(ctx context.Context, req *GetContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
 	ListContestAllSubmissions(ctx context.Context, req *ListContestAllSubmissionsRequest, opts ...http.CallOption) (rsp *ListContestAllSubmissionsResponse, err error)
 	ListContestProblemLanguages(ctx context.Context, req *ListContestProblemLanguagesRequest, opts ...http.CallOption) (rsp *ListContestProblemLanguagesResponse, err error)
 	ListContestProblems(ctx context.Context, req *ListContestProblemsRequest, opts ...http.CallOption) (rsp *ListContestProblemsResponse, err error)
 	ListContestSubmissions(ctx context.Context, req *ListContestSubmissionsRequest, opts ...http.CallOption) (rsp *ListContestSubmissionsResponse, err error)
 	ListContestUsers(ctx context.Context, req *ListContestUsersRequest, opts ...http.CallOption) (rsp *ListContestUsersResponse, err error)
 	ListContests(ctx context.Context, req *ListContestsRequest, opts ...http.CallOption) (rsp *ListContestsResponse, err error)
+	QueryContestSpecialEffects(ctx context.Context, req *QueryContestSpecialEffectsRequest, opts ...http.CallOption) (rsp *QueryContestSpecialEffectsResponse, err error)
 	UpdateContest(ctx context.Context, req *UpdateContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	UpdateContestUser(ctx context.Context, req *UpdateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
 }
@@ -692,6 +746,19 @@ func (c *ContestServiceHTTPClientImpl) GetContestStanding(ctx context.Context, i
 	return &out, err
 }
 
+func (c *ContestServiceHTTPClientImpl) GetContestUser(ctx context.Context, in *GetContestUserRequest, opts ...http.CallOption) (*ContestUser, error) {
+	var out ContestUser
+	pattern := "/contests/{contest_id}/users/{user_id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationContestServiceGetContestUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *ContestServiceHTTPClientImpl) ListContestAllSubmissions(ctx context.Context, in *ListContestAllSubmissionsRequest, opts ...http.CallOption) (*ListContestAllSubmissionsResponse, error) {
 	var out ListContestAllSubmissionsResponse
 	pattern := "/contests/{contest_id}/all_submissions"
@@ -762,6 +829,19 @@ func (c *ContestServiceHTTPClientImpl) ListContests(ctx context.Context, in *Lis
 	pattern := "/contests"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceListContests))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) QueryContestSpecialEffects(ctx context.Context, in *QueryContestSpecialEffectsRequest, opts ...http.CallOption) (*QueryContestSpecialEffectsResponse, error) {
+	var out QueryContestSpecialEffectsResponse
+	pattern := "/contests/{contest_id}/special_effects"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationContestServiceQueryContestSpecialEffects))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

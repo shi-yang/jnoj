@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -92,6 +93,12 @@ service ContestService {
             body: "*"
         };
     }
+    // 获取比赛用户信息
+    rpc GetContestUser (GetContestUserRequest) returns (ContestUser) {
+        option (google.api.http) = {
+            get: "/contests/{contest_id}/users/{user_id}"
+        };
+    }
     // 批量添加用户
     rpc BatchCreateContestUsers (BatchCreateContestUsersRequest) returns (BatchCreateContestUsersResponse) {
         option (google.api.http) = {
@@ -104,7 +111,7 @@ service ContestService {
         option (google.api.http) = {
             put: "/contests/{contest_id}/users"
             body: "*"
-        };     
+        };
     }
     // 退出虚拟竞赛
     rpc ExitVirtualContest (ExitVirtualContestRequest) returns (google.protobuf.Empty) {
@@ -130,6 +137,12 @@ service ContestService {
         option (google.api.http) = {
             post: "/contests/{contest_id}/calculate_rating"
             body: "*"
+        };
+    }
+    // 查询比赛特效
+    rpc QueryContestSpecialEffects (QueryContestSpecialEffectsRequest) returns (QueryContestSpecialEffectsResponse) {
+        option (google.api.http) = {
+            get: "/contests/{contest_id}/special_effects"
         };
     }
 }
@@ -356,6 +369,7 @@ message ContestUser {
     int32 old_rating = 6;
     int32 new_rating = 7;
     ContestUserRole role = 8;
+    string special_effects = 9;
 }
 
 message ListContestUsersRequest {
@@ -375,6 +389,11 @@ message CreateContestUserRequest {
     int32 contest_id = 1;
     string invitation_code = 2;
     string name = 3 [(validate.rules).string = {max_len: 64}];
+}
+
+message GetContestUserRequest {
+    int32 contest_id = 1;
+    int32 user_id = 2;
 }
 
 message BatchCreateContestUsersRequest {
@@ -486,4 +505,15 @@ message GetContestProblemLanguageRequest {
 
 message CalculateContestRatingRequest {
     int32 contest_id = 1;
+}
+
+message QueryContestSpecialEffectsRequest {
+    int32 contest_id = 1;
+}
+
+message QueryContestSpecialEffectsResponse {
+    string contest_name = 1;
+    string user_name = 2;
+    google.protobuf.Duration contestDuration = 3;
+    optional google.protobuf.Duration ak_time = 4;
 }

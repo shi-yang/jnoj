@@ -61,6 +61,10 @@ CREATE TABLE `contest_user` (
   `role` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `virtual_start` DATETIME NULL DEFAULT NULL,
   `virtual_end` DATETIME NULL DEFAULT NULL,
+  `old_rating` int NOT NULL DEFAULT '0',
+  `new_rating` int NOT NULL DEFAULT '0',
+  `rated_at` datetime NULL DEFAULT NULL,
+  `special_effects` varchar(255) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

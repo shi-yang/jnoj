@@ -9,6 +9,7 @@ import { IconCheckCircle, IconCloseCircle } from '@arco-design/web-react/icon';
 import React, { useRef, useState, useEffect } from 'react';
 import locale from './locale';
 import SubmissionModalAnimation from './SubmissionModalAnimation';
+import ContestAnimationModal from '../contest/ContestAnimationModal';
 
 interface RecentlySubmittedProps {
   problemId: number,
@@ -17,6 +18,9 @@ interface RecentlySubmittedProps {
   entityId?: number,
   entityType?: number,
 }
+
+// 重连间隔时间，单位毫秒
+const wsReconnectInterval = 2000; 
 
 const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const t = useLocale(locale);
@@ -27,11 +31,9 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const [btnContent, setBtnContent] = useState('');
   const user = useAppSelector(userInfo);
   const submissionModalAnimationRef = useRef(null);
+  const contestAnimationModalRef = useRef(null);
   // websocket 即时向用户反馈测评进度
-  useEffect(() => {
-    if (!user.id) {
-      return;
-    }
+  function wsConnect() {
     ws.current = new WebSocket(process.env.NEXT_PUBLIC_API_WS_URL + '?uid=' + user.id);
     ws.current.onmessage = (e) => {
       if (e.data === '') {
@@ -50,14 +52,27 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
               setSubmission(res.data);
               setBtnContent('');
               props.animation && submissionModalAnimationRef.current.done(res.data);
+              // 查询是否有AK
+              if (res.data.verdict === 4 && props.entityType === 1) {
+                contestAnimationModalRef.current.run(props.entityId);
+              }
             });
         }
       }
     };
+    ws.current.onclose = () => {
+      setTimeout(wsConnect, wsReconnectInterval); // 重连
+    };
+  }
+  useEffect(() => {
+    if (!user.id) {
+      return;
+    }
+    wsConnect();
     return () => {
       ws.current?.close();
     };
-  }, [ws, user]);
+  }, [ws, user.id]);
   function progressAnimation(msg: string) {
     // 处理 testing on 1/3 成进度
     const str = msg;
@@ -107,6 +122,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   }
   return (
     <>
+      { props.entityType === 1 && <ContestAnimationModal ref={contestAnimationModalRef} />}
       <SubmissionModalAnimation ref={submissionModalAnimationRef} />
       {
         submission.id !== 0 &&
