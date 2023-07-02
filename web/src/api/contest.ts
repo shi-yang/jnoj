@@ -87,3 +87,7 @@ export function calculateContestRating(id: number) {
 export function queryContestSpecialEffects(id: number) {
   return axios.get(`/contests/${id}/special_effects`);
 }
+
+export function listContestRatingChanges(id: number, params) {
+  return axios.get(`/contests/${id}/rating_changes`, {params});
+}

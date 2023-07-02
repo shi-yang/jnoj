@@ -4733,6 +4733,256 @@ var _ interface {
 	ErrorName() string
 } = QueryContestSpecialEffectsResponseValidationError{}
 
+// Validate checks the field values on ListContestRatingChangesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListContestRatingChangesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListContestRatingChangesRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListContestRatingChangesRequestMultiError, or nil if none found.
+func (m *ListContestRatingChangesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListContestRatingChangesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ContestId
+
+	// no validation rules for Page
+
+	// no validation rules for PerPage
+
+	if len(errors) > 0 {
+		return ListContestRatingChangesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListContestRatingChangesRequestMultiError is an error wrapping multiple
+// validation errors returned by ListContestRatingChangesRequest.ValidateAll()
+// if the designated constraints aren't met.
+type ListContestRatingChangesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListContestRatingChangesRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListContestRatingChangesRequestMultiError) AllErrors() []error { return m }
+
+// ListContestRatingChangesRequestValidationError is the validation error
+// returned by ListContestRatingChangesRequest.Validate if the designated
+// constraints aren't met.
+type ListContestRatingChangesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListContestRatingChangesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListContestRatingChangesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListContestRatingChangesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListContestRatingChangesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListContestRatingChangesRequestValidationError) ErrorName() string {
+	return "ListContestRatingChangesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListContestRatingChangesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListContestRatingChangesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListContestRatingChangesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListContestRatingChangesRequestValidationError{}
+
+// Validate checks the field values on ListContestRatingChangesResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListContestRatingChangesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListContestRatingChangesResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListContestRatingChangesResponseMultiError, or nil if none found.
+func (m *ListContestRatingChangesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListContestRatingChangesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListContestRatingChangesResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListContestRatingChangesResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListContestRatingChangesResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListContestRatingChangesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListContestRatingChangesResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// ListContestRatingChangesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListContestRatingChangesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListContestRatingChangesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListContestRatingChangesResponseMultiError) AllErrors() []error { return m }
+
+// ListContestRatingChangesResponseValidationError is the validation error
+// returned by ListContestRatingChangesResponse.Validate if the designated
+// constraints aren't met.
+type ListContestRatingChangesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListContestRatingChangesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListContestRatingChangesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListContestRatingChangesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListContestRatingChangesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListContestRatingChangesResponseValidationError) ErrorName() string {
+	return "ListContestRatingChangesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListContestRatingChangesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListContestRatingChangesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListContestRatingChangesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListContestRatingChangesResponseValidationError{}
+
 // Validate checks the field values on ContestStandingUser_Problem with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

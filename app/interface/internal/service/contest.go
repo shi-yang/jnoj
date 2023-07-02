@@ -563,3 +563,12 @@ func (s *ContestService) QueryContestSpecialEffects(ctx context.Context, req *v1
 	}
 	return s.uc.QueryContestSpecialEffects(ctx, contest)
 }
+
+// ListContestRatingChange 获取等级分变化
+func (s *ContestService) ListContestRatingChanges(ctx context.Context, req *v1.ListContestRatingChangesRequest) (*v1.ListContestRatingChangesResponse, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	return s.uc.ListContestRatingChanges(ctx, contest, req.Page, req.PerPage)
+}

@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 const Info = lazy(() => import('./info'));
 const Problem = lazy(() => import('./problem'));
 const Setting = lazy(() => import('./setting'));
-const Standings = lazy(() => import('./standings'));
+const Standings = lazy(() => import('./standings/index'));
 const Submission = lazy(() => import('./submission'));
 const Editorial = lazy(() => import('./editorial'));
 

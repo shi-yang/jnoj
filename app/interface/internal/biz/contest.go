@@ -339,15 +339,15 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 }
 
 // CalculateContestRating .
-func (c *ContestUsecase) CalculateContestRating(ctx context.Context, contest *Contest) error {
-	users, _ := c.GetContestStanding(ctx, contest, -1, -1, true, false)
+func (uc *ContestUsecase) CalculateContestRating(ctx context.Context, contest *Contest) error {
+	users, _ := uc.GetContestStanding(ctx, contest, -1, -1, true, false)
 	players := make([]*ContestRatedPlayer, 0)
 	contestUsers := make([]*ContestUser, 0)
 	for _, user := range users {
 		if !user.IsRank {
 			continue
 		}
-		oldRating := c.repo.GetContestUserRating(ctx, user.UserId)
+		oldRating := uc.repo.GetContestUserRating(ctx, user.UserId)
 		if oldRating < 0 {
 			oldRating = ContestInitialRating
 		}
@@ -369,29 +369,29 @@ func (c *ContestUsecase) CalculateContestRating(ctx context.Context, contest *Co
 			RatedAt:   &now,
 		})
 	}
-	return c.repo.SaveContestRating(ctx, contestUsers)
+	return uc.repo.SaveContestRating(ctx, contestUsers)
 }
 
 // QueryContestSpecialEffects .
-func (c *ContestUsecase) QueryContestSpecialEffects(ctx context.Context, contest *Contest) (*v1.QueryContestSpecialEffectsResponse, error) {
+func (uc *ContestUsecase) QueryContestSpecialEffects(ctx context.Context, contest *Contest) (*v1.QueryContestSpecialEffectsResponse, error) {
 	userId, _ := auth.GetUserID(ctx)
-	uc := c.repo.GetContestUser(ctx, contest.ID, userId)
-	if uc == nil || contest.Type == ContestTypeOI {
+	cu := uc.repo.GetContestUser(ctx, contest.ID, userId)
+	if cu == nil || contest.Type == ContestTypeOI {
 		return nil, nil
 	}
 	res := &v1.QueryContestSpecialEffectsResponse{
 		ContestName:     contest.Name,
-		UserName:        uc.Name,
+		UserName:        cu.Name,
 		ContestDuration: durationpb.New(contest.EndTime.Sub(contest.StartTime)),
 	}
 	if res.UserName == "" {
-		res.UserName = uc.UserNickname
+		res.UserName = cu.UserNickname
 	}
-	if strings.Contains(uc.SpecialEffects, ContestUserSpecialEffects) {
+	if strings.Contains(cu.SpecialEffects, ContestUserSpecialEffects) {
 		return nil, nil
 	}
 	// 判断是否满足AK条件
-	submissions, _ := c.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
+	submissions, _ := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
 		UserId:     int32(userId),
 		EntityId:   int32(contest.ID),
 		EntityType: SubmissionEntityTypeContest,
@@ -406,11 +406,41 @@ func (c *ContestUsecase) QueryContestSpecialEffects(ctx context.Context, contest
 			akTime = s.CreatedAt
 		}
 	}
-	problems, _ := c.repo.ListContestProblems(ctx, contest.ID)
+	problems, _ := uc.repo.ListContestProblems(ctx, contest.ID)
 	if len(problems) == len(submissionProblem) {
-		uc.SpecialEffects = ContestUserSpecialEffects
+		cu.SpecialEffects = ContestUserSpecialEffects
 		res.AkTime = durationpb.New(akTime.Sub(contest.StartTime))
-		c.repo.UpdateContestUser(ctx, uc)
+		uc.repo.UpdateContestUser(ctx, cu)
 	}
 	return res, nil
+}
+
+// ListContestRatingChange 获取等级分变化
+func (uc *ContestUsecase) ListContestRatingChanges(ctx context.Context, contest *Contest, page, pageSize int32) (*v1.ListContestRatingChangesResponse, error) {
+	users, _ := uc.repo.ListContestUsers(ctx, &v1.ListContestUsersRequest{
+		ContestId: int32(contest.ID),
+		Role:      v1.ContestUserRole_ROLE_OFFICIAL_PLAYER.Enum(),
+	})
+	standingUsers, count := uc.GetContestStanding(ctx, contest, int(page), int(pageSize), true, false)
+	resp := new(v1.ListContestRatingChangesResponse)
+	resp.Total = int64(count)
+	resp.Data = make([]*v1.ContestUser, 0)
+	// 按照排名的顺寻返回等级分变化
+	for _, user := range standingUsers {
+		for _, c := range users {
+			if user.UserId == c.UserID {
+				resp.Data = append(resp.Data, &v1.ContestUser{
+					Id:           int32(c.ID),
+					Name:         c.Name,
+					UserId:       int32(c.UserID),
+					UserNickname: c.UserNickname,
+					NewRating:    int32(c.NewRating),
+					OldRating:    int32(c.OldRating),
+					Role:         v1.ContestUserRole(c.Role),
+				})
+				break
+			}
+		}
+	}
+	return resp, nil
 }
