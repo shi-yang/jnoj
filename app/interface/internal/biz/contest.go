@@ -347,7 +347,7 @@ func (uc *ContestUsecase) CalculateContestRating(ctx context.Context, contest *C
 		if !user.IsRank {
 			continue
 		}
-		oldRating := uc.repo.GetContestUserRating(ctx, user.UserId)
+		oldRating := uc.repo.GetContestUserRating(ctx, user.UserId, contest.ID)
 		if oldRating < 0 {
 			oldRating = ContestInitialRating
 		}

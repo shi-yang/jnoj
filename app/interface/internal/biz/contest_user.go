@@ -36,7 +36,7 @@ type ContestUserRepo interface {
 	GetContestUser(context.Context, int, int) *ContestUser
 	UpdateContestUser(context.Context, *ContestUser) (*ContestUser, error)
 	SaveContestRating(ctx context.Context, users []*ContestUser) error
-	GetContestUserRating(ctx context.Context, uid int) int
+	GetContestUserRating(ctx context.Context, uid int, cid int) int
 }
 
 // ListContestUsers list ContestUser

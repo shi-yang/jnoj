@@ -181,12 +181,13 @@ func (r *contestRepo) DeleteContestUser(ctx context.Context, id int) error {
 }
 
 // GetContestUserRating 查询用户竞赛等级分
-func (r *contestRepo) GetContestUserRating(ctx context.Context, uid int) int {
+func (r *contestRepo) GetContestUserRating(ctx context.Context, uid int, cid int) int {
 	var user ContestUser
 	err := r.data.db.WithContext(ctx).
 		Select("new_rating").
 		Model(&ContestUser{}).
 		Where("user_id = ?", uid).
+		Where("contest_id != ?", cid).
 		Where("rated_at is not null").
 		Order("rated_at desc").
 		First(&user).Error
