@@ -140,7 +140,12 @@ func (s UserService) GetUserProfileCalendar(ctx context.Context, req *v1.GetUser
 	return s.uc.GetUserProfileCalendar(ctx, req)
 }
 
-// GetUserProfileProblemSolved 用户主页提交统计
+// GetUserProfileProblemSolved 用户主页做题进度统计
 func (s UserService) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	return s.uc.GetUserProfileProblemSolved(ctx, req)
+}
+
+// GetUserProfileCount 用户主页-统计
+func (s UserService) GetUserProfileCount(ctx context.Context, req *v1.GetUserProfileCountRequest) (*v1.GetUserProfileCountResponse, error) {
+	return s.uc.GetUserProfileCount(ctx, int(req.Id))
 }

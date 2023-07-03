@@ -1970,6 +1970,217 @@ var _ interface {
 	ErrorName() string
 } = GetUserProfileProblemSolvedResponseValidationError{}
 
+// Validate checks the field values on GetUserProfileCountRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserProfileCountRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserProfileCountRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserProfileCountRequestMultiError, or nil if none found.
+func (m *GetUserProfileCountRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserProfileCountRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return GetUserProfileCountRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserProfileCountRequestMultiError is an error wrapping multiple
+// validation errors returned by GetUserProfileCountRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetUserProfileCountRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserProfileCountRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserProfileCountRequestMultiError) AllErrors() []error { return m }
+
+// GetUserProfileCountRequestValidationError is the validation error returned
+// by GetUserProfileCountRequest.Validate if the designated constraints aren't met.
+type GetUserProfileCountRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserProfileCountRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserProfileCountRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserProfileCountRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserProfileCountRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserProfileCountRequestValidationError) ErrorName() string {
+	return "GetUserProfileCountRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserProfileCountRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserProfileCountRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserProfileCountRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserProfileCountRequestValidationError{}
+
+// Validate checks the field values on GetUserProfileCountResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserProfileCountResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserProfileCountResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserProfileCountResponseMultiError, or nil if none found.
+func (m *GetUserProfileCountResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserProfileCountResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemSolved
+
+	// no validation rules for ContestRating
+
+	if len(errors) > 0 {
+		return GetUserProfileCountResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserProfileCountResponseMultiError is an error wrapping multiple
+// validation errors returned by GetUserProfileCountResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetUserProfileCountResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserProfileCountResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserProfileCountResponseMultiError) AllErrors() []error { return m }
+
+// GetUserProfileCountResponseValidationError is the validation error returned
+// by GetUserProfileCountResponse.Validate if the designated constraints
+// aren't met.
+type GetUserProfileCountResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserProfileCountResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserProfileCountResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserProfileCountResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserProfileCountResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserProfileCountResponseValidationError) ErrorName() string {
+	return "GetUserProfileCountResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserProfileCountResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserProfileCountResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserProfileCountResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserProfileCountResponseValidationError{}
+
 // Validate checks the field values on
 // GetUserProfileCalendarResponse_ProfileCalendar with the rules defined in
 // the proto definition for this message. If any rules are violated, the first

@@ -1,17 +1,56 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { getUserProfileCalendar, getUserProfileProblemSolved, getUsers } from '@/api/user';
+import { getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Collapse, Divider, Grid, Link, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Card, Collapse, Divider, Grid, Link, List, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
-import SubmissionList from '@/modules/submission/SubmissionList';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
 import PassValidIcon from '@/assets/icon/pass-valid.svg';
 import VIPIcon from '@/assets/icon/vip.svg';
+import { listSubmissions } from '@/api/submission';
+import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
+import { FormatTime } from '@/utils/format';
+import StatisticCard from '@/components/StatisticCard';
+import { IconFile, IconTrophy } from '@arco-design/web-react/icon';
+
+function RecentlySubmission({userId}: {userId: number}) {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const params = {
+      page: 1,
+      perPage: 10,
+      userId: userId,
+      entityType: 0,
+    };
+    listSubmissions(params).then(res => {
+      setData(res.data.data);
+      console.log(res.data.data);
+    });
+  }, [userId]);
+  return (
+    <List
+      dataSource={data}
+      render={(item, index) => (
+        <List.Item key={index}>
+          <Link href={`/submissions/${item.id}`} target='_blank' style={{display: 'block'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              {item.problemName}
+              <Space >
+                <SubmissionVerdict verdict={item.verdict} />
+                <Divider type='vertical' />
+                {FormatTime(item.createdAt)}
+              </Space>
+            </div>
+          </Link>
+        </List.Item>
+      )}
+    />
+  );
+}
 
 function renderItemWithResponsive(item1: React.ReactNode, item2: React.ReactNode, item3: React.ReactNode) {
   return (
@@ -53,6 +92,11 @@ export default function UserPage() {
   const [profileProblemsets, setProfileProblemsets] = useState([]);
   const [profileContests, setProfileContests] = useState([]);
   const [profileGroups, setProfileGroups] = useState([]);
+  const [calendarSelectYear, setCalendarSelectYear] = useState(0);
+  const [profileCount, setProfileCount] = useState({
+    contestRating: 0,
+    problemSolved: 0,
+  });
   const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -70,6 +114,7 @@ export default function UserPage() {
     }
   });
   function onCalendarSelectChange(e) {
+    setCalendarSelectYear(e);
     getUserProfileCalendar(id, { year: e })
       .then(res => {
         const { data } = res;
@@ -128,6 +173,12 @@ export default function UserPage() {
       .then(res => {
         setProfileProblemsets(res.data.problemsets);
       });
+    getUserProfileCount(Number(id)).then(res => {
+      setProfileCount({
+        contestRating: res.data.contestRating,
+        problemSolved: res.data.problemSolved,
+      });
+    });
   }, [id]);
   return (
     <>
@@ -152,7 +203,27 @@ export default function UserPage() {
             </Tooltip>
           }
         </div>
-        <Card 
+        <Card>
+          <StatisticCard
+            items={[
+              {
+                icon: <IconFile fontSize={30} />,
+                title: '解题数量',
+                count: profileCount.problemSolved,
+                loading: false,
+              },
+              {
+                icon: <IconTrophy fontSize={30} />,
+                title: '竞赛分数',
+                count: profileCount.contestRating,
+                loading: false,
+              }
+            ]}
+          />
+        </Card>
+        <Divider type='horizontal' />
+        <Card
+          title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
           extra={
             <div>
               <Space>
@@ -170,12 +241,17 @@ export default function UserPage() {
             </div>
           }
         >
+          <Space style={{minWidth: '355px', marginBottom: '20px'}}>
+            <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
+            <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
+            <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
+          </Space>
           <HeatMap
             value={profileCalendar.submissionCalendar}
             width={'100%'}
             height={250}
             weekLabels={['日','一','二','三','四','五','六']}
-            monthLabels={['一','二','三','四','五','六','七','八','九','十','十一','十二']}
+            monthLabels={['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']}
             rectSize={21}
             rectRender={(props, data) => {
               return (
@@ -186,11 +262,6 @@ export default function UserPage() {
             }}
             startDate={new Date(profileCalendar.start)}
           />
-          <Space style={{minWidth: '355px'}}>
-            <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
-            <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
-            <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
-          </Space>
         </Card>
         <Divider type='horizontal' />
         <Card
@@ -300,7 +371,7 @@ export default function UserPage() {
         </Card>
         <Divider type='horizontal' />
         <Card title='最近提交' className='mobile-hide'>
-          <SubmissionList userId={Number(id)} />
+          <RecentlySubmission userId={Number(id)} />
         </Card>
       </div>
     </>

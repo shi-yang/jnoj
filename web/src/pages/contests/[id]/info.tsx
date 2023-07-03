@@ -2,50 +2,21 @@ import { listContestProblems } from '@/api/contest';
 import { ProblemStatus } from '@/modules/problemsets/list/constants';
 import useLocale from '@/utils/useLocale';
 import {
-  Grid,
   Divider,
-  Skeleton,
   Table,
   TableColumnProps,
   Link,
 } from '@arco-design/web-react';
-import { IconCalendar, IconUser } from '@arco-design/web-react/icon';
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import { IconCalendar, IconCodeSquare, IconInfoCircle, IconUser } from '@arco-design/web-react/icon';
+import React, { useContext, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import ContestContext from './context';
 import locale from './locale';
-import styles from './style/info.module.less';
 import rehypeHighlight from 'rehype-highlight';
 import RegisterContest from '@/modules/contest/RegisterContest';
-const { Row, Col } = Grid;
-
-type StatisticItemType = {
-  icon?: ReactNode;
-  title?: ReactNode;
-  count?: ReactNode;
-  loading?: boolean;
-  unit?: ReactNode;
-};
-
-function StatisticItem(props: StatisticItemType) {
-  const { icon, title, count, loading, unit } = props;
-  return (
-    <div className={styles.item}>
-      <div className={styles.icon}>{icon}</div>
-      <div>
-        <Skeleton loading={loading} text={{ rows: 2, width: 60 }} animation>
-          <div className={styles.title}>{title}</div>
-          <div className={styles.count}>
-            {count}
-            <span className={styles.unit}>{unit}</span>
-          </div>
-        </Skeleton>
-      </div>
-    </div>
-  );
-}
+import StatisticCard from '@/components/StatisticCard';
 
 function Info() {
   const t = useLocale(locale);
@@ -94,42 +65,32 @@ function Info() {
   }, []);
   return (
     <div>
-      <Row>
-        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title={t['info.stat.type']}
-            count={contest.type}
-            loading={loading}
-          />
-        </Col>
-        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title={t['info.stat.runningStatus']}
-            count={t[contest.runningStatus]}
-            loading={loading}
-          />
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title={t['info.stat.problem']}
-            count={problems.length}
-            loading={loading}
-          />
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1} style={{display: 'flex', justifyContent: 'center'}}>
-          <StatisticItem
-            icon={<IconUser />}
-            title={t['info.stat.user']}
-            count={contest.participantCount}
-            loading={loading}
-          />
-        </Col>
-      </Row>
+      <StatisticCard items={[
+        {
+          icon: <IconCalendar fontSize={25} />,
+          title: t['info.stat.type'],
+          count: contest.type,
+          loading: loading,
+        },
+        {
+          icon: <IconInfoCircle fontSize={25} />,
+          title: t['info.stat.runningStatus'],
+          count: t[contest.runningStatus],
+          loading: loading,
+        },
+        {
+          icon: <IconCodeSquare fontSize={25} />,
+          title: t['info.stat.problem'],
+          count: problems.length,
+          loading: loading,
+        },
+        {
+          icon: <IconUser fontSize={25} />,
+          title: t['info.stat.user'],
+          count: contest.participantCount,
+          loading: loading,
+        }
+      ]} />
       <Divider />
       <div style={{ maxWidth: '1200px', margin: '0 auto'}}>
         <Table rowKey={r => r.number} columns={columns} data={problems} pagination={false} />

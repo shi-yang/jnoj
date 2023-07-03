@@ -26,6 +26,7 @@ const OperationUserServiceGetCaptcha = "/jnoj.interface.v1.UserService/GetCaptch
 const OperationUserServiceGetUser = "/jnoj.interface.v1.UserService/GetUser"
 const OperationUserServiceGetUserInfo = "/jnoj.interface.v1.UserService/GetUserInfo"
 const OperationUserServiceGetUserProfileCalendar = "/jnoj.interface.v1.UserService/GetUserProfileCalendar"
+const OperationUserServiceGetUserProfileCount = "/jnoj.interface.v1.UserService/GetUserProfileCount"
 const OperationUserServiceGetUserProfileProblemSolved = "/jnoj.interface.v1.UserService/GetUserProfileProblemSolved"
 const OperationUserServiceLogin = "/jnoj.interface.v1.UserService/Login"
 const OperationUserServiceRegister = "/jnoj.interface.v1.UserService/Register"
@@ -37,6 +38,7 @@ type UserServiceHTTPServer interface {
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetUserInfo(context.Context, *emptypb.Empty) (*GetUserInfoResponse, error)
 	GetUserProfileCalendar(context.Context, *GetUserProfileCalendarRequest) (*GetUserProfileCalendarResponse, error)
+	GetUserProfileCount(context.Context, *GetUserProfileCountRequest) (*GetUserProfileCountResponse, error)
 	GetUserProfileProblemSolved(context.Context, *GetUserProfileProblemSolvedRequest) (*GetUserProfileProblemSolvedResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
@@ -57,6 +59,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}/password", _UserService_UpdateUserPassword0_HTTP_Handler(srv))
+	r.GET("/users/{id}/profile_count", _UserService_GetUserProfileCount0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_calendar", _UserService_GetUserProfileCalendar0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_problemsolved", _UserService_GetUserProfileProblemSolved0_HTTP_Handler(srv))
 }
@@ -203,6 +206,28 @@ func _UserService_UpdateUserPassword0_HTTP_Handler(srv UserServiceHTTPServer) fu
 	}
 }
 
+func _UserService_GetUserProfileCount0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserProfileCountRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceGetUserProfileCount)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserProfileCount(ctx, req.(*GetUserProfileCountRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetUserProfileCountResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _UserService_GetUserProfileCalendar0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetUserProfileCalendarRequest
@@ -252,6 +277,7 @@ type UserServiceHTTPClient interface {
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	GetUserInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetUserInfoResponse, err error)
 	GetUserProfileCalendar(ctx context.Context, req *GetUserProfileCalendarRequest, opts ...http.CallOption) (rsp *GetUserProfileCalendarResponse, err error)
+	GetUserProfileCount(ctx context.Context, req *GetUserProfileCountRequest, opts ...http.CallOption) (rsp *GetUserProfileCountResponse, err error)
 	GetUserProfileProblemSolved(ctx context.Context, req *GetUserProfileProblemSolvedRequest, opts ...http.CallOption) (rsp *GetUserProfileProblemSolvedResponse, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterResponse, err error)
@@ -311,6 +337,19 @@ func (c *UserServiceHTTPClientImpl) GetUserProfileCalendar(ctx context.Context, 
 	pattern := "/users/{id}/profile_calendar"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceGetUserProfileCalendar))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) GetUserProfileCount(ctx context.Context, in *GetUserProfileCountRequest, opts ...http.CallOption) (*GetUserProfileCountResponse, error) {
+	var out GetUserProfileCountResponse
+	pattern := "/users/{id}/profile_count"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceGetUserProfileCount))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

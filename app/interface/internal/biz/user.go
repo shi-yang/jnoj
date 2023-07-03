@@ -57,6 +57,7 @@ type UserRepo interface {
 	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileGroupProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
+	GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUserProfileCountResponse, error)
 
 	GetCaptcha(ctx context.Context, key string) (string, error)
 	SaveCaptcha(ctx context.Context, key string, value string) error
@@ -214,4 +215,9 @@ func (uc *UserUsecase) GetUserProfileProblemSolved(ctx context.Context, req *v1.
 		return uc.repo.GetUserProfileContestProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
 	}
 	return uc.repo.GetUserProfileGroupProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
+}
+
+// GetUserProfileCount 用户主页-统计
+func (uc *UserUsecase) GetUserProfileCount(ctx context.Context, id int) (*v1.GetUserProfileCountResponse, error) {
+	return uc.repo.GetUserProfileCount(ctx, id)
 }

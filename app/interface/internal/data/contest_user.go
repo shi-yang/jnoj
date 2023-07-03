@@ -180,7 +180,7 @@ func (r *contestRepo) DeleteContestUser(ctx context.Context, id int) error {
 	return err
 }
 
-// GetContestUserRating 查询用户积分
+// GetContestUserRating 查询用户竞赛等级分
 func (r *contestRepo) GetContestUserRating(ctx context.Context, uid int) int {
 	var user ContestUser
 	err := r.data.db.WithContext(ctx).

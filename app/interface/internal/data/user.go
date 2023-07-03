@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -349,4 +350,34 @@ func (r *userRepo) GetCaptcha(ctx context.Context, key string) (string, error) {
 // SaveCaptcha 保存验证码，5分钟
 func (r *userRepo) SaveCaptcha(ctx context.Context, key string, value string) error {
 	return r.data.redisdb.Set(ctx, key, value, time.Minute*5).Err()
+}
+
+// GetUserProfileCount 用户主页-统计
+func (r *userRepo) GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUserProfileCountResponse, error) {
+	res := new(v1.GetUserProfileCountResponse)
+	// 查询用户竞赛等级分
+	var contestUser ContestUser
+	err := r.data.db.WithContext(ctx).
+		Select("new_rating").
+		Model(&ContestUser{}).
+		Where("user_id = ?", uid).
+		Where("rated_at is not null").
+		Order("rated_at desc").
+		First(&contestUser).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		res.ContestRating = 0
+	} else {
+		res.ContestRating = int32(contestUser.NewRating)
+	}
+
+	// 查询用户解答数，用户解答数不包含未结束竞赛
+	r.data.db.WithContext(ctx).
+		Select("COUNT(DISTINCT submission.problem_id)").
+		Model(&Submission{}).
+		Joins("LEFT JOIN contest ON contest.id = submission.entity_id").
+		Where("submission.user_id = ?", uid).
+		Where("entity_type = ? or (entity_type = ? and contest.end_time < ?)", biz.SubmissionEntityTypeProblemset, biz.SubmissionEntityTypeContest, time.Now()).
+		Scan(&res.ProblemSolved)
+
+	return res, nil
 }

@@ -56,13 +56,19 @@ service UserService {
             body: "*"
         };
     };
+    // 用户主页统计
+    rpc GetUserProfileCount (GetUserProfileCountRequest) returns (GetUserProfileCountResponse) {
+        option (google.api.http) = {
+            get: "/users/{id}/profile_count"
+        };
+    };
     // 用户主页提交统计
     rpc GetUserProfileCalendar (GetUserProfileCalendarRequest) returns (GetUserProfileCalendarResponse) {
         option (google.api.http) = {
             get: "/users/{id}/profile_calendar"
         };
     };
-    // 用户主页提交统计
+    // 用户主页做题进度
     rpc GetUserProfileProblemSolved (GetUserProfileProblemSolvedRequest) returns (GetUserProfileProblemSolvedResponse) {
         option (google.api.http) = {
             get: "/users/{id}/profile_problemsolved"
@@ -236,4 +242,13 @@ message GetUserProfileProblemSolvedResponse {
     repeated Contest contests = 2;
     repeated Group groups = 3;
     int64 total = 4;
+}
+
+message GetUserProfileCountRequest {
+    int32 id = 1;
+}
+
+message GetUserProfileCountResponse {
+    int32 problem_solved = 1;
+    int32 contest_rating = 2;
 }
