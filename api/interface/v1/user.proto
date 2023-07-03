@@ -249,6 +249,13 @@ message GetUserProfileCountRequest {
 }
 
 message GetUserProfileCountResponse {
+    message ContestRanking {
+        int32 contest_id = 1;
+        string name = 2;
+        int32 ranking = 3;
+        int32 rating = 4;
+    }
     int32 problem_solved = 1;
     int32 contest_rating = 2;
+    repeated ContestRanking contest_ranking_history = 3;
 }

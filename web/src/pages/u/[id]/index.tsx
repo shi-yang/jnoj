@@ -16,6 +16,8 @@ import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
 import { FormatTime } from '@/utils/format';
 import StatisticCard from '@/components/StatisticCard';
 import { IconFile, IconTrophy } from '@arco-design/web-react/icon';
+import ReactECharts from 'echarts-for-react';
+
 
 function RecentlySubmission({userId}: {userId: number}) {
   const [data, setData] = useState([]);
@@ -28,7 +30,6 @@ function RecentlySubmission({userId}: {userId: number}) {
     };
     listSubmissions(params).then(res => {
       setData(res.data.data);
-      console.log(res.data.data);
     });
   }, [userId]);
   return (
@@ -113,6 +114,26 @@ export default function UserPage() {
       });
     }
   });
+  const [ratingHistory, setRatingHistory] = useState({
+    grid: { top: 8, right: 8, bottom: 24, left: 36 },
+    xAxis: {
+      show: false,
+      data: [],
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        data: [],
+        type: 'line',
+        smooth: true,
+      },
+    ],
+    tooltip: {
+      trigger: 'axis',
+    }
+  });
   function onCalendarSelectChange(e) {
     setCalendarSelectYear(e);
     getUserProfileCalendar(id, { year: e })
@@ -178,6 +199,18 @@ export default function UserPage() {
         contestRating: res.data.contestRating,
         problemSolved: res.data.problemSolved,
       });
+      setRatingHistory(prevState => ({...prevState,
+        xAxis: {
+          ...prevState.xAxis,
+          data: res.data.contestRankingHistory.map(item => item.name),
+        },
+        series: [
+          {
+            ...prevState.series[0],
+            data: res.data.contestRankingHistory.map(item => item.rating)
+          }
+        ],
+      }));
     });
   }, [id]);
   return (
@@ -220,6 +253,9 @@ export default function UserPage() {
               }
             ]}
           />
+          <div>
+            <ReactECharts style={{height: '200px'}} option={ratingHistory} />
+          </div>
         </Card>
         <Divider type='horizontal' />
         <Card

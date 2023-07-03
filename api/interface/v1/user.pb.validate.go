@@ -2100,6 +2100,40 @@ func (m *GetUserProfileCountResponse) validate(all bool) error {
 
 	// no validation rules for ContestRating
 
+	for idx, item := range m.GetContestRankingHistory() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetUserProfileCountResponseValidationError{
+						field:  fmt.Sprintf("ContestRankingHistory[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetUserProfileCountResponseValidationError{
+						field:  fmt.Sprintf("ContestRankingHistory[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetUserProfileCountResponseValidationError{
+					field:  fmt.Sprintf("ContestRankingHistory[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return GetUserProfileCountResponseMultiError(errors)
 	}
@@ -2854,3 +2888,117 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetUserProfileProblemSolvedResponse_GroupValidationError{}
+
+// Validate checks the field values on
+// GetUserProfileCountResponse_ContestRanking with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *GetUserProfileCountResponse_ContestRanking) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// GetUserProfileCountResponse_ContestRanking with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// GetUserProfileCountResponse_ContestRankingMultiError, or nil if none found.
+func (m *GetUserProfileCountResponse_ContestRanking) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserProfileCountResponse_ContestRanking) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ContestId
+
+	// no validation rules for Name
+
+	// no validation rules for Ranking
+
+	// no validation rules for Rating
+
+	if len(errors) > 0 {
+		return GetUserProfileCountResponse_ContestRankingMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserProfileCountResponse_ContestRankingMultiError is an error wrapping
+// multiple validation errors returned by
+// GetUserProfileCountResponse_ContestRanking.ValidateAll() if the designated
+// constraints aren't met.
+type GetUserProfileCountResponse_ContestRankingMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserProfileCountResponse_ContestRankingMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserProfileCountResponse_ContestRankingMultiError) AllErrors() []error { return m }
+
+// GetUserProfileCountResponse_ContestRankingValidationError is the validation
+// error returned by GetUserProfileCountResponse_ContestRanking.Validate if
+// the designated constraints aren't met.
+type GetUserProfileCountResponse_ContestRankingValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserProfileCountResponse_ContestRankingValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserProfileCountResponse_ContestRankingValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserProfileCountResponse_ContestRankingValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserProfileCountResponse_ContestRankingValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserProfileCountResponse_ContestRankingValidationError) ErrorName() string {
+	return "GetUserProfileCountResponse_ContestRankingValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserProfileCountResponse_ContestRankingValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserProfileCountResponse_ContestRanking.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserProfileCountResponse_ContestRankingValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserProfileCountResponse_ContestRankingValidationError{}

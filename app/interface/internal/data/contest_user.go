@@ -26,7 +26,8 @@ type ContestUser struct {
 	RatedAt        *time.Time // 竞赛积分计算时间
 	SpecialEffects string     // 比赛特效：allkilled，等
 	CreatedAt      time.Time
-	User           *User `json:"user" gorm:"foreignKey:UserID"`
+	User           *User    `json:"user" gorm:"foreignKey:UserID"`
+	Contest        *Contest `json:"contest" gorm:"foreignKey:ContestID"`
 }
 
 // ListContestUsers .

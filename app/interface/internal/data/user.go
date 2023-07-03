@@ -369,6 +369,26 @@ func (r *userRepo) GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUse
 	} else {
 		res.ContestRating = int32(contestUser.NewRating)
 	}
+	// 查询用户竞赛等级分历史记录
+	if res.ContestRating != 0 {
+		var contestUsers []*ContestUser
+		r.data.db.WithContext(ctx).
+			Model(&ContestUser{}).
+			Preload("Contest", func(db *gorm.DB) *gorm.DB {
+				return db.Select("id, name")
+			}).
+			Where("user_id = ?", uid).
+			Where("rated_at is not null").
+			Order("rated_at").
+			Find(&contestUsers)
+		for _, v := range contestUsers {
+			res.ContestRankingHistory = append(res.ContestRankingHistory, &v1.GetUserProfileCountResponse_ContestRanking{
+				ContestId: int32(v.Contest.ID),
+				Name:      v.Contest.Name,
+				Rating:    int32(v.NewRating),
+			})
+		}
+	}
 
 	// 查询用户解答数，用户解答数不包含未结束竞赛
 	r.data.db.WithContext(ctx).
@@ -378,6 +398,5 @@ func (r *userRepo) GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUse
 		Where("submission.user_id = ?", uid).
 		Where("entity_type = ? or (entity_type = ? and contest.end_time < ?)", biz.SubmissionEntityTypeProblemset, biz.SubmissionEntityTypeContest, time.Now()).
 		Scan(&res.ProblemSolved)
-
 	return res, nil
 }
