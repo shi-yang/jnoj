@@ -253,9 +253,13 @@ export default function UserPage() {
               }
             ]}
           />
-          <div>
-            <ReactECharts style={{height: '200px'}} option={ratingHistory} />
-          </div>
+          {
+            profileCount.contestRating !== 0 && (
+              <div>
+                <ReactECharts style={{height: '200px'}} option={ratingHistory} />
+              </div>
+            )
+          }
         </Card>
         <Divider type='horizontal' />
         <Card
