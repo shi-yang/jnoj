@@ -91,8 +91,11 @@ const SettingInfo = () => {
         membership: values.membership,
         invitationCode: values.invitationCode,
         description: values.description,
-        feature: values.feature.filter(v => v != '').join(','),
+        feature: '',
       };
+      if (values.feature) {
+        data.feature = values.feature.filter(v => v != '').join(',');
+      }
       setConfirmLoading(true);
       updateContest(contest.id, data)
         .then(res => {
