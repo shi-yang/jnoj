@@ -40,8 +40,8 @@ const userSlice = createSlice({
         state.isLogged = true;
       })
       .addCase(getUserInfo.rejected, (state, action) => {
-        state.isLogged = false;
-        removeAccessToken();
+        // state.isLogged = false;
+        // removeAccessToken();
       });
   }
 });
