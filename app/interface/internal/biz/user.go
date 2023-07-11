@@ -197,7 +197,7 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, u *User) (*User, error) {
 }
 
 func (uc *UserUsecase) UpdateUserPassowrd(ctx context.Context, u *User, oldPassword string, newPassword string) (*User, error) {
-	if !password.ValidatePassword(u.Password, oldPassword) {
+	if !password.ValidatePassword(oldPassword, u.Password) {
 		return nil, v1.ErrorInvalidUsernameOrPassword("")
 	}
 	password, _ := password.GeneratePasswordHash(newPassword)
