@@ -110,6 +110,7 @@ func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 		Realname: o.Realname,
 		Role:     o.Role,
 		Status:   o.Status,
+		Password: o.Password,
 	}, nil
 }
 
