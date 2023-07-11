@@ -88,6 +88,7 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	update := User{
 		ID:       u.ID,
 		Nickname: u.Nickname,
+		Password: u.Password,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
