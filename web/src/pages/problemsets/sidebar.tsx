@@ -8,7 +8,9 @@ import { isLogged } from '@/utils/auth';
 export default function Sidebar() {
   const t = useLocale(locale);
   const [problemSets, setProblemSets] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
+    setIsMounted(true);
     fetchData();
   }, []);
   function fetchData() {
@@ -25,11 +27,7 @@ export default function Sidebar() {
       });
   }
 
-  if (!isLogged()) {
-    return;
-  }
-
-  return (
+  return isMounted && isLogged() && (
     <div className={styles['sidebar']}>
       <Card
         title={t['problemset.title']}
