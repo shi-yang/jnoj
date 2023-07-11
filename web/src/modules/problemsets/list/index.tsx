@@ -29,7 +29,7 @@ function ProblemList({problemsetID = 0}: {problemsetID: number}) {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
-    pageSize: 25,
+    pageSize: 50,
     current: 1,
     pageSizeChangeResetCurrent: true,
     sizeOptions: [25, 50, 100]
