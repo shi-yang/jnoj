@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
+import ObjectivePage from './objective';
 
 const TabPane = Tabs.TabPane;
 
@@ -59,34 +60,40 @@ function Index(props) {
               </Typography.Title>
             </Grid.Col>
           </Grid.Row>
-          <Tabs defaultActiveTab='info' destroyOnHide>
-            <TabPane key='info' title={t['tab.baseInfo']}>
-              <Info problem={data} />
-            </TabPane>
-            <TabPane key='statement' title={t['tab.statement']}>
-              <Statement problem={data} />
-            </TabPane>
-            <TabPane key='checker' title={t['tab.checker']}>
-              <Checker problem={data} />
-            </TabPane>
-            <TabPane key='tests' title={t['tab.tests']}>
-              <Tests problem={data} />
-            </TabPane>
-            <TabPane key='solutionFiles' title={t['tab.solutionFiles']}>
-              <SolutionFiles problem={data} />
-            </TabPane>
-            {/* <TabPane key='files' title={t['tab.files']}>
-              <Files problem={data} />
-            </TabPane> */}
-            { data.type === 'FUNCTION' &&
-              <TabPane key='languageFiles' title={t['tab.languageFiles']}>
-                <LanguageFiles problem={data} />
-              </TabPane>
-            }
-            <TabPane key='package' title={t['tab.package']}>
-              <Package problemId={data.id} />
-            </TabPane>
-          </Tabs>
+          {
+            data.type === 'OBJECTIVE' ? (
+              <ObjectivePage problem={data} />
+            ) : (
+              <Tabs defaultActiveTab='info' destroyOnHide>
+                <TabPane key='info' title={t['tab.baseInfo']}>
+                  <Info problem={data} />
+                </TabPane>
+                <TabPane key='statement' title={t['tab.statement']}>
+                  <Statement problem={data} />
+                </TabPane>
+                <TabPane key='checker' title={t['tab.checker']}>
+                  <Checker problem={data} />
+                </TabPane>
+                <TabPane key='tests' title={t['tab.tests']}>
+                  <Tests problem={data} />
+                </TabPane>
+                <TabPane key='solutionFiles' title={t['tab.solutionFiles']}>
+                  <SolutionFiles problem={data} />
+                </TabPane>
+                {/* <TabPane key='files' title={t['tab.files']}>
+                  <Files problem={data} />
+                </TabPane> */}
+                { data.type === 'FUNCTION' &&
+                  <TabPane key='languageFiles' title={t['tab.languageFiles']}>
+                    <LanguageFiles problem={data} />
+                  </TabPane>
+                }
+                <TabPane key='package' title={t['tab.package']}>
+                  <Package problemId={data.id} />
+                </TabPane>
+              </Tabs>
+            )
+          }
         </div>
       )}
     </>

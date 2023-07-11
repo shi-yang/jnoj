@@ -20,7 +20,7 @@ type Problem struct {
 	Name          string
 	UserID        int
 	Nickname      string // 作者昵称
-	Type          int    // 题目类型：标准输入输出、函数题
+	Type          int    // 题目类型：标准输入输出、函数题、客观题
 	TimeLimit     int64
 	MemoryLimit   int64
 	AcceptedCount int
@@ -45,6 +45,7 @@ const (
 const (
 	ProblemTypeDefault = iota
 	ProblemTypeFunction
+	ProblemTypeObjective
 )
 
 // 题目权限

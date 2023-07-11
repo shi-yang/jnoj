@@ -14,7 +14,6 @@ import {
   Tooltip,
   Divider,
   Input,
-  List,
   Modal,
   Form,
   Alert,
@@ -92,7 +91,7 @@ export default function Index() {
       title: t['searchTable.columns.type'],
       dataIndex: 'type',
       align: 'center' as 'center',
-      render: (x) => x === 'DEFAULT' ? t['searchTable.columns.type.default'] : t['searchTable.columns.type.function'],
+      render: (x) => t['searchTable.columns.type.' + x.toLowerCase()],
       width: 150,
       filters: [
         {
@@ -102,6 +101,10 @@ export default function Index() {
         {
           text: t['searchTable.columns.type.function'],
           value: 1,
+        },
+        {
+          text: t['searchTable.columns.type.objective'],
+          value: 2,
         },
       ],
       filterMultiple: true,

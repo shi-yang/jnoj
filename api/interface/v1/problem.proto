@@ -295,6 +295,7 @@ service ProblemService {
 enum ProblemType {
     DEFAULT = 0; // 标准输入输出
     FUNCTION = 1; // 函数题
+    OBJECTIVE = 2; // 客观题
 }
 
 // 题目
