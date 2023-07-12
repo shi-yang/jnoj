@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from './style/editor.module.less';
-import { Button, Message, Select } from '@arco-design/web-react';
+import { Button, Form, Input, Message, Result, Select } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { createSubmission } from '@/api/submission';
@@ -44,6 +44,7 @@ export default function App() {
   const onChange = React.useCallback((value) => {
     setValue(value);
   }, []);
+  const statement = problem.statements[0] ?? problem.statements[0];
   
   const onChangeLanguage = (e) => {
     setLanguage(e);
@@ -102,6 +103,7 @@ export default function App() {
     <div className={styles['container']}>
       <div className={styles['code-header']}>
         <Select
+          disabled={problem.type === 'OBJECTIVE'}
           size='large'
           defaultValue={language}
           style={{ width: 154 }}
@@ -117,6 +119,7 @@ export default function App() {
         </Select>
         <Select
           size='large'
+          disabled={problem.type === 'OBJECTIVE'}
           defaultValue={theme}
           style={{ width: 70 }}
           onChange={(e) => setTheme(e)}
@@ -134,16 +137,45 @@ export default function App() {
         </Select>
       </div>
       <div className={styles['code-editor']}>
-        <Editor
-          language={languageNameToMonacoLanguage[language]}
-          options={{
-            automaticLayout: true,
-            fontSize: 16
-          }}
-          value={value}
-          theme={theme}
-          onChange={onChange}
-        />
+        {
+          problem.type === 'OBJECTIVE' ? (
+            <div>
+              <Result
+                title={<h1>答题区域</h1>}
+                icon={null}
+              >
+                <Form>
+                  {(statement.type === 'CHOICE' || statement.type === 'MULTIPLE') ? (
+                    <Form.Item label={statement.type === 'CHOICE' ? '单选题' : '多选题'}>
+                      <Select onChange={e => setValue(Array.isArray(e) ? e.join(',') : e)} placeholder='Please select' mode={statement.type === 'MULTIPLE' ? 'multiple' : null} allowCreate={false} allowClear>
+                        {statement.input.split(',').map((item, index) => (
+                          <Select.Option key={index} value={index}>
+                            {item}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  ) : (
+                    <Form.Item label='填空题'>
+                      <Input.TextArea placeholder='Please input'  onChange={e => setValue(e)} />
+                    </Form.Item>
+                  )}
+                </Form>
+              </Result>
+            </div>
+          ) : (
+            <Editor
+              language={languageNameToMonacoLanguage[language]}
+              options={{
+                automaticLayout: true,
+                fontSize: 16
+              }}
+              value={value}
+              theme={theme}
+              onChange={onChange}
+            />
+          )
+        }
       </div>
       {
         isMounted &&
@@ -154,12 +186,14 @@ export default function App() {
       <div className={styles.footer}>
         <div className={styles.left}>
           <Button
+            disabled={problem.type === 'OBJECTIVE'}
             icon={consoleVisible ? <IconUp /> : <IconDown />}
             onClick={() => setConsoleVisible((v) => !v)}
           >
             Console
           </Button>
           <Button
+            disabled={problem.type === 'OBJECTIVE'}
             type='outline'
             icon={<IconPlayArrow />}
             status='success'

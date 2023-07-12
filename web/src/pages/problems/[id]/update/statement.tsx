@@ -141,7 +141,7 @@ export default function Statement({problem}: any) {
         <Col flex='auto'>
           { statements.length > 0 &&
           <Form form={form} layout='vertical' autoComplete='off' onSubmit={onSubmit}>
-            <FormItem field='name' label={t['name']}>
+            <FormItem field='name' label={t['name']} required>
               <Input />
             </FormItem>
             <FormItem field='legend' label={t['legend']}>

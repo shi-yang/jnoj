@@ -331,6 +331,12 @@ message Problem {
     google.protobuf.Timestamp updated_at = 19;
 }
 
+enum ProblemStatementType {
+    CHOICE = 0; // 单选题
+    MULTIPLE = 1; // 多选题
+    FILLBLANK = 2; // 填空题
+}
+
 // 题目描述
 message ProblemStatement {
     int32 id = 1;
@@ -341,6 +347,7 @@ message ProblemStatement {
     string input = 6;
     string output = 7;
     string note = 8;
+    ProblemStatementType type = 9;
 }
 
 message ListProblemsRequest {
@@ -419,6 +426,7 @@ message UpdateProblemStatementRequest {
     string output = 6;
     string note = 7;
     string legend = 8;
+    ProblemStatementType type = 9;
 }
 
 message DeleteProblemStatementRequest {

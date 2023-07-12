@@ -140,6 +140,7 @@ func (uc *ProblemUsecase) GetProblem(ctx context.Context, id int) (*Problem, err
 			Legend:   v.Legend,
 			Language: v.Language,
 			Note:     v.Note,
+			Type:     v.Type,
 		})
 	}
 	for _, v := range tests {

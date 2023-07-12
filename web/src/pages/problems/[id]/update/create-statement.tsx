@@ -49,10 +49,10 @@ function App(props: any) {
   return (
     <div>
       <Button type="primary" icon={<IconPlus />} onClick={() => setVisible(true)}>
-        添加
+        添加题目描述
       </Button>
       <Modal
-        title='创建题目描述'
+        title='添加题目描述'
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}

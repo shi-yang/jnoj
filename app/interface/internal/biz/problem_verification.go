@@ -45,15 +45,23 @@ func (uc *ProblemUsecase) GetProblemVerification(ctx context.Context, id int) (*
 // VerifyProblem 验证题目完整性
 // TODO 该函数需要更加完善
 func (uc *ProblemUsecase) VerifyProblem(ctx context.Context, id int) error {
-	return uc.verifyProblem(ctx, id)
+	problem, _ := uc.repo.GetProblem(ctx, id)
+	// 客观题暂时免校验
+	if problem.Type == ProblemTypeObjective {
+		var res ProblemVerification
+		res.ProblemID = id
+		res.VerificationStatus = VerificationStatusSuccess
+		return uc.repo.CreateOrUpdateProblemVerification(ctx, &res)
+	}
+	return uc.verifyProblem(ctx, problem)
 }
 
 // 1. 题目描述 ProblemStatement
 // 2. 存在测试点、样例
 // 3. 存在 model_solution 标程，并可运行
 // 4. 基于 model_solution 生成测试点的输出
-func (uc *ProblemUsecase) verifyProblem(ctx context.Context, id int) error {
-	problem, _ := uc.repo.GetProblem(ctx, id)
+func (uc *ProblemUsecase) verifyProblem(ctx context.Context, problem *Problem) error {
+	id := problem.ID
 	var res ProblemVerification
 	res.ProblemID = id
 	res.VerificationStatus = VerificationStatusPending

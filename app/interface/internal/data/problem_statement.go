@@ -15,6 +15,7 @@ type ProblemStatement struct {
 	ID        int
 	ProblemID int
 	Name      string
+	Type      int
 	Language  string
 	Legend    string
 	Input     string
@@ -40,6 +41,7 @@ func (r *problemRepo) ListProblemStatements(ctx context.Context, req *v1.ListPro
 			ID:       v.ID,
 			Name:     v.Name,
 			Legend:   v.Legend,
+			Type:     v.Type,
 			Input:    v.Input,
 			Output:   v.Output,
 			Language: v.Language,
@@ -67,6 +69,7 @@ func (r *problemRepo) CreateProblemStatement(ctx context.Context, p *biz.Problem
 		Name:      p.Name,
 		UserID:    p.UserID,
 		Language:  p.Language,
+		Type:      p.Type,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
@@ -81,6 +84,7 @@ func (r *problemRepo) UpdateProblemStatement(ctx context.Context, b *biz.Problem
 	res := ProblemStatement{
 		ID:       b.ID,
 		Name:     b.Name,
+		Type:     b.Type,
 		Input:    b.Input,
 		Output:   b.Output,
 		Language: b.Language,
@@ -89,7 +93,7 @@ func (r *problemRepo) UpdateProblemStatement(ctx context.Context, b *biz.Problem
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
-		Select("Name", "Input", "Output", "Legend", "Note").
+		Select("Name", "Input", "Output", "Legend", "Note", "Type").
 		Updates(&res).Error
 	return &biz.ProblemStatement{ID: res.ID}, err
 }

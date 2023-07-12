@@ -98,6 +98,7 @@ func (s *ProblemService) GetProblem(ctx context.Context, req *v1.GetProblemReque
 			Note:     v.Note,
 			Legend:   v.Legend,
 			Language: v.Language,
+			Type:     v1.ProblemStatementType(v.Type),
 		})
 	}
 	for _, v := range data.SampleTests {
@@ -175,6 +176,7 @@ func (s *ProblemService) ListProblemStatements(ctx context.Context, req *v1.List
 			Note:     v.Note,
 			Legend:   v.Legend,
 			Language: v.Language,
+			Type:     v1.ProblemStatementType(v.Type),
 		})
 	}
 	return resp, nil
@@ -223,6 +225,7 @@ func (s *ProblemService) UpdateProblemStatement(ctx context.Context, req *v1.Upd
 		Output:    req.Output,
 		Legend:    req.Legend,
 		Note:      req.Note,
+		Type:      int(req.Type),
 	})
 	if err != nil {
 		return nil, err
@@ -867,6 +870,7 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 			Note:     v.Note,
 			Legend:   v.Legend,
 			Language: v.Language,
+			Type:     v1.ProblemStatementType(v.Type),
 		})
 	}
 	for _, v := range data.SampleTests {

@@ -5,6 +5,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -257,6 +258,8 @@ func (uc *SubmissionUsecase) GetSubmission(ctx context.Context, id int) (*Submis
 
 // CreateSubmission creates a Submission, and returns the new Submission.
 func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission) (*Submission, error) {
+	var problem *Problem
+	var err error
 	s.UserID, _ = auth.GetUserID(ctx)
 	s.Verdict = SubmissionVerdictPending
 	// 限制每分钟提交次数
@@ -284,6 +287,7 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		}
 		contestProblem.SubmitCount += 1
 		uc.contestRepo.UpdateContestProblem(ctx, contestProblem)
+		problem, _ = uc.problemRepo.GetProblem(ctx, contestProblem.ProblemID)
 		s.ProblemID = contestProblem.ProblemID
 	} else if s.EntityType == SubmissionEntityTypeProblemset {
 		// 提交至题单
@@ -291,7 +295,7 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
 		}
-		problem, err := uc.problemRepo.GetProblem(ctx, p.ProblemID)
+		problem, err = uc.problemRepo.GetProblem(ctx, p.ProblemID)
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
 		}
@@ -300,13 +304,25 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		s.ProblemID = problem.ID
 	} else if s.EntityType == SubmissionEntityTypeProblemVerify {
 		// 提交至验题
-		problem, err := uc.problemRepo.GetProblem(ctx, s.ProblemNumber)
+		problem, err = uc.problemRepo.GetProblem(ctx, s.ProblemNumber)
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
 		}
 		problem.SubmitCount += 1
 		uc.problemRepo.UpdateProblem(ctx, problem)
 		s.ProblemID = problem.ID
+	}
+	// 客观题直接判断，不用经过判题机
+	if problem != nil && problem.Type == ProblemTypeObjective {
+		problem.Statements, _ = uc.problemRepo.ListProblemStatements(ctx, &v1.ListProblemStatementsRequest{
+			Id: int32(problem.ID),
+		})
+		uc.judgeObjectiveProblem(ctx, s, problem)
+		res, err := uc.repo.CreateSubmission(ctx, s)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
 	}
 	res, err := uc.repo.CreateSubmission(ctx, s)
 	if err != nil {
@@ -316,6 +332,63 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		SubmissionId: int64(res.ID),
 	})
 	return res, nil
+}
+
+// judgeObjectiveProblem 判断客观题结果
+func (uc *SubmissionUsecase) judgeObjectiveProblem(ctx context.Context, s *Submission, problem *Problem) {
+	s.Verdict = SubmissionVerdictWrongAnswer
+	if len(problem.Statements) > 0 {
+		// TODO 暂时不处理多语言，直接取第一个
+		statement := problem.Statements[0]
+		// 单选题
+		if statement.Type == ProblemStatementTypeChoice {
+			if s.Source == statement.Output {
+				s.Verdict = SubmissionVerdictAccepted
+			}
+		} else if statement.Type == ProblemStatementTypeMultiple {
+			// 多选题
+			if isMatched(s.Source, statement.Output) {
+				s.Verdict = SubmissionVerdictAccepted
+			}
+		} else if statement.Type == ProblemStatementTypeFillBlank {
+			// 填空题
+			if s.Source == statement.Output {
+				s.Verdict = SubmissionVerdictAccepted
+			}
+		}
+	} else {
+		s.Verdict = SubmissionVerdictSysemError
+	}
+}
+
+// 多选题判断选项是否相等
+func isMatched(strA, strB string) bool {
+	setA := make(map[string]struct{})
+	setB := make(map[string]struct{})
+
+	// 使用逗号分割字符串 A 和 B，将元素添加到相应的集合中
+	for _, item := range strings.Split(strA, ",") {
+		setA[item] = struct{}{}
+	}
+	for _, item := range strings.Split(strB, ",") {
+		setB[item] = struct{}{}
+	}
+
+	// 检查集合 B 的元素是否都在集合 A 中
+	for item := range setB {
+		if _, ok := setA[item]; !ok {
+			return false
+		}
+	}
+
+	// 检查集合 A 的元素是否都在集合 B 中
+	for item := range setA {
+		if _, ok := setB[item]; !ok {
+			return false
+		}
+	}
+
+	return true
 }
 
 // UpdateSubmission update a Submission

@@ -11,6 +11,7 @@ type ProblemStatement struct {
 	ID        int
 	ProblemID int
 	Name      string
+	Type      int // 题目类型
 	Input     string
 	Output    string
 	Note      string
@@ -18,6 +19,12 @@ type ProblemStatement struct {
 	Language  string
 	UserID    int
 }
+
+const (
+	ProblemStatementTypeChoice    = iota // 单选题
+	ProblemStatementTypeMultiple         // 多选题
+	ProblemStatementTypeFillBlank        // 填空题
+)
 
 // ProblemStatementRepo is a ProblemStatement repo.
 type ProblemStatementRepo interface {

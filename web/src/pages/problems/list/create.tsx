@@ -54,7 +54,7 @@ function App() {
                 { name: '客观题', value: 2, help: '非编程题。从事先拟定的答案中辨认出正确答案的题目。可支持单选题、多选题、填空题。'},
               ].map((item) => {
                 return (
-                  <Radio key={item.value} value={item.value} disabled={item.value === 2}>
+                  <Radio key={item.value} value={item.value}>
                     {({ checked }) => {
                       return (
                         <Space

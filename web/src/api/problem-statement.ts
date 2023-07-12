@@ -18,6 +18,7 @@ export interface statement {
   output: string;
   legend: string;
   note: string;
+  type: string;
 }
 
 export interface listProblemStatementsResponse {
@@ -33,7 +34,7 @@ export interface updateProblemStatementRequest {
   input: string;
   output: string;
   legend: string;
-  notes: string;
+  note: string;
 }
 
 export function updateProblemStatement(id: number, sid: number, data: updateProblemStatementRequest) {

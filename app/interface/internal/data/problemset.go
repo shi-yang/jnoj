@@ -157,7 +157,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 		Joins(`LEFT JOIN(
 			SELECT problem_id, name
 			FROM problem_statement
-			WHERE id IN(SELECT MIN(id) FROM problem_statement GROUP BY problem_id)
+			WHERE id IN(SELECT MIN(id) FROM problem_statement WHERE deleted_at is null GROUP BY problem_id)
 		) AS ps
 		ON ps.problem_id = pp.problem_id`).
 		Joins(`LEFT JOIN(

@@ -121,7 +121,7 @@ function Index() {
       .then((res) => {
         const problemData = res.data;
         if (problemData.statements.length > 0) {
-          problem.name = problemData.statements[0].name;
+          problemData.name = problemData.statements[0].name;
         }
         setProblem(problemData);
         const langs = problemData.statements.map((item, index) => {

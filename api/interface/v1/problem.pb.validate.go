@@ -323,6 +323,8 @@ func (m *ProblemStatement) validate(all bool) error {
 
 	// no validation rules for Note
 
+	// no validation rules for Type
+
 	if len(errors) > 0 {
 		return ProblemStatementMultiError(errors)
 	}
@@ -1599,6 +1601,8 @@ func (m *UpdateProblemStatementRequest) validate(all bool) error {
 	// no validation rules for Note
 
 	// no validation rules for Legend
+
+	// no validation rules for Type
 
 	if len(errors) > 0 {
 		return UpdateProblemStatementRequestMultiError(errors)
