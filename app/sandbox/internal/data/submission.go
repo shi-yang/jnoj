@@ -196,14 +196,16 @@ func (r *submissionRepo) getProblemChecker(ctx context.Context, id int) string {
 	return f.Content
 }
 
-func (r *submissionRepo) ListProblemTests(ctx context.Context, id int) []*biz.Test {
+func (r *submissionRepo) ListProblemTests(ctx context.Context, id int, isTestPoint bool) []*biz.Test {
 	var tests []ProblemTest
-	r.data.db.WithContext(ctx).
+	db := r.data.db.WithContext(ctx).
 		Model(&ProblemTest{}).
 		Where("problem_id = ?", id).
-		Where("is_test_point = ?", true).
-		Order("`order`").
-		Find(&tests)
+		Order("`order`")
+	if isTestPoint {
+		db.Where("is_test_point = ?", true)
+	}
+	db.Find(&tests)
 
 	res := make([]*biz.Test, 0)
 	for index, v := range tests {

@@ -136,7 +136,7 @@ type SubmissionRepo interface {
 	GetProblem(context.Context, int) (*Problem, error)
 	UpdateProblem(context.Context, *Problem) (*Problem, error)
 	GetProblemFile(context.Context, *ProblemFile) (*ProblemFile, error)
-	ListProblemTests(context.Context, int) []*Test
+	ListProblemTests(ctx context.Context, problemId int, isTestPoint bool) []*Test
 
 	GetContestProblemByProblemID(context.Context, int, int) (*ContestProblem, error)
 	UpdateContestProblem(context.Context, *ContestProblem) (*ContestProblem, error)
@@ -230,7 +230,7 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 		// @@@替换
 		source = strings.ReplaceAll(problemLang.MainContent, "@@@", s.Source)
 	}
-	problemTest, _ := uc.prepareProblemTest(ctx, problem.ID)
+	problemTest, _ := uc.prepareProblemTest(ctx, problem.ID, !isGenerateOutput)
 	uc.log.Infof("RunSubmission = [%+v] isGenerateOutput=[%+v]\n", s.ID, isGenerateOutput)
 	res := uc.runTests(ctx, s.ID, source, s.Language, s.UserID, problem, problemTest, isGenerateOutput)
 	for i, subtask := range res.Subtasks {
@@ -289,11 +289,11 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	return nil
 }
 
-func (uc *SubmissionUsecase) prepareProblemTest(ctx context.Context, problemId int) (*ProblemSubtask, error) {
+func (uc *SubmissionUsecase) prepareProblemTest(ctx context.Context, problemId int, isTestPoint bool) (*ProblemSubtask, error) {
 	var (
 		subtaskContent string
 	)
-	tests := uc.repo.ListProblemTests(ctx, problemId)
+	tests := uc.repo.ListProblemTests(ctx, problemId, isTestPoint)
 	subtaskFile, err := uc.repo.GetProblemFile(ctx, &ProblemFile{
 		ProblemID: problemId,
 		FileType:  string(ProblemFileFileTypeSubtask),
