@@ -62,8 +62,6 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 	apiconfig, err := loadAPIConfigFromYAML(getAPIConfigFilePath(APIConfiguration, file))
 	if err == nil {
 		importAPIConfigPackage(g, apiconfig)
-	} else {
-		panic(err)
 	}
 	for _, service := range file.Services {
 		genService(gen, file, g, service, omitempty, apiconfig)
@@ -81,8 +79,10 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 		ServiceName: string(service.Desc.FullName()),
 		Metadata:    file.Desc.Path(),
 	}
-	for _, rule := range config.Rules {
-		sd.MiddlewareSets = append(sd.MiddlewareSets, buildMiddleware(rule))
+	if config != nil {
+		for _, rule := range config.Rules {
+			sd.MiddlewareSets = append(sd.MiddlewareSets, buildMiddleware(rule))
+		}
 	}
 	for _, method := range service.Methods {
 		if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
