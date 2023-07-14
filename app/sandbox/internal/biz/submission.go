@@ -189,12 +189,22 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, id int) error
 func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	var source string
 	s, _ := uc.repo.GetSubmission(ctx, id)
-	problem, _ := uc.repo.GetProblem(ctx, s.ProblemID)
+	problem, err := uc.repo.GetProblem(ctx, s.ProblemID)
+	if err != nil {
+		s.Verdict = SubmissionVerdictSysemError
+		uc.repo.UpdateSubmission(context.TODO(), s)
+		return nil
+	}
 	isGenerateOutput := false
 	if s.EntityType == SubmissionEntityTypeProblemFile {
 		problemFile, err := uc.repo.GetProblemFile(ctx, &ProblemFile{ID: s.EntityID})
 		if err == nil && problemFile.Type == ProblemFileTypeModelSolution {
 			isGenerateOutput = true
+		}
+		if err != nil {
+			s.Verdict = SubmissionVerdictSysemError
+			uc.repo.UpdateSubmission(context.TODO(), s)
+			return nil
 		}
 	}
 	source = s.Source
@@ -209,13 +219,13 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 		if err != nil {
 			s.Verdict = SubmissionVerdictSysemError
 			uc.repo.UpdateSubmission(context.TODO(), s)
-			return err
+			return nil
 		}
 		var problemLang ProblemLanguage
 		if err := json.Unmarshal([]byte(lang.Content), &problemLang); err != nil {
 			s.Verdict = SubmissionVerdictSysemError
 			uc.repo.UpdateSubmission(context.TODO(), s)
-			return err
+			return nil
 		}
 		// @@@替换
 		source = strings.ReplaceAll(problemLang.MainContent, "@@@", s.Source)
@@ -242,7 +252,7 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 		}
 	}
 	r, _ := json.Marshal(*res)
-	err := uc.repo.CreateSubmissionInfo(ctx, s.ID, string(r))
+	err = uc.repo.CreateSubmissionInfo(ctx, s.ID, string(r))
 	if err != nil {
 		uc.log.Info("CreateSubmissionInfo err:", err)
 	}
@@ -433,7 +443,7 @@ func (uc *SubmissionUsecase) runTests(
 				} else if t.CheckerExitCode == CheckerVerdictPresentationError {
 					t.Verdict = SubmissionVerdictPresentationError
 				} else if t.CheckerExitCode == CheckerVerdictFail {
-					t.Verdict = SubmissionVerdictSysemError
+					t.Verdict = SubmissionVerdictWrongAnswer
 				} else {
 					t.Verdict = SubmissionVerdictWrongAnswer
 				}
