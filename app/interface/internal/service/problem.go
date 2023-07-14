@@ -275,6 +275,7 @@ func (s *ProblemService) ListProblemTests(ctx context.Context, req *v1.ListProbl
 			OutputSize:    v.OutputSize,
 			Remark:        v.Remark,
 			IsExample:     v.IsExample,
+			IsTestPoint:   v.IsTestPoint,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 			UpdatedAt:     timestamppb.New(v.UpdatedAt),
 		})
@@ -300,6 +301,7 @@ func (s *ProblemService) CreateProblemTest(ctx context.Context, req *v1.CreatePr
 		ProblemID:        int(req.Id),
 		InputFileContent: req.FileContent,
 		Name:             req.Filename,
+		IsTestPoint:      true,
 	})
 	if err != nil {
 		return nil, err
@@ -354,10 +356,11 @@ func (s *ProblemService) UpdateProblemTest(ctx context.Context, req *v1.UpdatePr
 	}
 
 	s.uc.UpdateProblemTest(ctx, &biz.ProblemTest{
-		ID:        int(req.Tid),
-		ProblemID: int(req.Id),
-		Remark:    req.Remark,
-		IsExample: req.IsExample,
+		ID:          int(req.Tid),
+		ProblemID:   int(req.Id),
+		Remark:      req.Remark,
+		IsExample:   req.IsExample,
+		IsTestPoint: req.IsTestPoint,
 	})
 	return nil, nil
 }

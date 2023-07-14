@@ -455,16 +455,17 @@ message ProblemTest {
     int32 order = 2;
     int32 problem_id = 3;
     bool is_example = 4;
-    string name = 5;
-    int64 input_size = 6;
-    string input_preview = 7;
-    bytes input_file_content = 8;
-    int64 output_size = 9;
-    string output_preview = 10;
-    bytes output_file_content = 11;
-    string remark = 12;
-    google.protobuf.Timestamp created_at = 13;
-    google.protobuf.Timestamp updated_at = 14;
+    bool is_test_point = 5;
+    string name = 6;
+    int64 input_size = 7;
+    string input_preview = 8;
+    bytes input_file_content = 9;
+    int64 output_size = 10;
+    string output_preview = 11;
+    bytes output_file_content = 12;
+    string remark = 13;
+    google.protobuf.Timestamp created_at = 14;
+    google.protobuf.Timestamp updated_at = 15;
 }
 
 message CreateProblemTestRequest {
@@ -477,7 +478,8 @@ message UpdateProblemTestRequest {
     int32 id = 1;
     int32 tid = 2;
     bool is_example = 3;
-    string remark = 4;
+    bool is_test_point = 4;
+    string remark = 5;
 }
 
 message DeleteProblemTestRequest {

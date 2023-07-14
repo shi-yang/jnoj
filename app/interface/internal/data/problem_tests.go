@@ -27,6 +27,7 @@ type ProblemTest struct {
 	Remark        string
 	UserID        int
 	IsExample     bool
+	IsTestPoint   bool // 是否测试点
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -59,6 +60,7 @@ func (r *problemRepo) ListProblemTests(ctx context.Context, req *v1.ListProblemT
 			CreatedAt:     v.CreatedAt,
 			Remark:        v.Remark,
 			IsExample:     v.IsExample,
+			IsTestPoint:   v.IsTestPoint,
 			InputSize:     v.InputSize,
 			InputPreview:  v.InputPreview,
 			OutputSize:    v.OutputSize,
@@ -106,6 +108,7 @@ func (r *problemRepo) GetProblemTest(ctx context.Context, id int) (*biz.ProblemT
 		ID:            res.ID,
 		ProblemID:     res.ProblemID,
 		IsExample:     res.IsExample,
+		IsTestPoint:   res.IsTestPoint,
 		Name:          res.Name,
 		InputSize:     res.InputSize,
 		InputPreview:  res.InputPreview,
@@ -120,6 +123,7 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 		ProblemID:     b.ProblemID,
 		Name:          b.Name,
 		IsExample:     b.IsExample,
+		IsTestPoint:   b.IsTestPoint,
 		InputSize:     b.InputSize,
 		InputPreview:  b.InputPreview,
 		OutputSize:    b.OutputSize,
@@ -149,11 +153,13 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 // UpdateProblemTest .
 func (r *problemRepo) UpdateProblemTest(ctx context.Context, p *biz.ProblemTest) (*biz.ProblemTest, error) {
 	err := r.data.db.WithContext(ctx).
+		Select("IsExample", "IsTestPoint", "Remark").
 		Omit(clause.Associations).
 		Model(&ProblemTest{ID: p.ID}).
 		Updates(map[string]interface{}{
-			"is_example": p.IsExample,
-			"remark":     p.Remark,
+			"is_example":    p.IsExample,
+			"is_test_point": p.IsTestPoint,
+			"remark":        p.Remark,
 		}).Error
 	return nil, err
 }

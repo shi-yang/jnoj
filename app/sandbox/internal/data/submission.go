@@ -104,6 +104,7 @@ type ProblemTest struct {
 	Remark        string
 	UserID        int
 	IsExample     bool
+	IsTestPoint   bool
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -200,6 +201,7 @@ func (r *submissionRepo) ListProblemTests(ctx context.Context, id int) []*biz.Te
 	r.data.db.WithContext(ctx).
 		Model(&ProblemTest{}).
 		Where("problem_id = ?", id).
+		Where("is_test_point = ?", true).
 		Order("`order`").
 		Find(&tests)
 

@@ -240,6 +240,7 @@ INSERT INTO `problem_file` (`id`, `problem_id`, `name`, `language`, `content`, `
 CREATE TABLE `problem_statement` (
   `id` int UNSIGNED NOT NULL,
   `problem_id` int UNSIGNED NOT NULL,
+  `type` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `language` varchar(64) NOT NULL,
   `name` varchar(255) NOT NULL,
   `legend` text NOT NULL,
@@ -294,6 +295,7 @@ CREATE TABLE `problem_test` (
   `remark` varchar(255) NOT NULL DEFAULT '',
   `user_id` int UNSIGNED NOT NULL,
   `is_example` tinyint UNSIGNED NOT NULL,
+  `is_test_point` tinyint UNSIGNED NOT NULL DEFAULT '1',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

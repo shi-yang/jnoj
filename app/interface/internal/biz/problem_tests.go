@@ -13,6 +13,7 @@ type ProblemTest struct {
 	ID                int
 	ProblemID         int
 	IsExample         bool   // 是否样例
+	IsTestPoint       bool   // 是否测试点
 	Name              string // 测试点名称
 	InputSize         int64  // 输入文件大小
 	InputPreview      string // 输入文件预览

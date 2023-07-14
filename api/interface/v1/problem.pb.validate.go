@@ -2174,6 +2174,8 @@ func (m *ProblemTest) validate(all bool) error {
 
 	// no validation rules for IsExample
 
+	// no validation rules for IsTestPoint
+
 	// no validation rules for Name
 
 	// no validation rules for InputSize
@@ -2460,6 +2462,8 @@ func (m *UpdateProblemTestRequest) validate(all bool) error {
 	// no validation rules for Tid
 
 	// no validation rules for IsExample
+
+	// no validation rules for IsTestPoint
 
 	// no validation rules for Remark
 

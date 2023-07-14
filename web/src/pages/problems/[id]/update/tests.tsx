@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Divider, Form, Grid, Input, Link, Message, Modal, PaginationProps, Popconfirm, Popover, Radio, Table, TableColumnProps, Upload } from '@arco-design/web-react';
+import { Alert, Button, Card, Divider, Form, Grid, Input, Link, Message, Modal, PaginationProps, Popconfirm, Popover, Radio, Space, Table, TableColumnProps, Tag, Upload } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
@@ -146,6 +146,7 @@ const App = (props: any) => {
     form.setFieldsValue({
       id: record.id,
       isExample: record.isExample,
+      isTestPoint: record.isTestPoint,
       remark: record.remark,
     });
     setVisible(true);
@@ -154,6 +155,7 @@ const App = (props: any) => {
     form.validate().then((res) => {
       const values = {
         isExample: res.isExample,
+        isTestPoint: res.isTestPoint,
         remark: res.remark,
       };
       updateProblemTest(props.problem.id, res.id, values)
@@ -287,7 +289,7 @@ const App = (props: any) => {
       title: t['tests.table.isExample'],
       dataIndex: 'isExample',
       align: 'center',
-      render: (col, record) => col && '是'
+      render: (col, record) => <Space split={<Divider type='vertical' />}>{col && '是'}{!record.isTestPoint && <Tag color='red'>不测评</Tag>}</Space>
     },
     {
       title: t['tests.table.inputPreview'],
@@ -346,6 +348,12 @@ const App = (props: any) => {
                 <Input />
               </FormItem>
               <FormItem field='isExample' label='是否样例？'>
+                <Radio.Group>
+                  <Radio value={true}>是</Radio>
+                  <Radio value={false}>否</Radio>
+                </Radio.Group>
+              </FormItem>
+              <FormItem field='isTestPoint' label='是否测评？'>
                 <Radio.Group>
                   <Radio value={true}>是</Radio>
                   <Radio value={false}>否</Radio>
