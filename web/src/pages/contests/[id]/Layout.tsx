@@ -15,6 +15,7 @@ import { ProblemStatus } from '@/modules/problemsets/list/constants';
 import ContestContext from './context';
 import dayjs from 'dayjs';
 import MainLayout from '@/components/Layouts/MainLayout';
+import Forbidden from './forbidden';
 
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
@@ -162,10 +163,6 @@ function ContestLayout(page) {
             setProblems(res.data.data);
           });
         }
-        if ((data.role === 'ROLE_GUEST' && (data.privacy === 'PRIVATE' || data.runningStatus !== 'FINISHED')) ||
-          (data.role !== 'ROLE_ADMIN' && data.runningStatus === 'NOT_STARTED')) {
-          router.push(`/contests/${data.id}/forbidden`);
-        }
       })
       .finally(() => {
         setLoading(false);
@@ -219,46 +216,53 @@ function ContestLayout(page) {
             </Head>
             <Layout style={{height: '100%'}}>
               <ContestHeader />
-              <Layout style={{height: '100%'}}>
-                <Sider
-                  collapsible
-                  theme='light'
-                  className={menuSelected === 'problem' ? styles['sider-problem'] : ''}
-                  style={{height: '100%'}}
-                  onCollapse={onCollapse}
-                  collapsed={collapsed}
-                  width={siderWidth}
-                  resizeBoxProps={{
-                    directions: ['right'],
-                    onMoving: handleMoving,
-                  }}
-                >
-                  <div className='logo' />
-                  <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
-                    <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
-                    <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
-                    <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
-                    {contest.runningStatus === 'FINISHED' && <MenuItem key='editorial'><IconBook /> {t['menu.editorial']}</MenuItem>}
-                    {contest.role === 'ROLE_ADMIN' && <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>}
-                    <SubMenu
-                      key='problem'
-                      title={<span><IconSelectAll /> {t['menu.problem']}</span>}
+              {
+                ((contest.role === 'ROLE_GUEST' && (contest.privacy === 'PRIVATE' || contest.runningStatus !== 'FINISHED')) ||
+                (contest.role !== 'ROLE_ADMIN' && contest.runningStatus === 'NOT_STARTED')) ? (
+                  <Forbidden />
+                ) : (
+                  <Layout style={{height: '100%'}}>
+                    <Sider
+                      collapsible
+                      theme='light'
+                      className={menuSelected === 'problem' ? styles['sider-problem'] : ''}
+                      style={{height: '100%'}}
+                      onCollapse={onCollapse}
+                      collapsed={collapsed}
+                      width={siderWidth}
+                      resizeBoxProps={{
+                        directions: ['right'],
+                        onMoving: handleMoving,
+                      }}
                     >
-                      {problems.map(value => 
-                        <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>
-                          {String.fromCharCode(65 + value.number)}. {value.name}
-                          <span className='arco-menu-icon-suffix'>
-                            {ProblemStatus[value.status]}
-                          </span>
-                        </MenuItem>
-                      )}
-                    </SubMenu>
-                  </Menu>
-                </Sider>
-                <Content>
-                  {page}
-                </Content>
-              </Layout>
+                      <div className='logo' />
+                      <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
+                        <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
+                        <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
+                        <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
+                        {contest.runningStatus === 'FINISHED' && <MenuItem key='editorial'><IconBook /> {t['menu.editorial']}</MenuItem>}
+                        {contest.role === 'ROLE_ADMIN' && <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>}
+                        <SubMenu
+                          key='problem'
+                          title={<span><IconSelectAll /> {t['menu.problem']}</span>}
+                        >
+                          {problems.map(value => 
+                            <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>
+                              {String.fromCharCode(65 + value.number)}. {value.name}
+                              <span className='arco-menu-icon-suffix'>
+                                {ProblemStatus[value.status]}
+                              </span>
+                            </MenuItem>
+                          )}
+                        </SubMenu>
+                      </Menu>
+                    </Sider>
+                    <Content>
+                      {page}
+                    </Content>
+                  </Layout>
+                )
+              }
             </Layout>
           </div>
         </ContestContext.Provider>

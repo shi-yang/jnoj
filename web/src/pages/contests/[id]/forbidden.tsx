@@ -10,7 +10,6 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import RegisterContest from '@/modules/contest/RegisterContest';
-import ContestLayout from './Layout';
 
 const now = Date.now();
 
@@ -62,5 +61,4 @@ function Forbidden() {
   );
 }
 
-Forbidden.getLayout = ContestLayout;
 export default Forbidden;
