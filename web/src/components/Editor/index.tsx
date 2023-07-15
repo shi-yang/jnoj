@@ -3,7 +3,7 @@ import React from 'react';
 
 loader.config({
   paths: {
-    vs: 'https://cdn.bootcdn.net/ajax/libs/monaco-editor/0.37.1/min/vs'
+    vs: 'https://cdn.staticfile.org/monaco-editor/0.40.0/min/vs'
   }
 });
 
