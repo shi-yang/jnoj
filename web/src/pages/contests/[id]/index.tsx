@@ -29,7 +29,7 @@ function Info() {
       title: t['info.table.column.problem'],
       dataIndex: 'name',
       render: (col, record, index) => (
-        <Link onClick={(e) => contest.changeProblem(String.fromCharCode(65 + record.number))}>
+        <Link href={`/contests/${contest.id}/problem/${String.fromCharCode(65 + record.number)}`}>
           {String.fromCharCode(65 + record.number)}. {record.name}
         </Link>
       ),

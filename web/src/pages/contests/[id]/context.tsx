@@ -22,7 +22,6 @@ const ContestContext = createContext({
   },
   feature: '',
   problems: [],
-  changeProblem: (number: string) => {},
   updateContest: ({} : any) => {},
 });
 

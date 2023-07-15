@@ -195,13 +195,6 @@ function ContestLayout(page) {
     router.push(`/contests/${contest.id}/${key}`);
   };
 
-  const changeProblem = (number:string) => {
-    if (number !== '') {
-      setMenuSelected('problem');
-      setProblemNumber(number);
-    }
-  };
-
   const updateContest = (newContestData) => {
     setContest(newContestData);
   };
@@ -209,7 +202,7 @@ function ContestLayout(page) {
   return (
     <MainLayout>
       {!loading &&
-        <ContestContext.Provider value={{...contest, problems: problems, changeProblem: changeProblem, updateContest}}>
+        <ContestContext.Provider value={{...contest, problems: problems, updateContest}}>
           <div className={styles['contest-layout-basic']}>
             <Head>
               <title>{`${contest.name} - ${settings.name}`}</title>
