@@ -58,6 +58,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	}
 	if req.ProblemId != 0 {
 		db.Where("problem_id = ?", req.ProblemId)
+		db.Where("entity_type in (?)", []int{biz.SubmissionEntityTypeProblemset, biz.SubmissionEntityTypeContest})
 	}
 	db.Count(&count)
 	db.Find(&res)
