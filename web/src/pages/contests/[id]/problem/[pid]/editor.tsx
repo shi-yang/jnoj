@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './style/editor.module.less';
+import styles from '../../style/editor.module.less';
 import { Button, Message, Select } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
-import locale from './locale';
+import locale from '../../locale';
 import { createSubmission } from '@/api/submission';
 import useStorage from '@/utils/useStorage';
 import { IconDown, IconPlayArrow, IconSkin, IconUp } from '@arco-design/web-react/icon';

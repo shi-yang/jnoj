@@ -1,9 +1,7 @@
-import React, { useContext, useState } from 'react';
-import { createContestUser } from '@/api/contest';
-import { Button, Divider, Input, Message, Modal, Result, Statistic, Typography } from '@arco-design/web-react';
+import React, { useContext } from 'react';
+import { Divider, Result, Statistic, Typography } from '@arco-design/web-react';
 import { IconFaceSmileFill } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
-import { useRouter } from 'next/router';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import ContestContext from './context';
@@ -12,10 +10,11 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import RegisterContest from '@/modules/contest/RegisterContest';
+import ContestLayout from './Layout';
 
 const now = Date.now();
 
-export default function Forbidden() {
+function Forbidden() {
   const contest = useContext(ContestContext);
   const t = useLocale(locale);
   return (
@@ -62,3 +61,6 @@ export default function Forbidden() {
     </div>
   );
 }
+
+Forbidden.getLayout = ContestLayout;
+export default Forbidden;

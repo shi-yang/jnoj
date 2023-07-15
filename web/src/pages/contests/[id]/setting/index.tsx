@@ -5,6 +5,7 @@ import Info from './info';
 import locale from '../locale';
 import Users from './users';
 import Editorial from './editorial';
+import ContestLayout from '../Layout';
 
 const Setting = ({contest}: any) => {
   const t = useLocale(locale);
@@ -22,4 +23,6 @@ const Setting = ({contest}: any) => {
     </Tabs>
   );
 };
+
+Setting.getLayout = ContestLayout;
 export default Setting;

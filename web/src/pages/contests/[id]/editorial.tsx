@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
+import ContestLayout from './Layout';
 
 function Editorial() {
   const [post, setPost] = useState({id: 0, title: '', content: ''});
@@ -43,4 +44,5 @@ function Editorial() {
   );
 }
 
+Editorial.getLayout = ContestLayout;
 export default Editorial;

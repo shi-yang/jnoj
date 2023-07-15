@@ -3,6 +3,7 @@ import ContestContext from '../context';
 import Standings from './standings';
 import { Tabs } from '@arco-design/web-react';
 import Rating from './rating';
+import ContestLayout from '../Layout';
 
 function Index() {
   const contest = useContext(ContestContext);
@@ -21,5 +22,7 @@ function Index() {
     return <Standings />;
   }
 }
+
+Index.getLayout = ContestLayout;
 
 export default Index;

@@ -11,8 +11,8 @@ import ContestContext from './context';
 import { userInfo } from '@/store/reducers/user';
 import { useAppSelector } from '@/hooks';
 import { isLogged } from '@/utils/auth';
-
-const Submission = () => {
+import ContestLayout from './Layout';
+function Submission() {
   const t = useLocale(locale);
   const contest = useContext(ContestContext);
   const user = useAppSelector(userInfo);
@@ -175,5 +175,5 @@ const Submission = () => {
     </Card>
   );
 };
-
+Submission.getLayout = ContestLayout;
 export default Submission;

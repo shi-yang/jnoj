@@ -1,14 +1,17 @@
 import { getContestProblem } from '@/api/contest';
 import React, { useContext, useEffect, useState } from 'react';
-import styles from './style/problem.module.less';
+import styles from '../../style/problem.module.less';
 import { Grid, ResizeBox, Typography } from '@arco-design/web-react';
 import Editor from './editor';
 import ProblemContent from '@/modules/problem/ProblemContent';
-import ContestContext from './context';
+import ContestContext from '../../context';
+import ContestLayout from '../../Layout';
+import { useRouter } from 'next/router';
 
-export default function Problem({number}: { number: string}) {
-  const [loading, setLoading] = useState(true);
+function Problem() {
   const contest = useContext(ContestContext);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState({
     statements: [],
     timeLimit: 0,
@@ -16,9 +19,10 @@ export default function Problem({number}: { number: string}) {
     sampleTests: []
   });
   const [language, setLanguage] = useState(0);
+  const { pid } = router.query;
   function fetchData() {
     setLoading(true);
-    getContestProblem(contest.id, number.charCodeAt(0) - 65)
+    getContestProblem(contest.id, String(pid).charCodeAt(0) - 65)
       .then((res) => {
         setProblem(res.data);
       })
@@ -31,7 +35,7 @@ export default function Problem({number}: { number: string}) {
   }
   useEffect(() => {
     fetchData();
-  }, [contest.id, number]);
+  }, [contest.id, pid]);
   return (
     <div className={styles['container']}>
       { !loading && (
@@ -39,7 +43,7 @@ export default function Problem({number}: { number: string}) {
           <Grid.Row className={styles.header} justify='space-between' align='center'>
             <Grid.Col span={24}>
               <Typography.Title className={styles.title} heading={5}>
-                {number} - {problem.statements[language].name}
+                {pid} - {problem.statements[language].name}
               </Typography.Title>
             </Grid.Col>
           </Grid.Row>
@@ -65,3 +69,6 @@ export default function Problem({number}: { number: string}) {
     </div>
   );
 }
+
+Problem.getLayout = ContestLayout;
+export default Problem;
