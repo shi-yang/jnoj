@@ -255,6 +255,7 @@ func (r *submissionRepo) UpdateSubmission(ctx context.Context, s *biz.Submission
 		Score:   s.Score,
 	}
 	err := r.data.db.WithContext(ctx).
+		Select("Memory", "Time", "Verdict", "Score").
 		Omit(clause.Associations).
 		Updates(&res).Error
 	return nil, err
