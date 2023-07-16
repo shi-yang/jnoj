@@ -1,5 +1,3 @@
-START TRANSACTION;
-
 --
 -- 数据库： `jnoj`
 --
