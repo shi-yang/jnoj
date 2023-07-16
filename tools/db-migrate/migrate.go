@@ -3,13 +3,15 @@ package dbmigrate
 import (
 	"log"
 
-	"github.com/go-gormigrate/gormigrate/v2"
+	gormigrate "jnoj/pkg/gormmigrate"
+	"jnoj/pkg/password"
+
 	"gorm.io/gorm"
 )
 
 func Migrate(db *gorm.DB) {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
-		// Migrate20230715(),
+		MigrateAddSuperAdminUser20230716(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
@@ -18,18 +20,18 @@ func Migrate(db *gorm.DB) {
 	log.Println("Migration did run successfully")
 }
 
-// func Migrate20230715() *gormigrate.Migration {
-// 	return &gormigrate.Migration{
-// 		ID: "202307151845",
-// 		Migrate: func(tx *gorm.DB) error {
-// 			// type user struct {
-// 			// 	ID   uuid.UUID `gorm:"type:uuid;primaryKey;uniqueIndex"`
-// 			// 	Name string
-// 			// }
-// 			// return tx.Migrator().CreateTable(&user{})
-// 		},
-// 		Rollback: func(tx *gorm.DB) error {
-// 			// return tx.Migrator().DropTable("users")
-// 		},
-// 	}
-// }
+func MigrateAddSuperAdminUser20230716() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddSuperAdminUser20230716",
+		Migrate: func(tx *gorm.DB) error {
+			passwd, _ := password.GeneratePasswordHash("admin")
+			return tx.
+				Exec("INSERT INTO user (id, username, nickname, realname, role, password) VALUES (10000, 'admin', 'admin', 'admin', 4, ?)",
+					passwd).
+				Error
+		},
+		Rollback: func(tx *gorm.DB) error {
+			return tx.Exec("DELETE FROM user WHERE username = 'admin'").Error
+		},
+	}
+}

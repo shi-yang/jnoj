@@ -6,7 +6,6 @@ require (
 	github.com/JohannesKaufmann/html-to-markdown v1.4.0
 	github.com/docker/docker v20.10.24+incompatible
 	github.com/envoyproxy/protoc-gen-validate v0.6.13
-	github.com/go-gormigrate/gormigrate/v2 v2.1.0
 	github.com/go-kratos/kratos/v2 v2.5.2
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/google/uuid v1.3.0
@@ -47,12 +46,12 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
-	github.com/microsoft/go-mssqldb v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mozillazg/go-httpheader v0.3.1 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.23.0 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	golang.org/x/time v0.3.0 // indirect
 )
 
