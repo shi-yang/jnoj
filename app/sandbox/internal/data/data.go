@@ -2,7 +2,6 @@ package data
 
 import (
 	"jnoj/app/sandbox/internal/conf"
-	dbmigrate "jnoj/tools/db-migrate"
 	"os"
 
 	log2 "log"
@@ -45,9 +44,6 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		log.Errorf("failed opening connection to mysql: %v", err)
 		return nil, nil, err
 	}
-
-	// auto migrate
-	dbmigrate.Migrate(db)
 
 	mqConn, err := rabbitmq.NewConn(
 		c.MessageQueue.Address,
