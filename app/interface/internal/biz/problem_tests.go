@@ -51,6 +51,7 @@ type ProblemTestRepo interface {
 	CreateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
 	UpdateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
 	DeleteProblemTest(context.Context, int) error
+	DeleteAllProblemTest(ctx context.Context, pid int) error
 
 	ListProblemTestContent(ctx context.Context, pid int, isSample bool) ([]*Test, error)
 	SortProblemTests(context.Context, *v1.SortProblemTestsRequest)
@@ -88,7 +89,11 @@ func (uc *ProblemUsecase) UpdateProblemTest(ctx context.Context, p *ProblemTest)
 }
 
 // DeleteProblemTest delete a ProblemTest
-func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int64, tid int) error {
+func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int, tid int) error {
+	// 删除全部测试点
+	if tid == 0 {
+		return uc.repo.DeleteAllProblemTest(ctx, pid)
+	}
 	return uc.repo.DeleteProblemTest(ctx, tid)
 }
 

@@ -188,6 +188,19 @@ func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
 	return nil
 }
 
+// DeleteAllProblemTest 删除全部测试点
+func (r *problemRepo) DeleteAllProblemTest(ctx context.Context, pid int) error {
+	var tests []*ProblemTest
+	r.data.db.WithContext(ctx).
+		Model(&ProblemTest{}).
+		Where("problem_id = ?", pid).
+		Find(&tests)
+	for _, test := range tests {
+		r.DeleteProblemTest(ctx, test.ID)
+	}
+	return nil
+}
+
 func (r *problemRepo) IsProblemTestSampleFirst(ctx context.Context, pid int) bool {
 	var sampleOrder []int
 	r.data.db.WithContext(ctx).

@@ -212,6 +212,13 @@ const App = (props: any) => {
         Message.error('保存失败');
       });
   }
+  function onDeleteAllTest() {
+    deleteProblemTests(props.problem.id, 0)
+      .then(() => {
+        Message.success('删除成功');
+        fetchData();
+      });
+  }
 
   const DraggableContainer = (props) => (
     <SortableWrapper
@@ -487,20 +494,15 @@ const App = (props: any) => {
             </Modal>
           </Grid.Col>
         </Grid.Row>
-        {!isSampleFirst && (
-          <p>
-            {t['tests.sampleNotFirst']}
-            <Popconfirm
-              focusLock
-              title='调整样例测评顺序'
-              content='继续将会调整样例的测评顺序到最先，确定？'
-              onOk={sortSampleFirst}
-            >
-              <Button>{t['tests.fixSample']}</Button>
-            </Popconfirm>
-          </p>
-        )}
-        <p>
+        <Space style={{marginTop: '10px'}} split={<Divider type='vertical' />}>
+          <Popconfirm
+            focusLock
+            title='删除全部测试点'
+            content='继续将会把所有测试点全部删除，确定？'
+            onOk={onDeleteAllTest}  
+          >
+            <Button type='primary' status='danger'>删除全部测试点</Button>
+          </Popconfirm>
           <Popconfirm
             focusLock
             title='调整测评顺序'
@@ -509,7 +511,20 @@ const App = (props: any) => {
           >
             <Button>{t['tests.sortTestOrderByTestName']}</Button>
           </Popconfirm>
-        </p>
+          {!isSampleFirst && (
+            <div>
+              {t['tests.sampleNotFirst']}
+              <Popconfirm
+                focusLock
+                title='调整样例测评顺序'
+                content='继续将会调整样例的测评顺序到最先，确定？'
+                onOk={sortSampleFirst}
+              >
+                <Button>{t['tests.fixSample']}</Button>
+              </Popconfirm>
+            </div>
+          )}
+        </Space>
       </div>
       <Table
         className='drag-table-container'

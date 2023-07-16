@@ -374,7 +374,7 @@ func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeletePr
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err = s.uc.DeleteProblemTest(ctx, int64(req.Id), int(req.Tid))
+	err = s.uc.DeleteProblemTest(ctx, int(req.Id), int(req.Tid))
 	return &emptypb.Empty{}, err
 }
 
