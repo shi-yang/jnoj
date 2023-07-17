@@ -451,12 +451,12 @@ func (r *userRepo) ListUserProfileUserBadges(ctx context.Context, uid int) (*v1.
 		u.Image, _ = url.JoinPath(
 			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 			r.data.conf.ObjectStorage.PublicBucket.Bucket,
-			fmt.Sprintf(userBadgeFilePath, v.BadgeID, u.Name+".png"),
+			fmt.Sprintf(userBadgeFilePath, v.BadgeID, "image.png"),
 		)
 		u.ImageGif, _ = url.JoinPath(
 			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 			r.data.conf.ObjectStorage.PublicBucket.Bucket,
-			fmt.Sprintf(userBadgeFilePath, v.BadgeID, u.Name+".gif"),
+			fmt.Sprintf(userBadgeFilePath, v.BadgeID, "image.gif"),
 		)
 		res.Data = append(res.Data, u)
 	}

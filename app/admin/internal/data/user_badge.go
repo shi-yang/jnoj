@@ -66,12 +66,12 @@ func (r *userRepo) ListUserBadges(ctx context.Context, req *v1.ListUserBadgesReq
 		res.ImageURL, _ = url.JoinPath(
 			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 			r.data.conf.ObjectStorage.PublicBucket.Bucket,
-			fmt.Sprintf(userBadgeFilePath, res.ID, v.Name+".png"),
+			fmt.Sprintf(userBadgeFilePath, res.ID, "image.png"),
 		)
 		res.ImageGifURL, _ = url.JoinPath(
 			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 			r.data.conf.ObjectStorage.PublicBucket.Bucket,
-			fmt.Sprintf(userBadgeFilePath, res.ID, v.Name+".gif"),
+			fmt.Sprintf(userBadgeFilePath, res.ID, "image.gif"),
 		)
 		rv = append(rv, res)
 	}
@@ -96,12 +96,12 @@ func (r *userRepo) GetUserBadge(ctx context.Context, id int) (*biz.UserBadge, er
 	res.ImageURL, _ = url.JoinPath(
 		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 		r.data.conf.ObjectStorage.PublicBucket.Bucket,
-		fmt.Sprintf(userBadgeFilePath, res.ID, u.Name+".png"),
+		fmt.Sprintf(userBadgeFilePath, res.ID, "image.png"),
 	)
 	res.ImageGifURL, _ = url.JoinPath(
 		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 		r.data.conf.ObjectStorage.PublicBucket.Bucket,
-		fmt.Sprintf(userBadgeFilePath, res.ID, u.Name+".gif"),
+		fmt.Sprintf(userBadgeFilePath, res.ID, "image.gif"),
 	)
 	return res, err
 }
@@ -119,12 +119,12 @@ func (r *userRepo) CreateUserBadge(ctx context.Context, b *biz.UserBadge) (*biz.
 		return nil, err
 	}
 	store := objectstorage.NewSeaweed()
-	pngStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, b.Name+".png")
+	pngStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, "image.png")
 	err = store.PutObject(r.data.conf.ObjectStorage.PublicBucket, pngStoreName, bytes.NewReader(b.Image))
 	if err != nil {
 		return nil, err
 	}
-	gifStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, b.Name+".gif")
+	gifStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, "image.gif")
 	err = store.PutObject(r.data.conf.ObjectStorage.PublicBucket, gifStoreName, bytes.NewReader(b.ImageGif))
 	if err != nil {
 		return nil, err
@@ -158,27 +158,31 @@ func (r *userRepo) UpdateUserBadge(ctx context.Context, b *biz.UserBadge) (*biz.
 		Type: b.Type,
 	}
 	store := objectstorage.NewSeaweed()
-	pngStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, b.Name+".png")
-	err := store.PutObject(r.data.conf.ObjectStorage.PublicBucket, pngStoreName, bytes.NewReader(b.Image))
-	if err != nil {
-		return nil, err
+	if len(b.Image) > 0 {
+		pngStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, "image.png")
+		err := store.PutObject(r.data.conf.ObjectStorage.PublicBucket, pngStoreName, bytes.NewReader(b.Image))
+		if err != nil {
+			return nil, err
+		}
+		res.Image, _ = url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+			pngStoreName,
+		)
 	}
-	gifStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, b.Name+".gif")
-	err = store.PutObject(r.data.conf.ObjectStorage.PublicBucket, gifStoreName, bytes.NewReader(b.ImageGif))
-	if err != nil {
-		return nil, err
+	if len(b.ImageGif) > 0 {
+		gifStoreName := fmt.Sprintf(userBadgeFilePath, res.ID, "image.gif")
+		err := store.PutObject(r.data.conf.ObjectStorage.PublicBucket, gifStoreName, bytes.NewReader(b.ImageGif))
+		if err != nil {
+			return nil, err
+		}
+		res.ImageGif, _ = url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+			gifStoreName,
+		)
 	}
-	res.Image, _ = url.JoinPath(
-		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
-		r.data.conf.ObjectStorage.PublicBucket.Bucket,
-		pngStoreName,
-	)
-	res.ImageGif, _ = url.JoinPath(
-		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
-		r.data.conf.ObjectStorage.PublicBucket.Bucket,
-		gifStoreName,
-	)
-	err = r.data.db.WithContext(ctx).
+	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Updates(&res).Error
 	return nil, err
@@ -193,8 +197,8 @@ func (r *userRepo) DeleteUserBadge(ctx context.Context, id int) error {
 		return err
 	}
 	store := objectstorage.NewSeaweed()
-	pngStoreName := fmt.Sprintf(userBadgeFilePath, u.ID, u.Name+".png")
-	gifStoreName := fmt.Sprintf(userBadgeFilePath, u.ID, u.Name+".gif")
+	pngStoreName := fmt.Sprintf(userBadgeFilePath, u.ID, "image.png")
+	gifStoreName := fmt.Sprintf(userBadgeFilePath, u.ID, "image.gif")
 	store.DeleteObject(r.data.conf.ObjectStorage.PublicBucket, pngStoreName)
 	store.DeleteObject(r.data.conf.ObjectStorage.PublicBucket, gifStoreName)
 	err = r.data.db.WithContext(ctx).
@@ -236,12 +240,12 @@ func (r *userRepo) ListUserUserBadges(ctx context.Context, req *v1.ListUserUserB
 		u.UserBadge.ImageURL, _ = url.JoinPath(
 			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 			r.data.conf.ObjectStorage.PublicBucket.Bucket,
-			fmt.Sprintf(userBadgeFilePath, u.BadgeID, v.UserBadge.Name+".png"),
+			fmt.Sprintf(userBadgeFilePath, u.BadgeID, "image.png"),
 		)
 		u.UserBadge.ImageGifURL, _ = url.JoinPath(
 			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
 			r.data.conf.ObjectStorage.PublicBucket.Bucket,
-			fmt.Sprintf(userBadgeFilePath, u.BadgeID, v.UserBadge.Name+".gif"),
+			fmt.Sprintf(userBadgeFilePath, u.BadgeID, "image.gif"),
 		)
 		userUserBadges = append(userUserBadges, u)
 	}

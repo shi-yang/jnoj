@@ -182,7 +182,7 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
       formData.append('image', values.image[0].originFile);
       formData.append('imageGif', values.imageGif[0].originFile);
       setConfirmLoading(true);
-      updateUserBadge(id, values)
+      updateUserBadge(id, formData)
         .then(res => {
           Message.info('修改成功');
           setVisible(false);
@@ -231,7 +231,7 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
             ))}
           </Radio.Group>
         </FormItem>
-        <FormItem label='勋章图片' required field='image' rules={[{ required: true }]} help='请上传 png 格式，大小应为 240px * 240px'>
+        <FormItem label='勋章图片' field='image' help='请上传 png 格式，大小应为 240px * 240px'>
           <Upload
             fileList={file ? [file] : []}
             showUploadList={false}
@@ -278,7 +278,7 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
             </div>
           </Upload>
         </FormItem>
-        <FormItem label='勋章动态图片' required field='imageGif' rules={[{ required: true }]} help='请上传 gif 格式，大小应为 360px * 360px'>
+        <FormItem label='勋章动态图片' field='imageGif' help='请上传 gif 格式，大小应为 360px * 360px'>
           <Upload
             fileList={fileGif ? [fileGif] : []}
             accept='.gif'
