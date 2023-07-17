@@ -1,8 +1,8 @@
 const i18n = {
   'en-US': {
     'page.title': 'Group List',
-    'index.tab.mygroup': 'My Group',
-    'index.tab.allgroup': 'All Group',
+    'index.tab.my': 'My',
+    'index.tab.all': 'All',
     'index.create': 'Create',
     'index.create.form.name': 'Name',
     'index.create.form.description': 'Description',
@@ -16,8 +16,8 @@ const i18n = {
   },
   'zh-CN': {
     'page.title': '小组',
-    'index.tab.mygroup': '我的小组',
-    'index.tab.allgroup': '全部小组',
+    'index.tab.my': '我的',
+    'index.tab.all': '全部',
     'index.create': '新建',
     'index.create.form.name': '名称',
     'index.create.form.description': '描述',

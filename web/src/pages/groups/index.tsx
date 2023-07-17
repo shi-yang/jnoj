@@ -2,7 +2,6 @@ import React from 'react';
 import { createGroup, listGroups } from '@/api/group';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
-import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
 import {
   Button, Card, Form, Grid, Input, Message,
@@ -22,6 +21,7 @@ export default function Index() {
   const t = useLocale(locale);
   const settings = useAppSelector<SettingState>(setting);
   const [groups, setGroups] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: false,
     showTotal: true,
@@ -37,13 +37,15 @@ export default function Index() {
     type: 'GROUP'
   });
   const [activeTab, setActiveTab] = useState('all');
-  const user = useAppSelector(userInfo);
   useEffect(() => {
-    if (isLogged()) {
-      setActiveTab('mygroup');
+    setIsMounted(true);
+  }, []);
+  useEffect(() => {
+    if (isMounted && isLogged()) {
+      setActiveTab('my');
       setFormParams({...formParams, mygroup: true });
     }
-  }, []);
+  }, [isMounted]);
   useEffect(() => {
     fetchData();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
@@ -67,7 +69,7 @@ export default function Index() {
   }
   function onTabsChange(key) {
     setActiveTab(key);
-    setFormParams({...formParams, mygroup: key === 'mygroup' });
+    setFormParams({...formParams, mygroup: key === 'my' });
   }
   function onChange(current, pageSize) {
     setPatination({
@@ -131,8 +133,8 @@ export default function Index() {
             }
             onChange={onTabsChange}
           >
-            {isLogged() && <Tabs.TabPane key="mygroup" title={t['index.tab.mygroup']} />}
-            <Tabs.TabPane key="all" title={t['index.tab.allgroup']} />
+            {isMounted && isLogged() && <Tabs.TabPane key="my" title={t['index.tab.my']} />}
+            <Tabs.TabPane key="all" title={t['index.tab.all']} />
           </Tabs>
           <Grid.Row gutter={24} className={styles['card-content']}>
             {groups.length > 0 && groups.map((item, index) => (
