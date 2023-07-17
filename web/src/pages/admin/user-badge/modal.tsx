@@ -24,7 +24,7 @@ function CreateModal({callback}: {callback: () => void}) {
       formData.append('name', values.name);
       formData.append('type', values.type);
       formData.append('image', values.image[0].originFile);
-      formData.append('imageGif', values.image[0].originFile);
+      formData.append('imageGif', values.imageGif[0].originFile);
       createUserBadge(formData).then(res => {
         Message.info('创建成功');
         setVisible(false);
@@ -180,7 +180,7 @@ function UpdateModal({id, visible, setVisible, callback}: {id: number, visible: 
       formData.append('name', values.name);
       formData.append('type', values.type);
       formData.append('image', values.image[0].originFile);
-      formData.append('imageGif', values.image[0].originFile);
+      formData.append('imageGif', values.imageGif[0].originFile);
       setConfirmLoading(true);
       updateUserBadge(id, values)
         .then(res => {

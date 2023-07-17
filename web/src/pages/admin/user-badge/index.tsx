@@ -94,12 +94,12 @@ function Index() {
     {
       title: t['searchTable.columns.image'],
       dataIndex: 'image',
-      render: col => <img src={col} alt='image' />
+      render: col => <img src={col} height={80} alt='image' />
     },
     {
       title: t['searchTable.columns.imageGif'],
-      dataIndex: 'image',
-      render: col => <img src={col} alt='imageGif' />
+      dataIndex: 'imageGif',
+      render: col => <img src={col} height={80} alt='imageGif' />
     },
     {
       title: t['searchTable.columns.operations'],

@@ -201,7 +201,11 @@ func (r *userRepo) DeleteUserBadge(ctx context.Context, id int) error {
 		Omit(clause.Associations).
 		Delete(UserBadge{ID: id}).
 		Error
-	return err
+	if err != nil {
+		return err
+	}
+	return r.data.db.WithContext(ctx).Omit(clause.Associations).
+		Delete(&UserUserBadge{}, "badge_id = ?", id).Error
 }
 
 // ListUserUserBadges .
