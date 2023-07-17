@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	v1 "jnoj/api/admin/v1"
+	"time"
 )
 
 // UserBadge is a UserBadge model.
@@ -14,6 +15,14 @@ type UserBadge struct {
 	ImageGif    []byte
 	ImageURL    string
 	ImageGifURL string
+}
+
+type UserUserBadge struct {
+	ID        int
+	UserID    int
+	BadgeID   int
+	CreatedAt time.Time
+	UserBadge *UserBadge
 }
 
 const (
@@ -29,6 +38,10 @@ type UserBadgeRepo interface {
 	CreateUserBadge(context.Context, *UserBadge) (*UserBadge, error)
 	UpdateUserBadge(context.Context, *UserBadge) (*UserBadge, error)
 	DeleteUserBadge(context.Context, int) error
+
+	ListUserUserBadges(context.Context, *v1.ListUserUserBadgesRequest) ([]*UserUserBadge, int)
+	CreateUserUserBadge(context.Context, *UserUserBadge) (*UserUserBadge, error)
+	DeleteUserUserBadge(ctx context.Context, uid int, id int) error
 }
 
 // ListUserBadges list UserBadge
@@ -54,4 +67,19 @@ func (uc *UserUsecase) UpdateUserBadge(ctx context.Context, p *UserBadge) (*User
 // DeleteUserBadge delete a UserBadge
 func (uc *UserUsecase) DeleteUserBadge(ctx context.Context, id int) error {
 	return uc.repo.DeleteUserBadge(ctx, id)
+}
+
+// ListUserUserBadges 获取用户的勋章列表
+func (uc *UserUsecase) ListUserUserBadges(ctx context.Context, request *v1.ListUserUserBadgesRequest) ([]*UserUserBadge, int) {
+	return uc.repo.ListUserUserBadges(ctx, request)
+}
+
+// CreateUserUserBadge 创建用户的勋章
+func (uc *UserUsecase) CreateUserUserBadge(ctx context.Context, badge *UserUserBadge) (*UserUserBadge, error) {
+	return uc.repo.CreateUserUserBadge(ctx, badge)
+}
+
+// DeleteUserUserBadge 删除用户的勋章
+func (uc *UserUsecase) DeleteUserUserBadge(ctx context.Context, uid int, id int) error {
+	return uc.repo.DeleteUserUserBadge(ctx, uid, id)
 }

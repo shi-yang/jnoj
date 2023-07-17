@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form, Input, Message, Radio, Space } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
@@ -12,6 +12,10 @@ function App({callback}: {callback: () => void}) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
   const [method, setMethod] = useState('one');
+
+  useEffect(() => {
+    form.setFieldValue('type', 'one');
+  }, []);
 
   function onOk() {
     form.validate().then((values) => {

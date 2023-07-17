@@ -301,3 +301,44 @@ func (s UserService) UpdateUserBadgeWithFile(ctx http.Context) error {
 	reply := out.(*v1.UserBadge)
 	return ctx.Result(200, reply)
 }
+
+// ListUserUserBadges 用户的勋章列表
+func (s UserService) ListUserUserBadges(ctx context.Context, req *v1.ListUserUserBadgesRequest) (*v1.ListUserUserBadgesResponse, error) {
+	res, count := s.uc.ListUserUserBadges(ctx, req)
+	resp := new(v1.ListUserUserBadgesResponse)
+	resp.Total = int32(count)
+	for _, v := range res {
+		u := &v1.UserUserBadge{
+			Id:        int32(v.ID),
+			UserId:    int32(v.UserID),
+			BadgeId:   int32(v.BadgeID),
+			CreatedAt: timestamppb.New(v.CreatedAt),
+		}
+		u.Badge = &v1.UserBadge{
+			Id:       int32(v.UserBadge.ID),
+			Name:     v.UserBadge.Name,
+			Type:     v1.UserBadgeType(v.UserBadge.Type),
+			Image:    v.UserBadge.ImageURL,
+			ImageGif: v.UserBadge.ImageGifURL,
+		}
+		resp.Data = append(resp.Data, u)
+	}
+	return resp, nil
+}
+
+// CreateUserUserBadge 新增用户的勋章
+func (s UserService) CreateUserUserBadge(ctx context.Context, req *v1.CreateUserUserBadgeRequest) (*v1.UserUserBadge, error) {
+	badge := &biz.UserUserBadge{
+		UserID:    int(req.UserId),
+		BadgeID:   int(req.BadgeId),
+		CreatedAt: req.CreatedAt.AsTime(),
+	}
+	_, err := s.uc.CreateUserUserBadge(ctx, badge)
+	return &v1.UserUserBadge{}, err
+}
+
+// DeleteUserUserBadge 删除用户的勋章
+func (s UserService) DeleteUserUserBadge(ctx context.Context, req *v1.DeleteUserUserBadgeRequest) (*emptypb.Empty, error) {
+	err := s.uc.DeleteUserUserBadge(ctx, int(req.UserId), int(req.Id))
+	return &emptypb.Empty{}, err
+}

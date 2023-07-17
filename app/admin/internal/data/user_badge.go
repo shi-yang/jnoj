@@ -25,6 +25,14 @@ type UserBadge struct {
 	CreatedAt time.Time
 }
 
+type UserUserBadge struct {
+	ID        int
+	UserID    int
+	BadgeID   int
+	CreatedAt time.Time
+	UserBadge *UserBadge `gorm:"foreignKey:BadgeID"`
+}
+
 // 用户勋章储存路径 %d 勋章ID， %s 名称
 const userBadgeFilePath = "/user/badge/%d/%s"
 
@@ -194,4 +202,65 @@ func (r *userRepo) DeleteUserBadge(ctx context.Context, id int) error {
 		Delete(UserBadge{ID: id}).
 		Error
 	return err
+}
+
+// ListUserUserBadges .
+func (r *userRepo) ListUserUserBadges(ctx context.Context, req *v1.ListUserUserBadgesRequest) ([]*biz.UserUserBadge, int) {
+	res := []*UserUserBadge{}
+	count := int64(0)
+	page := pagination.NewPagination(req.Page, req.PerPage)
+	db := r.data.db.WithContext(ctx).Model(&res).Preload("UserBadge")
+	db.Where("user_id = ?", req.UserId)
+	db.Count(&count).
+		Order("id desc").
+		Offset(page.GetOffset()).
+		Limit(page.GetPageSize()).
+		Find(&res)
+	userUserBadges := make([]*biz.UserUserBadge, 0)
+	for _, v := range res {
+		u := &biz.UserUserBadge{
+			ID:      v.ID,
+			UserID:  v.UserID,
+			BadgeID: v.BadgeID,
+			UserBadge: &biz.UserBadge{
+				ID:   v.UserBadge.ID,
+				Name: v.UserBadge.Name,
+				Type: v.UserBadge.Type,
+			},
+			CreatedAt: v.CreatedAt,
+		}
+		u.UserBadge.ImageURL, _ = url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+			fmt.Sprintf(userBadgeFilePath, u.BadgeID, v.UserBadge.Name+".png"),
+		)
+		u.UserBadge.ImageGifURL, _ = url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+			fmt.Sprintf(userBadgeFilePath, u.BadgeID, v.UserBadge.Name+".gif"),
+		)
+		userUserBadges = append(userUserBadges, u)
+	}
+	return userUserBadges, int(count)
+}
+
+// CreateUserUserBadge .
+func (r *userRepo) CreateUserUserBadge(ctx context.Context, userUserBadge *biz.UserUserBadge) (*biz.UserUserBadge, error) {
+	u := &UserUserBadge{
+		UserID:    userUserBadge.UserID,
+		BadgeID:   userUserBadge.BadgeID,
+		CreatedAt: userUserBadge.CreatedAt,
+	}
+	err := r.data.db.WithContext(ctx).
+		Create(u).Error
+	return &biz.UserUserBadge{
+		ID: u.ID,
+	}, err
+}
+
+// DeleteUserUserBadge .
+func (r *userRepo) DeleteUserUserBadge(ctx context.Context, uid int, id int) error {
+	return r.data.db.WithContext(ctx).
+		Delete(&UserUserBadge{ID: id}).
+		Error
 }

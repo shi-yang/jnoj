@@ -94,6 +94,25 @@ service UserService {
             body: "*"
         };
     };
+    // 新增用户的用户勋章
+    rpc CreateUserUserBadge(CreateUserUserBadgeRequest) returns (UserUserBadge) {
+        option (google.api.http) = {
+            post: "/users/{user_id}/user_badges"
+            body: "*"
+        };
+    }
+    // 获取用户的勋章列表
+    rpc ListUserUserBadges(ListUserUserBadgesRequest) returns (ListUserUserBadgesResponse) {
+        option (google.api.http) = {
+            get: "/users/{user_id}/user_badges"
+        };
+    }
+    // 删除用户的勋章
+    rpc DeleteUserUserBadge(DeleteUserUserBadgeRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/users/{user_id}/user_badges/{id}"
+        };
+    }
 }
 
 message User {
@@ -278,4 +297,34 @@ message UpdateUserBadgeRequest {
     bytes image = 3;
     bytes image_gif = 4;
     UserBadgeType type = 5;
+}
+
+message UserUserBadge {
+    int32 id = 1;
+    int32 user_id = 2;
+    int32 badge_id = 3;
+    UserBadge badge = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateUserUserBadgeRequest {
+    int32 user_id = 1;
+    int32 badge_id = 2;
+    google.protobuf.Timestamp created_at = 3;
+}
+
+message ListUserUserBadgesRequest {
+    int32 user_id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
+}
+
+message ListUserUserBadgesResponse {
+    repeated UserUserBadge data = 1;
+    int32 total = 2;
+}
+
+message DeleteUserUserBadgeRequest {
+    int32 user_id = 1;
+    int32 id = 2;
 }

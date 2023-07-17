@@ -59,3 +59,15 @@ export function updateUserBadge(id, data) {
 export function deleteUserBadge(id: number) {
   return axios.delete(`/user_badges/${id}`);
 }
+
+export function listUserUserBadges(id: number, params: any) {
+  return axios.get(`/users/${id}/user_badges`, {params});
+}
+
+export function createUserUserBadge(id: number, data: any) {
+  return axios.post(`/users/${id}/user_badges`, data);
+}
+
+export function deleteUserUserBadge(uid: number, bid: number) {
+  return axios.delete(`/users/${uid}/user_badges/${bid}`);
+}
