@@ -244,9 +244,9 @@ func (s UserService) CreateUserBadgeWithFile(ctx http.Context) error {
 }
 
 // DeleteUserBadge 删除用户勋章
-func (s UserService) DeleteUserBadge(ctx context.Context, req *v1.DeleteUserBadgeRequest) (*emptypb.Empty, error) {
+func (s UserService) DeleteUserBadge(ctx context.Context, req *v1.DeleteUserBadgeRequest) (*v1.UserBadge, error) {
 	err := s.uc.DeleteUserBadge(ctx, int(req.Id))
-	return &emptypb.Empty{}, err
+	return &v1.UserBadge{}, err
 }
 
 // UpdateUserBadge 修改用户勋章

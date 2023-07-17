@@ -88,7 +88,7 @@ service UserService {
         };
     };
     // 修改用户勋章
-    rpc UpdateUserBadge(UpdateUserBadgeRequest) returns (google.protobuf.Empty) {
+    rpc UpdateUserBadge(UpdateUserBadgeRequest) returns (UserUserBadge) {
         option (google.api.http) = {
             put: "/user_badges_json/{id}"
             body: "*"

@@ -55,7 +55,7 @@ type UserServiceHTTPServer interface {
 	ListUserUserBadges(context.Context, *ListUserUserBadgesRequest) (*ListUserUserBadgesResponse, error)
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
-	UpdateUserBadge(context.Context, *UpdateUserBadgeRequest) (*emptypb.Empty, error)
+	UpdateUserBadge(context.Context, *UpdateUserBadgeRequest) (*UserUserBadge, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
@@ -339,7 +339,7 @@ func _UserService_UpdateUserBadge0_HTTP_Handler(srv UserServiceHTTPServer) func(
 		if err != nil {
 			return err
 		}
-		reply := out.(*emptypb.Empty)
+		reply := out.(*UserUserBadge)
 		return ctx.Result(200, reply)
 	}
 }
@@ -426,7 +426,7 @@ type UserServiceHTTPClient interface {
 	ListUserUserBadges(ctx context.Context, req *ListUserUserBadgesRequest, opts ...http.CallOption) (rsp *ListUserUserBadgesResponse, err error)
 	ListUsers(ctx context.Context, req *ListUsersRequest, opts ...http.CallOption) (rsp *ListUsersResponse, err error)
 	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *User, err error)
-	UpdateUserBadge(ctx context.Context, req *UpdateUserBadgeRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	UpdateUserBadge(ctx context.Context, req *UpdateUserBadgeRequest, opts ...http.CallOption) (rsp *UserUserBadge, err error)
 }
 
 type UserServiceHTTPClientImpl struct {
@@ -632,8 +632,8 @@ func (c *UserServiceHTTPClientImpl) UpdateUser(ctx context.Context, in *UpdateUs
 	return &out, err
 }
 
-func (c *UserServiceHTTPClientImpl) UpdateUserBadge(ctx context.Context, in *UpdateUserBadgeRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
-	var out emptypb.Empty
+func (c *UserServiceHTTPClientImpl) UpdateUserBadge(ctx context.Context, in *UpdateUserBadgeRequest, opts ...http.CallOption) (*UserUserBadge, error) {
+	var out UserUserBadge
 	pattern := "/user_badges_json/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUserServiceUpdateUserBadge))
