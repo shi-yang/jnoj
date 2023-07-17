@@ -23,7 +23,7 @@ data:
       bucket: "public"
       secret_id: "jnoj_access_key1"
       secret_key: "jnoj_secret_key1"
-      endpoint: "http://jnoj-s3:8333"
+      endpoint: "${USER_CONTENT_DOMAIN}"
   message_queue:
     address: "amqp://admin:admin@rabbitmq:5672/"
 service:
