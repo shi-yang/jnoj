@@ -1,11 +1,12 @@
 syntax = "proto3";
 
-package jnoj.interface.v1;
+package jnoj.interface.v1.user;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -74,6 +75,12 @@ service UserService {
             get: "/users/{id}/profile_problemsolved"
         };
     };
+    // 用户主页勋章成就
+    rpc ListUserProfileUserBadges (ListUserProfileUserBadgesRequest) returns (ListUserProfileUserBadgesResponse) {
+        option (google.api.http) = {
+            get: "/users/{id}/profile_user_badges"
+        };
+    }
 }
 
 message LoginRequest {
@@ -258,4 +265,28 @@ message GetUserProfileCountResponse {
     int32 problem_solved = 1;
     int32 contest_rating = 2;
     repeated ContestRanking contest_ranking_history = 3;
+}
+
+enum UserBadgeType {
+    ACTIVITY = 0;
+    LEVEL = 1;
+    CONTEST = 2;
+}
+
+message UserBadge {
+    int32 id = 1;
+    string name = 2;
+    string image = 3;
+    string image_gif = 4;
+    UserBadgeType type = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message ListUserProfileUserBadgesRequest {
+    int32 id = 1;
+}
+
+message ListUserProfileUserBadgesResponse {
+    repeated UserBadge data = 1;
+    int32 total = 2;
 }

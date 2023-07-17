@@ -58,6 +58,7 @@ type UserRepo interface {
 	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileGroupProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUserProfileCountResponse, error)
+	ListUserProfileUserBadges(ctx context.Context, uid int) (*v1.ListUserProfileUserBadgesResponse, error)
 
 	GetCaptcha(ctx context.Context, key string) (string, error)
 	SaveCaptcha(ctx context.Context, key string, value string) error
@@ -220,4 +221,9 @@ func (uc *UserUsecase) GetUserProfileProblemSolved(ctx context.Context, req *v1.
 // GetUserProfileCount 用户主页-统计
 func (uc *UserUsecase) GetUserProfileCount(ctx context.Context, id int) (*v1.GetUserProfileCountResponse, error) {
 	return uc.repo.GetUserProfileCount(ctx, id)
+}
+
+// ListUserProfileUserBadges 用户主页勋章成就
+func (uc *UserUsecase) ListUserProfileUserBadges(ctx context.Context, id int) (*v1.ListUserProfileUserBadgesResponse, error) {
+	return uc.repo.ListUserProfileUserBadges(ctx, id)
 }

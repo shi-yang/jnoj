@@ -149,3 +149,8 @@ func (s UserService) GetUserProfileProblemSolved(ctx context.Context, req *v1.Ge
 func (s UserService) GetUserProfileCount(ctx context.Context, req *v1.GetUserProfileCountRequest) (*v1.GetUserProfileCountResponse, error) {
 	return s.uc.GetUserProfileCount(ctx, int(req.Id))
 }
+
+// ListUserProfileUserBadges 用户主页勋章成就
+func (s UserService) ListUserProfileUserBadges(ctx context.Context, req *v1.ListUserProfileUserBadgesRequest) (*v1.ListUserProfileUserBadgesResponse, error) {
+	return s.uc.ListUserProfileUserBadges(ctx, int(req.Id))
+}

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package jnoj.interface.v1;
+package jnoj.interface.v1.contest;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";

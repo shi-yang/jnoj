@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package jnoj.interface.v1;
+package jnoj.interface.v1.sandboxs;
 
 option go_package = "api/interface/v1;v1";
 

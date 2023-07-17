@@ -60,3 +60,7 @@ export function updateUserPassword(id, data) {
 export function getUserProfileCount(id: number) {
   return axios.get(`/users/${id}/profile_count`);
 }
+
+export function listUserProfileUserBadges(id: number) {
+  return axios.get(`/users/${id}/profile_user_badges`);
+}

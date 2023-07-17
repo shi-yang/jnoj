@@ -3,6 +3,8 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/url"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -10,6 +12,7 @@ import (
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -41,6 +44,26 @@ type User struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
 }
+
+type UserBadge struct {
+	ID        int
+	Name      string
+	Type      int
+	Image     string
+	ImageGif  string
+	CreatedAt time.Time
+}
+
+type UserUserBadge struct {
+	ID        int
+	UserID    int
+	BadgeID   int
+	CreatedAt time.Time
+	UserBadge *UserBadge `gorm:"foreignKey:BadgeID"`
+}
+
+// 用户勋章储存路径 %d 勋章ID， %s 名称
+const userBadgeFilePath = "/user/badge/%d/%s"
 
 func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	res := User{}
@@ -400,5 +423,42 @@ func (r *userRepo) GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUse
 		Where("submission.user_id = ?", uid).
 		Where("entity_type = ? or (entity_type = ? and contest.end_time < ?)", biz.SubmissionEntityTypeProblemset, biz.SubmissionEntityTypeContest, time.Now()).
 		Scan(&res.ProblemSolved)
+	return res, nil
+}
+
+// ListUserProfileUserBadges 用户主页勋章成就
+func (r *userRepo) ListUserProfileUserBadges(ctx context.Context, uid int) (*v1.ListUserProfileUserBadgesResponse, error) {
+	var badges []*UserUserBadge
+	r.data.db.WithContext(ctx).
+		Model(&badges).
+		Preload("UserBadge").
+		Where("user_id = ?", uid).
+		Order("created_at desc").
+		Find(&badges)
+	res := new(v1.ListUserProfileUserBadgesResponse)
+	for _, v := range badges {
+		if v.UserBadge == nil {
+			continue
+		}
+		u := &v1.UserBadge{
+			Id:        int32(v.ID),
+			Name:      v.UserBadge.Name,
+			Image:     v.UserBadge.Image,
+			ImageGif:  v.UserBadge.ImageGif,
+			Type:      v1.UserBadgeType(v.UserBadge.Type),
+			CreatedAt: timestamppb.New(v.CreatedAt),
+		}
+		u.Image, _ = url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+			fmt.Sprintf(userBadgeFilePath, v.BadgeID, u.Name+".png"),
+		)
+		u.ImageGif, _ = url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+			fmt.Sprintf(userBadgeFilePath, v.BadgeID, u.Name+".gif"),
+		)
+		res.Data = append(res.Data, u)
+	}
 	return res, nil
 }

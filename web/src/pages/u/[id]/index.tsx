@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers } from '@/api/user';
+import { getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Card, Collapse, Divider, Grid, Link, List, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Button, Card, Collapse, Divider, Grid, Image, Link, List, Modal, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -15,9 +15,8 @@ import { listSubmissions } from '@/api/submission';
 import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
 import { FormatTime } from '@/utils/format';
 import StatisticCard from '@/components/StatisticCard';
-import { IconFile, IconTrophy } from '@arco-design/web-react/icon';
+import { IconFile, IconMore, IconTrophy } from '@arco-design/web-react/icon';
 import ReactECharts from 'echarts-for-react';
-
 
 function RecentlySubmission({userId}: {userId: number}) {
   const [data, setData] = useState([]);
@@ -50,6 +49,93 @@ function RecentlySubmission({userId}: {userId: number}) {
         </List.Item>
       )}
     />
+  );
+}
+
+export enum UserBadgeType {
+  ACTIVITY = 'ACTIVITY', // 活动勋章
+  LEVEL = 'LEVEL', // 等级勋章
+  CONTEST = 'CONTEST' // 竞赛勋章
+};
+
+function UserBadageListModal({userBadges}: {userBadges: any[]}) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <>
+      <Tooltip content='查看更多' position='bottom' >
+        <Button
+          size='large'
+          shape='circle'
+          long type='text'
+          icon={<IconMore />}
+          onClick={(e) => setVisible(true)}
+          style={{width: '80px', height: '80px'}}
+        />
+      </Tooltip>
+      <Modal
+        visible={visible}
+        onCancel={() =>setVisible(false)}
+        footer={null}
+      >
+        <Card title='活动勋章'>
+          <Grid.Row style={{textAlign: 'center'}}>
+            {userBadges.filter(item => item.type === UserBadgeType.ACTIVITY).map((item, index) => (
+              <Grid.Col key={index} span={6}>
+                <Image
+                  width={80}
+                  src={item.image}
+                  title={item.name}
+                  description={FormatTime(item.createdAt, 'YYYY-MM-DD')}
+                  footerPosition='outer'
+                  alt='lamp'
+                  previewProps={{
+                    src: item.imageGif,
+                  }}
+                />
+              </Grid.Col>
+            ))}
+          </Grid.Row>
+        </Card>
+        <Card title='等级勋章'>
+          <Grid.Row style={{textAlign: 'center'}}>
+            {userBadges.filter(item => item.type === UserBadgeType.LEVEL).map((item, index) => (
+              <Grid.Col key={index} span={6}>
+                <Image
+                  width={80}
+                  src={item.image}
+                  title={item.name}
+                  description={FormatTime(item.createdAt, 'YYYY-MM-DD')}
+                  footerPosition='outer'
+                  alt='lamp'
+                  previewProps={{
+                    src: item.imageGif,
+                  }}
+                />
+              </Grid.Col>
+            ))}
+          </Grid.Row>
+        </Card>
+        <Card title='竞赛勋章'>
+          <Grid.Row style={{textAlign: 'center'}}>
+            {userBadges.filter(item => item.type === UserBadgeType.CONTEST).map((item, index) => (
+              <Grid.Col key={index} span={6}>
+                <Image
+                  width={80}
+                  src={item.image}
+                  title={item.name}
+                  description={FormatTime(item.createdAt, 'YYYY-MM-DD')}
+                  footerPosition='outer'
+                  alt='lamp'
+                  previewProps={{
+                    src: item.imageGif,
+                  }}
+                />
+              </Grid.Col>
+            ))}
+          </Grid.Row>
+        </Card>
+      </Modal>
+    </>
   );
 }
 
@@ -94,6 +180,7 @@ export default function UserPage() {
   const [profileContests, setProfileContests] = useState([]);
   const [profileGroups, setProfileGroups] = useState([]);
   const [calendarSelectYear, setCalendarSelectYear] = useState(0);
+  const [profileUserBadges, setProfileUserBadges] = useState([]);
   const [profileCount, setProfileCount] = useState({
     contestRating: 0,
     problemSolved: 0,
@@ -179,6 +266,10 @@ export default function UserPage() {
       .then(res => {
         setUser(res.data);
       });
+    listUserProfileUserBadges(Number(id))
+      .then(res => {
+        setProfileUserBadges(res.data.data);
+      });
     getUserProfileCalendar(id).
       then(res => {
         const { data } = res;
@@ -236,31 +327,93 @@ export default function UserPage() {
             </Tooltip>
           }
         </div>
-        <Card>
-          <StatisticCard
-            items={[
+        <Grid.Row gutter={24}>
+          <Grid.Col span={12}>
+            <Card title='做题'>
+              <StatisticCard
+                items={[
+                  {
+                    icon: <IconFile fontSize={30} />,
+                    title: '解题数量',
+                    count: profileCount.problemSolved,
+                    loading: false,
+                  },
+                  {
+                    icon: <IconTrophy fontSize={30} />,
+                    title: '竞赛分数',
+                    count: profileCount.contestRating,
+                    loading: false,
+                  }
+                ]}
+              />
               {
-                icon: <IconFile fontSize={30} />,
-                title: '解题数量',
-                count: profileCount.problemSolved,
-                loading: false,
-              },
-              {
-                icon: <IconTrophy fontSize={30} />,
-                title: '竞赛分数',
-                count: profileCount.contestRating,
-                loading: false,
+                profileCount.contestRating !== 0 && (
+                  <div>
+                    <ReactECharts style={{height: '200px'}} option={ratingHistory} />
+                  </div>
+                )
               }
-            ]}
-          />
-          {
-            profileCount.contestRating !== 0 && (
-              <div>
-                <ReactECharts style={{height: '200px'}} option={ratingHistory} />
-              </div>
-            )
-          }
-        </Card>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <Card title='勋章成就'>
+              <Grid.Row style={{textAlign: 'center'}}>
+                <Grid.Col flex='auto'>
+                  <Grid.Row justify='center'>
+                  {profileUserBadges.length > 0 && (
+                    <Grid.Col span={8}>
+                      <Image
+                        width={80}
+                        src={profileUserBadges[0].image}
+                        title={profileUserBadges[0].name}
+                        description={FormatTime(profileUserBadges[0].createdAt, 'YYYY-MM-DD')}
+                        footerPosition='outer'
+                        alt='lamp'
+                        previewProps={{
+                          src: profileUserBadges[0].imageGif,
+                        }}
+                      />
+                    </Grid.Col>
+                  )}
+                  {profileUserBadges.length > 1 && (
+                    <Grid.Col span={8}>
+                      <Image
+                        width={80}
+                        src={profileUserBadges[1].image}
+                        title={profileUserBadges[1].name}
+                        description={FormatTime(profileUserBadges[1].createdAt, 'YYYY-MM-DD')}
+                        footerPosition='outer'
+                        alt='lamp'
+                        previewProps={{
+                          src: profileUserBadges[1].imageGif,
+                        }}
+                      />
+                    </Grid.Col>
+                  )}
+                  {profileUserBadges.length > 2 && (
+                    <Grid.Col span={8}>
+                      <Image
+                        width={80}
+                        src={profileUserBadges[2].image}
+                        title={profileUserBadges[2].name}
+                        description={FormatTime(profileUserBadges[2].createdAt, 'YYYY-MM-DD')}
+                        footerPosition='outer'
+                        alt='lamp'
+                        previewProps={{
+                          src: profileUserBadges[2].imageGif,
+                        }}
+                      />
+                    </Grid.Col>
+                  )}
+                  </Grid.Row>
+                </Grid.Col>
+                <Grid.Col flex='100px'>
+                  <UserBadageListModal userBadges={profileUserBadges} />
+                </Grid.Col>
+              </Grid.Row>
+            </Card>
+          </Grid.Col>
+        </Grid.Row>
         <Divider type='horizontal' />
         <Card
           title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}

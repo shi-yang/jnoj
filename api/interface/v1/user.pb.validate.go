@@ -2215,6 +2215,392 @@ var _ interface {
 	ErrorName() string
 } = GetUserProfileCountResponseValidationError{}
 
+// Validate checks the field values on UserBadge with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UserBadge) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserBadge with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in UserBadgeMultiError, or nil
+// if none found.
+func (m *UserBadge) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserBadge) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Image
+
+	// no validation rules for ImageGif
+
+	// no validation rules for Type
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UserBadgeValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UserBadgeValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UserBadgeValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UserBadgeMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserBadgeMultiError is an error wrapping multiple validation errors returned
+// by UserBadge.ValidateAll() if the designated constraints aren't met.
+type UserBadgeMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserBadgeMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserBadgeMultiError) AllErrors() []error { return m }
+
+// UserBadgeValidationError is the validation error returned by
+// UserBadge.Validate if the designated constraints aren't met.
+type UserBadgeValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserBadgeValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserBadgeValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserBadgeValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserBadgeValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserBadgeValidationError) ErrorName() string { return "UserBadgeValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserBadgeValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserBadge.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserBadgeValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserBadgeValidationError{}
+
+// Validate checks the field values on ListUserProfileUserBadgesRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListUserProfileUserBadgesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListUserProfileUserBadgesRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListUserProfileUserBadgesRequestMultiError, or nil if none found.
+func (m *ListUserProfileUserBadgesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListUserProfileUserBadgesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return ListUserProfileUserBadgesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListUserProfileUserBadgesRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// ListUserProfileUserBadgesRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ListUserProfileUserBadgesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListUserProfileUserBadgesRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListUserProfileUserBadgesRequestMultiError) AllErrors() []error { return m }
+
+// ListUserProfileUserBadgesRequestValidationError is the validation error
+// returned by ListUserProfileUserBadgesRequest.Validate if the designated
+// constraints aren't met.
+type ListUserProfileUserBadgesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListUserProfileUserBadgesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListUserProfileUserBadgesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListUserProfileUserBadgesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListUserProfileUserBadgesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListUserProfileUserBadgesRequestValidationError) ErrorName() string {
+	return "ListUserProfileUserBadgesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListUserProfileUserBadgesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListUserProfileUserBadgesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListUserProfileUserBadgesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListUserProfileUserBadgesRequestValidationError{}
+
+// Validate checks the field values on ListUserProfileUserBadgesResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListUserProfileUserBadgesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListUserProfileUserBadgesResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// ListUserProfileUserBadgesResponseMultiError, or nil if none found.
+func (m *ListUserProfileUserBadgesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListUserProfileUserBadgesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListUserProfileUserBadgesResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListUserProfileUserBadgesResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListUserProfileUserBadgesResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListUserProfileUserBadgesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListUserProfileUserBadgesResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// ListUserProfileUserBadgesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListUserProfileUserBadgesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListUserProfileUserBadgesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListUserProfileUserBadgesResponseMultiError) AllErrors() []error { return m }
+
+// ListUserProfileUserBadgesResponseValidationError is the validation error
+// returned by ListUserProfileUserBadgesResponse.Validate if the designated
+// constraints aren't met.
+type ListUserProfileUserBadgesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListUserProfileUserBadgesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListUserProfileUserBadgesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListUserProfileUserBadgesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListUserProfileUserBadgesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListUserProfileUserBadgesResponseValidationError) ErrorName() string {
+	return "ListUserProfileUserBadgesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListUserProfileUserBadgesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListUserProfileUserBadgesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListUserProfileUserBadgesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListUserProfileUserBadgesResponseValidationError{}
+
 // Validate checks the field values on
 // GetUserProfileCalendarResponse_ProfileCalendar with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
