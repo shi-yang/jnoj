@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	v1 "jnoj/api/admin/v1"
+	"jnoj/app/admin/internal/biz"
 	"jnoj/app/admin/internal/conf"
 	"jnoj/app/admin/internal/service"
 	"jnoj/internal/middleware/auth"
@@ -59,8 +60,8 @@ func NewHTTPServer(c *conf.Server,
 func AdminAuth() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
-			uid, _ := auth.GetUserID(ctx)
-			if uid != 1 {
+			_, role := auth.GetUserID(ctx)
+			if role != biz.UserRoleSuperAdmin {
 				return nil, jwt.ErrTokenInvalid
 			}
 			return handler(ctx, req)
