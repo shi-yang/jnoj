@@ -244,13 +244,13 @@ func (s UserService) CreateUserBadgeWithFile(ctx http.Context) error {
 }
 
 // DeleteUserBadge 删除用户勋章
-func (s UserService) DeleteUserBadge(ctx context.Context, req *v1.DeleteUserBadgeRequest) (*v1.UserBadge, error) {
+func (s UserService) DeleteUserBadge(ctx context.Context, req *v1.DeleteUserBadgeRequest) (*emptypb.Empty, error) {
 	err := s.uc.DeleteUserBadge(ctx, int(req.Id))
-	return &v1.UserBadge{}, err
+	return &emptypb.Empty{}, err
 }
 
 // UpdateUserBadge 修改用户勋章
-func (s UserService) UpdateUserBadge(ctx context.Context, req *v1.UpdateUserBadgeRequest) (*emptypb.Empty, error) {
+func (s UserService) UpdateUserBadge(ctx context.Context, req *v1.UpdateUserBadgeRequest) (*v1.UserBadge, error) {
 	_, err := s.uc.UpdateUserBadge(ctx, &biz.UserBadge{
 		ID:       int(req.Id),
 		Name:     req.Name,
@@ -258,7 +258,7 @@ func (s UserService) UpdateUserBadge(ctx context.Context, req *v1.UpdateUserBadg
 		ImageGif: req.ImageGif,
 		Type:     int(req.Type),
 	})
-	return &emptypb.Empty{}, err
+	return &v1.UserBadge{}, err
 }
 
 // UpdateUserBadgeWithFile 处理用户勋章图片上传
