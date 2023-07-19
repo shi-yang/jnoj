@@ -20,16 +20,30 @@ import (
 
 // User is a User model.
 type User struct {
-	ID        int
-	Username  string
-	Nickname  string
+	ID          int
+	Username    string
+	Nickname    string
+	Email       string
+	Phone       string
+	Password    string
+	Role        int
+	Status      int
+	CreatedAt   time.Time
+	UserProfile *UserProfile
+}
+
+type UserProfile struct {
+	UserID    int
 	Realname  string
-	Email     string
-	Phone     string
-	Password  string
-	Role      int
-	Status    int
+	Location  string
+	Bio       string
+	Gender    int
+	School    string
+	Birthday  *time.Time
+	Company   string
+	Job       string
 	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // 用户角色
@@ -53,6 +67,8 @@ type UserRepo interface {
 	GetUser(context.Context, *User) (*User, error)
 	UpdateUser(context.Context, *User) (*User, error)
 	FindByID(context.Context, int) (*User, error)
+	GetUserProfile(context.Context, int) (*UserProfile, error)
+	UpdateUserProfile(context.Context, *UserProfile) (*UserProfile, error)
 	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
 	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
@@ -203,6 +219,14 @@ func (uc *UserUsecase) UpdateUserPassowrd(ctx context.Context, u *User, oldPassw
 	}
 	password, _ := password.GeneratePasswordHash(newPassword)
 	return uc.repo.UpdateUser(ctx, &User{ID: u.ID, Password: password})
+}
+
+func (uc *UserUsecase) GetUserProfile(ctx context.Context, id int) (*UserProfile, error) {
+	return uc.repo.GetUserProfile(ctx, id)
+}
+
+func (uc *UserUsecase) UpdateUserProfile(ctx context.Context, u *UserProfile) (*UserProfile, error) {
+	return uc.repo.UpdateUserProfile(ctx, u)
 }
 
 func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {

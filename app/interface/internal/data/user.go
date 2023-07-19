@@ -34,7 +34,6 @@ type User struct {
 	ID        int
 	Username  string
 	Nickname  string
-	Realname  string
 	Password  string
 	Email     string
 	Phone     string
@@ -43,6 +42,20 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
+}
+
+type UserProfile struct {
+	UserID    int
+	Realname  string
+	Location  string
+	Bio       string
+	Gender    int
+	School    string
+	Birthday  *time.Time
+	Company   string
+	Job       string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type UserBadge struct {
@@ -82,7 +95,6 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 		ID:       res.ID,
 		Username: res.Username,
 		Nickname: res.Nickname,
-		Realname: res.Realname,
 		Email:    res.Email,
 		Phone:    res.Phone,
 		Role:     res.Role,
@@ -99,9 +111,20 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 		Nickname: u.Nickname,
 		Phone:    u.Phone,
 	}
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
+	tx := r.data.db.WithContext(ctx).Begin()
+	err := tx.Omit(clause.Associations).
 		Create(&res).Error
+	if err != nil {
+		return nil, err
+	}
+	err = tx.Omit(clause.Associations).Create(&UserProfile{
+		UserID: res.ID,
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
 	return &biz.User{
 		ID: res.ID,
 	}, err
@@ -131,11 +154,54 @@ func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 		ID:       o.ID,
 		Username: o.Username,
 		Nickname: o.Nickname,
-		Realname: o.Realname,
 		Role:     o.Role,
 		Status:   o.Status,
 		Password: o.Password,
 	}, nil
+}
+
+// GetUserProfile 获取用户信息
+func (r *userRepo) GetUserProfile(ctx context.Context, ID int) (*biz.UserProfile, error) {
+	var up UserProfile
+	err := r.data.db.WithContext(ctx).
+		First(&up, "user_id = ?", ID).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &biz.UserProfile{
+		UserID:    up.UserID,
+		Realname:  up.Realname,
+		Location:  up.Location,
+		Bio:       up.Bio,
+		Gender:    up.Gender,
+		School:    up.School,
+		Birthday:  up.Birthday,
+		Company:   up.Company,
+		Job:       up.Job,
+		CreatedAt: up.CreatedAt,
+		UpdatedAt: up.UpdatedAt,
+	}, nil
+}
+
+// UpdateUserProfile 修改用户信息
+func (r *userRepo) UpdateUserProfile(ctx context.Context, up *biz.UserProfile) (*biz.UserProfile, error) {
+	update := UserProfile{
+		UserID:   up.UserID,
+		Location: up.Location,
+		Bio:      up.Bio,
+		Gender:   up.Gender,
+		School:   up.School,
+		Birthday: up.Birthday,
+		Company:  up.Company,
+		Job:      up.Job,
+	}
+	err := r.data.db.WithContext(ctx).
+		Omit(clause.Associations).
+		Select("Location", "Bio", "Gender", "School", "Birthday", "Company", "Job").
+		Where("user_id = ?", up.UserID).
+		Updates(&update).Error
+	return up, err
 }
 
 func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {

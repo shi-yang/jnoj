@@ -114,7 +114,7 @@ function Index() {
     },
     {
       title: t['searchTable.columns.realname'],
-      dataIndex: 'realname',
+      dataIndex: 'profile.realname',
       align: 'center' as 'center',
       filterMultiple: false,
       filterIcon: <IconSearch />,

@@ -33,6 +33,10 @@ export function getUsers(id) {
   return axios.get(`/users/${id}`);
 }
 
+export function getUserProfile(id) {
+  return axios.get(`/users/${id}/profile`);
+}
+
 interface getCaptchaRequest {
   phone?: string;
   email?: string;

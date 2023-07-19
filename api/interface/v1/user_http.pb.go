@@ -22,9 +22,11 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+// auth.
 const OperationUserServiceGetCaptcha = "/jnoj.interface.v1.user.UserService/GetCaptcha"
 const OperationUserServiceGetUser = "/jnoj.interface.v1.user.UserService/GetUser"
 const OperationUserServiceGetUserInfo = "/jnoj.interface.v1.user.UserService/GetUserInfo"
+const OperationUserServiceGetUserProfile = "/jnoj.interface.v1.user.UserService/GetUserProfile"
 const OperationUserServiceGetUserProfileCalendar = "/jnoj.interface.v1.user.UserService/GetUserProfileCalendar"
 const OperationUserServiceGetUserProfileCount = "/jnoj.interface.v1.user.UserService/GetUserProfileCount"
 const OperationUserServiceGetUserProfileProblemSolved = "/jnoj.interface.v1.user.UserService/GetUserProfileProblemSolved"
@@ -38,6 +40,7 @@ type UserServiceHTTPServer interface {
 	GetCaptcha(context.Context, *GetCaptchaRequest) (*emptypb.Empty, error)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetUserInfo(context.Context, *emptypb.Empty) (*GetUserInfoResponse, error)
+	GetUserProfile(context.Context, *GetUserProfileRequest) (*UserProfile, error)
 	GetUserProfileCalendar(context.Context, *GetUserProfileCalendarRequest) (*GetUserProfileCalendarResponse, error)
 	GetUserProfileCount(context.Context, *GetUserProfileCountRequest) (*GetUserProfileCountResponse, error)
 	GetUserProfileProblemSolved(context.Context, *GetUserProfileProblemSolvedRequest) (*GetUserProfileProblemSolvedResponse, error)
@@ -53,6 +56,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUser", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUserPassword", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/CreateUser", auth.User())
+	s.Use("/jnoj.interface.v1.user.UserService/GetUserProfile", auth.Guest())
 	r := s.Route("/")
 	r.POST("/login", _UserService_Login0_HTTP_Handler(srv))
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
@@ -60,6 +64,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
+	r.GET("/users/{id}/profile", _UserService_GetUserProfile0_HTTP_Handler(srv))
 	r.PUT("/users/{id}/password", _UserService_UpdateUserPassword0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_count", _UserService_GetUserProfileCount0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_calendar", _UserService_GetUserProfileCalendar0_HTTP_Handler(srv))
@@ -187,6 +192,28 @@ func _UserService_UpdateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 	}
 }
 
+func _UserService_GetUserProfile0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserProfileRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceGetUserProfile)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserProfile(ctx, req.(*GetUserProfileRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserProfile)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _UserService_UpdateUserPassword0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in UpdateUserPasswordRequest
@@ -301,6 +328,7 @@ type UserServiceHTTPClient interface {
 	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	GetUserInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetUserInfoResponse, err error)
+	GetUserProfile(ctx context.Context, req *GetUserProfileRequest, opts ...http.CallOption) (rsp *UserProfile, err error)
 	GetUserProfileCalendar(ctx context.Context, req *GetUserProfileCalendarRequest, opts ...http.CallOption) (rsp *GetUserProfileCalendarResponse, err error)
 	GetUserProfileCount(ctx context.Context, req *GetUserProfileCountRequest, opts ...http.CallOption) (rsp *GetUserProfileCountResponse, err error)
 	GetUserProfileProblemSolved(ctx context.Context, req *GetUserProfileProblemSolvedRequest, opts ...http.CallOption) (rsp *GetUserProfileProblemSolvedResponse, err error)
@@ -350,6 +378,19 @@ func (c *UserServiceHTTPClientImpl) GetUserInfo(ctx context.Context, in *emptypb
 	pattern := "/user/info"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceGetUserInfo))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) GetUserProfile(ctx context.Context, in *GetUserProfileRequest, opts ...http.CallOption) (*UserProfile, error) {
+	var out UserProfile
+	pattern := "/users/{id}/profile"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceGetUserProfile))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

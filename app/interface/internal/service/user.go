@@ -8,6 +8,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // UserService is a user service.
@@ -115,10 +116,45 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 	}
 	user.Nickname = req.Nickname
 	s.uc.UpdateUser(ctx, user)
+	up := &biz.UserProfile{
+		UserID:   user.ID,
+		Location: req.Location,
+		Bio:      req.Bio,
+		Gender:   int(req.Gender),
+		School:   req.School,
+		Company:  req.Company,
+		Job:      req.Job,
+	}
+	if req.Birthday != nil {
+		t := req.Birthday.AsTime()
+		up.Birthday = &t
+	}
+	s.uc.UpdateUserProfile(ctx, up)
 	return &v1.User{
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,
 	}, nil
+}
+
+// GetUserProfile 获取用户信息
+func (s *UserService) GetUserProfile(ctx context.Context, req *v1.GetUserProfileRequest) (*v1.UserProfile, error) {
+	userId, _ := auth.GetUserID(ctx)
+	profile, err := s.uc.GetUserProfile(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	resp := &v1.UserProfile{
+		Location: profile.Location,
+		Bio:      profile.Bio,
+		Gender:   int32(profile.Gender),
+		School:   profile.School,
+		Company:  profile.Company,
+		Job:      profile.Job,
+	}
+	if profile.Birthday != nil && userId == int(req.Id) {
+		resp.Birthday = timestamppb.New(*profile.Birthday)
+	}
+	return resp, nil
 }
 
 // UpdateUserPassword 修改用户密码

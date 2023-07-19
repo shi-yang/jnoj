@@ -28,18 +28,32 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 }
 
 type User struct {
-	ID        int
-	Username  string
-	Nickname  string
+	ID          int
+	Username    string
+	Nickname    string
+	Password    string
+	Email       string
+	Phone       string
+	Role        int
+	Status      int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
+	UserProfile *UserProfile `gorm:"foreignKey:UserID"`
+}
+
+type UserProfile struct {
+	UserID    int
 	Realname  string
-	Password  string
-	Email     string
-	Phone     string
-	Role      int
-	Status    int
+	Location  string
+	Bio       string
+	Gender    int
+	School    string
+	Birthday  *time.Time
+	Company   string
+	Job       string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
 }
 
 // UserExpiration 用户有效期
@@ -64,36 +78,63 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 			Email:    u.Email,
 			Phone:    u.Phone,
 		}).
+		Preload("UserProfile").
 		First(&res).
 		Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.User{
+	user := &biz.User{
 		ID:       res.ID,
 		Username: res.Username,
 		Nickname: res.Nickname,
-		Realname: res.Realname,
 		Email:    res.Email,
 		Phone:    res.Phone,
 		Password: res.Password,
 		Role:     res.Role,
 		Status:   res.Status,
-	}, nil
+	}
+	if res.UserProfile != nil {
+		user.UserProfile = &biz.UserProfile{
+			UserID:    res.ID,
+			Realname:  res.UserProfile.Realname,
+			Location:  res.UserProfile.Location,
+			Bio:       res.UserProfile.Bio,
+			Gender:    res.UserProfile.Gender,
+			School:    res.UserProfile.School,
+			Birthday:  res.UserProfile.Birthday,
+			Company:   res.UserProfile.Company,
+			Job:       res.UserProfile.Job,
+			CreatedAt: res.UserProfile.CreatedAt,
+			UpdatedAt: res.UserProfile.UpdatedAt,
+		}
+	}
+	return user, nil
 }
 
 func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	res := User{
 		Username: u.Username,
-		Realname: u.Realname,
 		Password: u.Password,
 		Email:    u.Email,
 		Nickname: u.Nickname,
 		Phone:    u.Phone,
 	}
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
+	tx := r.data.db.WithContext(ctx).Begin()
+	err := tx.Omit(clause.Associations).
 		Create(&res).Error
+	if err != nil {
+		return nil, err
+	}
+	err = tx.Omit(clause.Associations).Create(&UserProfile{
+		UserID:   res.ID,
+		Realname: u.Realname,
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
 	return &biz.User{
 		ID: res.ID,
 	}, err
@@ -103,7 +144,6 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	update := User{
 		ID:       u.ID,
 		Username: u.Username,
-		Realname: u.Realname,
 		Password: u.Password,
 		Nickname: u.Nickname,
 		Role:     u.Role,
@@ -119,8 +159,11 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	if update.Username != "" {
 		updateColumn = append(updateColumn, "username")
 	}
-	if update.Realname != "" {
-		updateColumn = append(updateColumn, "realname")
+	if u.Realname != "" {
+		r.data.db.WithContext(ctx).Omit(clause.Associations).
+			Select("Realname").
+			Where("user_id = ?", u.ID).
+			Updates(&UserProfile{Realname: u.Realname})
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
@@ -135,7 +178,8 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 	count := int64(0)
 	page := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
-		Model(&User{})
+		Model(&User{}).
+		Preload("UserProfile")
 	if req.Username != "" {
 		db.Where("username like ?", fmt.Sprintf("%%%s%%", req.Username))
 	}
@@ -143,7 +187,8 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 		db.Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname))
 	}
 	if req.Realname != "" {
-		db.Where("realname like ?", fmt.Sprintf("%%%s%%", req.Realname))
+		db.Where("id in (?)", r.data.db.Select("user_id").WithContext(ctx).Model(&UserProfile{}).
+			Where("realname like ?", fmt.Sprintf("%%%s%%", req.Realname)))
 	}
 
 	if req.Role != nil {
@@ -163,10 +208,23 @@ func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) ([]*
 			ID:        v.ID,
 			Nickname:  v.Nickname,
 			Username:  v.Username,
-			Realname:  v.Realname,
 			Role:      v.Role,
 			Status:    v.Status,
 			CreatedAt: v.CreatedAt,
+		}
+		if v.UserProfile != nil {
+			u.UserProfile = &biz.UserProfile{
+				UserID:    v.ID,
+				Realname:  v.UserProfile.Realname,
+				Bio:       v.UserProfile.Bio,
+				Gender:    v.UserProfile.Gender,
+				School:    v.UserProfile.School,
+				Birthday:  v.UserProfile.Birthday,
+				Company:   v.UserProfile.Company,
+				Job:       v.UserProfile.Job,
+				CreatedAt: v.UserProfile.CreatedAt,
+				UpdatedAt: v.UserProfile.UpdatedAt,
+			}
 		}
 		rv = append(rv, u)
 	}

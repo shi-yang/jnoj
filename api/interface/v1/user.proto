@@ -50,6 +50,12 @@ service UserService {
             body: "*"
         };
     };
+    // 获取用户信息
+    rpc GetUserProfile (GetUserProfileRequest) returns (UserProfile) {
+        option (google.api.http) = {
+            get: "/users/{id}/profile"
+        };
+    }
     // 修改用户密码
     rpc UpdateUserPassword (UpdateUserPasswordRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
@@ -161,6 +167,13 @@ message GetUserRequest {
 message UpdateUserRequest {
     int32 id = 1;
     string nickname = 2;
+    string location = 3;
+    string bio = 4;
+    int32 gender = 5;
+    string school = 6;
+    google.protobuf.Timestamp birthday = 7;
+    string company = 8;
+    string job = 9;
 }
 
 message UpdateUserPasswordRequest {
@@ -289,4 +302,18 @@ message ListUserProfileUserBadgesRequest {
 message ListUserProfileUserBadgesResponse {
     repeated UserBadge data = 1;
     int32 total = 2;
+}
+
+message GetUserProfileRequest {
+    int32 id = 1;
+}
+
+message UserProfile {
+    string location = 1;
+    string bio = 2;
+    int32 gender = 3;
+    string school = 4;
+    optional google.protobuf.Timestamp birthday = 5;
+    string company = 6;
+    string job = 7;
 }

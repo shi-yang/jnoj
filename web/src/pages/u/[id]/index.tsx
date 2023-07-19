@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
+import { getUserProfile, getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Button, Card, Collapse, Divider, Grid, Image, Link, List, Modal, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -15,7 +15,7 @@ import { listSubmissions } from '@/api/submission';
 import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
 import { FormatTime } from '@/utils/format';
 import StatisticCard from '@/components/StatisticCard';
-import { IconFile, IconMore, IconTrophy } from '@arco-design/web-react/icon';
+import { IconBook, IconFile, IconLocation, IconMan, IconMore, IconTrophy, IconUserGroup, IconWoman } from '@arco-design/web-react/icon';
 import ReactECharts from 'echarts-for-react';
 
 function RecentlySubmission({userId}: {userId: number}) {
@@ -167,6 +167,13 @@ export default function UserPage() {
   const [user, setUser] = useState({username: '', nickname: '', role: ''});
   const settings = useAppSelector<SettingState>(setting);
   const [calendarOptions, setCalendarOptions] = useState([]);
+  const [profile, setProfile] = useState({
+    bio: '',
+    location: '',
+    school: '',
+    gender: 0,
+  });
+  const [profileDescriptionData, setProfileDescriptionData] = useState([]);
   const [profileCalendar, setProfileCalendar] = useState({
     submissionCalendar: [],
     totalSubmission: 0,
@@ -266,6 +273,31 @@ export default function UserPage() {
       .then(res => {
         setUser(res.data);
       });
+    getUserProfile(id)
+      .then(res => {
+        const { data } = res;
+        setProfile(data);
+        const arr = [];
+        if (data.location !== '') {
+          arr.push({
+            label: <IconLocation />,
+            value: data.location
+          });
+        }
+        if (data.school !== '') {
+          arr.push({
+            label: <IconBook />,
+            value: data.school
+          });
+        }
+        if (data.gender !== 0) {
+          arr.push({
+            label: <IconUserGroup />,
+            value: data.gender === 1 ? <span><IconMan /> 男</span> : <span><IconWoman /> 女</span>
+          });
+        }
+        setProfileDescriptionData(arr);
+      });
     listUserProfileUserBadges(Number(id))
       .then(res => {
         setProfileUserBadges(res.data.data);
@@ -328,244 +360,258 @@ export default function UserPage() {
           }
         </div>
         <Grid.Row gutter={24}>
-          <Grid.Col span={12}>
-            <Card title='做题'>
-              <StatisticCard
-                items={[
-                  {
-                    icon: <IconFile fontSize={30} />,
-                    title: '解题数量',
-                    count: profileCount.problemSolved,
-                    loading: false,
-                  },
-                  {
-                    icon: <IconTrophy fontSize={30} />,
-                    title: '竞赛分数',
-                    count: profileCount.contestRating,
-                    loading: false,
-                  }
-                ]}
+          <Grid.Col span={6}>
+            <Card title='个人简介'>
+              <Typography.Paragraph>{profile.bio}</Typography.Paragraph>
+              <Descriptions
+                column={1}
+                data={profileDescriptionData}
+                labelStyle={{ textAlign: 'right', paddingRight: 36 }}
               />
-              {
-                profileCount.contestRating !== 0 && (
-                  <div>
-                    <ReactECharts style={{height: '200px'}} option={ratingHistory} />
-                  </div>
-                )
-              }
             </Card>
           </Grid.Col>
-          <Grid.Col span={12}>
-            <Card title='勋章成就'>
-              <Grid.Row style={{textAlign: 'center'}}>
-                <Grid.Col flex='auto'>
-                  <Grid.Row justify='center'>
-                  {profileUserBadges.length > 0 && (
-                    <Grid.Col span={8}>
-                      <Image
-                        width={80}
-                        src={profileUserBadges[0].image}
-                        title={profileUserBadges[0].name}
-                        description={FormatTime(profileUserBadges[0].createdAt, 'YYYY-MM-DD')}
-                        footerPosition='outer'
-                        alt='lamp'
-                        previewProps={{
-                          src: profileUserBadges[0].imageGif,
-                        }}
-                      />
+          <Grid.Col span={18}>
+            <Grid.Row gutter={24}>
+              <Grid.Col span={12}>
+                <Card title='做题'>
+                  <StatisticCard
+                    items={[
+                      {
+                        icon: <IconFile fontSize={30} />,
+                        title: '解题数量',
+                        count: profileCount.problemSolved,
+                        loading: false,
+                      },
+                      {
+                        icon: <IconTrophy fontSize={30} />,
+                        title: '竞赛分数',
+                        count: profileCount.contestRating,
+                        loading: false,
+                      }
+                    ]}
+                  />
+                  {
+                    profileCount.contestRating !== 0 && (
+                      <div>
+                        <ReactECharts style={{height: '200px'}} option={ratingHistory} />
+                      </div>
+                    )
+                  }
+                </Card>
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <Card title='勋章成就'>
+                  <Grid.Row style={{textAlign: 'center'}}>
+                    <Grid.Col flex='auto'>
+                      <Grid.Row justify='center'>
+                      {profileUserBadges.length > 0 && (
+                        <Grid.Col span={8}>
+                          <Image
+                            width={80}
+                            src={profileUserBadges[0].image}
+                            title={profileUserBadges[0].name}
+                            description={FormatTime(profileUserBadges[0].createdAt, 'YYYY-MM-DD')}
+                            footerPosition='outer'
+                            alt='lamp'
+                            previewProps={{
+                              src: profileUserBadges[0].imageGif,
+                            }}
+                          />
+                        </Grid.Col>
+                      )}
+                      {profileUserBadges.length > 1 && (
+                        <Grid.Col span={8}>
+                          <Image
+                            width={80}
+                            src={profileUserBadges[1].image}
+                            title={profileUserBadges[1].name}
+                            description={FormatTime(profileUserBadges[1].createdAt, 'YYYY-MM-DD')}
+                            footerPosition='outer'
+                            alt='lamp'
+                            previewProps={{
+                              src: profileUserBadges[1].imageGif,
+                            }}
+                          />
+                        </Grid.Col>
+                      )}
+                      {profileUserBadges.length > 2 && (
+                        <Grid.Col span={8}>
+                          <Image
+                            width={80}
+                            src={profileUserBadges[2].image}
+                            title={profileUserBadges[2].name}
+                            description={FormatTime(profileUserBadges[2].createdAt, 'YYYY-MM-DD')}
+                            footerPosition='outer'
+                            alt='lamp'
+                            previewProps={{
+                              src: profileUserBadges[2].imageGif,
+                            }}
+                          />
+                        </Grid.Col>
+                      )}
+                      </Grid.Row>
                     </Grid.Col>
-                  )}
-                  {profileUserBadges.length > 1 && (
-                    <Grid.Col span={8}>
-                      <Image
-                        width={80}
-                        src={profileUserBadges[1].image}
-                        title={profileUserBadges[1].name}
-                        description={FormatTime(profileUserBadges[1].createdAt, 'YYYY-MM-DD')}
-                        footerPosition='outer'
-                        alt='lamp'
-                        previewProps={{
-                          src: profileUserBadges[1].imageGif,
-                        }}
-                      />
+                    <Grid.Col flex='100px'>
+                      <UserBadageListModal userBadges={profileUserBadges} />
                     </Grid.Col>
-                  )}
-                  {profileUserBadges.length > 2 && (
-                    <Grid.Col span={8}>
-                      <Image
-                        width={80}
-                        src={profileUserBadges[2].image}
-                        title={profileUserBadges[2].name}
-                        description={FormatTime(profileUserBadges[2].createdAt, 'YYYY-MM-DD')}
-                        footerPosition='outer'
-                        alt='lamp'
-                        previewProps={{
-                          src: profileUserBadges[2].imageGif,
-                        }}
-                      />
-                    </Grid.Col>
-                  )}
                   </Grid.Row>
-                </Grid.Col>
-                <Grid.Col flex='100px'>
-                  <UserBadageListModal userBadges={profileUserBadges} />
-                </Grid.Col>
-              </Grid.Row>
+                </Card>
+              </Grid.Col>
+            </Grid.Row>
+            <Divider type='horizontal' />
+            <Card
+              title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
+              extra={
+                <div>
+                  <Space>
+                    <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
+                      <Select.Option value={0}>
+                        {t['pastYear']}
+                      </Select.Option>
+                      {calendarOptions.map((option, index) => (
+                        <Select.Option key={index} value={option.value}>
+                          {option.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Space>
+                </div>
+              }
+            >
+              <Space style={{minWidth: '355px', marginBottom: '20px'}}>
+                <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
+                <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
+                <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
+              </Space>
+              <HeatMap
+                value={profileCalendar.submissionCalendar}
+                width={'100%'}
+                height={250}
+                weekLabels={['日','一','二','三','四','五','六']}
+                monthLabels={['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']}
+                rectSize={21}
+                rectRender={(props, data) => {
+                  return (
+                    <Tooltip key={data.index} content={`${data.date}, ${data.count || 0} 次`}>
+                      <rect {...props} />
+                    </Tooltip>
+                  );
+                }}
+                startDate={new Date(profileCalendar.start)}
+              />
+            </Card>
+            <Divider type='horizontal' />
+            <Card
+              title='做题进度'
+            >
+              <Tabs type='rounded' destroyOnHide onChange={e => setProblemSolvedProgressTab(e)}>
+                <Tabs.TabPane key='problemset' title='题单进度'>
+                  <Collapse accordion bordered={false}>
+                    {profileProblemsets.map((item, index) => 
+                      <Collapse.Item
+                        key={index}
+                        name={item.id}
+                        header={
+                          renderItemWithResponsive(
+                            <Link href={`/problemsets/${item.id}`} target='_blank'>{item.name}</Link>,
+                            <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
+                            <span>{item.count} / {item.total}</span>
+                          )
+                        }
+                      >
+                        <Space wrap>
+                          {item.problems.map((problem, index) => (
+                            <Link key={index} href={`/problemsets/${item.id}/problems/${problem.id}`}><Tag color={Color[problem.status]}>{problem.id}</Tag></Link>
+                          ))}
+                        </Space>
+                      </Collapse.Item>
+                    )}
+                  </Collapse>
+                </Tabs.TabPane>
+                <Tabs.TabPane key='contest' title='比赛进度'>
+                  <Collapse accordion bordered={false}>
+                    {profileContests.map((item, index) => 
+                      <Collapse.Item
+                        key={index}
+                        name={item.id}
+                        header={
+                          renderItemWithResponsive(
+                            <>
+                              {item.groupName !== '' && (
+                                <>
+                                  <Link href={`/groups/${item.groupId}`} target='_blank'>{item.groupName}</Link>
+                                  <Divider type='vertical' />
+                                </>
+                              )}
+                              {<Link href={`/contests/${item.id}`} target='_blank'>{item.name}</Link>}
+                            </>,
+                            <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
+                            <span>{item.count} / {item.total}</span>
+                          )
+                        }
+                      >
+                        <Space wrap>
+                          {item.problems.map((problem, index) => (
+                            <Link key={index} href={`/contests/${item.id}`}>
+                              <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
+                            </Link>
+                          ))}
+                        </Space>
+                      </Collapse.Item>
+                    )}
+                  </Collapse>
+                  <Pagination {...pagination} />
+                </Tabs.TabPane>
+                <Tabs.TabPane key='group' title='小组进度'>
+                  <Collapse accordion bordered={false}>
+                    {profileGroups.map((item, index) => 
+                      <Collapse.Item
+                        key={index}
+                        name={item.id}
+                        header={
+                          renderItemWithResponsive(
+                            <Link href={`/groups/${item.id}`} target='_blank'>{item.name}</Link>,
+                            <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
+                            <span>{item.count} / {item.total}</span>
+                          )
+                        }
+                      >
+                        <Collapse accordion bordered={false}>
+                          {item.contests.map((contest, index) => 
+                            <Collapse.Item
+                              key={index}
+                              name={contest.id}
+                              header={
+                                renderItemWithResponsive(
+                                  <Link href={`/contests/${contest.id}`} target='_blank'>{contest.name}</Link>,
+                                  <Progress percent={contest.total === 0 ? 0 : Number(Number(contest.count * 100 / contest.total).toFixed(0))} />,
+                                  <span>{contest.count} / {contest.total}</span>
+                                )
+                              }
+                            >
+                              <Space wrap>
+                                {contest.problems.map((problem, index) => (
+                                  <Link key={index} href={`/contests/${contest.id}`}>
+                                    <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
+                                  </Link>
+                                ))}
+                              </Space>
+                            </Collapse.Item>
+                          )}
+                        </Collapse>
+                      </Collapse.Item>
+                    )}
+                  </Collapse>
+                  <Pagination {...pagination} />
+                </Tabs.TabPane>
+              </Tabs>
+            </Card>
+            <Divider type='horizontal' />
+            <Card title='最近提交' className='mobile-hide'>
+              <RecentlySubmission userId={Number(id)} />
             </Card>
           </Grid.Col>
         </Grid.Row>
-        <Divider type='horizontal' />
-        <Card
-          title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
-          extra={
-            <div>
-              <Space>
-                <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
-                  <Select.Option value={0}>
-                    {t['pastYear']}
-                  </Select.Option>
-                  {calendarOptions.map((option, index) => (
-                    <Select.Option key={index} value={option.value}>
-                      {option.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Space>
-            </div>
-          }
-        >
-          <Space style={{minWidth: '355px', marginBottom: '20px'}}>
-            <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
-            <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
-            <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
-          </Space>
-          <HeatMap
-            value={profileCalendar.submissionCalendar}
-            width={'100%'}
-            height={250}
-            weekLabels={['日','一','二','三','四','五','六']}
-            monthLabels={['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']}
-            rectSize={21}
-            rectRender={(props, data) => {
-              return (
-                <Tooltip key={data.index} content={`${data.date}, ${data.count || 0} 次`}>
-                  <rect {...props} />
-                </Tooltip>
-              );
-            }}
-            startDate={new Date(profileCalendar.start)}
-          />
-        </Card>
-        <Divider type='horizontal' />
-        <Card
-          title='做题进度'
-        >
-          <Tabs type='rounded' destroyOnHide onChange={e => setProblemSolvedProgressTab(e)}>
-            <Tabs.TabPane key='problemset' title='题单进度'>
-              <Collapse accordion bordered={false}>
-                {profileProblemsets.map((item, index) => 
-                  <Collapse.Item
-                    key={index}
-                    name={item.id}
-                    header={
-                      renderItemWithResponsive(
-                        <Link href={`/problemsets/${item.id}`} target='_blank'>{item.name}</Link>,
-                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
-                        <span>{item.count} / {item.total}</span>
-                      )
-                    }
-                  >
-                    <Space wrap>
-                      {item.problems.map((problem, index) => (
-                        <Link key={index} href={`/problemsets/${item.id}/problems/${problem.id}`}><Tag color={Color[problem.status]}>{problem.id}</Tag></Link>
-                      ))}
-                    </Space>
-                  </Collapse.Item>
-                )}
-              </Collapse>
-            </Tabs.TabPane>
-            <Tabs.TabPane key='contest' title='比赛进度'>
-              <Collapse accordion bordered={false}>
-                {profileContests.map((item, index) => 
-                  <Collapse.Item
-                    key={index}
-                    name={item.id}
-                    header={
-                      renderItemWithResponsive(
-                        <>
-                          {item.groupName !== '' && (
-                            <>
-                              <Link href={`/groups/${item.groupId}`} target='_blank'>{item.groupName}</Link>
-                              <Divider type='vertical' />
-                            </>
-                          )}
-                          {<Link href={`/contests/${item.id}`} target='_blank'>{item.name}</Link>}
-                        </>,
-                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
-                        <span>{item.count} / {item.total}</span>
-                      )
-                    }
-                  >
-                    <Space wrap>
-                      {item.problems.map((problem, index) => (
-                        <Link key={index} href={`/contests/${item.id}`}>
-                          <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
-                        </Link>
-                      ))}
-                    </Space>
-                  </Collapse.Item>
-                )}
-              </Collapse>
-              <Pagination {...pagination} />
-            </Tabs.TabPane>
-            <Tabs.TabPane key='group' title='小组进度'>
-              <Collapse accordion bordered={false}>
-                {profileGroups.map((item, index) => 
-                  <Collapse.Item
-                    key={index}
-                    name={item.id}
-                    header={
-                      renderItemWithResponsive(
-                        <Link href={`/groups/${item.id}`} target='_blank'>{item.name}</Link>,
-                        <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
-                        <span>{item.count} / {item.total}</span>
-                      )
-                    }
-                  >
-                    <Collapse accordion bordered={false}>
-                      {item.contests.map((contest, index) => 
-                        <Collapse.Item
-                          key={index}
-                          name={contest.id}
-                          header={
-                            renderItemWithResponsive(
-                              <Link href={`/contests/${contest.id}`} target='_blank'>{contest.name}</Link>,
-                              <Progress percent={contest.total === 0 ? 0 : Number(Number(contest.count * 100 / contest.total).toFixed(0))} />,
-                              <span>{contest.count} / {contest.total}</span>
-                            )
-                          }
-                        >
-                          <Space wrap>
-                            {contest.problems.map((problem, index) => (
-                              <Link key={index} href={`/contests/${contest.id}`}>
-                                <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
-                              </Link>
-                            ))}
-                          </Space>
-                        </Collapse.Item>
-                      )}
-                    </Collapse>
-                  </Collapse.Item>
-                )}
-              </Collapse>
-              <Pagination {...pagination} />
-            </Tabs.TabPane>
-          </Tabs>
-        </Card>
-        <Divider type='horizontal' />
-        <Card title='最近提交' className='mobile-hide'>
-          <RecentlySubmission userId={Number(id)} />
-        </Card>
       </div>
     </>
   );

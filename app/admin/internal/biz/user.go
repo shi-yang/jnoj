@@ -14,16 +14,31 @@ import (
 
 // User is a User model.
 type User struct {
-	ID        int
-	Username  string
-	Nickname  string
+	ID          int
+	Username    string
+	Nickname    string
+	Realname    string
+	Email       string
+	Phone       string
+	Password    string
+	Role        int
+	Status      int
+	CreatedAt   time.Time
+	UserProfile *UserProfile
+}
+
+type UserProfile struct {
+	UserID    int
 	Realname  string
-	Email     string
-	Phone     string
-	Password  string
-	Role      int
-	Status    int
+	Location  string
+	Bio       string
+	Gender    int
+	School    string
+	Birthday  *time.Time
+	Company   string
+	Job       string
 	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 const (

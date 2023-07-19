@@ -89,7 +89,7 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 	res, count := s.uc.ListUsers(ctx, req)
 	resp := new(v1.ListUsersResponse)
 	for _, v := range res {
-		resp.Data = append(resp.Data, &v1.User{
+		u := &v1.User{
 			Id:        int32(v.ID),
 			Username:  v.Username,
 			Nickname:  v.Nickname,
@@ -97,7 +97,19 @@ func (s UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*
 			Role:      v1.UserRole(v.Role),
 			Status:    v1.UserStatus(v.Status),
 			CreatedAt: timestamppb.New(v.CreatedAt),
-		})
+		}
+		if v.UserProfile != nil {
+			u.Profile = &v1.UserProfile{
+				Realname: v.UserProfile.Realname,
+				Location: v.UserProfile.Location,
+				Bio:      v.UserProfile.Bio,
+				Gender:   int32(v.UserProfile.Gender),
+				School:   v.UserProfile.School,
+				Company:  v.UserProfile.Company,
+				Job:      v.UserProfile.Job,
+			}
+		}
+		resp.Data = append(resp.Data, u)
 	}
 	resp.Total = count
 	return resp, nil

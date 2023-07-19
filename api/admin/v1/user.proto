@@ -122,7 +122,19 @@ message User {
     string realname = 4;
     UserRole role = 5;
     UserStatus status = 6;
-    google.protobuf.Timestamp created_at = 7;
+    UserProfile profile = 7;
+    google.protobuf.Timestamp created_at = 8;
+}
+
+message UserProfile {
+    string realname = 1;
+    string location = 2;
+    string bio = 3;
+    int32 gender = 4;
+    string school = 5;
+    optional google.protobuf.Timestamp birthday = 6;
+    string company = 7;
+    string job = 8;
 }
 
 enum UserStatus {

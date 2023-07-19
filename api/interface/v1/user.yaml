@@ -7,3 +7,5 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/CreateUser"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.user.UserService/GetUserProfile"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
