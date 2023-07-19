@@ -252,6 +252,8 @@ func (m *ListSubmissionsRequest) validate(all bool) error {
 
 	// no validation rules for Username
 
+	// no validation rules for ProblemName
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage

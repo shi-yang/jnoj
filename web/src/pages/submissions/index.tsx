@@ -122,13 +122,38 @@ const Submission = () => {
     },
     {
       title: t['problemName'],
-      dataIndex: 'problemName',
+      dataIndex: 'problemId',
       align: 'center',
       render: (_, record) => (
         <Link href={`/problemsets/${record.entityId}/problems/${record.problemNumber}`}>
           {record.problemNumber}. {record.problemName}
         </Link>
-      )
+      ),
+      filterMultiple: false,
+      filterIcon: <IconSearch />,
+      filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+        return (
+          <div className='arco-table-custom-filter'>
+            <Input.Search
+              ref={inputRef}
+              searchButton
+              placeholder='输入题号进行搜索'
+              value={filterKeys[0] || ''}
+              onChange={(value) => {
+                setFilterKeys(value ? [value] : []);
+              }}
+              onSearch={() => {
+                confirm();
+              }}
+            />
+          </div>
+        );
+      },
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => inputRef.current.focus(), 150);
+        }
+      },
     },
     {
       title: t['language'],
