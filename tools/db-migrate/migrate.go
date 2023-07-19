@@ -23,7 +23,7 @@ func Migrate(db *gorm.DB) {
 }
 
 func MigrateAddUserProfile20230719() *gormigrate.Migration {
-	sql := "CREATE TABLE `jnoj`.`user_profile`(" +
+	sql := "CREATE TABLE `user_profile`(" +
 		"`user_id` INT NOT NULL," +
 		"`realname` VARCHAR(64) NOT NULL DEFAULT ''," +
 		"`location` VARCHAR(128) NOT NULL DEFAULT ''," +
