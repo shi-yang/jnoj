@@ -21,5 +21,6 @@ func NewAdminService(uc *biz.AdminUsecase, logger log.Logger) *AdminService {
 }
 
 func (s AdminService) ListServiceStatuses(ctx context.Context, req *v1.ListServiceStatusesRequest) (*v1.ListServiceStatusesResponse, error) {
-	return nil, nil
+	resp := s.uc.ListServiceStatuses(ctx)
+	return resp, nil
 }

@@ -36,7 +36,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	sandboxServiceClient := biz.NewSandboxClient(discovery)
 	submissionUsecase := biz.NewSubmissionUsecase(submissionRepo, sandboxServiceClient, logger)
 	submissionService := service.NewSubmissionService(submissionUsecase, logger)
-	adminUsecase := biz.NewAdminUsecase(logger)
+	adminUsecase := biz.NewAdminUsecase(logger, discovery, registry)
 	adminService := service.NewAdminService(adminUsecase, logger)
 	httpServer := server.NewHTTPServer(confServer, userService, submissionService, adminService, logger)
 	app := newApp(logger, httpServer)

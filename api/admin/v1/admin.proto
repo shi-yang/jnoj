@@ -19,4 +19,86 @@ message ListServiceStatusesRequest {
 }
 
 message ListServiceStatusesResponse {
+    message SanboxSystemInfo {
+        message Host {
+            message InfoStat {
+                string hostname = 1;
+                uint64 uptime = 2;
+                uint64 bootTime = 3;
+                uint64 procs = 4;
+                string os = 5;
+                string platform = 6;
+                string platformFamily = 7;
+                string platformVersion = 8;
+                string kernelVersion = 9;
+                string kernelArch = 10;
+                string virtualizationSystem = 11;
+                string virtualizationRole = 12;
+                string hostId = 13;
+            }
+            InfoStat info_stat = 1;
+        }
+        message Cpu {
+            // Counts returns the number of physical or logical cores in the system
+            int32 counts = 1;
+            float percent = 2;
+            message InfoStat {
+                int32 cpu = 1;
+                string vendor_id = 2;
+                string family = 3;
+                string model = 4;
+                int32 stepping = 5;
+                string physical_id = 6;
+                string core_id = 7;
+                int32 cores = 8;
+                string model_name = 9;
+                double mhz = 10;
+                int32 cache_size = 11;
+                repeated string flags = 12;
+                string microcode = 13;
+            }
+            repeated InfoStat info_stat = 3;
+        }
+        message Memory {
+            message SwapDevice {
+                string name = 1;
+                uint64 used_bytes = 2;
+                uint64 free_bytes = 3;
+            }
+            message VirtualMemoryStat {
+                uint64 total = 1;
+                uint64 available = 2;
+                uint64 used = 3;
+                double used_percent = 4;
+                uint64 free = 5;
+                uint64 active = 6;
+                uint64 inactive = 7;
+                uint64 swap_total = 8;
+                uint64 swap_free = 9;
+            }
+            repeated SwapDevice swap_device = 1;
+            VirtualMemoryStat virtual_memory = 2;
+        }
+        message Disk {
+            message UsageStat {
+                string path = 1;
+                string fst = 2;
+                uint64 total = 3;
+                uint64 free = 4;
+                uint64 used = 5;
+                double used_percent = 6;
+                uint64 inodes_total = 7;
+                uint64 inodes_used = 8;
+                uint64 inodes_free = 9;
+                double inodes_used_percent = 10;
+            }
+            UsageStat usage_stat = 1;
+        }
+        Host host = 1;
+        Cpu cpu = 2;
+        Memory memory = 3;
+        Disk disk = 4;
+        string endpoint = 5;
+    }
+    repeated SanboxSystemInfo sanbox_system_info = 1;
 }

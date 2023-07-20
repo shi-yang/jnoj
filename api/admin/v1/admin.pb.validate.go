@@ -159,6 +159,40 @@ func (m *ListServiceStatusesResponse) validate(all bool) error {
 
 	var errors []error
 
+	for idx, item := range m.GetSanboxSystemInfo() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListServiceStatusesResponseValidationError{
+						field:  fmt.Sprintf("SanboxSystemInfo[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListServiceStatusesResponseValidationError{
+						field:  fmt.Sprintf("SanboxSystemInfo[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListServiceStatusesResponseValidationError{
+					field:  fmt.Sprintf("SanboxSystemInfo[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return ListServiceStatusesResponseMultiError(errors)
 	}
@@ -239,3 +273,1525 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListServiceStatusesResponseValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfoMultiError, or nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetHost()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Host",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Host",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetHost()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+				field:  "Host",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCpu()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Cpu",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Cpu",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCpu()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+				field:  "Cpu",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetMemory()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Memory",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Memory",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMemory()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+				field:  "Memory",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetDisk()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Disk",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+					field:  "Disk",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetDisk()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfoValidationError{
+				field:  "Disk",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Endpoint
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfoMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfoMultiError is an error wrapping
+// multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo.ValidateAll() if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfoMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfoMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfoMultiError) AllErrors() []error { return m }
+
+// ListServiceStatusesResponse_SanboxSystemInfoValidationError is the
+// validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo.Validate if the designated
+// constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfoValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfoValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfoValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfoValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfoValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfoValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfoValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfoValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfoValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfoValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Host with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Host) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Host with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_HostMultiError, or nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Host) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Host) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetInfoStat()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError{
+					field:  "InfoStat",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError{
+					field:  "InfoStat",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetInfoStat()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError{
+				field:  "InfoStat",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_HostMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_HostMultiError is an error
+// wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Host.ValidateAll() if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_HostMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_HostMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_HostMultiError) AllErrors() []error { return m }
+
+// ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError is the
+// validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Host.Validate if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Host.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_HostValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Cpu) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_CpuMultiError, or nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Cpu) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Cpu) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Counts
+
+	// no validation rules for Percent
+
+	for idx, item := range m.GetInfoStat() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError{
+						field:  fmt.Sprintf("InfoStat[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError{
+						field:  fmt.Sprintf("InfoStat[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError{
+					field:  fmt.Sprintf("InfoStat[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_CpuMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_CpuMultiError is an error
+// wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu.ValidateAll() if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_CpuMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_CpuMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_CpuMultiError) AllErrors() []error { return m }
+
+// ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError is the
+// validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu.Validate if the designated
+// constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Cpu.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_CpuValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_MemoryMultiError, or nil if
+// none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetSwapDevice() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{
+						field:  fmt.Sprintf("SwapDevice[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{
+						field:  fmt.Sprintf("SwapDevice[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{
+					field:  fmt.Sprintf("SwapDevice[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if all {
+		switch v := interface{}(m.GetVirtualMemory()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{
+					field:  "VirtualMemory",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{
+					field:  "VirtualMemory",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetVirtualMemory()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{
+				field:  "VirtualMemory",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_MemoryMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_MemoryMultiError is an error
+// wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory.ValidateAll() if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_MemoryMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_MemoryMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_MemoryMultiError) AllErrors() []error { return m }
+
+// ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError is the
+// validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory.Validate if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Memory.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_MemoryValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Disk) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_DiskMultiError, or nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Disk) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Disk) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetUsageStat()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError{
+					field:  "UsageStat",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError{
+					field:  "UsageStat",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUsageStat()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError{
+				field:  "UsageStat",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_DiskMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_DiskMultiError is an error
+// wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk.ValidateAll() if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_DiskMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_DiskMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_DiskMultiError) AllErrors() []error { return m }
+
+// ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError is the
+// validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk.Validate if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Disk.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_DiskValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatMultiError, or
+// nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Hostname
+
+	// no validation rules for Uptime
+
+	// no validation rules for BootTime
+
+	// no validation rules for Procs
+
+	// no validation rules for Os
+
+	// no validation rules for Platform
+
+	// no validation rules for PlatformFamily
+
+	// no validation rules for PlatformVersion
+
+	// no validation rules for KernelVersion
+
+	// no validation rules for KernelArch
+
+	// no validation rules for VirtualizationSystem
+
+	// no validation rules for VirtualizationRole
+
+	// no validation rules for HostId
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatMultiError is an
+// error wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat.ValidateAll() if
+// the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatMultiError) AllErrors() []error {
+	return m
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError is
+// the validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat.Validate if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStatValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatMultiError, or nil
+// if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Cpu
+
+	// no validation rules for VendorId
+
+	// no validation rules for Family
+
+	// no validation rules for Model
+
+	// no validation rules for Stepping
+
+	// no validation rules for PhysicalId
+
+	// no validation rules for CoreId
+
+	// no validation rules for Cores
+
+	// no validation rules for ModelName
+
+	// no validation rules for Mhz
+
+	// no validation rules for CacheSize
+
+	// no validation rules for Microcode
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatMultiError is an
+// error wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat.ValidateAll() if
+// the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatMultiError) AllErrors() []error {
+	return m
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError is
+// the validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat.Validate if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStatValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceMultiError,
+// or nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	// no validation rules for UsedBytes
+
+	// no validation rules for FreeBytes
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceMultiError is
+// an error wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice.ValidateAll()
+// if the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceMultiError) AllErrors() []error {
+	return m
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError
+// is the validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice.Validate if
+// the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDeviceValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatMultiError,
+// or nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Total
+
+	// no validation rules for Available
+
+	// no validation rules for Used
+
+	// no validation rules for UsedPercent
+
+	// no validation rules for Free
+
+	// no validation rules for Active
+
+	// no validation rules for Inactive
+
+	// no validation rules for SwapTotal
+
+	// no validation rules for SwapFree
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatMultiError
+// is an error wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat.ValidateAll()
+// if the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatMultiError) AllErrors() []error {
+	return m
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError
+// is the validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat.Validate
+// if the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStatValidationError{}
+
+// Validate checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatMultiError, or
+// nil if none found.
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Path
+
+	// no validation rules for Fst
+
+	// no validation rules for Total
+
+	// no validation rules for Free
+
+	// no validation rules for Used
+
+	// no validation rules for UsedPercent
+
+	// no validation rules for InodesTotal
+
+	// no validation rules for InodesUsed
+
+	// no validation rules for InodesFree
+
+	// no validation rules for InodesUsedPercent
+
+	if len(errors) > 0 {
+		return ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatMultiError is an
+// error wrapping multiple validation errors returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat.ValidateAll()
+// if the designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatMultiError) AllErrors() []error {
+	return m
+}
+
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError
+// is the validation error returned by
+// ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat.Validate if the
+// designated constraints aren't met.
+type ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError) ErrorName() string {
+	return "ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError{}
