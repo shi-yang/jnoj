@@ -8,7 +8,6 @@ import Highlight from '@/components/Highlight';
 import locale from './locale';
 import SubmissionVerdict from './SubmissionVerdict';
 import { IconShareInternal } from '@arco-design/web-react/icon';
-import { useRouter } from 'next/router';
 
 export default function Submission ({id}: {id: number}) {
   const t = useLocale(locale);

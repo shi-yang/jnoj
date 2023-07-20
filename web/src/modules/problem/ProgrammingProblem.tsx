@@ -1,15 +1,11 @@
 import useLocale from '@/utils/useLocale';
 import { Divider, Typography } from '@arco-design/web-react';
-import ReactMarkdown from 'react-markdown';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import remarkMath from 'remark-math';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
 import locale from './locale';
 import styles from './style/index.module.less';
 import { IconCopy } from '@arco-design/web-react/icon';
 import { useMemo } from 'react';
+import MarkdownView from '@/components/MarkdownView';
 import React from 'react';
 const { Title, Paragraph } = Typography;
 export default function ProgrammingProblem({problem, language}: any) {
@@ -38,23 +34,13 @@ export default function ProgrammingProblem({problem, language}: any) {
         {t['memoryLimit']}：{problem.memoryLimit} MB
       </Paragraph>
       <Paragraph>
-        <ReactMarkdown
-          remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex, rehypeHighlight]}
-        >
-          {problem.statements[language].legend}
-        </ReactMarkdown>
+        <MarkdownView content={problem.statements[language].legend} />
       </Paragraph>
       { problem.statements[language].input != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['input']}</Title>
           <Paragraph>
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeHighlight]}
-            >
-              {problem.statements[language].input}
-            </ReactMarkdown>
+            <MarkdownView content={problem.statements[language].input} />
           </Paragraph>
         </>
       }
@@ -62,12 +48,7 @@ export default function ProgrammingProblem({problem, language}: any) {
         <>
           <Title className={styles['subtitle']} heading={5}>{t['output']}</Title>
           <Paragraph>
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeHighlight]}
-            >
-              {problem.statements[language].output}
-            </ReactMarkdown>
+            <MarkdownView content={problem.statements[language].output} />
           </Paragraph>
         </>
       }
@@ -108,12 +89,7 @@ export default function ProgrammingProblem({problem, language}: any) {
         <>
           <Title className={styles['subtitle']} heading={5}>{t['notes']}</Title>
           <Paragraph>
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeHighlight]}
-            >
-              {problem.statements[language].note}
-            </ReactMarkdown>
+            <MarkdownView content={problem.statements[language].note} />
           </Paragraph>
         </>
       }
@@ -121,12 +97,7 @@ export default function ProgrammingProblem({problem, language}: any) {
         <>
           <Title className={styles['subtitle']} heading={5}>{t['source']}</Title>
           <Paragraph>
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeHighlight]}
-            >
-              {problem.source}
-            </ReactMarkdown>
+            <MarkdownView content={problem.statements[language].source} />
           </Paragraph>
         </>
       }

@@ -2,7 +2,6 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
-import 'katex/dist/katex.css';
 import { Upload } from '@arco-design/web-react';
 import * as commands from '@uiw/react-md-editor/lib/commands';
 import { IconClose, IconFaceFrownFill, IconFileAudio, IconUpload } from '@arco-design/web-react/icon';

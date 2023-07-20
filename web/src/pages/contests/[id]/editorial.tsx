@@ -2,10 +2,7 @@ import { listPosts } from '@/api/post';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from './context';
 import { Empty, Typography } from '@arco-design/web-react';
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import rehypeHighlight from 'rehype-highlight';
+import MarkdownView from '@/components/MarkdownView';
 import ContestLayout from './Layout';
 
 function Editorial() {
@@ -29,12 +26,7 @@ function Editorial() {
           <Typography>
           <Typography.Title>{post.title}</Typography.Title>
           <Typography.Paragraph>
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeHighlight]}
-            >
-              {post.content}
-            </ReactMarkdown>
+            <MarkdownView content={post.content} />
           </Typography.Paragraph>
           </Typography>
         </div>

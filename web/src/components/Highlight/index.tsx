@@ -1,6 +1,6 @@
 import hljs, { HighlightOptions, HighlightResult } from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css';
 import React, { useEffect, useState } from 'react';
+import 'highlight.js/styles/vs.css';
 
 const LanguageMap = {
   0: 'c',
@@ -22,10 +22,14 @@ export default function Highlight({content, language}: {content: string, languag
   }, [content]);
   return (
     <pre>
-      <code
-        className={`hljs language-${v.language}`}
-        dangerouslySetInnerHTML={{ __html: v.value }}
-      />
+      {v.value === '' ? (
+        <code>{v.code}</code>
+      ) : (
+        <code
+          className={`hljs language-${v.language}`}
+          dangerouslySetInnerHTML={{ __html: v.value }}
+        />
+      )}
     </pre>
   );
 }
