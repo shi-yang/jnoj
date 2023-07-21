@@ -201,6 +201,7 @@ func (r *problemRepo) CreateProblem(ctx context.Context, p *biz.Problem) (*biz.P
 func (r *problemRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*biz.Problem, error) {
 	update := Problem{
 		ID:            p.ID,
+		Name:          p.Name,
 		TimeLimit:     p.TimeLimit,
 		MemoryLimit:   p.MemoryLimit,
 		Status:        p.Status,

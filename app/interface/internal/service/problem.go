@@ -146,6 +146,7 @@ func (s *ProblemService) UpdateProblem(ctx context.Context, req *v1.UpdateProble
 	}
 	_, err = s.uc.UpdateProblem(ctx, &biz.Problem{
 		ID:          int(req.Id),
+		Name:        req.Name,
 		TimeLimit:   req.TimeLimit,
 		MemoryLimit: req.MemoryLimit,
 		Status:      int(req.Status),

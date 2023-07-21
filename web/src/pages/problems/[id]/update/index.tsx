@@ -3,6 +3,9 @@ import {
   Tabs,
   Typography,
   Grid,
+  Breadcrumb,
+  Link,
+  Message,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -16,12 +19,13 @@ import SolutionFiles from './solution-files';
 import Files from './files';
 import Package from './package';
 import LanguageFiles from './language-files';
-import { getProblem, Problem } from '@/api/problem';
+import { getProblem, Problem, updateProblem } from '@/api/problem';
 import { useRouter } from 'next/router';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
 import ObjectivePage from './objective';
+import { IconRight } from '@arco-design/web-react/icon';
 
 const TabPane = Tabs.TabPane;
 
@@ -41,6 +45,16 @@ function Index(props) {
         setLoading(false);
       });
   }
+  function onProblemNameChange(name) {
+    setData(v => ({...v, name: name}));
+  }
+  function onProblemNameEnd(name) {
+    data.name = name;
+    updateProblem(data.id, data)
+      .then(() => {
+        Message.success('已更新');
+      });
+  }
 
   useEffect(() => {
     fetchData();
@@ -55,9 +69,22 @@ function Index(props) {
         <div className={styles.container}>
           <Grid.Row className={styles.header} justify="space-between" align="center">
             <Grid.Col span={24}>
-              <Typography.Title className={styles.title} heading={5}>
-              { data.id } - { data.name }
-              </Typography.Title>
+            </Grid.Col>
+            <Grid.Col span={24} style={{padding: '20px 15px'}}>
+              <Breadcrumb separator={<IconRight />}>
+                <Breadcrumb.Item>
+                  <Link href='/problems'>题目列表</Link>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                {data.id}.&nbsp;
+                <Typography.Paragraph style={{margin: 0, padding: 0}} editable={{
+                  onChange: onProblemNameChange,
+                  onEnd: onProblemNameEnd,
+                }} className={styles.title}>
+                  { data.name }
+                </Typography.Paragraph>
+                </Breadcrumb.Item>
+              </Breadcrumb>
             </Grid.Col>
           </Grid.Row>
           {
