@@ -390,11 +390,12 @@ message CreateProblemResponse {
 
 message UpdateProblemRequest {
     int32 id = 1;
-    int64 time_limit = 2 [(validate.rules).int64 = {gte:250, lte: 15000}];
-    int64 memory_limit = 3 [(validate.rules).int64 = {gte:4, lte: 1024}];
-    int32 status = 4;
-    string source = 5;
-    repeated string tags = 6;
+    string name = 2;
+    int64 time_limit = 3 [(validate.rules).int64 = {gte:250, lte: 15000}];
+    int64 memory_limit = 4 [(validate.rules).int64 = {gte:4, lte: 1024}];
+    int32 status = 5;
+    string source = 6;
+    repeated string tags = 7;
 }
 
 message ListProblemStatementsRequest {

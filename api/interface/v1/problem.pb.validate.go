@@ -999,6 +999,8 @@ func (m *UpdateProblemRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for Name
+
 	if val := m.GetTimeLimit(); val < 250 || val > 15000 {
 		err := UpdateProblemRequestValidationError{
 			field:  "TimeLimit",
