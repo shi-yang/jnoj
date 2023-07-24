@@ -76,7 +76,7 @@ export default function Statement({problem}: any) {
     formData.append('fileType', 'statement');
     uploadProblemFile(problem.id, formData)
       .then(res => {
-        onSuccess();
+        onSuccess(res.data.content);
         Message.success('上传成功');
         fetchData();
       })
@@ -146,6 +146,7 @@ export default function Statement({problem}: any) {
             </FormItem>
             <FormItem field='legend' label={t['legend']}>
               <Editor
+                height='200px'
                 imageRequest={{
                   onUpload: uploadFile,
                   onRemove: removeFile,
@@ -155,6 +156,7 @@ export default function Statement({problem}: any) {
             </FormItem>
             <FormItem field='input' label={t['inputFormat']}>
               <Editor
+                height='200px'
                 imageRequest={{
                   onUpload: uploadFile,
                   onRemove: removeFile,
@@ -164,6 +166,7 @@ export default function Statement({problem}: any) {
             </FormItem>
             <FormItem field='output' label={t['outputFormat']}>
               <Editor
+                height='200px'
                 imageRequest={{
                   onUpload: uploadFile,
                   onRemove: removeFile,
@@ -173,6 +176,7 @@ export default function Statement({problem}: any) {
             </FormItem>
             <FormItem field='note' label={t['notes']}>
               <Editor
+                height='200px'
                 imageRequest={{
                   onUpload: uploadFile,
                   onRemove: removeFile,

@@ -32,6 +32,7 @@ type PostRepo interface {
 	CreatePost(context.Context, *Post) (*Post, error)
 	UpdatePost(context.Context, *Post) (*Post, error)
 	DeletePost(context.Context, int) error
+	CreatePostImage(ctx context.Context, filename string, content []byte) (string, error)
 }
 
 // PostUsecase is a Post usecase.
@@ -118,4 +119,8 @@ func (uc *PostUsecase) UpdatePost(ctx context.Context, p *Post) (*Post, error) {
 // DeletePost delete a Post
 func (uc *PostUsecase) DeletePost(ctx context.Context, id int) error {
 	return uc.repo.DeletePost(ctx, id)
+}
+
+func (uc *PostUsecase) CreatePostImage(ctx context.Context, filename string, image []byte) (string, error) {
+	return uc.repo.CreatePostImage(ctx, filename, image)
 }

@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"io"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -87,4 +89,23 @@ func (s *PostService) UpdatePost(ctx context.Context, req *v1.UpdatePostRequest)
 	return &v1.Post{
 		Id: int32(res.ID),
 	}, nil
+}
+
+// UploadPostImage 上传图片
+func (s *PostService) UploadPostImage(ctx http.Context) error {
+	http.SetOperation(ctx, "uploadPostImage")
+	file, fileheader, err := ctx.Request().FormFile("file")
+	if err != nil {
+		return err
+	}
+	fileContent, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	imageUrl, err := s.uc.CreatePostImage(ctx, fileheader.Filename, fileContent)
+	if err != nil {
+		return err
+	}
+	return ctx.Result(200, imageUrl)
 }

@@ -1,12 +1,17 @@
 package data
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"net/url"
+	"path"
+	"strconv"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	objectstorage "jnoj/pkg/object_storage"
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -33,6 +38,8 @@ type Post struct {
 
 	User *User `json:"user" gorm:"foreignKey:UserID"`
 }
+
+const postImageFilePath = "/posts/images/%s"
 
 // NewPostRepo .
 func NewPostRepo(data *Data, logger log.Logger) biz.PostRepo {
@@ -140,4 +147,19 @@ func (r *postRepo) DeletePost(ctx context.Context, id int) error {
 		Delete(Post{ID: id}).
 		Error
 	return err
+}
+
+func (r *postRepo) CreatePostImage(ctx context.Context, filename string, image []byte) (string, error) {
+	store := objectstorage.NewSeaweed()
+	fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
+	storeName := fmt.Sprintf(postImageFilePath, fileUnixName+path.Ext(filename))
+	err := store.PutObject(r.data.conf.ObjectStorage.PublicBucket, storeName, bytes.NewReader(image))
+	if err != nil {
+		return "", err
+	}
+	return url.JoinPath(
+		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+		r.data.conf.ObjectStorage.PublicBucket.Bucket,
+		storeName,
+	)
 }

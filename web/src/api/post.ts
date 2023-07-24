@@ -15,3 +15,11 @@ export function listPosts(params) {
 export function updatePost(id, data) {
   return axios.put(`/posts/${id}`, data);
 }
+
+export function uploadPostImage(data) {
+  return axios.post(`/post/upload_image`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data;charset=UTF-8'
+    }
+  });
+}

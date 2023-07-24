@@ -4,6 +4,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/conf"
 	"jnoj/app/interface/internal/service"
+	"jnoj/internal/middleware/auth"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -53,6 +54,10 @@ func NewHTTPServer(c *conf.Server,
 	srv.HandleFunc("/ws", websocket.WsHandler)
 	route.POST("/problems/{id}/upload_test", problem.UploadProblemTest)
 	route.POST("/problems/{id}/upload_file", problem.UploadProblemFile)
+
+	// 上传图片
+	route.POST("/post/upload_image", post.UploadPostImage)
+	srv.Use("uploadPostImage", auth.User())
 
 	v1.RegisterContestServiceHTTPServer(srv, contest)
 	v1.RegisterProblemServiceHTTPServer(srv, problem)
