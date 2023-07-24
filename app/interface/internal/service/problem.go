@@ -689,7 +689,9 @@ func (s *ProblemService) PackProblem(ctx context.Context, req *v1.PackProblemReq
 	if res, err := s.uc.GetProblemVerification(ctx, problem.ID); err != nil || res.VerificationStatus != biz.VerificationStatusSuccess {
 		return nil, v1.ErrorProblemNotVerification("题目未通过验证")
 	}
-	err = s.uc.PackProblem(ctx, problem.ID)
+	go func() {
+		_ = s.uc.PackProblem(context.TODO(), problem.ID)
+	}()
 	return &emptypb.Empty{}, err
 }
 
