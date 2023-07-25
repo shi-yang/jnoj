@@ -1,7 +1,7 @@
 import React from 'react';
 import { runRequest, runSandbox } from '@/api/sandbox';
 import useLocale from '@/utils/useLocale';
-import { Form, ResizeBox, Spin, Card, Tabs, Grid, Input, Button, Space, Typography } from '@arco-design/web-react';
+import { Form, ResizeBox, Spin, Card, Tabs, Grid, Input, Button, Space, Typography, Message } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import locale from './locale';
 import { useState, useImperativeHandle, forwardRef } from 'react';
@@ -49,6 +49,10 @@ function ConsoleComponent({ problem, language, languageId, source }: any, ref) {
         res.data.results.forEach((value, index) => {
           setCasesResult(v => [...v, { stdin: cases[index], ...value }]);
         });
+      }).catch(err => {
+        if (err.response.data.reason === 'SUBMISSION_RATE_LIMIT') {
+          Message.error('您的提交过于频繁');
+        }
       }).finally(() => {
         setLoading(false);
       });
