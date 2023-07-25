@@ -29,6 +29,7 @@ var ProviderSet = wire.NewSet(
 	NewWebSocketRepo,
 	NewRankingRepo,
 	NewPostRepo,
+	NewSandboxRepo,
 )
 
 // Data .

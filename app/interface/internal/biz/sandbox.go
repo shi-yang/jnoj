@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"jnoj/app/interface/internal/conf"
+	"jnoj/internal/middleware/auth"
 
 	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/log"
@@ -19,20 +20,33 @@ import (
 	sandboxV1 "jnoj/api/sandbox/v1"
 )
 
+const (
+	// 每分钟内能提交多少次
+	RunSandboxPerMinute = 6
+)
+
 // SandboxUsecase is a Sandbox usecase.
 type SandboxUsecase struct {
 	sandboxClient sandboxV1.SandboxServiceClient
 	problemRepo   ProblemRepo
+	repo          SandboxRepo
 	log           *log.Helper
+}
+
+type SandboxRepo interface {
+	// 获取用户每分钟提交次数
+	GetUserRunPerMinute(ctx context.Context, uid int) int
 }
 
 // NewSandboxUsecase new a Submission usecase.
 func NewSandboxUsecase(
 	sandboxClient sandboxV1.SandboxServiceClient,
 	problemRepo ProblemRepo,
+	repo SandboxRepo,
 	logger log.Logger,
 ) *SandboxUsecase {
 	return &SandboxUsecase{
+		repo:          repo,
 		sandboxClient: sandboxClient,
 		problemRepo:   problemRepo,
 		log:           log.NewHelper(logger),
@@ -40,6 +54,12 @@ func NewSandboxUsecase(
 }
 
 func (uc *SandboxUsecase) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunResponse, error) {
+	userId, _ := auth.GetUserID(ctx)
+	// 限制每分钟提交次数
+	if count := uc.repo.GetUserRunPerMinute(ctx, userId); count >= RunSandboxPerMinute {
+		return nil, v1.ErrorSubmissionRateLimit("rate limit")
+	}
+
 	runRequest := &sandboxV1.RunRequest{
 		Stdin:       req.Stdin,
 		Source:      req.Source,
