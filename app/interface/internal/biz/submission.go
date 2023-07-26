@@ -161,6 +161,9 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 	if !hasPermission {
 		return nil, 0
 	}
+	if isOIModeRunning {
+		req.Verdict = nil
+	}
 	submissions, count := uc.repo.ListSubmissions(ctx, req)
 	if isOIModeRunning {
 		for i := 0; i < len(submissions); i++ {
