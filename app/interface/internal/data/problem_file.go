@@ -132,11 +132,12 @@ func (r *problemRepo) CreateProblemFile(ctx context.Context, p *biz.ProblemFile)
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
 		Create(&res).Error
-	return &biz.ProblemFile{
-		ID:      res.ID,
-		Content: res.Content,
-		Name:    res.Name,
-	}, err
+	p.Content, _ = url.JoinPath(
+		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+		r.data.conf.ObjectStorage.PublicBucket.Bucket,
+		res.Content,
+	)
+	return p, err
 }
 
 // UpdateProblemFile .
