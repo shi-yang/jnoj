@@ -299,6 +299,12 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			reqProblemID = &id
 		}
 	}
+	isContestManager := contest.HasPermission(ctx, ContestPermissionUpdate)
+	runningStatus := contest.GetRunningStatus()
+	// 正在进行的OI比赛不查询测评条件
+	if contest.Type == ContestTypeOI && !isContestManager && runningStatus != ContestRunningStatusFinished {
+		req.Verdict = nil
+	}
 	submissions, count := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
 		EntityId:   req.ContestId,
 		EntityType: SubmissionEntityTypeContest,
@@ -308,8 +314,6 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 		ProblemId:  reqProblemID,
 		UserId:     req.UserId,
 	})
-	isContestManager := contest.HasPermission(ctx, ContestPermissionUpdate)
-	runningStatus := contest.GetRunningStatus()
 	for _, v := range submissions {
 		cs := &ContestSubmission{
 			ID:            v.ID,
