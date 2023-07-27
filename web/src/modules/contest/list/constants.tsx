@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormatTime } from '@/utils/format';
-import { Link, Tag } from '@arco-design/web-react';
+import { Divider, Link, Space, Tag, Typography } from '@arco-design/web-react';
 import { IconLock, IconUser, IconUserGroup } from '@arco-design/web-react/icon';
 
 export function getColumns(
@@ -30,9 +30,14 @@ export function getColumns(
       align: 'center' as 'center',
       width: 220,
       render: (col, record) => (
-        <>
-          {t[record.runningStatus]} <IconUser /> x {record.participantCount}
-        </>
+        <Space split={<Divider type='vertical' />}>
+          {record.runningStatus === 'FINISHED' ? (
+            <Typography.Text bold type='error'>{t[record.runningStatus]}</Typography.Text>
+          ) : (
+            <Typography.Text bold type='success'>{t[record.runningStatus]}</Typography.Text>
+          )}
+          <span><IconUser /> x {record.participantCount}</span>
+        </Space>
       )
     },
     {
