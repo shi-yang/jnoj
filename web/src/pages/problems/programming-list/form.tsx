@@ -5,10 +5,8 @@ import {
   Button,
   Grid,
   Radio,
-  Switch,
   Tooltip,
 } from '@arco-design/web-react';
-import { GlobalContext } from '@/context';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
 import { IconRefresh, IconSearch } from '@arco-design/web-react/icon';

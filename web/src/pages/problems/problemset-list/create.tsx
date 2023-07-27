@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Input, Radio, Space, Typography } from '@arco-design/web-react';
+import { Modal, Button, Form, Input, Radio, Space, Typography, Message } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 const FormItem = Form.Item;
 import styles from './style/index.module.less';
 
-function App() {
+function CreateModal() {
   const t = useLocale(locale);
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -16,16 +16,17 @@ function App() {
   const router = useRouter();
 
   function onOk() {
-    form.validate().then((values) => {
-      setConfirmLoading(true);
-      createProblem(values)
-        .then(res => {
-          router.push(`/problems/${res.data.id}/update`);
-        })
-        .finally(() => {
-          setConfirmLoading(false);
-        });
-    });
+    Message.error('暂不可用');
+    // form.validate().then((values) => {
+    //   setConfirmLoading(true);
+    //   createProblem(values)
+    //     .then(res => {
+    //       router.push(`/problems/${res.data.id}/update`);
+    //     })
+    //     .finally(() => {
+    //       setConfirmLoading(false);
+    //     });
+    // });
   }
 
   return (
@@ -34,7 +35,7 @@ function App() {
         {t['searchTable.operations.add']}
       </Button>
       <Modal
-        title='创建题目'
+        title='创建题单'
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
@@ -43,15 +44,14 @@ function App() {
         <Form
           form={form}
         >
-          <FormItem label='题目名称' required field='name' rules={[{ required: true }]}>
+          <FormItem label='名称' required field='name' rules={[{ required: true }]}>
             <Input placeholder='' />
           </FormItem>
-          <FormItem label='题目类型' required field='type' defaultValue={0} help='题目类型创建后不可修改' rules={[{ required: true }]}>
+          <FormItem label='类型' required field='type' defaultValue={0} help='类型创建后不可修改' rules={[{ required: true }]}>
             <Radio.Group className={styles['card-radio-group']}>
               {[
-                { name: '标准输入输出题', value: 0, help: '用户需要完成标准输入输出'},
-                { name: '函数题', value: 1, help: '用户只需要补全函数'},
-                { name: '客观题', value: 2, help: '非编程题。从事先拟定的答案中辨认出正确答案的题目。可支持单选题、多选题、填空题。'},
+                { name: '普通模式', value: 0, help: '只是将各种题目单纯整合到一个题单里面，用户可随时、不限制时间地刷题'},
+                { name: '试卷模式', value: 1, help: '在普通模式的基础上有额外的功能：每道题目都可有分数限制，类似于考试，可限制考试时间，用户进入题单即开始计时，用户需要交卷才能得知答案'},
               ].map((item) => {
                 return (
                   <Radio key={item.value} value={item.value}>
@@ -82,4 +82,4 @@ function App() {
   );
 }
 
-export default App;
+export default CreateModal;

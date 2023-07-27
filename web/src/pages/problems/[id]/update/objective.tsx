@@ -212,8 +212,9 @@ export default function ObjectivePage(props: any) {
                 <FormItem field='name' label={t['name']} required>
                   <Input />
                 </FormItem>
-                <FormItem field='legend' label={t['legend']}>
+                <FormItem field='legend' label={t['legend']} required>
                   <Editor
+                    height='200px'
                     imageRequest={{
                       onUpload: uploadFile,
                       onRemove: removeFile,
@@ -326,6 +327,7 @@ export default function ObjectivePage(props: any) {
                 </Form.Item>
                 <FormItem field='note' label='答案解析'>
                   <Editor
+                    height='200px'
                     imageRequest={{
                       onUpload: uploadFile,
                       onRemove: removeFile,
