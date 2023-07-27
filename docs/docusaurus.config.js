@@ -134,7 +134,7 @@ const config = {
             ]
           },
           {to: '/blog', label: '博客', position: 'left'},
-          {to: 'https://jisuanya.com', label: 'Demo', position: 'right'},
+          {to: 'https://sijicode.com', label: 'Demo', position: 'right'},
           {
             href: 'https://github.com/shi-yang/jnoj',
             label: 'GitHub',
