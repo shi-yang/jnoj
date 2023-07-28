@@ -3624,6 +3624,11 @@ github-from-package@0.0.0:
   resolved "https://registry.npmmirror.com/github-from-package/-/github-from-package-0.0.0.tgz#97fb5d96bfde8973313f20e8288ef9a167fa64ce"
   integrity sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==
 
+github-markdown-css@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.npmmirror.com/github-markdown-css/-/github-markdown-css-5.2.0.tgz#9f9e30f16cbc1d3b76110667b7c36ca3d96c9cdc"
+  integrity sha512-hq5RaCInSUZ48bImOZpkppW2/MT44StRgsbsZ8YA4vJFwLKB/Vo3k7R2t+pUGqO+ThG0QDMi96TewV/B3vyItg==
+
 github-slugger@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmmirror.com/github-slugger/-/github-slugger-2.0.0.tgz#52cf2f9279a21eb6c59dd385b410f0c0adda8f1a"
@@ -5865,7 +5870,7 @@ rehype@~12.0.1:
     rehype-stringify "^9.0.0"
     unified "^10.0.0"
 
-remark-gfm@~3.0.1:
+remark-gfm@^3.0.1, remark-gfm@~3.0.1:
   version "3.0.1"
   resolved "https://registry.npmmirror.com/remark-gfm/-/remark-gfm-3.0.1.tgz#0b180f095e3036545e9dddac0e8df3fa5cfee54f"
   integrity sha512-lEFDoi2PICJyNrACFOfDD3JlLkuSbOa5Wd8EPt06HUdptv8Gn0bxYTdbU/XXQ3swAPkEaGxxPN9cbnMHvVu1Ig==
