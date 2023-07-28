@@ -275,7 +275,10 @@ func (r *groupRepo) GetGroupUser(ctx context.Context, group *biz.Group, uid int)
 		Error
 	// 小组没找到，往小组所属团队查找角色
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return r.GetGroupUser(ctx, group.Team, uid)
+		if group.Team != nil {
+			return r.GetGroupUser(ctx, group.Team, uid)
+		}
+		return nil, err
 	}
 	u := &biz.GroupUser{
 		ID:        res.ID,
