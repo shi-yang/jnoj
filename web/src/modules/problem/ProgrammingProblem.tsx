@@ -93,7 +93,7 @@ export default function ProgrammingProblem({problem, language}: any) {
           </Paragraph>
         </>
       }
-      { problem.source != '' &&
+      { problem.statements[language].source != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['source']}</Title>
           <Paragraph>
