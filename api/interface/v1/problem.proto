@@ -268,6 +268,20 @@ service ProblemService {
             body: "*"
         };
     }
+    // 上传Excel，预览批量添加题目到题单的结果
+    rpc BatchAddProblemToProblemsetPreview (BatchAddProblemToProblemsetPreviewRequest) returns (BatchAddProblemToProblemsetPreviewResponse) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/batch_problems_preview"
+            body: "*"
+        };
+    }
+    // 批量创建题单
+    rpc BatchAddProblemToProblemset(BatchAddProblemToProblemsetRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/batch_problems"
+            body: "*"
+        };
+    }
     // 从题单中删除题目
     rpc DeleteProblemFromProblemset (DeleteProblemFromProblemsetRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
@@ -291,7 +305,7 @@ service ProblemService {
 }
 
 
-// 题目类型：标准输入输出、函数题
+// 题目类型：标准输入输出、函数题、客观题
 enum ProblemType {
     DEFAULT = 0; // 标准输入输出
     FUNCTION = 1; // 函数题
@@ -590,20 +604,33 @@ message ProblemVerification {
     repeated VerificaitionInfo verificaiton_info = 4;
 }
 
+enum ProblemsetType {
+    SIMPLE = 0;
+    EXAM = 1;
+}
+
 message Problemset {
+    message User {
+        int32 id = 1;
+        string nickname = 2;
+        string username = 3;
+    }
     int32 id = 1;
     string name = 2;
-    int32 user_id = 3;
-    string description = 4;
-    int32 problem_count = 5;
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
+    ProblemsetType type = 3;
+    User user = 4;
+    string description = 5;
+    int32 problem_count = 6;
+    repeated ProblemsetProblem problems = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
 
 message ListProblemsetsRequest {
     string name = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    repeated ProblemsetType type = 2;
+    int32 page = 3;
+    int32 per_page = 4;
 }
 
 message ListProblemsetsResponse {
@@ -618,6 +645,7 @@ message GetProblemsetRequest {
 message CreateProblemsetRequest {
     string name = 1;
     string description = 2;
+    ProblemsetType type = 3;
 }
 
 message DeleteProblemsetRequest {
@@ -660,7 +688,11 @@ message ProblemsetProblem {
         SOLVED = 2;
     }
     Status status = 11;
-    repeated string tags = 12;
+    // 题目类型：标准输入输出、函数题、客观题
+    ProblemType type = 12;
+    // 客观题内容
+    ProblemStatement statement = 13;
+    repeated string tags = 14;
 }
 
 message ListProblemsetProblemsResponse {
@@ -686,6 +718,26 @@ message GetProblemsetLateralProblemResponse {
 message AddProblemToProblemsetRequest {
     int32 id = 1;
     int32 problem_id = 2;
+}
+
+message BatchAddProblemToProblemsetPreviewRequest {
+    enum Method {
+        EXCEL = 0;
+    }
+    int32 id = 1;
+    Method method = 2;
+    string content = 3;
+}
+
+message BatchAddProblemToProblemsetPreviewResponse {
+    repeated ProblemsetProblem problems = 1;
+    int32 total = 2;
+    repeated string failed_reason = 3;
+}
+
+message BatchAddProblemToProblemsetRequest {
+    int32 id = 1;
+    repeated ProblemsetProblem problems = 2;
 }
 
 message DeleteProblemFromProblemsetRequest {

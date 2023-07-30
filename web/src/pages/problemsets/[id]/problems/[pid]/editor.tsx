@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from './style/editor.module.less';
-import { Button, Form, Input, Message, Result, Select } from '@arco-design/web-react';
+import { Button, Checkbox, Form, Input, Message, Radio, Result, Select } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { createSubmission } from '@/api/submission';
@@ -145,20 +145,52 @@ export default function App() {
                 icon={null}
               >
                 <Form>
-                  {(statement.type === 'CHOICE' || statement.type === 'MULTIPLE') ? (
-                    <Form.Item label={statement.type === 'CHOICE' ? '单选题' : '多选题'}>
-                      <Select onChange={e => setValue(Array.isArray(e) ? e.join(',') : e)} placeholder='Please select' mode={statement.type === 'MULTIPLE' ? 'multiple' : null} allowCreate={false} allowClear>
-                        {statement.input.split(',').map((item, index) => (
-                          <Select.Option key={index} value={index}>
+                  {statement.type === 'CHOICE' && (
+                    <Form.Item label={'单选题'}>
+                      <Radio.Group
+                        direction='vertical'
+                        onChange={e => setValue(JSON.stringify([e]))}
+                      >
+                        {statement.input !== '' && JSON.parse(statement.input).map((item, index) => (
+                          <Radio key={index} value={item}>
                             {item}
-                          </Select.Option>
+                          </Radio>
                         ))}
-                      </Select>
+                      </Radio.Group>
                     </Form.Item>
-                  ) : (
-                    <Form.Item label='填空题'>
-                      <Input.TextArea placeholder='Please input'  onChange={e => setValue(e)} />
+                  )}
+                  {statement.type === 'MULTIPLE' && (
+                    <Form.Item label={'多选题'}>
+                      <Checkbox.Group
+                        direction='vertical'
+                        onChange={e => setValue(Array.isArray(e) ? JSON.stringify(e) : e)}
+                      >
+                        {statement.input !== '' && JSON.parse(statement.input).map((item, index) => (
+                          <Checkbox key={index} value={item}>
+                            {item}
+                          </Checkbox>
+                        ))}
+                      </Checkbox.Group>
                     </Form.Item>
+                  )}
+                  {statement.type === 'FILLBLANK' && (
+                    statement.input !== '' && JSON.parse(statement.input).map((item, index) => (
+                      <Form.Item label={`填空 ${index+1}`} key={index}>
+                        <Input.TextArea placeholder='Please input' onChange={(e) => {
+                          setValue(v => {
+                            let tmp = [];
+                            if (v === '') {
+                              tmp = JSON.parse(statement.input);
+                              tmp[index] = e;
+                              return JSON.stringify(tmp);
+                            }
+                            const value = JSON.parse(v);
+                            value[index] = e;
+                            return JSON.stringify(value);
+                          });
+                        }} />
+                      </Form.Item>
+                    ))
                   )}
                 </Form>
               </Result>

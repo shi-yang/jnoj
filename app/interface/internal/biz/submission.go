@@ -2,10 +2,10 @@ package biz
 
 import (
 	"context"
+	"encoding/json"
 	v1 "jnoj/api/interface/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
-	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -369,11 +369,15 @@ func isMatched(strA, strB string) bool {
 	setA := make(map[string]struct{})
 	setB := make(map[string]struct{})
 
+	var arrA, arrB []string
+	json.Unmarshal([]byte(strA), &arrA)
+	json.Unmarshal([]byte(strB), &arrB)
+
 	// 使用逗号分割字符串 A 和 B，将元素添加到相应的集合中
-	for _, item := range strings.Split(strA, ",") {
+	for _, item := range arrA {
 		setA[item] = struct{}{}
 	}
-	for _, item := range strings.Split(strB, ",") {
+	for _, item := range arrB {
 		setB[item] = struct{}{}
 	}
 

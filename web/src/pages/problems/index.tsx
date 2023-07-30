@@ -7,7 +7,7 @@ import { Tabs, Tooltip } from '@arco-design/web-react';
 
 function Index() {
   return (
-    <Tabs>
+    <Tabs destroyOnHide>
       <Tabs.TabPane key='programming' title={
         <Tooltip content='代码编写在线测评题，含标准输入输出、函数题'>
           编程题

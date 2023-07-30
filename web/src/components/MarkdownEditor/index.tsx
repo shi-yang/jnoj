@@ -42,7 +42,6 @@ const image = function(props:UploadProps) {
                 return (
                   <a
                     onClick={() => {
-                    console.log(file);
                       handle.textApi.replaceSelection(`![${file.name}](${file.response})\n`);
                     }}
                   >

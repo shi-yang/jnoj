@@ -43,6 +43,16 @@ export function addProblemToProblemset(id, data) {
   return axios.post(`/problemsets/${id}/problems`, data);
 }
 
+// 上传Excel表，预览批量添加题目到题单的结果
+export function batchAddProblemToProblemsetPreview(id, data) {
+  return axios.post(`/problemsets/${id}/batch_problems_preview`, data);
+}
+
+// batchAddProblemToProblemset 批量添加题目到题单
+export function batchAddProblemToProblemset(id, data) {
+  return axios.post(`/problemsets/${id}/batch_problems`, data);
+}
+
 // 从题单中删除题目
 export function deleteProblemFromProblemset(id, problemId) {
   return axios.delete(`/problemsets/${id}/problems/${problemId}`);

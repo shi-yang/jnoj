@@ -25,6 +25,7 @@ type ProblemsetRepo struct {
 type Problemset struct {
 	ID                 int
 	Name               string
+	Type               int
 	Description        string
 	UserID             int
 	ProblemCount       int
@@ -32,6 +33,7 @@ type Problemset struct {
 	UpdatedAt          time.Time
 	DeletedAt          gorm.DeletedAt
 	ProblemsetProblems []*ProblemsetProblem `gorm:"ForeignKey:ProblemsetID"`
+	User               *User                `gorm:"ForeighKey:UserID"`
 }
 
 type ProblemsetProblem struct {
@@ -56,7 +58,16 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 	count := int64(0)
 	page := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
-		Model(&res)
+		Model(&res).
+		Preload("User", func(t *gorm.DB) *gorm.DB {
+			return t.Select("ID", "Nickname", "Username")
+		})
+	if req.Name != "" {
+		db.Where("name like ?", "%"+req.Name+"%")
+	}
+	if len(req.Type) > 0 {
+		db.Where("type in (?)", req.Type)
+	}
 	db.Count(&count)
 	db.Offset(page.GetOffset()).
 		Limit(page.GetPageSize()).
@@ -66,10 +77,16 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 		rv = append(rv, &biz.Problemset{
 			ID:           v.ID,
 			Name:         v.Name,
+			Type:         v.Type,
 			Description:  v.Description,
 			CreatedAt:    v.CreatedAt,
 			ProblemCount: v.ProblemCount,
 			UserID:       v.UserID,
+			User: &biz.User{
+				ID:       v.User.ID,
+				Nickname: v.User.Nickname,
+				Username: v.User.Username,
+			},
 		})
 	}
 	return rv, count
@@ -79,6 +96,9 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Problemset, error) {
 	var res Problemset
 	err := r.data.db.Model(Problemset{}).
+		Preload("User", func(t *gorm.DB) *gorm.DB {
+			return t.Select("ID", "Nickname", "Username")
+		}).
 		First(&res, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -86,10 +106,16 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 	return &biz.Problemset{
 		ID:           res.ID,
 		Name:         res.Name,
+		Type:         res.Type,
 		Description:  res.Description,
 		ProblemCount: res.ProblemCount,
 		CreatedAt:    res.CreatedAt,
 		UserID:       res.UserID,
+		User: &biz.User{
+			ID:       res.User.ID,
+			Nickname: res.User.Nickname,
+			Username: res.User.Username,
+		},
 	}, err
 }
 
@@ -98,6 +124,7 @@ func (r *ProblemsetRepo) CreateProblemset(ctx context.Context, b *biz.Problemset
 	res := Problemset{
 		Name:        b.Name,
 		UserID:      b.UserID,
+		Type:        b.Type,
 		Description: b.Description,
 	}
 	err := r.data.db.WithContext(ctx).
@@ -197,6 +224,26 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 	return rv, count
 }
 
+// ListProblemsetProblemStatements .
+func (r *ProblemsetRepo) ListProblemsetProblemStatements(ctx context.Context, ids []int) map[int]*biz.ProblemStatement {
+	var statements []*ProblemStatement
+	res := make(map[int]*biz.ProblemStatement)
+	r.data.db.WithContext(ctx).
+		Where("problem_id in (?)", ids).
+		Find(&statements)
+	for _, v := range statements {
+		res[v.ProblemID] = &biz.ProblemStatement{
+			Name:   v.Name,
+			Legend: v.Legend,
+			Input:  v.Input,
+			Output: v.Output,
+			Note:   v.Note,
+			Type:   v.Type,
+		}
+	}
+	return res
+}
+
 // GetProblemsetProblem .
 func (r *ProblemsetRepo) GetProblemsetProblem(ctx context.Context, sid int, order int) (*biz.ProblemsetProblem, error) {
 	var p ProblemsetProblem
@@ -226,30 +273,31 @@ func (r *ProblemsetRepo) GetProblemsetLateralProblem(ctx context.Context, id int
 }
 
 // AddProblemToProblemset .
-func (r *ProblemsetRepo) AddProblemToProblemset(ctx context.Context, sid int, pid int) error {
+func (r *ProblemsetRepo) AddProblemToProblemset(ctx context.Context, problem *biz.ProblemsetProblem) error {
 	// 判断是否已经存在
 	var count int64
 	r.data.db.WithContext(ctx).
 		Model(&ProblemsetProblem{}).
-		Where("problemset_id = ? and problem_id = ?", sid, pid).
+		Where("problemset_id = ? and problem_id = ?", problem.ProblemsetID, problem.ProblemID).
 		Count(&count)
 	if count > 0 {
 		return errors.New("已经存在")
 	}
-
-	var maxOrder int
 	db := r.data.db.WithContext(ctx).Begin()
-	db.Select("max(`order`)").Model(&ProblemsetProblem{}).Where("problemset_id = ?", sid).Scan(&maxOrder)
-	err := db.Create(&ProblemsetProblem{
-		ProblemID:    pid,
-		ProblemsetID: sid,
-		Order:        maxOrder + 1,
-	}).Error
-	if err != nil {
-		db.Rollback()
-		return err
+	if problem.Order == 0 {
+		var maxOrder int
+		db.Select("max(`order`)").Model(&ProblemsetProblem{}).Where("problemset_id = ?", problem.ProblemsetID).Scan(&maxOrder)
+		err := db.Create(&ProblemsetProblem{
+			ProblemID:    problem.ProblemID,
+			ProblemsetID: problem.ProblemsetID,
+			Order:        maxOrder + 1,
+		}).Error
+		if err != nil {
+			db.Rollback()
+			return err
+		}
 	}
-	db.Model(&Problemset{ID: sid}).
+	db.Model(&Problemset{ID: problem.ProblemsetID}).
 		UpdateColumn("problem_count", gorm.Expr("problem_count + 1"))
 	db.Commit()
 	return nil

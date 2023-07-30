@@ -70,6 +70,10 @@ func (r *problemRepo) CreateProblemStatement(ctx context.Context, p *biz.Problem
 		UserID:    p.UserID,
 		Language:  p.Language,
 		Type:      p.Type,
+		Legend:    p.Legend,
+		Input:     p.Input,
+		Output:    p.Output,
+		Note:      p.Note,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

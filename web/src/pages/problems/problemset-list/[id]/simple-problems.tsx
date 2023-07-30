@@ -1,87 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Divider, Form, Input, InputNumber,
-  Link,
+  Button, Card, Form, InputNumber,
   Message, Modal, PaginationProps, Popconfirm,
   Table, TableColumnProps
 } from '@arco-design/web-react';
-import { useAppSelector } from '@/hooks';
-import { SettingState, setting } from '@/store/reducers/setting';
-import { useRouter } from 'next/router';
 import {
-  addProblemToProblemset, deleteProblemFromProblemset, getProblemset,
-  listProblemsetProblems, sortProblemsetProblems, updateProblemset
+  addProblemToProblemset, deleteProblemFromProblemset,
+  listProblemsetProblems, sortProblemsetProblems
 } from '@/api/problemset';
-import Head from 'next/head';
 import useLocale from '@/utils/useLocale';
-import styles from './style/index.module.less';
 import locale from './locale';
 import { IconPlus, IconDragDotVertical } from '@arco-design/web-react/icon';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-
-function UpdateProblemset() {
-  const t = useLocale(locale);
-  const router = useRouter();
-  const [form] = Form.useForm();
-  const { id } = router.query;
-  const settings = useAppSelector<SettingState>(setting);
-  const [problemset, setProblemset] = useState({id: 0, name: '', description: ''});
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    fetchData();
-  }, []);
-  function fetchData() {
-    setLoading(true);
-    getProblemset(id)
-      .then((res) => {
-        setLoading(false);
-        setProblemset(res.data);
-        form.setFieldsValue({
-          name: res.data.name,
-          description: res.data.description,
-        });
-      });
-  }
-  function onSubmit(v) {
-    updateProblemset(id, v)
-      .then(res => {
-        Message.success(t['update.form.saveInfo']);
-      });
-  }
-  return (!loading && (
-    <div className='container'>
-      <Head>
-        <title>{`${problemset.name} - ${t['page.title']} - ${settings.name}`}</title>
-      </Head>
-      <div>
-        <Card title={(
-          <>
-            {t['update.form']}:<Link href={`/problemsets/${id}`}>{problemset.name}</Link>
-          </>
-        )}>
-          <Form
-            form={form}
-            layout='vertical'
-            onSubmit={onSubmit}
-          >
-            <Form.Item label={t['update.form.name']} required field='name' rules={[{ required: true }]}>
-              <Input placeholder='' />
-            </Form.Item>
-            <Form.Item label={t['update.form.description']} field='description'>
-              <Input.TextArea placeholder='' />
-            </Form.Item>
-            <Form.Item>
-              <Button htmlType='submit' type='primary'>{t['update.form.save']}</Button>
-            </Form.Item>
-          </Form>
-        </Card>
-        <Divider />
-        <Problems problemsetId={problemset.id} />
-      </div>
-    </div>)
-  );
-}
 
 const arrayMoveMutate = (array, from, to) => {
   const startIndex = to < 0 ? array.length + to : to;
@@ -111,7 +41,8 @@ const SortableWrapper = SortableContainer((props) => {
 const SortableItem = SortableElement((props) => {
   return <tr {...props} />;
 });
-function Problems({problemsetId}: {problemsetId: number}) {
+function Problems({problemset}: {problemset:any}) {
+  const problemsetId = problemset.id;
   const t = useLocale(locale);
   const [problems, setProblems] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -347,4 +278,4 @@ function AddProblem({problemsetId, callback}: {problemsetId: number, callback?:(
   );
 }
 
-export default UpdateProblemset;
+export default Problems;

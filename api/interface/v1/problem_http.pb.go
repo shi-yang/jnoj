@@ -24,6 +24,8 @@ const _ = http.SupportPackageIsVersion1
 // auth.
 // auth.
 const OperationProblemServiceAddProblemToProblemset = "/jnoj.interface.v1.ProblemService/AddProblemToProblemset"
+const OperationProblemServiceBatchAddProblemToProblemset = "/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemset"
+const OperationProblemServiceBatchAddProblemToProblemsetPreview = "/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemsetPreview"
 const OperationProblemServiceCreateProblem = "/jnoj.interface.v1.ProblemService/CreateProblem"
 const OperationProblemServiceCreateProblemFile = "/jnoj.interface.v1.ProblemService/CreateProblemFile"
 const OperationProblemServiceCreateProblemLanguage = "/jnoj.interface.v1.ProblemService/CreateProblemLanguage"
@@ -69,6 +71,8 @@ const OperationProblemServiceVerifyProblem = "/jnoj.interface.v1.ProblemService/
 
 type ProblemServiceHTTPServer interface {
 	AddProblemToProblemset(context.Context, *AddProblemToProblemsetRequest) (*emptypb.Empty, error)
+	BatchAddProblemToProblemset(context.Context, *BatchAddProblemToProblemsetRequest) (*emptypb.Empty, error)
+	BatchAddProblemToProblemsetPreview(context.Context, *BatchAddProblemToProblemsetPreviewRequest) (*BatchAddProblemToProblemsetPreviewResponse, error)
 	CreateProblem(context.Context, *CreateProblemRequest) (*CreateProblemResponse, error)
 	CreateProblemFile(context.Context, *CreateProblemFileRequest) (*ProblemFile, error)
 	CreateProblemLanguage(context.Context, *CreateProblemLanguageRequest) (*ProblemLanguage, error)
@@ -138,6 +142,8 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetRequest", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/AddProblemToProblemset", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemsetPreview", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/SortProblemsetProblems", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetProblems", auth.Guest())
@@ -182,6 +188,8 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.GET("/problemsets/{id}/problems/{pid}", _ProblemService_GetProblemsetProblem0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems/{pid}/lateral", _ProblemService_GetProblemsetLateralProblem0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/problems", _ProblemService_AddProblemToProblemset0_HTTP_Handler(srv))
+	r.POST("/problemsets/{id}/batch_problems_preview", _ProblemService_BatchAddProblemToProblemsetPreview0_HTTP_Handler(srv))
+	r.POST("/problemsets/{id}/batch_problems", _ProblemService_BatchAddProblemToProblemset0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}/problems/{problem_id}", _ProblemService_DeleteProblemFromProblemset0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/problem/sort", _ProblemService_SortProblemsetProblems0_HTTP_Handler(srv))
 	r.POST("/download_problems", _ProblemService_DownloadProblems0_HTTP_Handler(srv))
@@ -1055,6 +1063,50 @@ func _ProblemService_AddProblemToProblemset0_HTTP_Handler(srv ProblemServiceHTTP
 	}
 }
 
+func _ProblemService_BatchAddProblemToProblemsetPreview0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in BatchAddProblemToProblemsetPreviewRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceBatchAddProblemToProblemsetPreview)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.BatchAddProblemToProblemsetPreview(ctx, req.(*BatchAddProblemToProblemsetPreviewRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*BatchAddProblemToProblemsetPreviewResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_BatchAddProblemToProblemset0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in BatchAddProblemToProblemsetRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceBatchAddProblemToProblemset)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.BatchAddProblemToProblemset(ctx, req.(*BatchAddProblemToProblemsetRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_DeleteProblemFromProblemset0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in DeleteProblemFromProblemsetRequest
@@ -1120,6 +1172,8 @@ func _ProblemService_DownloadProblems0_HTTP_Handler(srv ProblemServiceHTTPServer
 
 type ProblemServiceHTTPClient interface {
 	AddProblemToProblemset(ctx context.Context, req *AddProblemToProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	BatchAddProblemToProblemset(ctx context.Context, req *BatchAddProblemToProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	BatchAddProblemToProblemsetPreview(ctx context.Context, req *BatchAddProblemToProblemsetPreviewRequest, opts ...http.CallOption) (rsp *BatchAddProblemToProblemsetPreviewResponse, err error)
 	CreateProblem(ctx context.Context, req *CreateProblemRequest, opts ...http.CallOption) (rsp *CreateProblemResponse, err error)
 	CreateProblemFile(ctx context.Context, req *CreateProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
 	CreateProblemLanguage(ctx context.Context, req *CreateProblemLanguageRequest, opts ...http.CallOption) (rsp *ProblemLanguage, err error)
@@ -1177,6 +1231,32 @@ func (c *ProblemServiceHTTPClientImpl) AddProblemToProblemset(ctx context.Contex
 	pattern := "/problemsets/{id}/problems"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceAddProblemToProblemset))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) BatchAddProblemToProblemset(ctx context.Context, in *BatchAddProblemToProblemsetRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problemsets/{id}/batch_problems"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceBatchAddProblemToProblemset))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) BatchAddProblemToProblemsetPreview(ctx context.Context, in *BatchAddProblemToProblemsetPreviewRequest, opts ...http.CallOption) (*BatchAddProblemToProblemsetPreviewResponse, error) {
+	var out BatchAddProblemToProblemsetPreviewResponse
+	pattern := "/problemsets/{id}/batch_problems_preview"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceBatchAddProblemToProblemsetPreview))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

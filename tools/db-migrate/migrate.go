@@ -14,12 +14,25 @@ func Migrate(db *gorm.DB) {
 		MigrateAddSuperAdminUser20230716(),
 		MigrateAddUserBadge20230717(),
 		MigrateAddUserProfile20230719(),
+		MigrateAddProblemsetType20230727(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddProblemsetType20230727() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddProblemsetType20230727",
+		Migrate: func(d *gorm.DB) error {
+			return d.Exec("ALTER TABLE `problemset` ADD `type` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `name`;").Error
+		},
+		Rollback: func(d *gorm.DB) error {
+			return d.Exec("ALTER TABLE `problemset` DROP `type`;").Error
+		},
+	}
 }
 
 func MigrateAddUserProfile20230719() *gormigrate.Migration {

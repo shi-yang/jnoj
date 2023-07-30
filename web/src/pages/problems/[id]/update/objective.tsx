@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Card, Radio, InputTag, Grid, Space, Select, Divider, List, Popconfirm, Message, Tag } from '@arco-design/web-react';
-import { getProblemVerification, updateProblem, verifyProblem } from '@/api/problem';
+import { updateProblem } from '@/api/problem';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { IconArrowFall, IconArrowRise, IconDelete, IconEdit } from '@arco-design/web-react/icon';
@@ -8,19 +8,17 @@ import { deleteProblemStatement, listProblemStatements, updateProblemStatement }
 import { deleteProblemFile, listProblemFiles, uploadProblemFile } from '@/api/problem-file';
 import CreateStatementModal from './create-statement';
 import Editor from '@/components/MarkdownEditor';
-const VerificationStatus = ['', '待验证', '验证失败', '验证成功'];
 const FormItem = Form.Item;
 
 export default function ObjectivePage(props: any) {
   const t = useLocale(locale);
   const [form] = Form.useForm();
   const [statementForm] = Form.useForm();
-  const [verification, setVerification] = useState({verificationStatus: 0, verificaitonInfo: []});
   const [statements, setStatements] = useState([]);
   const [current, setCurrent] = useState(0);
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   function fetchStatement() {
-    listProblemStatements(props.problem.id).then(res => {
+    listProblemStatements(props.problem.id).then((res:any) => {
       const d = res.data.data;
       setStatements(res.data.data);
       if (d.length > 0) {
@@ -32,15 +30,24 @@ export default function ObjectivePage(props: any) {
           note: statement.note,
         });
         if (statement.type === 'CHOICE') {
+          if (statement.input !== '') {
+            statement.input = JSON.parse(statement.input);
+          }
           statementForm.setFieldsValue({
-            optionals: statement.input.split(','),
+            optionals: statement.input,
             answer: statement.input.indexOf(statement.output)
           });
         } else if (statement.type === 'MULTIPLE') {
-          const choices = statement.input.split(',');
+          if (statement.input !== '') {
+            statement.input = JSON.parse(statement.input);
+          }
+          if (statement.output !== '') {
+            statement.output = JSON.parse(statement.output);
+          }
+          const choices = statement.input;
           statementForm.setFieldsValue({
             optionals: choices,
-            answer: statement.output.split(',').map(item => choices.indexOf(item))
+            answer: statement.output.map(item => choices.indexOf(item))
           });
         } else {
           statementForm.setFieldsValue({
@@ -88,13 +95,22 @@ export default function ObjectivePage(props: any) {
         note: values.note,
       };
       if (values.type === 'CHOICE') {
-        data.input = values.optionals.join(',');
+        data.input = JSON.stringify(values.optionals);
         data.output = values.optionals[values.answer];
       } else if (values.type === 'MULTIPLE') {
-        data.input = values.optionals.join(',');
-        data.output = values.answer.map(item => values.optionals[item]).join(',');
+        data.input = JSON.stringify(values.optionals);
+        data.output = JSON.stringify(values.answer.map(item => values.optionals[item]));
       } else {
-        data.output = values.answer;
+        const regex = /\{([^}]+)\}/g;
+        let match;
+        const ans = [];
+        const input = [];
+        while ((match = regex.exec(values.legend)) !== null) {
+          ans.push(match[1]);
+          input.push('');
+        }
+        data.input = JSON.stringify(input);
+        data.output = JSON.stringify(ans);
       }
       updateProblemStatement(props.problem.id, statements[current].id, data)
         .then(res => {
@@ -124,11 +140,6 @@ export default function ObjectivePage(props: any) {
         fetchStatement();
       });
   }
-  function verify() {
-    verifyProblem(props.problem.id).then(res => {
-      Message.info('已提交校验，请稍等刷新');
-    });
-  }
   function editStatement(index) {
     setCurrent(index);
     const statement = statements[index];
@@ -139,14 +150,14 @@ export default function ObjectivePage(props: any) {
     });
     if (statement.type === 'CHOICE') {
       statementForm.setFieldsValue({
-        optionals: statement.input.split(','),
+        optionals: JSON.parse(statement.input),
         answer: statement.input.indexOf(statement.output)
       });
     } else if (statement.type === 'MULTIPLE') {
-      const choices = statement.input.split(',');
+      const choices = JSON.parse(statement.input);
       statementForm.setFieldsValue({
         optionals: choices,
-        answer: statement.output.split(',').map(item => choices.indexOf(item))
+        answer: statement.output.map(item => choices.indexOf(item))
       });
     } else {
       statementForm.setFieldsValue({
@@ -164,10 +175,6 @@ export default function ObjectivePage(props: any) {
   
   useEffect(() => {
     fetchStatement();
-    getProblemVerification(props.problem.id)
-      .then(res => {
-        setVerification(res.data);
-      });
     form.setFieldsValue({
       status: props.problem.status,
       source: props.problem.source,
@@ -181,7 +188,7 @@ export default function ObjectivePage(props: any) {
         <Grid.Col flex='800px'>
           <List
             bordered
-            footer={<CreateStatementModal problem={props.problem} callback={fetchStatement} />}
+            footer={ statements.length === 0 && <CreateStatementModal problem={props.problem} callback={fetchStatement} />}
           >
             {statements.map((item, index) => (
               <List.Item key={index} actions={[
@@ -256,7 +263,6 @@ export default function ObjectivePage(props: any) {
                                       <Grid.Row key={item.key}>
                                         <Form.Item
                                           field={item.field}
-                                          label={String.fromCharCode(65 + index)}
                                           style={{
                                             width: 370,
                                           }}
@@ -317,8 +323,8 @@ export default function ObjectivePage(props: any) {
                     ) : (
                       values.type === 'FILLBLANK' && (
                         <>
-                          <Form.Item field='answer' label='答案' required>
-                            <Input />
+                          <Form.Item field='answer' label='答案' required help={'填空题的答案请在描述中用括号{}括住'}>
+                            <Input disabled />
                           </Form.Item>
                         </>
                       )
@@ -360,35 +366,6 @@ export default function ObjectivePage(props: any) {
               <Button type='primary' htmlType='submit'>{t['save']}</Button>
             </FormItem>
           </Form>
-          <Card title='题目校验'>
-            <Button onClick={() => verify()}>校验</Button>
-            <div>
-              <h1></h1>
-              <List
-                style={{ width: 622 }}
-                size='small'
-                header={
-                  <div>
-                    校验状态: {VerificationStatus[verification.verificationStatus]}
-                  </div>
-                }
-                dataSource={verification.verificaitonInfo.map(item => {
-                  return {
-                    title: item.action,
-                    description: item.errorMessage,
-                  };
-                })}
-                render={(item, index) => 
-                  <List.Item key={index}>
-                    <List.Item.Meta
-                      title={item.title}
-                      description={item.description}
-                    />
-                  </List.Item>
-                }
-              />
-            </div>
-          </Card>
         </Grid.Col>
       </Grid.Row>
     </Card>

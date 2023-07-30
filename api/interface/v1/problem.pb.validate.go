@@ -4568,11 +4568,74 @@ func (m *Problemset) validate(all bool) error {
 
 	// no validation rules for Name
 
-	// no validation rules for UserId
+	// no validation rules for Type
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ProblemsetValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ProblemsetValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ProblemsetValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for Description
 
 	// no validation rules for ProblemCount
+
+	for idx, item := range m.GetProblems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ProblemsetValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ProblemsetValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ProblemsetValidationError{
+					field:  fmt.Sprintf("Problems[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
@@ -5085,6 +5148,8 @@ func (m *CreateProblemsetRequest) validate(all bool) error {
 
 	// no validation rules for Description
 
+	// no validation rules for Type
+
 	if len(errors) > 0 {
 		return CreateProblemsetRequestMultiError(errors)
 	}
@@ -5531,6 +5596,37 @@ func (m *ProblemsetProblem) validate(all bool) error {
 	// no validation rules for Source
 
 	// no validation rules for Status
+
+	// no validation rules for Type
+
+	if all {
+		switch v := interface{}(m.GetStatement()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ProblemsetProblemValidationError{
+					field:  "Statement",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ProblemsetProblemValidationError{
+					field:  "Statement",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStatement()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ProblemsetProblemValidationError{
+				field:  "Statement",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return ProblemsetProblemMultiError(errors)
@@ -6182,6 +6278,401 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = AddProblemToProblemsetRequestValidationError{}
+
+// Validate checks the field values on
+// BatchAddProblemToProblemsetPreviewRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchAddProblemToProblemsetPreviewRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// BatchAddProblemToProblemsetPreviewRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// BatchAddProblemToProblemsetPreviewRequestMultiError, or nil if none found.
+func (m *BatchAddProblemToProblemsetPreviewRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchAddProblemToProblemsetPreviewRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Method
+
+	// no validation rules for Content
+
+	if len(errors) > 0 {
+		return BatchAddProblemToProblemsetPreviewRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchAddProblemToProblemsetPreviewRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// BatchAddProblemToProblemsetPreviewRequest.ValidateAll() if the designated
+// constraints aren't met.
+type BatchAddProblemToProblemsetPreviewRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchAddProblemToProblemsetPreviewRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchAddProblemToProblemsetPreviewRequestMultiError) AllErrors() []error { return m }
+
+// BatchAddProblemToProblemsetPreviewRequestValidationError is the validation
+// error returned by BatchAddProblemToProblemsetPreviewRequest.Validate if the
+// designated constraints aren't met.
+type BatchAddProblemToProblemsetPreviewRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchAddProblemToProblemsetPreviewRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchAddProblemToProblemsetPreviewRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchAddProblemToProblemsetPreviewRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchAddProblemToProblemsetPreviewRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchAddProblemToProblemsetPreviewRequestValidationError) ErrorName() string {
+	return "BatchAddProblemToProblemsetPreviewRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchAddProblemToProblemsetPreviewRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchAddProblemToProblemsetPreviewRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchAddProblemToProblemsetPreviewRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchAddProblemToProblemsetPreviewRequestValidationError{}
+
+// Validate checks the field values on
+// BatchAddProblemToProblemsetPreviewResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchAddProblemToProblemsetPreviewResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// BatchAddProblemToProblemsetPreviewResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// BatchAddProblemToProblemsetPreviewResponseMultiError, or nil if none found.
+func (m *BatchAddProblemToProblemsetPreviewResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchAddProblemToProblemsetPreviewResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetProblems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchAddProblemToProblemsetPreviewResponseValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchAddProblemToProblemsetPreviewResponseValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchAddProblemToProblemsetPreviewResponseValidationError{
+					field:  fmt.Sprintf("Problems[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return BatchAddProblemToProblemsetPreviewResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchAddProblemToProblemsetPreviewResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// BatchAddProblemToProblemsetPreviewResponse.ValidateAll() if the designated
+// constraints aren't met.
+type BatchAddProblemToProblemsetPreviewResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchAddProblemToProblemsetPreviewResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchAddProblemToProblemsetPreviewResponseMultiError) AllErrors() []error { return m }
+
+// BatchAddProblemToProblemsetPreviewResponseValidationError is the validation
+// error returned by BatchAddProblemToProblemsetPreviewResponse.Validate if
+// the designated constraints aren't met.
+type BatchAddProblemToProblemsetPreviewResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchAddProblemToProblemsetPreviewResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchAddProblemToProblemsetPreviewResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchAddProblemToProblemsetPreviewResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchAddProblemToProblemsetPreviewResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchAddProblemToProblemsetPreviewResponseValidationError) ErrorName() string {
+	return "BatchAddProblemToProblemsetPreviewResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchAddProblemToProblemsetPreviewResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchAddProblemToProblemsetPreviewResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchAddProblemToProblemsetPreviewResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchAddProblemToProblemsetPreviewResponseValidationError{}
+
+// Validate checks the field values on BatchAddProblemToProblemsetRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *BatchAddProblemToProblemsetRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BatchAddProblemToProblemsetRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// BatchAddProblemToProblemsetRequestMultiError, or nil if none found.
+func (m *BatchAddProblemToProblemsetRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchAddProblemToProblemsetRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	for idx, item := range m.GetProblems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchAddProblemToProblemsetRequestValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchAddProblemToProblemsetRequestValidationError{
+						field:  fmt.Sprintf("Problems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchAddProblemToProblemsetRequestValidationError{
+					field:  fmt.Sprintf("Problems[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return BatchAddProblemToProblemsetRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchAddProblemToProblemsetRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// BatchAddProblemToProblemsetRequest.ValidateAll() if the designated
+// constraints aren't met.
+type BatchAddProblemToProblemsetRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchAddProblemToProblemsetRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchAddProblemToProblemsetRequestMultiError) AllErrors() []error { return m }
+
+// BatchAddProblemToProblemsetRequestValidationError is the validation error
+// returned by BatchAddProblemToProblemsetRequest.Validate if the designated
+// constraints aren't met.
+type BatchAddProblemToProblemsetRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchAddProblemToProblemsetRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchAddProblemToProblemsetRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchAddProblemToProblemsetRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchAddProblemToProblemsetRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchAddProblemToProblemsetRequestValidationError) ErrorName() string {
+	return "BatchAddProblemToProblemsetRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BatchAddProblemToProblemsetRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchAddProblemToProblemsetRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchAddProblemToProblemsetRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchAddProblemToProblemsetRequestValidationError{}
 
 // Validate checks the field values on DeleteProblemFromProblemsetRequest with
 // the rules defined in the proto definition for this message. If any rules
@@ -7640,6 +8131,112 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ProblemVerification_VerificaitionInfoValidationError{}
+
+// Validate checks the field values on Problemset_User with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *Problemset_User) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Problemset_User with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// Problemset_UserMultiError, or nil if none found.
+func (m *Problemset_User) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Problemset_User) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Nickname
+
+	// no validation rules for Username
+
+	if len(errors) > 0 {
+		return Problemset_UserMultiError(errors)
+	}
+
+	return nil
+}
+
+// Problemset_UserMultiError is an error wrapping multiple validation errors
+// returned by Problemset_User.ValidateAll() if the designated constraints
+// aren't met.
+type Problemset_UserMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m Problemset_UserMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m Problemset_UserMultiError) AllErrors() []error { return m }
+
+// Problemset_UserValidationError is the validation error returned by
+// Problemset_User.Validate if the designated constraints aren't met.
+type Problemset_UserValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e Problemset_UserValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e Problemset_UserValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e Problemset_UserValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e Problemset_UserValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e Problemset_UserValidationError) ErrorName() string { return "Problemset_UserValidationError" }
+
+// Error satisfies the builtin error interface
+func (e Problemset_UserValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sProblemset_User.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = Problemset_UserValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = Problemset_UserValidationError{}
 
 // Validate checks the field values on
 // SortProblemsetProblemsRequest_ProblemsetProblems with the rules defined in

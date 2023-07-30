@@ -7,6 +7,7 @@ import {
   Link,
   Tooltip,
   Input,
+  Button,
 } from '@arco-design/web-react';
 import { IconDownload, IconSearch } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
@@ -58,10 +59,28 @@ function Page() {
       dataIndex: 'name'
     },
     {
+      title: t['searchTable.columns.type'],
+      dataIndex: 'type',
+      align: 'center' as 'center',
+      render: (x) => t['searchTable.columns.type.' + x.toLowerCase()],
+      width: 150,
+      filters: [
+        {
+          text: t['searchTable.columns.type.simple'],
+          value: 'SIMPLE',
+        },
+        {
+          text: t['searchTable.columns.type.exam'],
+          value: 'EXAM',
+        },
+      ],
+      filterMultiple: true,
+    },
+    {
       title: t['searchTable.columns.createdBy'],
       dataIndex: 'username',
       align: 'center' as 'center',
-      render: (_, record) => <Link href={`/u/${record.userId}`}>{record.nickname}</Link>,
+      render: (_, record) => <Link href={`/u/${record.user.id}`}>{record.user.nickname}</Link>,
       filterMultiple: false,
       filterIcon: <IconSearch />,
       filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
@@ -100,6 +119,22 @@ function Page() {
       align: 'center' as 'center',
       width: 200,
       headerCellStyle: { paddingLeft: '15px' },
+      render: (_, record) => (
+        <Space>
+          <Button type='text' size='small'>
+            <Link href={`/problemsets/${record.id}`} target='_blank'>{t['searchTable.columns.operations.view']}</Link>
+          </Button>
+          {
+            user.id === record.user.id &&
+              <Button
+                type="text"
+                size="small"
+              >
+                <Link href={`/problems/problemset-list/${record.id}`}>{t['searchTable.columns.operations.update']}</Link>
+              </Button>
+          }
+        </Space>
+      ),
     },
   ];
   useEffect(() => {
@@ -111,7 +146,6 @@ function Page() {
     listProblemsets({
       page: current,
       perPage: pageSize,
-      type: [0, 1],
       ...formParams,
     })
       .then((res) => {

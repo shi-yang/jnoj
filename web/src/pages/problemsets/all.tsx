@@ -113,6 +113,7 @@ function AddProblemset() {
   function onOk() {
     form.validate().then((values) => {
       setConfirmLoading(true);
+      values.type = 'SIMPLE';
       createProblemset(values)
         .then(res => {
           setVisible(false);

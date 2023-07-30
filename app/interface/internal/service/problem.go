@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"io"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
+	"regexp"
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -741,10 +744,15 @@ func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProble
 		resp.Data = append(resp.Data, &v1.Problemset{
 			Id:           int32(v.ID),
 			Name:         v.Name,
+			Type:         v1.ProblemsetType(v.Type),
 			Description:  v.Description,
 			ProblemCount: int32(v.ProblemCount),
-			UserId:       int32(v.UserID),
-			CreatedAt:    timestamppb.New(v.CreatedAt),
+			User: &v1.Problemset_User{
+				Id:       int32(v.User.ID),
+				Nickname: v.User.Nickname,
+				Username: v.User.Username,
+			},
+			CreatedAt: timestamppb.New(v.CreatedAt),
 		})
 	}
 	return resp, nil
@@ -759,10 +767,15 @@ func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemse
 	return &v1.Problemset{
 		Id:           int32(res.ID),
 		Name:         res.Name,
+		Type:         v1.ProblemsetType(res.Type),
 		Description:  res.Description,
 		ProblemCount: int32(res.ProblemCount),
-		UserId:       int32(res.UserID),
 		CreatedAt:    timestamppb.New(res.CreatedAt),
+		User: &v1.Problemset_User{
+			Id:       int32(res.User.ID),
+			Nickname: res.User.Nickname,
+			Username: res.User.Username,
+		},
 	}, nil
 }
 
@@ -772,6 +785,7 @@ func (s *ProblemService) CreateProblemset(ctx context.Context, req *v1.CreatePro
 	res, err := s.problemsetUc.CreateProblemset(ctx, &biz.Problemset{
 		Name:        req.Name,
 		UserID:      uid,
+		Type:        int(req.Type),
 		Description: req.Description,
 	})
 	if err != nil {
@@ -822,7 +836,11 @@ func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdatePro
 
 // ListProblemsetProblems 获取题单的题目
 func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) (*v1.ListProblemsetProblemsResponse, error) {
-	res, count := s.problemsetUc.ListProblemsetProblems(ctx, req)
+	problemset, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	res, count := s.problemsetUc.ListProblemsetProblems(ctx, problemset, req)
 	resp := new(v1.ListProblemsetProblemsResponse)
 	resp.Total = count
 	for _, v := range res {
@@ -837,6 +855,17 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			Source:        v.Source,
 			Tags:          v.Tags,
 			Status:        v1.ProblemsetProblem_Status(v.Status),
+		}
+		if v.Statement != nil {
+			p.Statement = &v1.ProblemStatement{
+				Name:   v.Statement.Name,
+				Input:  v.Statement.Input,
+				Output: v.Statement.Output,
+				Note:   v.Statement.Note,
+				Type:   v1.ProblemStatementType(v.Statement.Type),
+			}
+			re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
+			p.Statement.Legend = re.ReplaceAllString(v.Statement.Legend, "`________`")
 		}
 		resp.Data = append(resp.Data, p)
 	}
@@ -868,7 +897,7 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 	resp.Statements = make([]*v1.ProblemStatement, 0)
 	resp.SampleTests = make([]*v1.Problem_SampleTest, 0)
 	for _, v := range data.Statements {
-		resp.Statements = append(resp.Statements, &v1.ProblemStatement{
+		statement := &v1.ProblemStatement{
 			Id:       int32(v.ID),
 			Name:     v.Name,
 			Input:    v.Input,
@@ -877,7 +906,23 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 			Legend:   v.Legend,
 			Language: v.Language,
 			Type:     v1.ProblemStatementType(v.Type),
-		})
+		}
+		// 客观题不展示答案
+		if data.Type == biz.ProblemTypeObjective {
+			statement.Output = ""
+			if v.Type == biz.ProblemStatementTypeFillBlank {
+				var ans []string
+				json.Unmarshal([]byte(v.Output), &ans)
+				re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
+				statement.Legend = re.ReplaceAllString(v.Legend, "`________`")
+				for i := 0; i < len(ans); i++ {
+					ans[i] = ""
+				}
+				a, _ := json.Marshal(ans)
+				statement.Output = string(a)
+			}
+		}
+		resp.Statements = append(resp.Statements, statement)
 	}
 	for _, v := range data.SampleTests {
 		resp.SampleTests = append(resp.SampleTests, &v1.Problem_SampleTest{
@@ -918,10 +963,46 @@ func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.Add
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	// 题目是否通过验证
-	if res, err := s.uc.GetProblemVerification(ctx, problem.ID); err != nil || res.VerificationStatus != biz.VerificationStatusSuccess {
-		return nil, v1.ErrorProblemNotVerification("题目未通过验证")
+	if problem.Type != biz.ProblemTypeObjective {
+		if res, err := s.uc.GetProblemVerification(ctx, problem.ID); err != nil || res.VerificationStatus != biz.VerificationStatusSuccess {
+			return nil, v1.ErrorProblemNotVerification("题目未通过验证")
+		}
 	}
 	err = s.problemsetUc.AddProblemToProblemset(ctx, int(req.Id), int(req.ProblemId))
+	return &emptypb.Empty{}, err
+}
+
+// BatchAddProblemToProblemset 批量添加题目到题单
+func (s *ProblemService) BatchAddProblemToProblemsetPreview(ctx context.Context, req *v1.BatchAddProblemToProblemsetPreviewRequest) (*v1.BatchAddProblemToProblemsetPreviewResponse, error) {
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if !set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	// 解析 base64 excel 文件
+	decodedBytes, err := base64.StdEncoding.DecodeString(req.Content)
+	if err != nil {
+		return nil, err
+	}
+	return s.problemsetUc.BatchAddProblemToProblemsetPreview(ctx, set, decodedBytes)
+}
+
+// BatchAddProblemToProblemset 批量添加题目到题单
+func (s *ProblemService) BatchAddProblemToProblemset(ctx context.Context, req *v1.BatchAddProblemToProblemsetRequest) (*emptypb.Empty, error) {
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if !set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.problemsetUc.BatchAddProblemToProblemset(ctx, set, req.Problems)
 	return &emptypb.Empty{}, err
 }
 
