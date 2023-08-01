@@ -82,6 +82,7 @@ func (s *GroupService) CreateGroup(ctx context.Context, req *v1.CreateGroupReque
 		ParentID:       int(req.ParentId),
 		Type:           int(req.Type),
 		Privacy:        biz.GroupPrivacyPrivate,
+		Membership:     biz.GroupMembershipInvitationCode,
 		InvitationCode: invitationCode.String()[len(invitationCode.String())-6:],
 	}
 	res, err := s.uc.CreateGroup(ctx, group)

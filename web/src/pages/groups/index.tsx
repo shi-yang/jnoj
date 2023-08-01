@@ -227,6 +227,7 @@ function AddGroup() {
             <Input placeholder='' />
           </Form.Item>
           <Form.Item label={t['index.create.form.type']} required field='type' rules={[{ required: true}]}
+            initialValue={'GROUP'}
             help='创建后不可修改。小组与团队的区别：一个团队可以包含多个小组，即在团队下还可以创建多个小组'
           >
             <Radio.Group

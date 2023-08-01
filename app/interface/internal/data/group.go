@@ -152,6 +152,7 @@ func (r *groupRepo) CreateGroup(ctx context.Context, g *biz.Group) (*biz.Group, 
 		Type:           g.Type,
 		Privacy:        g.Privacy,
 		InvitationCode: g.InvitationCode,
+		Membership:     g.Membership,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).
