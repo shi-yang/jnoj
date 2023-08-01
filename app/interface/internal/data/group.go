@@ -145,11 +145,13 @@ func (r *groupRepo) GetGroup(ctx context.Context, id int) (*biz.Group, error) {
 // CreateGroup .
 func (r *groupRepo) CreateGroup(ctx context.Context, g *biz.Group) (*biz.Group, error) {
 	res := Group{
-		Name:        g.Name,
-		Description: g.Description,
-		UserID:      g.UserID,
-		ParentID:    g.ParentID,
-		Type:        g.Type,
+		Name:           g.Name,
+		Description:    g.Description,
+		UserID:         g.UserID,
+		ParentID:       g.ParentID,
+		Type:           g.Type,
+		Privacy:        g.Privacy,
+		InvitationCode: g.InvitationCode,
 	}
 	err := r.data.db.WithContext(ctx).
 		Omit(clause.Associations).

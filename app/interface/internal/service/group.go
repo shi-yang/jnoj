@@ -7,6 +7,7 @@ import (
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
 
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -72,13 +73,16 @@ func (s *GroupService) GetGroup(ctx context.Context, req *v1.GetGroupRequest) (*
 // CreateGroup .
 func (s *GroupService) CreateGroup(ctx context.Context, req *v1.CreateGroupRequest) (*v1.Group, error) {
 	uid, _ := auth.GetUserID(ctx)
+	invitationCode := uuid.New()
 	group := &biz.Group{
-		Name:        req.Name,
-		Description: req.Description,
-		UserID:      uid,
-		MemberCount: 1,
-		ParentID:    int(req.ParentId),
-		Type:        int(req.Type),
+		Name:           req.Name,
+		Description:    req.Description,
+		UserID:         uid,
+		MemberCount:    1,
+		ParentID:       int(req.ParentId),
+		Type:           int(req.Type),
+		Privacy:        biz.GroupPrivacyPrivate,
+		InvitationCode: invitationCode.String()[len(invitationCode.String())-6:],
 	}
 	res, err := s.uc.CreateGroup(ctx, group)
 	if err != nil {
