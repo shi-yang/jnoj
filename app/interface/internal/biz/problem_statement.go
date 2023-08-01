@@ -21,6 +21,7 @@ type ProblemStatement struct {
 }
 
 const (
+	ProblemStatementTypeCode      = iota // 编程题
 	ProblemStatementTypeChoice    = iota // 单选题
 	ProblemStatementTypeMultiple         // 多选题
 	ProblemStatementTypeFillBlank        // 填空题

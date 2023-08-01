@@ -32,7 +32,7 @@ const i18n = {
     'allowDownload': 'Allow Download',
   },
   'zh-CN': {
-    'page.title': '题目列表',
+    'page.title': '题目准备系统',
     'page.desc': '这里提供一个准备题目的平台。',
     'page.desc2': '你可将公开的或者自己创建的题目用于创建比赛或者题单。如果题目带有下载图标的，你也可以下载题目数据。',
     'searchTable.form.search': '查询',

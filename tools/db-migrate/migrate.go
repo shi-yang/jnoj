@@ -15,12 +15,38 @@ func Migrate(db *gorm.DB) {
 		MigrateAddUserBadge20230717(),
 		MigrateAddUserProfile20230719(),
 		MigrateAddProblemsetType20230727(),
+		MigrateCreateProblemsetAnswer20230801(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateCreateProblemsetAnswer20230801() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateCreateProblemsetAnswer20230801",
+		Migrate: func(d *gorm.DB) error {
+			return d.Exec("CREATE TABLE `problemset_answer` (" +
+				"`id` INT UNSIGNED NOT NULL AUTO_INCREMENT, " +
+				"`problemset_id` INT UNSIGNED NOT NULL," +
+				"`user_id` INT UNSIGNED NOT NULL," +
+				"`answer` TEXT NOT NULL," +
+				"`answered_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
+				"`unanswered_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
+				"`correct_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
+				"`wrong_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
+				"`submited_at` DATETIME NULL DEFAULT NULL," +
+				"`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+				"`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
+				"PRIMARY KEY (`id`)" +
+				") ENGINE = InnoDB;").Error
+		},
+		Rollback: func(d *gorm.DB) error {
+			return d.Exec("DROP TABLE `problemset_answer").Error
+		},
+	}
 }
 
 func MigrateAddProblemsetType20230727() *gormigrate.Migration {

@@ -73,7 +73,7 @@ function Index(props) {
             <Grid.Col span={24} style={{padding: '20px 15px'}}>
               <Breadcrumb separator={<IconRight />}>
                 <Breadcrumb.Item>
-                  <Link href='/problems'>题目列表</Link>
+                  <Link href='/problems'>题目准备系统</Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Item>
                 {data.id}.&nbsp;

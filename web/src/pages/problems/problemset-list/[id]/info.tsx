@@ -24,7 +24,7 @@ const App = ({problemset}: {problemset:any}) => {
   }, []);
   return (
     <>
-      <Card>
+      <Card title='基本信息'>
         <Form form={form} style={{ width: 600 }} autoComplete='off' onSubmit={onSubmit}>
           <FormItem field='name' label={t['name']}>
             <Input />

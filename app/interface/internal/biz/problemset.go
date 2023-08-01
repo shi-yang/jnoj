@@ -28,6 +28,20 @@ type Problemset struct {
 	CreatedAt    time.Time
 }
 
+type ProblemsetAnswer struct {
+	ID              int
+	ProblemsetID    int
+	UserID          int
+	Answer          string
+	AnsweredCount   int        // 回答题目数量
+	UnansweredCount int        // 未回答数量
+	CorrectCount    int        // 正确数量
+	WrongCount      int        // 错误数量
+	SubmittedAt     *time.Time // 提交时间
+	CreatedAt       time.Time  // 创建时间
+	UpdatedAt       time.Time
+}
+
 const (
 	ProblemsetTypeSimple = iota
 	ProblemsetTypeExam
@@ -36,7 +50,6 @@ const (
 // HasPermission 是否有权限修改
 func (p *Problemset) HasPermission(ctx context.Context) bool {
 	uid, _ := auth.GetUserID(ctx)
-	fmt.Println(uid, p.UserID)
 	return uid == p.UserID
 }
 
@@ -45,15 +58,20 @@ type ProblemsetProblem struct {
 	ID            int
 	Name          string
 	Order         int // 题目次序 1,2,3,4
+	Type          int
 	ProblemID     int
 	ProblemsetID  int
 	SubmitCount   int
 	AcceptedCount int
+	TimeLimit     int
+	MemoryLimit   int
 	Statement     *ProblemStatement
 	Source        string
 	Tags          []string
 	Status        int
 	CreatedAt     time.Time
+
+	SampleTests []*Test
 }
 
 // ProblemsetRepo is a Problemset repo.
@@ -70,21 +88,28 @@ type ProblemsetRepo interface {
 	AddProblemToProblemset(context.Context, *ProblemsetProblem) error
 	DeleteProblemFromProblemset(ctx context.Context, sid int, order int) error
 	SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) error
+
+	CreateProblemsetAnswer(ctx context.Context, answer *ProblemsetAnswer) (*ProblemsetAnswer, error)
+	ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) ([]*ProblemsetAnswer, int64)
+	GetProblemsetAnswer(ctx context.Context, pid int, answerid int) (*ProblemsetAnswer, error)
+	UpdateProblemsetAnswer(ctx context.Context, id int, answer *ProblemsetAnswer) error
 }
 
 // ProblemsetUsecase is a Problemset usecase.
 type ProblemsetUsecase struct {
-	repo        ProblemsetRepo
-	problemRepo ProblemRepo
-	log         *log.Helper
+	repo           ProblemsetRepo
+	problemRepo    ProblemRepo
+	submissionRepo SubmissionRepo
+	log            *log.Helper
 }
 
 // NewProblemsetUsecase new a Problemset usecase.
-func NewProblemsetUsecase(repo ProblemsetRepo, problemRepo ProblemRepo, logger log.Logger) *ProblemsetUsecase {
+func NewProblemsetUsecase(repo ProblemsetRepo, problemRepo ProblemRepo, submissionRepo SubmissionRepo, logger log.Logger) *ProblemsetUsecase {
 	return &ProblemsetUsecase{
-		repo:        repo,
-		problemRepo: problemRepo,
-		log:         log.NewHelper(logger),
+		repo:           repo,
+		problemRepo:    problemRepo,
+		submissionRepo: submissionRepo,
+		log:            log.NewHelper(logger),
 	}
 }
 
@@ -131,6 +156,13 @@ func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, problem
 	if problemset.Type == ProblemsetTypeExam {
 		statementMap := uc.repo.ListProblemsetProblemStatements(ctx, ids)
 		for k, v := range problems {
+			if v.Type == ProblemTypeDefault || v.Type == ProblemTypeFunction {
+				p, _ := uc.problemRepo.GetProblem(ctx, v.ProblemID)
+				problems[k].TimeLimit = int(p.TimeLimit)
+				problems[k].MemoryLimit = int(p.MemoryLimit)
+				tests, _ := uc.problemRepo.ListProblemTestContent(ctx, p.ID, true)
+				problems[k].SampleTests = tests
+			}
 			problems[k].Statement = statementMap[v.ProblemID]
 		}
 	}
@@ -145,10 +177,13 @@ func (uc *ProblemsetUsecase) GetProblemsetLateralProblem(ctx context.Context, id
 	return uc.repo.GetProblemsetLateralProblem(ctx, id, pid)
 }
 
-func (uc *ProblemsetUsecase) AddProblemToProblemset(ctx context.Context, sid int, pid int) error {
+func (uc *ProblemsetUsecase) AddProblemToProblemset(ctx context.Context, problemset *Problemset, pid int) error {
+	if problemset.Type == ProblemsetTypeExam && problemset.ProblemCount >= 100 {
+		return v1.ErrorBadRequest("limited to 100 problems in an exam")
+	}
 	return uc.repo.AddProblemToProblemset(ctx, &ProblemsetProblem{
 		ProblemID:    pid,
-		ProblemsetID: sid,
+		ProblemsetID: problemset.ID,
 	})
 }
 
@@ -340,9 +375,39 @@ func (uc *ProblemsetUsecase) previewBatchAddProblemToProblemset(ctx context.Cont
 }
 
 // BatchAddProblemToProblemset 批量添加题目到题单
-func (uc *ProblemsetUsecase) BatchAddProblemToProblemset(ctx context.Context, problemset *Problemset, problems []*v1.ProblemsetProblem) error {
+func (uc *ProblemsetUsecase) BatchAddProblemToProblemset(ctx context.Context, problemset *Problemset, req *v1.BatchAddProblemToProblemsetRequest) (*v1.BatchAddProblemToProblemsetResponse, error) {
 	uid, _ := auth.GetUserID(ctx)
-	for _, v := range problems {
+	resp := new(v1.BatchAddProblemToProblemsetResponse)
+	for _, id := range req.ProblemIds {
+		// 题目是否存在
+		problem, err := uc.problemRepo.GetProblem(ctx, int(id))
+		if err != nil {
+			resp.FailedReason = append(resp.FailedReason, fmt.Sprintf("题目%d：不存在该题目", id))
+			continue
+		}
+		// 是否有权限访问题目
+		if !problem.HasPermission(ctx, ProblemPermissionUpdate) {
+			resp.FailedReason = append(resp.FailedReason, fmt.Sprintf("题目%d：无权限访问该题目", id))
+			continue
+		}
+		// 题目是否通过验证
+		if problem.Type != ProblemTypeObjective {
+			if res, err := uc.problemRepo.GetProblemVerification(ctx, problem.ID); err != nil || res.VerificationStatus != VerificationStatusSuccess {
+				resp.FailedReason = append(resp.FailedReason, fmt.Sprintf("题目%d：该题目未通过验证", id))
+				continue
+			}
+		}
+		set, _ := uc.repo.GetProblemset(ctx, problemset.ID)
+		if set.Type == ProblemsetTypeExam && set.ProblemCount >= 100 {
+			resp.FailedReason = append(resp.FailedReason, fmt.Sprintf("题目%d：达到题单上限100", id))
+			continue
+		}
+		uc.repo.AddProblemToProblemset(ctx, &ProblemsetProblem{
+			ProblemID:    problem.ID,
+			ProblemsetID: problemset.ID,
+		})
+	}
+	for _, v := range req.Problems {
 		problem, err := uc.problemRepo.CreateProblem(ctx, &Problem{
 			Name:   v.Name,
 			UserID: uid,
@@ -367,7 +432,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemset(ctx context.Context, pr
 			ProblemsetID: problemset.ID,
 		})
 	}
-	return nil
+	return resp, nil
 }
 
 func (uc *ProblemsetUsecase) DeleteProblemFromProblemset(ctx context.Context, sid int, pid int) error {
@@ -376,4 +441,69 @@ func (uc *ProblemsetUsecase) DeleteProblemFromProblemset(ctx context.Context, si
 
 func (uc *ProblemsetUsecase) SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) error {
 	return uc.repo.SortProblemsetProblems(ctx, req)
+}
+
+func (uc *ProblemsetUsecase) CreateProblemsetAnswer(ctx context.Context, answer *ProblemsetAnswer) (*ProblemsetAnswer, error) {
+	return uc.repo.CreateProblemsetAnswer(ctx, answer)
+}
+
+func (uc *ProblemsetUsecase) ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) ([]*ProblemsetAnswer, int64) {
+	return uc.repo.ListProblemsetAnswers(ctx, req)
+}
+
+func (uc *ProblemsetUsecase) GetProblemsetAnswer(ctx context.Context, pid int, answerid int) (*ProblemsetAnswer, error) {
+	return uc.repo.GetProblemsetAnswer(ctx, pid, answerid)
+}
+
+func (uc *ProblemsetUsecase) UpdateProblemsetAnswer(ctx context.Context, id int, answer *ProblemsetAnswer) error {
+	// 交卷，阅卷
+	if answer.SubmittedAt != nil {
+		uc.judgeProblemsetAnswer(ctx, id, answer)
+	}
+	return uc.repo.UpdateProblemsetAnswer(ctx, id, answer)
+}
+
+func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, answer *ProblemsetAnswer) error {
+	_, err := uc.repo.GetProblemset(ctx, id)
+	if err != nil {
+		return nil
+	}
+	problems, _ := uc.repo.ListProblemsetProblems(ctx, &v1.ListProblemsetProblemsRequest{
+		Id:      int32(id),
+		PerPage: 100,
+	})
+	var ids []int
+	for _, p := range problems {
+		ids = append(ids, p.ProblemID)
+	}
+	statementMap := uc.repo.ListProblemsetProblemStatements(ctx, ids)
+	for k, v := range problems {
+		problems[k].Statement = statementMap[v.ProblemID]
+	}
+	var answerMap = make(map[string]interface{})
+	json.Unmarshal([]byte(answer.Answer), &answerMap)
+	answer.CorrectCount = 0
+	answer.WrongCount = 0
+	answer.UnansweredCount = 0
+	for _, problem := range problems {
+		if v, ok := answerMap[fmt.Sprintf("problem-%d", problem.ProblemID)]; ok {
+			answer.AnsweredCount++
+			rightAnswer, _ := json.Marshal(v)
+			// 客观题直接比较答案
+			if problem.Type == ProblemTypeObjective {
+				if isAnswerMatched(string(rightAnswer), problem.Statement.Output) {
+					answer.CorrectCount++
+				} else {
+					answer.WrongCount++
+				}
+			} else {
+				// 编程题提交测评机运行程序
+				// TODO
+			}
+		}
+	}
+	fmt.Println("answerMap", answerMap)
+	fmt.Println("answer", answer)
+	answer.UnansweredCount = len(problems) - answer.AnsweredCount
+	return nil
 }

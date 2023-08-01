@@ -35,7 +35,7 @@ const Description = ({ problemset }: any) => {
   return (
     <div className={styles.descriptionContent}>
       <div className={styles.description}>
-        { problem.statements.length > 0 && <ProblemContent problem={problem} language={language} />}
+        { problem.statements.length > 0 && <ProblemContent problem={problem} statement={problem.statements[language]} />}
       </div>
       <div className={styles.footer}>
         <div className={styles.left}>

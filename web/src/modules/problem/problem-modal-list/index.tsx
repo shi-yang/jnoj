@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Table,
-  Card,
   PaginationProps,
   Button,
   Space,
@@ -14,33 +13,36 @@ import {
   Tooltip,
   Divider,
   Input,
+  Modal,
+  Form,
+  Alert,
 } from '@arco-design/web-react';
-import { IconDownload, IconLanguage, IconSearch } from '@arco-design/web-react/icon';
+import { IconDownload, IconLanguage, IconPlus, IconSearch } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
-import CreateModal from './create';
-import { downloadProblems, getProblem, listProblems } from '@/api/problem';
+import { getProblem, getProblemVerification, listProblems } from '@/api/problem';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
-import { setting, SettingState } from '@/store/reducers/setting';
 import ProblemContent from '@/modules/problem/ProblemContent';
-import Head from 'next/head';
-import Layout from '../Layout';
 import { FormatTime } from '@/utils/format';
-const { Title } = Typography;
+import SubmissionList from '@/modules/submission/SubmissionList';
+import CodeMirror from '@uiw/react-codemirror';
+import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
+import { createSubmission } from '@/api/submission';
+import useStorage from '@/utils/useStorage';
 
-function Index() {
+function Page({onChange}: {onChange:(v:any[]) => void}) {
   const t = useLocale(locale);
   const user = useAppSelector(userInfo);
-  const settings = useAppSelector<SettingState>(setting);
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     showTotal: true,
-    pageSize: 25,
+    pageSize: 10,
     current: 1,
+    hideOnSinglePage: true,
     pageSizeChangeResetCurrent: true,
   });
   const [loading, setLoading] = useState(true);
@@ -84,7 +86,7 @@ function Index() {
       title: t['searchTable.columns.type'],
       dataIndex: 'type',
       align: 'center' as 'center',
-      render: (x) => x === 'DEFAULT' ? t['searchTable.columns.type.default'] : t['searchTable.columns.type.function'],
+      render: (x) => t['searchTable.columns.type.' + x.toLowerCase()],
       width: 150,
       filters: [
         {
@@ -94,6 +96,10 @@ function Index() {
         {
           text: t['searchTable.columns.type.function'],
           value: 1,
+        },
+        {
+          text: t['searchTable.columns.type.objective'],
+          value: 2,
         },
       ],
       filterMultiple: true,
@@ -167,15 +173,6 @@ function Index() {
           }}>
             {t['searchTable.columns.operations.view']}
           </Button>
-          {
-            user.id === record.userId &&
-              <Button
-                type="text"
-                size="small"
-              >
-                <Link href={`/problems/${record.id}/update`}>{t['searchTable.columns.operations.update']}</Link>
-              </Button>
-          }
         </>
       ),
     },
@@ -189,6 +186,7 @@ function Index() {
     listProblems({
       page: current,
       perPage: pageSize,
+      type: [0, 1],
       ...formParams,
     })
       .then((res) => {
@@ -226,104 +224,117 @@ function Index() {
     setFormParams(params);
   }
 
-  function downloadProblem() {
-    downloadProblems(selectedRowKeys)
-      .then(res => {
-        const a = document.createElement('a');
-        a.href = res.data.url;
-        a.click();
-        document.body.removeChild(a);
-      })
-      .catch(err => {
-        Message.error(err.response.data.message);
-      });
-  }
-
   return (
-    <>
-      <Head>
-        <title>{`${t['page.title']} - ${settings.name}`}</title>
-      </Head>
-      <div className={styles['list-container']}>
-        <Card className='container'>
-          <Title heading={3}>{t['page.title']}</Title>
-          <Divider />
-          <SearchForm onSearch={handleSearch} />
-          <div className={styles['button-group']}>
-            <Space>
-              <CreateModal />
-            </Space>
-            <Space>
-              <Button
-                icon={<IconDownload />}
-                disabled={selectedRowKeys.length === 0}
-                onClick={downloadProblem}
-              >
-                {t['searchTable.operation.download']}
-              </Button>
-            </Space>
-          </div>
-          <Table
-            rowKey="id"
-            loading={loading}
-            onChange={onChangeTable}
-            pagination={pagination}
-            columns={columns}
-            data={data}
-            rowSelection={{
-              type: 'radio',
-              selectedRowKeys,
-              onChange: (selectedRowKeys, selectedRows) => {
-                setSelectedRowKeys(selectedRowKeys);
-              },
-              onSelect: (selected, record, selectedRows) => {
-              },
-            }}
-          />
-          <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false);}} />
-        </Card>
-      </div>
-    </>
+    <div>
+      <SearchForm onSearch={handleSearch} />
+      <Table
+        rowKey="id"
+        loading={loading}
+        onChange={onChangeTable}
+        pagination={pagination}
+        columns={columns}
+        data={data}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (selectedRowKeys, selectedRows) => {
+            onChange(selectedRowKeys);
+            setSelectedRowKeys(selectedRowKeys);
+          },
+          onSelect: (selected, record, selectedRows) => {
+          },
+        }}
+      />
+      <ProblemView id={id} visible={visible} onCancel={() => {setVisible(false);}} />
+    </div>
   );
 }
 
-Index.getLayout = Layout;
-export default Index;
+export default Page;
 
 function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onCancel?: (e: MouseEvent | Event) => void;}) {
-  const [data, setData] = useState({
+  const [problem, setProblem] = useState({
     id: 0,
     name: '',
+    type: '',
     statements: [],
     sampleTests: []
   });
+  const [codeLanguage, setCodeLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [language, setLanguage] = useState(0);
+  const [statementLanguageOptions, setStatementLanguageOptions] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [form] = Form.useForm();
   const [languageOptions, setLanguageOptions] = useState([]);
-  useEffect(() => {
-    if (id !== 0) {
-      getProblem(id)
-      .then(res => {
-        setData(res.data);
-        const langs = res.data.statements.map((item, index) => {
-          return {
-            label: item.language,
-            value: index,
-          };
+  const [lastSubmissionID, setLastSubmissionID] = useState(0);
+  const [verification, setVerification] = useState({verificationStatus: 0, verificaitonInfo: []});
+  const ref = useRef(null);
+  function onOk() {
+    form.validate().then((values) => {
+      const data = {
+        problemNumber: problem.id,
+        source: values.content,
+        language: codeLanguage,
+        entityId: problem.id,
+        entityType: 'PROBLEM_VERIFY'
+      };
+      createSubmission(data).then(res => {
+        Message.success('已提交');
+        setLastSubmissionID(res.data.id);
+        setModalVisible(false);
+        ref.current.fetchData();
+      }).catch(err => {
+        if (err.response.data.reason === 'SUBMISSION_RATE_LIMIT') {
+          Message.error('您的提交过于频繁');
+        }
+      });
+    });
+  }
+  function onLanguageChange(e) {
+    setCodeLanguage(e);
+    if (problem.type === 'FUNCTION') {
+      const lang = languageOptions.find(item => {
+        return item.languageCode === Number(e);
+      });
+      getProblemLanguage(problem.id, lang.id)
+        .then(res => {
+          form.setFieldValue('content', res.data.userContent);
         });
+    }
+  }
+  useEffect(() => {
+    if (id === 0) {
+      return;
+    }
+    getProblem(id).then(res => {
+      setProblem(res.data);
+      const langs = res.data.statements.map((item, index) => {
+        return {
+          label: item.language,
+          value: index,
+        };
+      });
+      setStatementLanguageOptions(langs);
+    });
+    listProblemLanguages(id)
+      .then(res => {
+        const langs = res.data.data;
         setLanguageOptions(langs);
       });
-    }
+    getProblemVerification(id)
+      .then(res => {
+        setVerification(res.data);
+      });
   }, [id]);
   return (
     <Drawer
-      width={800}
-      title={<span>{data.id} - {data.name}</span>}
+      width={1100}
+      title={<span>{problem.id} - {problem.name}</span>}
       visible={visible}
       footer={null}
       onCancel={onCancel}
     >
-      { 
-        languageOptions.length > 0 &&
+      {
+        statementLanguageOptions.length > 0 &&
         <div>
           <Select
             bordered={false}
@@ -339,18 +350,63 @@ function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onC
             }}
             triggerElement={
               <span className={styles['header-language']}>
-                <IconLanguage /> {languageOptions[language].label}
+                <IconLanguage /> {statementLanguageOptions[language].label}
               </span>
             }
           >
-            {languageOptions.map((option, index) => (
+            {statementLanguageOptions.map((option, index) => (
               <Select.Option key={index} value={option.value}>
                 {option.label}
               </Select.Option>
             ))}
           </Select>
-          <Typography.Title heading={4}>{data.statements[language].name}</Typography.Title>
-          <ProblemContent problem={data} statement={data.statements[language]} />
+          <Typography.Title heading={4}>{problem.statements[language].name}</Typography.Title>
+          <ProblemContent problem={problem} statement={problem.statements[language]} />
+          <Divider />
+          <Typography.Title heading={4}>测试-验题区域</Typography.Title>
+          {
+            verification.verificationStatus !== 3 ? (
+              <Alert
+                type='warning'
+                content='本题目尚未通过校验，请先到题目基本信息页进行题目校验，通过校验后方可进行测试'
+              />
+            ) : (
+              <div>
+                <Button type='primary' icon={<IconPlus />} onClick={() => setModalVisible(true)}>提交代码</Button>
+                <Modal
+                  title='添加'
+                  style={{width: '800px'}}
+                  visible={modalVisible}
+                  onOk={onOk}
+                  onCancel={() => setModalVisible(false)}
+                  autoFocus={false}
+                  focusLock={true}
+                >
+                  <Form
+                    form={form}
+                  >
+                    <Form.Item field='language' label='语言' required>
+                      <Select onChange={onLanguageChange}>
+                        {languageOptions.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={`${item.languageCode}`}>
+                              {item.languageName}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item field='content' label='源码' required>
+                      <CodeMirror
+                        height="400px"
+                      />
+                    </Form.Item>
+                  </Form>
+                </Modal>
+                <SubmissionList ref={ref} pid={problem.id} entityType={3} />
+              </div>
+            )
+          }
         </div>
       }
     </Drawer>

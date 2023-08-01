@@ -53,12 +53,10 @@ function Index(props) {
       { !loading && (
         <div className={styles.container}>
           <Grid.Row className={styles.header} justify="space-between" align="center">
-            <Grid.Col span={24}>
-            </Grid.Col>
             <Grid.Col span={24} style={{padding: '20px 15px'}}>
               <Breadcrumb separator={<IconRight />}>
                 <Breadcrumb.Item>
-                  <Link href='/problems'>题目列表</Link>
+                  <Link href='/problems'>题目准备系统</Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Item>
                 {problemset.id}.&nbsp;

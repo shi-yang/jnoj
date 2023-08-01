@@ -32,7 +32,7 @@ export function getColumns(
       render: (col, record) => (
         <Space split={<Divider type='vertical' />}>
           {record.runningStatus === 'FINISHED' ? (
-            <Typography.Text bold type='error'>{t[record.runningStatus]}</Typography.Text>
+            <Typography.Text bold>{t[record.runningStatus]}</Typography.Text>
           ) : (
             <Typography.Text bold type='success'>{t[record.runningStatus]}</Typography.Text>
           )}

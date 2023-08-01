@@ -62,3 +62,23 @@ export function deleteProblemFromProblemset(id, problemId) {
 export function sortProblemsetProblems(id, pids) {
   return axios.post(`/problemsets/${id}/problem/sort`, pids);
 }
+
+// 创建题单回答
+export function createProblemsetAnswer(id) {
+  return axios.post(`/problemsets/${id}/answers`, {});
+}
+
+// 获取题单回答列表
+export function listProblemsetAnswers(id, params) {
+  return axios.get(`/problemsets/${id}/answers`, {params});
+}
+
+// 获取某个题单回答
+export function getProblemsetAnswer(id, answerId) {
+  return axios.get(`/problemsets/${id}/answers/${answerId}`);
+}
+
+// 修改题单回答
+export function updateProblemsetAnswer(id, answerId, data) {
+  return axios.put(`/problemsets/${id}/answers/${answerId}`, data);
+}

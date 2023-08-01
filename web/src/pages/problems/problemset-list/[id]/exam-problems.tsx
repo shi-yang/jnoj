@@ -1,11 +1,13 @@
-import { Button, Card, Tabs, Modal, PaginationProps, Steps, Upload, Space, Typography, Message } from '@arco-design/web-react';
+import { Button, Card, Tabs, Modal, PaginationProps, Steps, Upload, Space, Typography, Message, Form, Select, Divider } from '@arco-design/web-react';
 import locale from './locale';
 import { batchAddProblemToProblemset, batchAddProblemToProblemsetPreview, listProblemsetProblems } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
 import { useState, useEffect } from 'react';
 import { IconDownload, IconPlus, IconUpload } from '@arco-design/web-react/icon';
 import React from 'react';
-import ProblemsList from '@/modules/problemsets/ExamProblemList';
+import ProblemsList from './exam-problem-list';
+import ViewProblemsList from '@/modules/problemsets/ExamProblemList';
+import ProblemModalList from '@/modules/problem/problem-modal-list';
 
 const TabPane = Tabs.TabPane;
 
@@ -21,6 +23,9 @@ function fileToBase64(file, callback) {
 const BatchCreateModal = ({ problemset, callback }: {problemset: any, callback: () => void}) => {
   const [visible, setVisible] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
+  const t = useLocale(locale);
   function customRequest(option) {
     const { onProgress, onError, onSuccess, file } = option;
     fileToBase64(file, (base64String) => {
@@ -42,7 +47,7 @@ const BatchCreateModal = ({ problemset, callback }: {problemset: any, callback: 
                 <Typography.Paragraph key={index} style={{ color: 'red' }}>{item}</Typography.Paragraph>
               ))}
             </div>
-            <ProblemsList problems={res.data.problems}  />
+            <ViewProblemsList problems={res.data.problems} />
           </div>,
           onOk: () => {
             batchAddProblemToProblemset(problemset.id, { problems: res.data.problems }).then(res => {
@@ -54,15 +59,46 @@ const BatchCreateModal = ({ problemset, callback }: {problemset: any, callback: 
       });
     });
   }
+  function onOk() {
+    form.validate().then((values) => {
+      setConfirmLoading(true);
+      batchAddProblemToProblemset(problemset.id, values)
+        .then(res => {
+          if (res.data.failedReason.length > 0) {
+            Message.error({
+              content: (
+                <div>
+                  {res.data.failedReason.map(v => (
+                    <Typography.Paragraph key={v} style={{marginBottom: 0}}>
+                      {v}
+                    </Typography.Paragraph>
+                  ))}
+                </div>
+              )
+            });
+          }
+          setVisible(false);
+          callback();
+        })
+        .catch(err => {
+          Message.error(err.response.data.message);
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    });
+  }
   return (
     <>
       {contextHolder}
-      <Button onClick={() => setVisible(true)} type='primary' icon={<IconPlus />} long>批量添加</Button>
+      <Button onClick={() => setVisible(true)} type='primary' icon={<IconPlus />}>批量添加</Button>
       <Modal
         title='批量添加'
         style={{ width: 1100 }}
         visible={visible}
+        confirmLoading={confirmLoading}
         onOk={() => {
+          onOk();
           setVisible(false);
         }}
         onCancel={() => {
@@ -95,7 +131,20 @@ const BatchCreateModal = ({ problemset, callback }: {problemset: any, callback: 
               } />
            </Steps>
           </TabPane>
-          <TabPane key='problems' title='题库添加' disabled>
+          <TabPane key='problems' title='题库添加'>
+            <div style={{paddingTop: 20}}>
+              <ProblemModalList onChange={(v) => {
+                form.setFieldValue('problemIds', v);
+              }} />
+              <Divider />
+              <Form
+                form={form}
+              >
+                <Form.Item  label={t['update.table.add.form.problemId']} required field='problemIds' rules={[{ required: true }]}>
+                  <Select mode='multiple' allowClear allowCreate></Select>
+                </Form.Item>
+              </Form>
+            </div>
           </TabPane>
         </Tabs>
       </Modal>
@@ -113,20 +162,16 @@ const Page = ({problemset}: {problemset:any}) => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [loading, setLoading] = useState(true);
-  const [formParams, setFormParams] = useState({});
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+  }, [pagination.current, pagination.pageSize]);
 
   function fetchData() {
     const { current, pageSize } = pagination;
-    setLoading(true);
     const params = {
       page: current,
       perPage: pageSize,
-      ...formParams,
     };
     listProblemsetProblems(problemset.id, params)
       .then((res) => {
@@ -137,14 +182,18 @@ const Page = ({problemset}: {problemset:any}) => {
           pageSize,
           total: res.data.total,
         });
-        setLoading(false);
       });
   }
 
   return (
-    <Card title='题目列表'>
-      <ProblemsList problems={problems} />
-      <BatchCreateModal problemset={problemset} callback={fetchData} />
+    <Card title='题目列表' extra={
+      <div>
+        <BatchCreateModal problemset={problemset} callback={fetchData} />
+      </div>
+    }>
+      <div className='container'>
+        <ProblemsList problemsetId={problemset.id} problems={problems} fetchData={fetchData} />
+      </div>
     </Card>
   );
 };

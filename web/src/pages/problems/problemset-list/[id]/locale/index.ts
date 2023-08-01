@@ -41,6 +41,10 @@ const i18n = {
     'update.table.column.action.remove.tips': 'Are you sure you want to delete?',
     'update.table.add': 'Add',
     'update.table.add.form.problemId': 'Problem ID',
+    'objective.type.CODE': 'Code Question',
+    'objective.type.CHOICE': 'Multiple Choice Question',
+    'objective.type.MULTIPLE': 'Multiple Response Question',
+    'objective.type.FILLBLANK': 'Fill-in-the-Blank Question',
   },
   'zh-CN': {
     'page.title': '修改题单',
@@ -83,7 +87,11 @@ const i18n = {
     'update.table.column.action.remove': '移除',
     'update.table.column.action.remove.tips': '你确定要移除该项吗？',
     'update.table.add': '添加',
-    'update.table.add.form.problemId': '题目ID'
+    'update.table.add.form.problemId': '题目ID',
+    'objective.type.CODE': '编程题',
+    'objective.type.CHOICE': '单选题',
+    'objective.type.MULTIPLE': '多选题',
+    'objective.type.FILLBLANK': '填空题',
   },
 };
 

@@ -350,7 +350,7 @@ func (uc *SubmissionUsecase) judgeObjectiveProblem(ctx context.Context, s *Submi
 			}
 		} else if statement.Type == ProblemStatementTypeMultiple {
 			// 多选题
-			if isMatched(s.Source, statement.Output) {
+			if isAnswerMatched(s.Source, statement.Output) {
 				s.Verdict = SubmissionVerdictAccepted
 			}
 		} else if statement.Type == ProblemStatementTypeFillBlank {
@@ -365,7 +365,7 @@ func (uc *SubmissionUsecase) judgeObjectiveProblem(ctx context.Context, s *Submi
 }
 
 // 多选题判断选项是否相等
-func isMatched(strA, strB string) bool {
+func isAnswerMatched(strA, strB string) bool {
 	setA := make(map[string]struct{})
 	setB := make(map[string]struct{})
 
@@ -373,7 +373,7 @@ func isMatched(strA, strB string) bool {
 	json.Unmarshal([]byte(strA), &arrA)
 	json.Unmarshal([]byte(strB), &arrB)
 
-	// 使用逗号分割字符串 A 和 B，将元素添加到相应的集合中
+	// 将元素添加到相应的集合中
 	for _, item := range arrA {
 		setA[item] = struct{}{}
 	}

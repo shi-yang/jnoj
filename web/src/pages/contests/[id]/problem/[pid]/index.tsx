@@ -55,7 +55,7 @@ function Problem() {
               <div key='first' className={styles.left}>
                 {!loading && (
                   <div className={styles['description-content']}>
-                    <ProblemContent problem={problem} language={language}></ProblemContent>
+                    <ProblemContent problem={problem} statement={problem.statements[language]}></ProblemContent>
                   </div>
                 )}
               </div>,

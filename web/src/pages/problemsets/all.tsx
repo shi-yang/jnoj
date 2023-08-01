@@ -1,12 +1,9 @@
-import { createProblemset, listProblemsets } from '@/api/problemset';
+import { listProblemsets } from '@/api/problemset';
 import { useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
-import { userInfo } from '@/store/reducers/user';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Descriptions, Form, Grid, Input, Message, Modal, Typography, Link, Pagination, PaginationProps } from '@arco-design/web-react';
-import { IconPlus } from '@arco-design/web-react/icon';
+import { Card, Descriptions, Grid, Typography, Link, Pagination, PaginationProps, Tag, Tabs, Space, Radio, Select, Input } from '@arco-design/web-react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
@@ -15,23 +12,29 @@ export default function All() {
   const t = useLocale(locale);
   const settings = useAppSelector<SettingState>(setting);
   const [problemsets, setProblemsets] = useState([]);
+  const [activeTab, setActiveTab] = useState('all');
+  const [formParams, setFormParams] = useState({
+    name: '',
+    type: undefined,
+  });
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: false,
     showTotal: true,
     pageSize: 25,
     current: 1,
     pageSizeChangeResetCurrent: true,
-    sizeOptions: [25, 50, 100]
+    sizeOptions: [25, 50, 100],
+    hideOnSinglePage: true,
   });
-  const user = useAppSelector(userInfo);
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
   function fetchData() {
     const { current, pageSize } = pagination;
     const params = {
       page: current,
       perPage: pageSize,
+      ...formParams,
     };
     listProblemsets(params)
       .then((res) => {
@@ -43,6 +46,14 @@ export default function All() {
           total: Number(res.data.total),
         });
       });
+  }
+  function onTabsChange(key) {
+    setActiveTab(key);
+    if (key === 'all') {
+      setFormParams({...formParams, type: undefined});
+    } else {
+      setFormParams({...formParams, type: key });
+    }
   }
   function onChange(current, pageSize) {
     setPatination({
@@ -56,15 +67,30 @@ export default function All() {
       <Head>
         <title>{`${t['page.title']} - ${settings.name}`}</title>
       </Head>
-      <div className='container'>
+      <div className='container' style={{padding: '20px'}}>
         <Card
           title={t['page.title']}
-          extra={
-            <div>
-              { user.id && <AddProblemset />}
-            </div>
-          }
         >
+          <Tabs
+            type='rounded'
+            style={{marginBottom: '10px'}}
+            activeTab={activeTab}
+            extra={
+              <Space>
+                <Input.Search
+                  style={{ width: '240px' }}
+                  onSearch={(value) => {
+                    setFormParams({...formParams, name: value});
+                  }}
+                />
+              </Space>
+            }
+            onChange={onTabsChange}
+          >
+            <Tabs.TabPane key='all' title={t['all.tab.all']} />
+            <Tabs.TabPane key='SIMPLE' title={t['all.problemset.type.SIMPLE']} />
+            <Tabs.TabPane key='EXAM' title={t['all.problemset.type.EXAM']} />
+          </Tabs>
           <Grid.Row gutter={24} className={styles['card-content']}>
             {problemsets.map((item, index) => (
               <Grid.Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6} key={index}>
@@ -75,6 +101,7 @@ export default function All() {
                     title={
                       item.name
                     }
+                    extra={<Tag>{t[`all.problemset.type.${item.type}`]}</Tag>}
                   >
                     <div className={styles.content}>
                       <Typography.Paragraph className={styles['description']} ellipsis={{ showTooltip: true, cssEllipsis: true, rows: 2 }}>
@@ -100,58 +127,5 @@ export default function All() {
         </Card>
       </div>
     </>
-  );
-}
-
-function AddProblemset() {
-  const t = useLocale(locale);
-  const [visible, setVisible] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [form] = Form.useForm();
-  const router = useRouter();
-
-  function onOk() {
-    form.validate().then((values) => {
-      setConfirmLoading(true);
-      values.type = 'SIMPLE';
-      createProblemset(values)
-        .then(res => {
-          setVisible(false);
-          Message.success(t['all.create.savedSuccessfully']);
-          router.push(`/problemsets/${res.data.id}/update`);
-        })
-        .catch(err => {
-          Message.error(err.response.data.message);
-        })
-        .finally(() => {
-          setConfirmLoading(false);
-        });
-    });
-  }
-
-  return (
-    <div>
-      <Button type='primary' style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
-        {t['all.createProblemset']}
-      </Button>
-      <Modal
-        title={t['all.createProblemset']}
-        visible={visible}
-        onOk={onOk}
-        confirmLoading={confirmLoading}
-        onCancel={() => setVisible(false)}
-      >
-        <Form
-          form={form}
-        >
-          <Form.Item label={t['all.create.form.name']} required field='name' rules={[{ required: true }]}>
-            <Input placeholder='' />
-          </Form.Item>
-          <Form.Item label={t['all.create.form.description']} field='description'>
-            <Input.TextArea placeholder='' />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
   );
 }

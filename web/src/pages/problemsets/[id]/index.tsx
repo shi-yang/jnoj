@@ -1,27 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Divider, Typography } from '@arco-design/web-react';
 import { useAppSelector } from '@/hooks';
 import { SettingState, setting } from '@/store/reducers/setting';
 import { useRouter } from 'next/router';
-import { getProblemset, listProblemsetProblems } from '@/api/problemset';
-import SimpleProblemList from '@/modules/problemsets/list';
-import ExamProblemList from '@/modules/problemsets/ExamProblemList';
+import { getProblemset } from '@/api/problemset';
 import Head from 'next/head';
 import useLocale from '@/utils/useLocale';
-import styles from './style/index.module.less';
 import locale from './locale';
-
-function ExamProblem({problemsetID}: {problemsetID:number}) {
-  const [problems, setProblems] = useState([]);
-  useEffect(() => {
-    listProblemsetProblems(problemsetID, {perPage: 100}).then(res => setProblems(res.data.data));
-  }, []);
-  return (
-    <Card>
-      <ExamProblemList problems={problems} />
-    </Card>
-  );
-}
+import SimpleProblemset from './simple-problemset';
+import ExamProblemset from './exam-problemset';
 
 function Problem() {
   const t = useLocale(locale);
@@ -43,22 +29,13 @@ function Problem() {
       <Head>
         <title>{`${problemset.name} - ${t['page.title']} - ${settings.name}`}</title>
       </Head>
-      <div>
-        <div className={styles['header']}>
-          <div>
-            <Typography.Title>
-              {problemset.name}
-            </Typography.Title>
-          </div>
-          <div>{problemset.description}</div>
-        </div>
-        <Divider />
-        {problemset.type === 'SIMPLE' ? (
-          <SimpleProblemList problemsetID={Number(id)} />
+      {problemset.id !== 0 && (
+        problemset.type === 'SIMPLE' ? (
+          <SimpleProblemset problemset={problemset} />
         ) : (
-          <ExamProblem problemsetID={Number(id)} />
-        )}
-      </div>
+          <ExamProblemset problemset={problemset} />
+        )
+      )}
     </div>
   );
 }

@@ -276,7 +276,7 @@ service ProblemService {
         };
     }
     // 批量创建题单
-    rpc BatchAddProblemToProblemset(BatchAddProblemToProblemsetRequest) returns (google.protobuf.Empty) {
+    rpc BatchAddProblemToProblemset(BatchAddProblemToProblemsetRequest) returns (BatchAddProblemToProblemsetResponse) {
         option (google.api.http) = {
             post: "/problemsets/{id}/batch_problems"
             body: "*"
@@ -295,6 +295,32 @@ service ProblemService {
             body: "*"
         };
     };
+    // 获取题单回答
+    rpc GetProblemsetAnswer (GetProblemsetAnswerRequest) returns (ProblemsetAnswer) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}/answers/{answer_id}"
+        };
+    }
+    // 获取题单回答列表
+    rpc ListProblemsetAnswers (ListProblemsetAnswersRequest) returns (ListProblemsetAnswersResponse) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}/answers"
+        };
+    }
+    // 创建新的题单回答
+    rpc CreateProblemsetAnswer (CreateProblemsetAnswerRequest) returns (ProblemsetAnswer) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/answers"
+            body: "*"
+        };
+    }
+    // 修改题单回答
+    rpc UpdateProblemsetAnswer (UpdateProblemsetAnswerRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/problemsets/{id}/answers/{answer_id}"
+            body: "*"
+        };
+    }
     // 下载题目
     rpc DownloadProblems (DownloadProblemsRequest) returns (DownloadProblemsResponse) {
         option (google.api.http) = {
@@ -310,6 +336,12 @@ enum ProblemType {
     DEFAULT = 0; // 标准输入输出
     FUNCTION = 1; // 函数题
     OBJECTIVE = 2; // 客观题
+}
+
+// 样例
+message SampleTest {
+    string input = 1;
+    string output = 2;
 }
 
 // 题目
@@ -335,20 +367,16 @@ message Problem {
     int32 user_id = 13;
     string nickname = 14;
     bool allow_download = 15;
-    // 样例
-    message SampleTest {
-        string input = 1;
-        string output = 2;
-    }
     repeated SampleTest sample_tests = 16;
     google.protobuf.Timestamp created_at = 17;
     google.protobuf.Timestamp updated_at = 19;
 }
 
 enum ProblemStatementType {
-    CHOICE = 0; // 单选题
-    MULTIPLE = 1; // 多选题
-    FILLBLANK = 2; // 填空题
+    CODE = 0; // 编程题
+    CHOICE = 1; // 单选题
+    MULTIPLE = 2; // 多选题
+    FILLBLANK = 3; // 填空题
 }
 
 // 题目描述
@@ -693,6 +721,7 @@ message ProblemsetProblem {
     // 客观题内容
     ProblemStatement statement = 13;
     repeated string tags = 14;
+    repeated SampleTest sample_tests = 16;
 }
 
 message ListProblemsetProblemsResponse {
@@ -737,7 +766,12 @@ message BatchAddProblemToProblemsetPreviewResponse {
 
 message BatchAddProblemToProblemsetRequest {
     int32 id = 1;
-    repeated ProblemsetProblem problems = 2;
+    repeated int32 problem_ids = 2;
+    repeated ProblemsetProblem problems = 3;
+}
+
+message BatchAddProblemToProblemsetResponse {
+    repeated string failed_reason = 3;
 }
 
 message DeleteProblemFromProblemsetRequest {
@@ -801,4 +835,43 @@ message DownloadProblemsRequest {
 
 message DownloadProblemsResponse {
     string url = 1;
+}
+
+message GetProblemsetAnswerRequest {
+    int32 id = 1;
+    int32 answer_id = 2;
+}
+
+message ProblemsetAnswer {
+    int32 id = 1;
+    int32 problemset_id = 2;
+    int32 user_id = 3;
+    string answer = 4;
+    int32 answered_count = 5;
+    int32 unanswered_count = 6;
+    int32 correct_count = 7;
+    int32 wrong_count = 8;
+    google.protobuf.Timestamp submitted_at = 9;
+    google.protobuf.Timestamp created_at = 10;
+}
+
+message ListProblemsetAnswersRequest {
+    int32 id = 1;
+    int32 user_id = 2;
+}
+
+message ListProblemsetAnswersResponse {
+    repeated ProblemsetAnswer data = 1;
+    int32 total = 2;
+}
+
+message CreateProblemsetAnswerRequest {
+    int32 id = 1;
+}
+
+message UpdateProblemsetAnswerRequest {
+    int32 id = 1;
+    int32 answer_id = 2;
+    string answer = 3;
+    google.protobuf.Timestamp submitted_at = 4;
 }

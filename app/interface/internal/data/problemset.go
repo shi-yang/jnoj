@@ -36,6 +36,20 @@ type Problemset struct {
 	User               *User                `gorm:"ForeighKey:UserID"`
 }
 
+type ProblemsetAnswer struct {
+	ID              int
+	ProblemsetID    int
+	UserID          int
+	Answer          string
+	AnsweredCount   int
+	UnansweredCount int
+	CorrectCount    int
+	WrongCount      int
+	SubmittedAt     *time.Time
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}
+
 type ProblemsetProblem struct {
 	ID           int
 	ProblemID    int
@@ -176,6 +190,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 		pp.order,
 		ps.name,
 		pp.problem_id,
+		problem.type,
 		problem.accepted_count,
 		problem.submit_count,
 		problem.source, GROUP_CONCAT(pt.name) AS tags`).
@@ -215,7 +230,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 	for rows.Next() {
 		p := &biz.ProblemsetProblem{}
 		var tags string
-		rows.Scan(&p.ID, &p.Order, &p.Name, &p.ProblemID, &p.AcceptedCount, &p.SubmitCount, &p.Source, &tags)
+		rows.Scan(&p.ID, &p.Order, &p.Name, &p.ProblemID, &p.Type, &p.AcceptedCount, &p.SubmitCount, &p.Source, &tags)
 		if len(tags) != 0 {
 			p.Tags = strings.Split(tags, ",")
 		}
@@ -233,12 +248,13 @@ func (r *ProblemsetRepo) ListProblemsetProblemStatements(ctx context.Context, id
 		Find(&statements)
 	for _, v := range statements {
 		res[v.ProblemID] = &biz.ProblemStatement{
-			Name:   v.Name,
-			Legend: v.Legend,
-			Input:  v.Input,
-			Output: v.Output,
-			Note:   v.Note,
-			Type:   v.Type,
+			ProblemID: v.ProblemID,
+			Name:      v.Name,
+			Legend:    v.Legend,
+			Input:     v.Input,
+			Output:    v.Output,
+			Note:      v.Note,
+			Type:      v.Type,
 		}
 	}
 	return res
@@ -353,4 +369,74 @@ func (r *ProblemsetRepo) SortProblemsetProblems(ctx context.Context, req *v1.Sor
 	}
 	tx.Commit()
 	return nil
+}
+
+// CreateProblemsetAnswer 创建题单回答
+func (r *ProblemsetRepo) CreateProblemsetAnswer(ctx context.Context, answer *biz.ProblemsetAnswer) (*biz.ProblemsetAnswer, error) {
+	create := &ProblemsetAnswer{
+		ProblemsetID: answer.ProblemsetID,
+		UserID:       answer.UserID,
+	}
+	err := r.data.db.WithContext(ctx).
+		Create(create).Error
+	answer.ID = create.ID
+	answer.CreatedAt = create.CreatedAt
+	return answer, err
+}
+
+// ListProblemsetAnswers .
+func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) ([]*biz.ProblemsetAnswer, int64) {
+	var rv []*ProblemsetAnswer
+	var count int64
+	r.data.db.WithContext(ctx).
+		Model(&ProblemsetAnswer{}).
+		Where("problemset_id = ?", req.Id).
+		Count(&count).
+		Order("id desc").
+		Find(&rv)
+	var res []*biz.ProblemsetAnswer
+	for _, v := range rv {
+		res = append(res, &biz.ProblemsetAnswer{
+			ID:              v.ID,
+			ProblemsetID:    v.ProblemsetID,
+			UserID:          v.UserID,
+			Answer:          v.Answer,
+			AnsweredCount:   v.AnsweredCount,
+			UnansweredCount: v.UnansweredCount,
+			CorrectCount:    v.CorrectCount,
+			WrongCount:      v.WrongCount,
+			SubmittedAt:     v.SubmittedAt,
+			CreatedAt:       v.CreatedAt,
+		})
+	}
+	return res, count
+}
+
+// GetProblemsetAnswer .
+func (r *ProblemsetRepo) GetProblemsetAnswer(ctx context.Context, pid int, answerid int) (*biz.ProblemsetAnswer, error) {
+	var v ProblemsetAnswer
+	err := r.data.db.Model(&ProblemsetAnswer{}).
+		First(&v, "id = ?", answerid).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &biz.ProblemsetAnswer{
+		ID:              v.ID,
+		ProblemsetID:    v.ProblemsetID,
+		UserID:          v.UserID,
+		Answer:          v.Answer,
+		AnsweredCount:   v.AnsweredCount,
+		UnansweredCount: v.UnansweredCount,
+		CorrectCount:    v.CorrectCount,
+		WrongCount:      v.WrongCount,
+		SubmittedAt:     v.SubmittedAt,
+		CreatedAt:       v.CreatedAt,
+	}, nil
+}
+
+// UpdateProblemsetAnswer .
+func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, answer *biz.ProblemsetAnswer) error {
+	return r.data.db.WithContext(ctx).
+		Updates(answer).Error
 }

@@ -60,3 +60,12 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemsetProblems"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+
+- selector: "/jnoj.interface.v1.ProblemService/GetProblemsetAnswer"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/ListProblemsetAnswers"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/CreateProblemsetAnswer"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/UpdateProblemsetAnswer"
+  middleware: "jnoj/internal/middleware/auth.User()"

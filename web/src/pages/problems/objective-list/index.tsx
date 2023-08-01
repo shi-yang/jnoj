@@ -375,7 +375,7 @@ function ProblemView({id, visible, onCancel}: {id: number, visible: boolean, onC
             ))}
           </Select>
           <Typography.Title heading={4}>{problem.statements[language].name}</Typography.Title>
-          <ProblemContent problem={problem} language={language} />
+          <ProblemContent problem={problem} statement={problem.statements[language]} />
           <Divider />
           <Typography.Title heading={4}>测试-验题区域</Typography.Title>
           {

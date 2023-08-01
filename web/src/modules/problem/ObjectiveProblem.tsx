@@ -6,8 +6,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import ReactMarkdown from 'react-markdown';
 const { Title, Paragraph } = Typography;
-export default function Page({problem, language}: any) {
-  const statement = problem.statements[language];
+export default function Page({problem, statement}: any) {
   let choices = [];
   if (statement.input !== '' && statement.type === 'CHOICE' || statement.type === 'MULTIPLE') {
     choices = JSON.parse(statement.input);

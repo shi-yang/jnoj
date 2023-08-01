@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import MarkdownView from '@/components/MarkdownView';
 import React from 'react';
 const { Title, Paragraph } = Typography;
-export default function ProgrammingProblem({problem, language}: any) {
+export default function ProgrammingProblem({problem, statement}: any) {
   const t = useLocale(locale);
   const refsById = useMemo(() => {
     const refs = {};
@@ -34,21 +34,21 @@ export default function ProgrammingProblem({problem, language}: any) {
         {t['memoryLimit']}：{problem.memoryLimit} MB
       </Paragraph>
       <Paragraph>
-        <MarkdownView content={problem.statements[language].legend} />
+        <MarkdownView content={statement.legend} />
       </Paragraph>
-      { problem.statements[language].input != '' &&
+      { statement.input != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['input']}</Title>
           <Paragraph>
-            <MarkdownView content={problem.statements[language].input} />
+            <MarkdownView content={statement.input} />
           </Paragraph>
         </>
       }
-      { problem.statements[language].output != '' &&
+      { statement.output != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['output']}</Title>
           <Paragraph>
-            <MarkdownView content={problem.statements[language].output} />
+            <MarkdownView content={statement.output} />
           </Paragraph>
         </>
       }
@@ -85,19 +85,19 @@ export default function ProgrammingProblem({problem, language}: any) {
           );
         })
       }
-      { problem.statements[language].note != '' &&
+      { statement.note != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['notes']}</Title>
           <Paragraph>
-            <MarkdownView content={problem.statements[language].note} />
+            <MarkdownView content={statement.note} />
           </Paragraph>
         </>
       }
-      { problem.statements[language].source != '' &&
+      { statement.source != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['source']}</Title>
           <Paragraph>
-            <MarkdownView content={problem.statements[language].source} />
+            <MarkdownView content={statement.source} />
           </Paragraph>
         </>
       }

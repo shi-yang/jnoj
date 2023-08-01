@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Form, InputNumber,
+  Button, Card, Divider, Form, InputNumber,
   Message, Modal, PaginationProps, Popconfirm,
-  Table, TableColumnProps
+  Select,
+  Table, TableColumnProps, Typography
 } from '@arco-design/web-react';
 import {
-  addProblemToProblemset, deleteProblemFromProblemset,
+  addProblemToProblemset, batchAddProblemToProblemset, deleteProblemFromProblemset,
   listProblemsetProblems, sortProblemsetProblems
 } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { IconPlus, IconDragDotVertical } from '@arco-design/web-react/icon';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import ProblemModalList from '@/modules/problem/problem-modal-list';
+import { batch } from 'react-redux';
 
 const arrayMoveMutate = (array, from, to) => {
   const startIndex = to < 0 ? array.length + to : to;
@@ -215,8 +218,14 @@ function Problems({problemset}: {problemset:any}) {
     },
   };
   return (
-    <Card>
-      <AddProblem problemsetId={problemsetId} callback={fetchData} />
+    <Card
+      title='题目列表'
+      extra={
+        <div>
+          <AddProblem problemsetId={problemsetId} callback={fetchData} />
+        </div>
+      }
+    >
       <Table
         rowKey={r => r.id}
         className='arco-drag-table-container'
@@ -240,8 +249,21 @@ function AddProblem({problemsetId, callback}: {problemsetId: number, callback?:(
   function onOk() {
     form.validate().then((values) => {
       setConfirmLoading(true);
-      addProblemToProblemset(problemsetId, values)
+      batchAddProblemToProblemset(problemsetId, values)
         .then(res => {
+          if (res.data.failedReason.length > 0) {
+            Message.error({
+              content: (
+                <div>
+                  {res.data.failedReason.map(v => (
+                    <Typography.Paragraph key={v} style={{marginBottom: 0}}>
+                      {v}
+                    </Typography.Paragraph>
+                  ))}
+                </div>
+              )
+            });
+          }
           setVisible(false);
           callback();
         })
@@ -263,14 +285,19 @@ function AddProblem({problemsetId, callback}: {problemsetId: number, callback?:(
         title={t['update.table.add']}
         visible={visible}
         onOk={onOk}
+        style={{width: 1100}}
         confirmLoading={confirmLoading}
         onCancel={() => setVisible(false)}
       >
+        <ProblemModalList onChange={(v) => {
+          form.setFieldValue('problemIds', v);
+        }} />
+        <Divider />
         <Form
           form={form}
         >
-          <Form.Item  label={t['update.table.add.form.problemId']} required field='problemId' rules={[{ required: true }]}>
-            <InputNumber placeholder='' />
+          <Form.Item  label={t['update.table.add.form.problemId']} required field='problemIds' rules={[{ required: true }]}>
+            <Select mode='multiple' allowClear allowCreate></Select>
           </Form.Item>
         </Form>
       </Modal>
