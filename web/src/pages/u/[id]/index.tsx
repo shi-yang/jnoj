@@ -359,8 +359,8 @@ export default function UserPage() {
             </Tooltip>
           }
         </div>
-        <Grid.Row gutter={24}>
-          <Grid.Col span={6}>
+        <Grid.Row gutter={[24, 12]}>
+          <Grid.Col xs={24} md={6}>
             <Card title='个人简介'>
               <Typography.Paragraph>{profile.bio}</Typography.Paragraph>
               <Descriptions
@@ -370,7 +370,7 @@ export default function UserPage() {
               />
             </Card>
           </Grid.Col>
-          <Grid.Col span={18}>
+          <Grid.Col xs={24} md={18}>
             <Grid.Row gutter={24}>
               <Grid.Col span={12}>
                 <Card title='做题'>
