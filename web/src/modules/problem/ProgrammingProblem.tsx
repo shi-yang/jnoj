@@ -93,11 +93,11 @@ export default function ProgrammingProblem({problem, statement}: any) {
           </Paragraph>
         </>
       }
-      { statement.source != '' &&
+      { problem.source != '' &&
         <>
           <Title className={styles['subtitle']} heading={5}>{t['source']}</Title>
           <Paragraph>
-            <MarkdownView content={statement.source} />
+            <MarkdownView content={problem.source} />
           </Paragraph>
         </>
       }
