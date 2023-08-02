@@ -425,6 +425,19 @@ func (s *ContestService) BatchCreateContestUsers(ctx context.Context, req *v1.Ba
 	return s.uc.BatchCreateContestUsers(ctx, req)
 }
 
+// DeleteContestUser 删除比赛用户
+func (s *ContestService) DeleteContestUser(ctx context.Context, req *v1.DeleteContestUserRequest) (*emptypb.Empty, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	s.uc.DeleteContestUser(ctx, int(req.ContestId), int(req.UserId))
+	return &emptypb.Empty{}, nil
+}
+
 // ExitVirtualContest 退出虚拟比赛
 func (s *ContestService) ExitVirtualContest(ctx context.Context, req *v1.ExitVirtualContestRequest) (*emptypb.Empty, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.ContestId))

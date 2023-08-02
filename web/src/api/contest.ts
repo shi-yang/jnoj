@@ -64,6 +64,10 @@ export function updateContestUser(id, data) {
   return axios.put(`/contests/${id}/users`, data);
 }
 
+export function deleteContestUser(id, userId) {
+  return axios.delete(`/contests/${id}/users/${userId}`);
+}
+
 export function getContestUser(contestId: number, userId: number) {
   return axios.get(`/contests/${contestId}/users/${userId}`);
 }

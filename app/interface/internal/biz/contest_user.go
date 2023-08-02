@@ -32,7 +32,7 @@ const (
 type ContestUserRepo interface {
 	ListContestUsers(context.Context, *v1.ListContestUsersRequest) ([]*ContestUser, int64)
 	CreateContestUser(context.Context, *ContestUser) (*ContestUser, error)
-	DeleteContestUser(context.Context, int) error
+	DeleteContestUser(ctx context.Context, contestId int, userId int) error
 	GetContestUser(context.Context, int, int) *ContestUser
 	UpdateContestUser(context.Context, *ContestUser) (*ContestUser, error)
 	SaveContestRating(ctx context.Context, users []*ContestUser) error
@@ -147,6 +147,6 @@ func (uc *ContestUsecase) UpdateContestUser(ctx context.Context, c *ContestUser)
 }
 
 // DeleteContestUser delete a ContestUser
-func (uc *ContestUsecase) DeleteContestUser(ctx context.Context, id int) error {
-	return uc.repo.DeleteContestUser(ctx, id)
+func (uc *ContestUsecase) DeleteContestUser(ctx context.Context, contestId int, userId int) error {
+	return uc.repo.DeleteContestUser(ctx, contestId, userId)
 }

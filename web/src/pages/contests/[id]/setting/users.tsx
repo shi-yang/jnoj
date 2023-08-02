@@ -1,10 +1,9 @@
-import { batchCreateContestUsers, calculateContestRating, createContestUser, listContestUsers, updateContestUser } from '@/api/contest';
+import { batchCreateContestUsers, calculateContestRating, deleteContestUser, listContestUsers, updateContestUser } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Space, Table, Typography } from '@arco-design/web-react';
+import { Button, Card, Divider, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Space, Table, Typography } from '@arco-design/web-react';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
 import locale from '../locale';
-import user from '@/store/reducers/user';
 import PermissionWrapper from '@/components/PermissionWrapper';
 
 enum  ContestUserRole {
@@ -243,7 +242,19 @@ function Users() {
       dataIndex: 'operation',
       align: 'center' as 'center',
       render: (_, record) => {
-        return (<Button onClick={() => setUpdateModal({visible: true, record: record})}>编辑</Button>);
+        return (
+          <Space split={<Divider type='vertical' />}>
+            <Button onClick={() => setUpdateModal({visible: true, record: record})}>编辑</Button>
+            <Popconfirm
+              focusLock
+              title='移除用户'
+              content='确定要移除该用户吗？该用户的提交记录也将被删除，不可恢复。'
+              onOk={() => onRemoveUser(record.userId)}
+            >
+              <Button status='warning'>移除</Button>
+            </Popconfirm>
+          </Space>
+        );
       }
     }
   ];
@@ -288,6 +299,12 @@ function Users() {
   function onCalculateRating() {
     calculateContestRating(contest.id).then(res => {
       Message.success('已更新');
+      fetchData();
+    });
+  }
+  function onRemoveUser(userId) {
+    deleteContestUser(contest.id, userId).then(res => {
+      Message.success('已删除');
       fetchData();
     });
   }

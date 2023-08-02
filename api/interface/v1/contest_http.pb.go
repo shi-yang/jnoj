@@ -29,6 +29,7 @@ const OperationContestServiceCreateContest = "/jnoj.interface.v1.contest.Contest
 const OperationContestServiceCreateContestProblem = "/jnoj.interface.v1.contest.ContestService/CreateContestProblem"
 const OperationContestServiceCreateContestUser = "/jnoj.interface.v1.contest.ContestService/CreateContestUser"
 const OperationContestServiceDeleteContestProblem = "/jnoj.interface.v1.contest.ContestService/DeleteContestProblem"
+const OperationContestServiceDeleteContestUser = "/jnoj.interface.v1.contest.ContestService/DeleteContestUser"
 const OperationContestServiceExitVirtualContest = "/jnoj.interface.v1.contest.ContestService/ExitVirtualContest"
 const OperationContestServiceGetContest = "/jnoj.interface.v1.contest.ContestService/GetContest"
 const OperationContestServiceGetContestProblem = "/jnoj.interface.v1.contest.ContestService/GetContestProblem"
@@ -53,6 +54,7 @@ type ContestServiceHTTPServer interface {
 	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*ContestProblem, error)
 	CreateContestUser(context.Context, *CreateContestUserRequest) (*ContestUser, error)
 	DeleteContestProblem(context.Context, *DeleteContestProblemRequest) (*emptypb.Empty, error)
+	DeleteContestUser(context.Context, *DeleteContestUserRequest) (*emptypb.Empty, error)
 	ExitVirtualContest(context.Context, *ExitVirtualContestRequest) (*emptypb.Empty, error)
 	GetContest(context.Context, *GetContestRequest) (*Contest, error)
 	GetContestProblem(context.Context, *GetContestProblemRequest) (*ContestProblem, error)
@@ -87,6 +89,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.contest.ContestService/ExitVirtualContest", auth.User())
 	s.Use("/jnoj.interface.v1.contest.ContestService/ListContestUsers", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/GetContestUser", auth.User())
+	s.Use("/jnoj.interface.v1.contest.ContestService/DeleteContestUser", auth.User())
 	s.Use("/jnoj.interface.v1.contest.ContestService/ListContestSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/ListContestAllSubmissions", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/ListContestProblemLanguages", auth.Guest())
@@ -107,6 +110,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	r.GET("/contests/{id}/problems/{number}/languages/{language}", _ContestService_GetContestProblemLanguage0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/users", _ContestService_ListContestUsers0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/users", _ContestService_CreateContestUser0_HTTP_Handler(srv))
+	r.DELETE("/contests/{contest_id}/users/{user_id}", _ContestService_DeleteContestUser0_HTTP_Handler(srv))
 	r.GET("/contests/{contest_id}/users/{user_id}", _ContestService_GetContestUser0_HTTP_Handler(srv))
 	r.POST("/contests/{contest_id}/batch_users", _ContestService_BatchCreateContestUsers0_HTTP_Handler(srv))
 	r.PUT("/contests/{contest_id}/users", _ContestService_UpdateContestUser0_HTTP_Handler(srv))
@@ -398,6 +402,28 @@ func _ContestService_CreateContestUser0_HTTP_Handler(srv ContestServiceHTTPServe
 	}
 }
 
+func _ContestService_DeleteContestUser0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteContestUserRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContestServiceDeleteContestUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteContestUser(ctx, req.(*DeleteContestUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ContestService_GetContestUser0_HTTP_Handler(srv ContestServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetContestUserRequest
@@ -603,6 +629,7 @@ type ContestServiceHTTPClient interface {
 	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
 	CreateContestUser(ctx context.Context, req *CreateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
 	DeleteContestProblem(ctx context.Context, req *DeleteContestProblemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteContestUser(ctx context.Context, req *DeleteContestUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	ExitVirtualContest(ctx context.Context, req *ExitVirtualContestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetContest(ctx context.Context, req *GetContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
 	GetContestProblem(ctx context.Context, req *GetContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
@@ -699,6 +726,19 @@ func (c *ContestServiceHTTPClientImpl) DeleteContestProblem(ctx context.Context,
 	pattern := "/contests/{id}/problems/{number}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationContestServiceDeleteContestProblem))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ContestServiceHTTPClientImpl) DeleteContestUser(ctx context.Context, in *DeleteContestUserRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/contests/{contest_id}/users/{user_id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationContestServiceDeleteContestUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {

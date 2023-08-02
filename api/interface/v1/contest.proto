@@ -93,6 +93,12 @@ service ContestService {
             body: "*"
         };
     }
+    // 删除比赛用户
+    rpc DeleteContestUser (DeleteContestUserRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/contests/{contest_id}/users/{user_id}"
+        };
+    }
     // 获取比赛用户信息
     rpc GetContestUser (GetContestUserRequest) returns (ContestUser) {
         option (google.api.http) = {
@@ -395,6 +401,11 @@ message CreateContestUserRequest {
     int32 contest_id = 1;
     string invitation_code = 2;
     string name = 3 [(validate.rules).string = {max_len: 64}];
+}
+
+message DeleteContestUserRequest {
+    int32 contest_id = 1;
+    int32 user_id = 2;
 }
 
 message GetContestUserRequest {

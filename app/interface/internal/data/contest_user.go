@@ -173,12 +173,25 @@ func (r *contestRepo) UpdateContestUser(ctx context.Context, c *biz.ContestUser)
 }
 
 // DeleteContestUser .
-func (r *contestRepo) DeleteContestUser(ctx context.Context, id int) error {
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Delete(ContestUser{ID: id}).
+func (r *contestRepo) DeleteContestUser(ctx context.Context, contestId int, userId int) error {
+	tx := r.data.db.WithContext(ctx).Begin()
+	// 删除比赛用户
+	err := tx.Omit(clause.Associations).
+		Delete(ContestUser{}, "contest_id = ? and user_id = ?", contestId, userId).
 		Error
-	return err
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// 删除提交记录
+	err = tx.Omit(clause.Associations).
+		Delete(Submission{}, "user_id = ? and entity_id = ? and entity_type = ?", userId, contestId, biz.SubmissionEntityTypeContest).
+		Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
 // GetContestUserRating 查询用户竞赛等级分

@@ -29,6 +29,8 @@ rules:
   middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector : "/jnoj.interface.v1.contest.ContestService/GetContestUser"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector : "/jnoj.interface.v1.contest.ContestService/DeleteContestUser"
+  middleware: "jnoj/internal/middleware/auth.User()"
 - selector : "/jnoj.interface.v1.contest.ContestService/ListContestSubmissions"
   middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector : "/jnoj.interface.v1.contest.ContestService/ListContestAllSubmissions"

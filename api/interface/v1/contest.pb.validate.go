@@ -2745,6 +2745,112 @@ var _ interface {
 	ErrorName() string
 } = CreateContestUserRequestValidationError{}
 
+// Validate checks the field values on DeleteContestUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteContestUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteContestUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteContestUserRequestMultiError, or nil if none found.
+func (m *DeleteContestUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteContestUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ContestId
+
+	// no validation rules for UserId
+
+	if len(errors) > 0 {
+		return DeleteContestUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteContestUserRequestMultiError is an error wrapping multiple validation
+// errors returned by DeleteContestUserRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteContestUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteContestUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteContestUserRequestMultiError) AllErrors() []error { return m }
+
+// DeleteContestUserRequestValidationError is the validation error returned by
+// DeleteContestUserRequest.Validate if the designated constraints aren't met.
+type DeleteContestUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteContestUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteContestUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteContestUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteContestUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteContestUserRequestValidationError) ErrorName() string {
+	return "DeleteContestUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteContestUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteContestUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteContestUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteContestUserRequestValidationError{}
+
 // Validate checks the field values on GetContestUserRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
