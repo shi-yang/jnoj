@@ -139,9 +139,10 @@ export default function Index() {
           <Grid.Row gutter={24} className={styles['card-content']}>
             {groups.length > 0 && groups.map((item, index) => (
               <Grid.Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6} key={index}>
-                <Link className={styles['card-block']} href={`/groups/${item.id}`}>
+                <Link className={styles['card-block']} hoverable={false} href={`/groups/${item.id}`}>
                   <Card
                     bordered={true}
+                    hoverable
                     size='small'
                     actions={[
                       <span key={index} className='icon-hover'>
