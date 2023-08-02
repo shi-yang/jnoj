@@ -19,8 +19,8 @@ export function listProblemTests(id: number, params) {
   return axios.get<ListProblemTetstsResponse>(`/problems/${id}/tests`, {params});
 }
 
-export function deleteProblemTests(pid: number, testId: number) {
-  return axios.delete(`/problems/${pid}/tests/${testId}`);
+export function deleteProblemTests(pid: number, params) {
+  return axios.delete(`/problems/${pid}/test/delete`, {params});
 }
 
 export function uploadProblemTest(id, data) {
@@ -37,4 +37,8 @@ export function updateProblemTest(pid, testId, data) {
 
 export function sortProblemTests(pid, data) {
   return axios.post(`/problems/${pid}/test/sort`, data);
+}
+
+export function downloadProblemTest(pid, params) {
+  return axios.get(`/problems/${pid}/test/download`, {responseType: 'blob', params});
 }

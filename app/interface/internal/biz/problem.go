@@ -129,7 +129,7 @@ func (uc *ProblemUsecase) GetProblem(ctx context.Context, id int) (*Problem, err
 	statements, _ := uc.repo.ListProblemStatements(ctx, &v1.ListProblemStatementsRequest{
 		Id: int32(id),
 	})
-	tests, _ := uc.repo.ListProblemTestContent(ctx, id, true)
+	tests, _ := uc.repo.ListProblemTestContent(ctx, id, nil, true)
 	p.Tags = uc.repo.GetProblemTags(ctx, id)
 	for _, v := range statements {
 		p.Statements = append(p.Statements, &ProblemStatement{
@@ -192,7 +192,7 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 	zipFile := zip.NewWriter(buf)
 
 	// 创建 tests 文件
-	tests, _ := uc.repo.ListProblemTestContent(ctx, id, false)
+	tests, _ := uc.repo.ListProblemTestContent(ctx, id, nil, false)
 	zero := 2
 	if len(tests) >= 100 {
 		zero = 3
@@ -222,7 +222,7 @@ func (uc *ProblemUsecase) PackProblem(ctx context.Context, id int) error {
 		Language    string                `json:"language"`
 		SampleTest  []statementSampleTest `json:"sampleTests"`
 	}
-	samples, _ := uc.repo.ListProblemTestContent(ctx, id, true)
+	samples, _ := uc.repo.ListProblemTestContent(ctx, id, nil, true)
 	for _, v := range statements {
 		fstatement, _ := zipFile.Create(fmt.Sprintf("statements/%s/problem-properites.json", v.Language))
 		s := statement{

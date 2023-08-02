@@ -1,7 +1,10 @@
 package biz
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
+	"fmt"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/internal/middleware/auth"
 	"time"
@@ -50,10 +53,9 @@ type ProblemTestRepo interface {
 	GetProblemTest(context.Context, int) (*ProblemTest, error)
 	CreateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
 	UpdateProblemTest(context.Context, *ProblemTest) (*ProblemTest, error)
-	DeleteProblemTest(context.Context, int) error
-	DeleteAllProblemTest(ctx context.Context, pid int) error
+	DeleteProblemTest(ctx context.Context, pid int, testIds []int32) error
 
-	ListProblemTestContent(ctx context.Context, pid int, isSample bool) ([]*Test, error)
+	ListProblemTestContent(ctx context.Context, pid int, testIds []int, isSample bool) ([]*Test, error)
 	SortProblemTests(context.Context, *v1.SortProblemTestsRequest)
 	IsProblemTestSampleFirst(ctx context.Context, pid int) bool
 }
@@ -89,15 +91,36 @@ func (uc *ProblemUsecase) UpdateProblemTest(ctx context.Context, p *ProblemTest)
 }
 
 // DeleteProblemTest delete a ProblemTest
-func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int, tid int) error {
-	// 删除全部测试点
-	if tid == 0 {
-		return uc.repo.DeleteAllProblemTest(ctx, pid)
-	}
-	return uc.repo.DeleteProblemTest(ctx, tid)
+func (uc *ProblemUsecase) DeleteProblemTest(ctx context.Context, pid int, testIds []int32) error {
+	return uc.repo.DeleteProblemTest(ctx, pid, testIds)
 }
 
 // SortProblemTests .
 func (uc *ProblemUsecase) SortProblemTests(ctx context.Context, req *v1.SortProblemTestsRequest) {
 	uc.repo.SortProblemTests(ctx, req)
+}
+
+// DownloadProblemTests 下载题目测试点
+func (uc *ProblemUsecase) DownloadProblemTests(ctx context.Context, problem *Problem, testIds []int) (*bytes.Buffer, error) {
+	// 创建一个压缩文档
+	buf := new(bytes.Buffer)
+	zipFile := zip.NewWriter(buf)
+
+	// 创建 tests 文件
+	tests, _ := uc.repo.ListProblemTestContent(ctx, problem.ID, testIds, false)
+	zero := 2
+	if len(tests) >= 100 {
+		zero = 3
+	}
+	for index, v := range tests {
+		fin, _ := zipFile.Create(fmt.Sprintf("%0*d", zero, index+1))
+		fin.Write([]byte(v.Input))
+		fout, _ := zipFile.Create(fmt.Sprintf("%0*d.ans", zero, index+1))
+		fout.Write([]byte(v.Output))
+	}
+	// zip 结束
+	if err := zipFile.Close(); err != nil {
+		return nil, err
+	}
+	return buf, nil
 }

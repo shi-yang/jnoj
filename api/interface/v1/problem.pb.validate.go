@@ -2676,8 +2676,6 @@ func (m *DeleteProblemTestRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Tid
-
 	if len(errors) > 0 {
 		return DeleteProblemTestRequestMultiError(errors)
 	}

@@ -173,7 +173,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.GET("/problems/{id}/tests", _ProblemService_GetProblemTest0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/tests", _ProblemService_CreateProblemTest0_HTTP_Handler(srv))
 	r.PUT("/problems/{id}/tests/{tid}", _ProblemService_UpdateProblemTest0_HTTP_Handler(srv))
-	r.DELETE("/problems/{id}/tests/{tid}", _ProblemService_DeleteProblemTest0_HTTP_Handler(srv))
+	r.DELETE("/problems/{id}/test/delete", _ProblemService_DeleteProblemTest0_HTTP_Handler(srv))
 	r.POST("/problems/{id}/test/sort", _ProblemService_SortProblemTests0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/files", _ProblemService_ListProblemFiles0_HTTP_Handler(srv))
 	r.GET("/problems/{id}/files/{sid}", _ProblemService_GetProblemFile0_HTTP_Handler(srv))
@@ -1518,7 +1518,7 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemStatement(ctx context.Contex
 
 func (c *ProblemServiceHTTPClientImpl) DeleteProblemTest(ctx context.Context, in *DeleteProblemTestRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/problems/{id}/tests/{tid}"
+	pattern := "/problems/{id}/test/delete"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemTest))
 	opts = append(opts, http.PathTemplate(pattern))

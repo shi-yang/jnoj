@@ -98,7 +98,7 @@ service ProblemService {
     // 删除题目测试点
     rpc DeleteProblemTest (DeleteProblemTestRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/problems/{id}/tests/{tid}"
+            delete: "/problems/{id}/test/delete"
         };
     }
     // 对题目测试点进行排序
@@ -528,7 +528,7 @@ message UpdateProblemTestRequest {
 
 message DeleteProblemTestRequest {
     int32 id = 1;
-    int32 tid = 2;
+    repeated int32 test_ids = 2;
 }
 
 message SortProblemTestsRequest {

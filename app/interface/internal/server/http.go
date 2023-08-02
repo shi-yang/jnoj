@@ -59,6 +59,10 @@ func NewHTTPServer(c *conf.Server,
 	route.POST("/post/upload_image", post.UploadPostImage)
 	srv.Use("uploadPostImage", auth.User())
 
+	// 下载测试点
+	route.GET("/problems/{id}/test/download", problem.DownloadProblemTests)
+	srv.Use("downloadProblemTests", auth.User())
+
 	v1.RegisterContestServiceHTTPServer(srv, contest)
 	v1.RegisterProblemServiceHTTPServer(srv, problem)
 	v1.RegisterUserServiceHTTPServer(srv, user)

@@ -3,7 +3,7 @@ import { Alert, Button, Card, Divider, Form, Grid, Input, Link, Message, Modal, 
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/tests.module.less';
-import { deleteProblemTests, listProblemTests, sortProblemTests, updateProblemTest, uploadProblemTest } from '@/api/problem-test';
+import { deleteProblemTests, downloadProblemTest, listProblemTests, sortProblemTests, updateProblemTest, uploadProblemTest } from '@/api/problem-test';
 import { FormatStorageSize, FormatTime } from '@/utils/format';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { IconDragDotVertical } from '@arco-design/web-react/icon';
@@ -101,6 +101,7 @@ const App = (props: any) => {
   const [subtask, setSubtask] = useState({id: 0, content: ''});
   const [subtaskVisible, setSubtaskVisible] = useState(false);
   const [isSampleFirst, setIsSampleFirst] = useState(true);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -126,7 +127,7 @@ const App = (props: any) => {
     });
   }
   function deleteTest(id) {
-    deleteProblemTests(props.problem.id, id)
+    deleteProblemTests(props.problem.id, {testIds: [id]})
       .then(() => {
         Message.success('删除成功');
         fetchData();
@@ -212,11 +213,26 @@ const App = (props: any) => {
         Message.error('保存失败');
       });
   }
-  function onDeleteAllTest() {
-    deleteProblemTests(props.problem.id, 0)
+  function onDeleteTest() {
+    deleteProblemTests(props.problem.id, {testIds: selectedRowKeys})
       .then(() => {
         Message.success('删除成功');
         fetchData();
+        setSelectedRowKeys([]);
+      });
+  }
+  function onDownloadTest() {
+    downloadProblemTest(props.problem.id, {testIds: selectedRowKeys})
+      .then(res => {
+        setSelectedRowKeys([]);
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'file.zip');
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
       });
   }
 
@@ -496,13 +512,15 @@ const App = (props: any) => {
         </Grid.Row>
         <Space style={{marginTop: '10px'}} split={<Divider type='vertical' />}>
           <Popconfirm
+            disabled={selectedRowKeys.length === 0}
             focusLock
-            title='删除全部测试点'
-            content='继续将会把所有测试点全部删除，确定？'
-            onOk={onDeleteAllTest}  
+            title='删除选中项'
+            content='继续将会把选中项测试点删除，确定？'
+            onOk={onDeleteTest}  
           >
-            <Button type='primary' status='danger'>删除全部测试点</Button>
+            <Button type='primary' status='danger' disabled={selectedRowKeys.length === 0}>删除选中项</Button>
           </Popconfirm>
+          <Button onClick={onDownloadTest} disabled={selectedRowKeys.length === 0}>下载选中项</Button>
           <Popconfirm
             focusLock
             title='调整测评顺序'
@@ -537,6 +555,10 @@ const App = (props: any) => {
         onChange={onTableChange}
         rowSelection={{
           type: 'checkbox',
+          selectedRowKeys,
+          onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
         }}
       />
     </Card>

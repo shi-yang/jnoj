@@ -1,9 +1,11 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
@@ -379,7 +381,7 @@ func (s *ProblemService) DeleteProblemTest(ctx context.Context, req *v1.DeletePr
 	if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	err = s.uc.DeleteProblemTest(ctx, int(req.Id), int(req.Tid))
+	err = s.uc.DeleteProblemTest(ctx, int(req.Id), req.TestIds)
 	return &emptypb.Empty{}, err
 }
 
@@ -394,6 +396,45 @@ func (s *ProblemService) SortProblemTests(ctx context.Context, req *v1.SortProbl
 	}
 	s.uc.SortProblemTests(ctx, req)
 	return &emptypb.Empty{}, nil
+}
+
+// DownloadProblemTests 下载题目测试点
+func (s *ProblemService) DownloadProblemTests(ctx http.Context) error {
+	http.SetOperation(ctx, "downloadProblemTests")
+	var req struct {
+		ID      int   `json:"id"`
+		TestIDs []int `json:"testIds[]"`
+	}
+	err := ctx.BindVars(&req)
+	if err != nil {
+		return err
+	}
+	err = ctx.BindQuery(&req)
+	if err != nil {
+		return err
+	}
+
+	h := ctx.Middleware(func(ctx context.Context, r interface{}) (interface{}, error) {
+		p, err := s.uc.GetProblem(ctx, req.ID)
+		if err != nil {
+			return nil, v1.ErrorProblemNotFound(err.Error())
+		}
+		if ok := p.HasPermission(ctx, biz.ProblemPermissionUpdate); !ok {
+			return nil, v1.ErrorPermissionDenied("permission denied")
+		}
+		return s.uc.DownloadProblemTests(ctx, p, req.TestIDs)
+	})
+
+	disposition := fmt.Sprintf("attachment; filename=%d.zip", req.ID)
+	ctx.Response().Header().Set("Content-Type", "application/zip")
+	ctx.Response().Header().Set("Content-Disposition", disposition)
+	ctx.Response().Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
+	resp, err := h(ctx, &req)
+	if err != nil {
+		return err
+	}
+	resp.(*bytes.Buffer).WriteTo(ctx.Response())
+	return nil
 }
 
 // ListProblemFiles 获取题目文件列表

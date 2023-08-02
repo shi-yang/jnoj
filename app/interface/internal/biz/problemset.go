@@ -172,7 +172,7 @@ func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, problem
 				p, _ := uc.problemRepo.GetProblem(ctx, v.ProblemID)
 				problems[k].TimeLimit = int(p.TimeLimit)
 				problems[k].MemoryLimit = int(p.MemoryLimit)
-				tests, _ := uc.problemRepo.ListProblemTestContent(ctx, p.ID, true)
+				tests, _ := uc.problemRepo.ListProblemTestContent(ctx, p.ID, nil, true)
 				problems[k].SampleTests = tests
 			}
 			problems[k].Statement = statementMap[v.ProblemID]

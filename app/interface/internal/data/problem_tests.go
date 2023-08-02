@@ -71,13 +71,16 @@ func (r *problemRepo) ListProblemTests(ctx context.Context, req *v1.ListProblemT
 	return res, count
 }
 
-func (r *problemRepo) ListProblemTestContent(ctx context.Context, id int, isExample bool) ([]*biz.Test, error) {
+func (r *problemRepo) ListProblemTestContent(ctx context.Context, id int, testIds []int, isExample bool) ([]*biz.Test, error) {
 	var tests []ProblemTest
 	db := r.data.db.WithContext(ctx).
 		Model(&ProblemTest{}).
 		Where("problem_id = ?", id)
 	if isExample {
 		db.Where("is_example = ?", isExample)
+	}
+	if len(testIds) > 0 {
+		db.Where("id in (?)", testIds)
 	}
 	db.Find(&tests)
 
@@ -165,38 +168,24 @@ func (r *problemRepo) UpdateProblemTest(ctx context.Context, p *biz.ProblemTest)
 }
 
 // DeleteProblemTest .
-func (r *problemRepo) DeleteProblemTest(ctx context.Context, id int) error {
-	var res ProblemTest
-	err := r.data.db.Model(&ProblemTest{}).
-		First(&res, "id = ?", id).
-		Error
-	if err != nil {
-		return err
-	}
-	// 删除数据库的记录
-	err = r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Delete(ProblemTest{ID: id}).
-		Error
-	if err != nil {
-		return err
-	}
-	// 删除文件
-	store := objectstorage.NewSeaweed()
-	store.DeleteObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, res.ProblemID, res.ID))
-	store.DeleteObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, res.ProblemID, res.ID))
-	return nil
-}
+func (r *problemRepo) DeleteProblemTest(ctx context.Context, pid int, testIds []int32) error {
+	var res []ProblemTest
+	r.data.db.Model(&ProblemTest{}).
+		Find(&res, "problem_id = ? and id in (?)", pid, testIds)
 
-// DeleteAllProblemTest 删除全部测试点
-func (r *problemRepo) DeleteAllProblemTest(ctx context.Context, pid int) error {
-	var tests []*ProblemTest
-	r.data.db.WithContext(ctx).
-		Model(&ProblemTest{}).
-		Where("problem_id = ?", pid).
-		Find(&tests)
-	for _, test := range tests {
-		r.DeleteProblemTest(ctx, test.ID)
+	for _, v := range res {
+		err := r.data.db.WithContext(ctx).
+			Omit(clause.Associations).
+			Delete(ProblemTest{}, "id = ?", v.ID).
+			Error
+		// 删除数据库的记录
+		if err != nil {
+			return err
+		}
+		// 删除文件
+		store := objectstorage.NewSeaweed()
+		store.DeleteObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestInputPath, pid, v.ID))
+		store.DeleteObject(r.data.conf.ObjectStorage.PrivateBucket, fmt.Sprintf(problemTestOutputPath, pid, v.ID))
 	}
 	return nil
 }
