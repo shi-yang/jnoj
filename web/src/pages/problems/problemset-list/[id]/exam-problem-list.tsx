@@ -8,8 +8,9 @@ import remarkMath from 'remark-math';
 import locale from './locale';
 import { deleteProblemFromProblemset, sortProblemsetProblems } from '@/api/problemset';
 import { IconDown, IconDragDot, IconUp } from '@arco-design/web-react/icon';
+import ProblemContent from '@/modules/problem/ProblemContent';
 
-function RenderItem({statement}: {statement: any}) {
+function RenderObjectiveItem({statement}: {statement: any}) {
   const t = useLocale(locale);
   let choices = [];
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
@@ -67,6 +68,21 @@ function RenderItem({statement}: {statement: any}) {
           </ReactMarkdown>
         </div>
       </Typography.Paragraph>
+    </div>
+  );
+}
+
+function RenderProgrammingItem({statement, problem}: {statement: any, problem:any}) {
+  const t = useLocale(locale);
+  return (
+    <div>
+      <Typography.Title heading={5} style={{marginBottom: 0}}>
+        <Tag color='blue'>
+          {t[`objective.type.${statement.type}`]}
+        </Tag>
+        {statement.name}
+      </Typography.Title>
+      <ProblemContent problem={problem} statement={statement} />
     </div>
   );
 }
@@ -141,7 +157,11 @@ const ProblemsList = ({ problemsetId, problems, fetchData }: { problemsetId: num
           </Space>
         }>
           {item.statement && (
-            <RenderItem statement={item.statement} />
+            item.statement.type === 'CODE' ? (
+              <RenderProgrammingItem problem={item} statement={item.statement} />
+            ) : (
+              <RenderObjectiveItem statement={item.statement} />
+            )
           )}
         </List.Item>
       )}

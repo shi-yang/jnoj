@@ -21,6 +21,7 @@ function CreateModal() {
       createProblemset(values)
         .then(res => {
           Message.success('创建成功');
+          router.push(`/problems/problemset-list/${res.data.id}`);
         })
         .finally(() => {
           setConfirmLoading(false);

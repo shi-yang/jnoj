@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Card, Checkbox, Divider, Empty, Form, Input, Link, List, Message, Popconfirm, Radio, Space, Tag, Typography } from '@arco-design/web-react';
+import { Anchor, Button, Card, Checkbox, Divider, Empty, Form, Input, Link, List, Message, Popconfirm, Radio, Select, Space, Tag, Typography } from '@arco-design/web-react';
 import { createProblemsetAnswer, getProblemsetAnswer, listProblemsetAnswers, listProblemsetProblems, updateProblemsetAnswer } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
@@ -13,6 +13,8 @@ import { FormatTime } from '@/utils/format';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import Editor from '@/components/Editor';
 import useStorage from '@/utils/useStorage';
+import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
+import { IconSkin } from '@arco-design/web-react/icon';
 const AnchorLink = Anchor.Link;
 const themes = [
   'light', 'vs-dark'
@@ -43,7 +45,7 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
             <AnchorLink
               key={index}
               href={`#problem-${item.problemId}`}
-              title={<Button status={answers[`problem-${item.problemId}`] ? 'success' : 'default'}>{index + 1}</Button>}
+              title={<Button status={answers[`problem-${item.problemId}`] && answers[`problem-${item.problemId}`].every(item => item) ? 'success' : 'default'}>{index + 1}</Button>}
             />
           ))}
           <AnchorLink title={
@@ -122,6 +124,50 @@ function RenderProgrammingItem({index, statement, problem}: {index: number, stat
   const t = useLocale(locale);
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
+  const [languageId, setLanguageId] = useState(0);
+  const [value, setValue] = useState('');
+  const [languageList, setLanguageList] = useState([]);
+  const { form, disabled, isSubmitting } = Form.useFormContext();
+  useEffect(() => {
+    if (problem.problemId === 0) {
+      return;
+    }
+    const v = form.getFieldValue(`problem-${statement.problemId}`);
+    if (v && v.every(item => item) && v.length >= 2) {
+      setValue(v[1]);
+    } else {
+      getLanguages();
+    }
+  }, [problem.problemId]);
+  const onChangeLanguage = (e) => {
+    setLanguage(e);
+    // 函数题需要查询对应的语言模板
+    if (problem.type === 'FUNCTION') {
+      const lang = languageList.find(item => item.languageCode === Number(e));
+      getProblemLanguage(problem.problemId, lang.id)
+        .then(res => {
+          setLanguageId(lang.id);
+          setValue(res.data.userContent);
+        });
+    }
+  };
+  const getLanguages = () => {
+    listProblemLanguages(problem.problemId)
+      .then(res => {
+        const langs = res.data.data;
+        setLanguageList(langs);
+        const userLang = langs.find(item => item.languageCode === Number(language));
+        if (problem.type === 'FUNCTION' && userLang) {
+          getProblemLanguage(problem.problemId, userLang.id)
+            .then(res => {
+              setLanguageId(userLang.id);
+              setValue(res.data.userContent);
+            });
+        } else {
+          setValue('');
+        }
+      });
+  };
   return (
     <div>
       <Typography.Title heading={5} style={{marginBottom: 0}}>
@@ -132,16 +178,55 @@ function RenderProgrammingItem({index, statement, problem}: {index: number, stat
       </Typography.Title>
       <ProblemContent problem={problem} statement={statement} />
       <Form.Item field={`problem-${statement.problemId}`}>
-        <Editor
-          height={350}
-          language={languageNameToMonacoLanguage[language]}
-          options={{
-            automaticLayout: true,
-            fontSize: 16
-          }}
-          theme={theme}
-        />
+        <Input hidden />
       </Form.Item>
+      <div className={styles['code-header']}>
+        <Select
+          size='large'
+          defaultValue={language}
+          style={{ width: 154 }}
+          onChange={onChangeLanguage}
+        >
+          {languageList.map((item, index) => {
+            return (
+              <Select.Option key={index} value={`${item.languageCode}`}>
+                {item.languageName}
+              </Select.Option>
+            );
+          })}
+        </Select>
+        <Select
+          size='large'
+          defaultValue={theme}
+          style={{ width: 70 }}
+          onChange={(e) => setTheme(e)}
+          triggerProps={{
+            autoAlignPopupWidth: false,
+            autoAlignPopupMinWidth: true,
+          }}
+          renderFormat={(option, value) => <IconSkin />}
+        >
+          {themes.map((item, index) => 
+            <Select.Option key={index} value={item}>
+              {item}
+            </Select.Option>
+          )}
+        </Select>
+      </div>
+      <Editor
+        height={350}
+        language={languageNameToMonacoLanguage[language]}
+        options={{
+          automaticLayout: true,
+          fontSize: 16
+        }}
+        theme={theme}
+        value={value}
+        onChange={(v) => {
+          form.setFieldValue(`problem-${statement.problemId}`, [language, v]);
+        }}
+      />
+      <Button type='primary' htmlType='submit' onSubmit={() => form.submit}>保存代码</Button>
     </div>
   );
 }
@@ -165,9 +250,9 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
         render={(item, index) => (
           <List.Item key={index} extra={<div><Link href={`/problemsets/${problemset.id}/answer/${item.id}`}>查看</Link></div>}>
             <Space>
-              <span>正确回答：{item.correctCount}</span>
-              <span>错误回答：{item.wrongCount}</span>
-              <span>未回答：{item.unansweredCount}</span>
+              <span>正确回答：{item.correctProblemIds === '' ? 0 : item.correctProblemIds.split(',').length}</span>
+              <span>错误回答：{item.wrongProblemIds === '' ? 0 : item.wrongProblemIds.split(',').length}</span>
+              <span>未回答：{item.unansweredProblemIds === '' ? 0 : item.unansweredProblemIds.split(',').length}</span>
               <span>开始时间：{FormatTime(item.createdAt)}</span>
               <span>提交时间：{FormatTime(item.submittedAt)}</span>
             </Space>
@@ -212,6 +297,9 @@ function Page({problemset}: {problemset:any}) {
     }
   }, [unsubmitAnswerId]);
   function onFormChange(_, v) {
+    onSubmit(v);
+  }
+  function onSubmit(v) {
     Object.keys(v).forEach((key) => {
       if (!Array.isArray(v[key])) {
         v[key] = [v[key]];
@@ -240,7 +328,7 @@ function Page({problemset}: {problemset:any}) {
             <div>
               <AnswerSheet unsubmitAnswerId={unsubmitAnswerId} problemset={problemset} answers={answers} problems={problems} />
               <Card>
-                <Form form={form} onChange={onFormChange}>
+                <Form form={form} onChange={onFormChange} onSubmit={onSubmit}>
                   <List
                     dataSource={problems}
                     render={(item, index) => (

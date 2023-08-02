@@ -59,7 +59,7 @@ message Submission {
 }
 
 message ListSubmissionsRequest {
-    int32 id = 1;
+    repeated int32 id = 1;
     optional int32 problem_id = 2;
     int32 entity_id = 3;
     int32 entity_type = 4;

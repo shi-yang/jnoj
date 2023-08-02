@@ -8295,13 +8295,49 @@ func (m *ProblemsetAnswer) validate(all bool) error {
 
 	// no validation rules for Answer
 
-	// no validation rules for AnsweredCount
+	// no validation rules for AnsweredProblemIds
 
-	// no validation rules for UnansweredCount
+	// no validation rules for UnansweredProblemIds
 
-	// no validation rules for CorrectCount
+	// no validation rules for CorrectProblemIds
 
-	// no validation rules for WrongCount
+	// no validation rules for WrongProblemIds
+
+	// no validation rules for SubmissionIds
+
+	for idx, item := range m.GetSubmissions() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ProblemsetAnswerValidationError{
+						field:  fmt.Sprintf("Submissions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ProblemsetAnswerValidationError{
+						field:  fmt.Sprintf("Submissions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ProblemsetAnswerValidationError{
+					field:  fmt.Sprintf("Submissions[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	if all {
 		switch v := interface{}(m.GetSubmittedAt()).(type) {

@@ -1,5 +1,5 @@
 import useLocale from '@/utils/useLocale';
-import { Typography, Radio, Checkbox, List, Tag, Space, Divider } from '@arco-design/web-react';
+import { Typography, Radio, Checkbox, List, Tag, Space, Divider, Link } from '@arco-design/web-react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
@@ -7,8 +7,11 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import locale from './locale';
 import ProblemContent from '../problem/ProblemContent';
+import Highlight from '@/components/Highlight';
+import SubmissionVerdict from '../submission/SubmissionVerdict';
+import SubmissionDrawer from '../submission/SubmissionDrawer';
 
-function RenderObjectiveItem({statement, answer, index}: {statement: any, answer?:any, index:number}) {
+function RenderObjectiveItem({statement, answer, index}: {statement: any, answer?:any, index: number}) {
   const t = useLocale(locale);
   let choices = [];
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
@@ -20,18 +23,17 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
   }
   return (
     <div>
-      <Typography.Title heading={5} style={{marginBottom: 0}}>
+      <Typography.Title heading={6} style={{marginBottom: 0}}>
         <Tag color='blue'>
           {t[`objective.type.${statement.type}`]}
         </Tag>
-        {statement.title}
       </Typography.Title>
       <Typography.Paragraph>
         <ReactMarkdown
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex, rehypeHighlight]}
         >
-          {legend}
+          {`${index + 1}. ` + legend}
         </ReactMarkdown>
       </Typography.Paragraph>
       <Typography.Paragraph>
@@ -75,22 +77,38 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
   );
 }
 
-function RenderProgrammingItem({statement, answer, index, problem}: {statement: any, answer?:any, index:number, problem:any}) {
+function RenderProgrammingItem({statement, answer, problem, submission, index}: {statement: any, answer?:any, problem:any, submission?:any, index:number}) {
   const t = useLocale(locale);
+  const [visible, setVisible] = React.useState(false);
   return (
     <div>
-      <Typography.Title heading={5} style={{marginBottom: 0}}>
+      <Typography.Title heading={6} style={{marginBottom: 0}}>
         <Tag color='blue'>
           {t[`objective.type.${statement.type}`]}
         </Tag>
-        {statement.title}
+        {index+1}. {statement.name}
       </Typography.Title>
       <ProblemContent problem={problem} statement={statement} />
+      {answer && Array.isArray(answer) && answer.length > 0  && (
+        <>
+          <Typography.Paragraph>
+            你的回答
+          </Typography.Paragraph>
+          <Highlight content={answer[1]} language={answer[0]} />
+          <Space split={<Divider type='vertical' />}>
+            <span>测评：{submission.id}</span>
+            <span><SubmissionVerdict verdict={submission.verdict} /></span>
+            <span>得分：{submission.score}</span>
+            <Link onClick={() => setVisible(true)}>查看</Link>
+            <SubmissionDrawer visible={visible} id={submission.id} onCancel={() => setVisible(false)} />
+          </Space>
+        </>
+      )}
     </div>
   );
 }
 
-const ProblemsList = ({ problems, answer }: { problems: any[], answer?: any}) => {
+const ProblemsList = ({ problems, answer, submissions }: { problems: any[], answer?: any, submissions?:any}) => {
   return (
     <List
       dataSource={problems}
@@ -98,9 +116,9 @@ const ProblemsList = ({ problems, answer }: { problems: any[], answer?: any}) =>
         <List.Item key={index} id={`problem-${item.problemId}`}>
           {item.statement && (
             item.statement.type === 'CODE' ? (
-              <RenderProgrammingItem statement={item.statement} answer={answer} index={index} problem={item} />
+              <RenderProgrammingItem statement={item.statement} answer={answer[`problem-${item.problemId}`]} index={index} submission={submissions && submissions[item.problemId]} problem={item} />
             ) : (
-              <RenderObjectiveItem statement={item.statement} answer={answer} index={index} />
+              <RenderObjectiveItem statement={item.statement} answer={answer[`problem-${item.problemId}`]} index={index} />
             )
           )}
         </List.Item>

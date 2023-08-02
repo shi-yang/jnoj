@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "jnoj/api/interface/v1"
+	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,17 +31,19 @@ type Problemset struct {
 }
 
 type ProblemsetAnswer struct {
-	ID              int
-	ProblemsetID    int
-	UserID          int
-	Answer          string
-	AnsweredCount   int        // 回答题目数量
-	UnansweredCount int        // 未回答数量
-	CorrectCount    int        // 正确数量
-	WrongCount      int        // 错误数量
-	SubmittedAt     *time.Time // 提交时间
-	CreatedAt       time.Time  // 创建时间
-	UpdatedAt       time.Time
+	ID                   int
+	ProblemsetID         int
+	UserID               int
+	Answer               string
+	AnsweredProblemIDs   string // 回答题目题目
+	UnansweredProblemIDs string // 未回答题目
+	CorrectProblemIDs    string // 正确题目
+	WrongProblemIDs      string // 错误题目
+	SubmissionIDs        string // 编程题提交ID
+	Submissions          []*Submission
+	SubmittedAt          *time.Time // 提交时间
+	CreatedAt            time.Time  // 创建时间
+	UpdatedAt            time.Time
 }
 
 const (
@@ -100,15 +104,23 @@ type ProblemsetUsecase struct {
 	repo           ProblemsetRepo
 	problemRepo    ProblemRepo
 	submissionRepo SubmissionRepo
+	sandboxClient  sandboxV1.SandboxServiceClient
 	log            *log.Helper
 }
 
 // NewProblemsetUsecase new a Problemset usecase.
-func NewProblemsetUsecase(repo ProblemsetRepo, problemRepo ProblemRepo, submissionRepo SubmissionRepo, logger log.Logger) *ProblemsetUsecase {
+func NewProblemsetUsecase(
+	repo ProblemsetRepo,
+	problemRepo ProblemRepo,
+	submissionRepo SubmissionRepo,
+	sandboxClient sandboxV1.SandboxServiceClient,
+	logger log.Logger,
+) *ProblemsetUsecase {
 	return &ProblemsetUsecase{
 		repo:           repo,
 		problemRepo:    problemRepo,
 		submissionRepo: submissionRepo,
+		sandboxClient:  sandboxClient,
 		log:            log.NewHelper(logger),
 	}
 }
@@ -452,7 +464,21 @@ func (uc *ProblemsetUsecase) ListProblemsetAnswers(ctx context.Context, req *v1.
 }
 
 func (uc *ProblemsetUsecase) GetProblemsetAnswer(ctx context.Context, pid int, answerid int) (*ProblemsetAnswer, error) {
-	return uc.repo.GetProblemsetAnswer(ctx, pid, answerid)
+	answer, err := uc.repo.GetProblemsetAnswer(ctx, pid, answerid)
+	if err != nil {
+		return answer, err
+	}
+	if answer.SubmissionIDs != "" {
+		var submissionsIds []int32
+		for _, v := range strings.Split(answer.SubmissionIDs, ",") {
+			id, _ := strconv.Atoi(v)
+			submissionsIds = append(submissionsIds, int32(id))
+		}
+		answer.Submissions, _ = uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
+			Id: submissionsIds,
+		})
+	}
+	return answer, err
 }
 
 func (uc *ProblemsetUsecase) UpdateProblemsetAnswer(ctx context.Context, id int, answer *ProblemsetAnswer) error {
@@ -482,28 +508,62 @@ func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, 
 	}
 	var answerMap = make(map[string]interface{})
 	json.Unmarshal([]byte(answer.Answer), &answerMap)
-	answer.CorrectCount = 0
-	answer.WrongCount = 0
-	answer.UnansweredCount = 0
+	var (
+		answered      []string
+		correct       []string
+		wrong         []string
+		unanswered    []string
+		submissionIds []string
+	)
 	for _, problem := range problems {
-		if v, ok := answerMap[fmt.Sprintf("problem-%d", problem.ProblemID)]; ok {
-			answer.AnsweredCount++
-			rightAnswer, _ := json.Marshal(v)
-			// 客观题直接比较答案
-			if problem.Type == ProblemTypeObjective {
-				if isAnswerMatched(string(rightAnswer), problem.Statement.Output) {
-					answer.CorrectCount++
-				} else {
-					answer.WrongCount++
-				}
+		v, ok := answerMap[fmt.Sprintf("problem-%d", problem.ProblemID)]
+		if !ok {
+			unanswered = append(unanswered, strconv.Itoa(problem.ProblemID))
+			continue
+		}
+		answered = append(answered, strconv.Itoa(problem.ProblemID))
+		// 客观题直接比较答案
+		if problem.Type == ProblemTypeObjective {
+			userAnswer, _ := json.Marshal(v)
+			if isAnswerMatched(string(userAnswer), problem.Statement.Output) {
+				correct = append(correct, strconv.Itoa(problem.ProblemID))
 			} else {
-				// 编程题提交测评机运行程序
-				// TODO
+				wrong = append(wrong, strconv.Itoa(problem.ProblemID))
 			}
+		} else {
+			// 编程题提交测评机运行程序
+			userAnswer := v.([]interface{})
+			if len(userAnswer) != 2 {
+				continue
+			}
+			submission := &Submission{
+				ProblemID:  problem.ProblemID,
+				UserID:     answer.UserID,
+				EntityType: SubmissionEntityTypeProblemset,
+				EntityID:   answer.ProblemsetID,
+			}
+			submission.Language, _ = strconv.Atoi(userAnswer[0].(string))
+			submission.Source = userAnswer[1].(string)
+			p, err := uc.problemRepo.GetProblem(ctx, problem.ProblemID)
+			if err != nil {
+				continue
+			}
+			p.SubmitCount += 1
+			uc.problemRepo.UpdateProblem(ctx, p)
+			res, err := uc.submissionRepo.CreateSubmission(ctx, submission)
+			if err != nil {
+				continue
+			}
+			uc.sandboxClient.RunSubmission(ctx, &sandboxV1.RunSubmissionRequest{
+				SubmissionId: int64(res.ID),
+			})
+			submissionIds = append(submissionIds, strconv.Itoa(res.ID))
 		}
 	}
-	fmt.Println("answerMap", answerMap)
-	fmt.Println("answer", answer)
-	answer.UnansweredCount = len(problems) - answer.AnsweredCount
+	answer.AnsweredProblemIDs = strings.Join(answered, ",")
+	answer.CorrectProblemIDs = strings.Join(correct, ",")
+	answer.WrongProblemIDs = strings.Join(wrong, ",")
+	answer.UnansweredProblemIDs = strings.Join(unanswered, ",")
+	answer.SubmissionIDs = strings.Join(submissionIds, ",")
 	return nil
 }

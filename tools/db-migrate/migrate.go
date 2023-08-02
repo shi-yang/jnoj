@@ -33,11 +33,12 @@ func MigrateCreateProblemsetAnswer20230801() *gormigrate.Migration {
 				"`problemset_id` INT UNSIGNED NOT NULL," +
 				"`user_id` INT UNSIGNED NOT NULL," +
 				"`answer` TEXT NOT NULL," +
-				"`answered_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
-				"`unanswered_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
-				"`correct_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
-				"`wrong_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
-				"`submited_at` DATETIME NULL DEFAULT NULL," +
+				"`answered_problem_ids` VARCHAR(255) NOT NULL DEFAULT ''," +
+				"`unanswered_problem_ids` VARCHAR(255) NOT NULL DEFAULT ''," +
+				"`correct_problem_ids` VARCHAR(255) NOT NULL DEFAULT ''," +
+				"`wrong_problem_ids` VARCHAR(255) NOT NULL DEFAULT ''," +
+				"`submission_ids` VARCHAR(255) NOT NULL DEFAULT ''," +
+				"`submitted_at` DATETIME NULL DEFAULT NULL," +
 				"`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
 				"`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
 				"PRIMARY KEY (`id`)" +

@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
+import "v1/submission.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -847,12 +848,14 @@ message ProblemsetAnswer {
     int32 problemset_id = 2;
     int32 user_id = 3;
     string answer = 4;
-    int32 answered_count = 5;
-    int32 unanswered_count = 6;
-    int32 correct_count = 7;
-    int32 wrong_count = 8;
-    google.protobuf.Timestamp submitted_at = 9;
-    google.protobuf.Timestamp created_at = 10;
+    string answered_problem_ids = 5;
+    string unanswered_problem_ids = 6;
+    string correct_problem_ids = 7;
+    string wrong_problem_ids = 8;
+    string submission_ids = 9;
+    repeated Submission submissions = 10;
+    google.protobuf.Timestamp submitted_at = 11;
+    google.protobuf.Timestamp created_at = 12;
 }
 
 message ListProblemsetAnswersRequest {

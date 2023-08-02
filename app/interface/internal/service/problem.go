@@ -1068,17 +1068,35 @@ func (s *ProblemService) GetProblemsetAnswer(ctx context.Context, req *v1.GetPro
 		return nil, v1.ErrorNotFound(err.Error())
 	}
 	res := &v1.ProblemsetAnswer{
-		Id:              int32(data.ID),
-		ProblemsetId:    int32(data.ProblemsetID),
-		Answer:          data.Answer,
-		CorrectCount:    int32(data.CorrectCount),
-		AnsweredCount:   int32(data.AnsweredCount),
-		WrongCount:      int32(data.WrongCount),
-		UnansweredCount: int32(data.UnansweredCount),
-		CreatedAt:       timestamppb.New(data.CreatedAt),
+		Id:                   int32(data.ID),
+		ProblemsetId:         int32(data.ProblemsetID),
+		Answer:               data.Answer,
+		CorrectProblemIds:    data.CorrectProblemIDs,
+		AnsweredProblemIds:   data.AnsweredProblemIDs,
+		WrongProblemIds:      data.WrongProblemIDs,
+		UnansweredProblemIds: data.UnansweredProblemIDs,
+		CreatedAt:            timestamppb.New(data.CreatedAt),
 	}
 	if data.SubmittedAt != nil {
 		res.SubmittedAt = timestamppb.New(*data.SubmittedAt)
+	}
+	for _, v := range data.Submissions {
+		res.Submissions = append(res.Submissions, &v1.Submission{
+			Id:            int64(v.ID),
+			ProblemId:     int32(v.ProblemID),
+			ProblemName:   v.ProblemName,
+			ProblemNumber: int32(v.ProblemNumber),
+			UserId:        int32(v.UserID),
+			Nickname:      v.Nickname,
+			Time:          int64(v.Time),
+			Memory:        int64(v.Memory),
+			Language:      int32(v.Language),
+			Verdict:       int32(v.Verdict),
+			Score:         int32(v.Score),
+			EntityId:      int32(v.EntityID),
+			EntityType:    v1.SubmissionEntityType(v.EntityType),
+			CreatedAt:     timestamppb.New(v.CreatedAt),
+		})
 	}
 	return res, nil
 }
@@ -1090,13 +1108,13 @@ func (s *ProblemService) ListProblemsetAnswers(ctx context.Context, req *v1.List
 	resp.Total = int32(count)
 	for _, v := range res {
 		d := &v1.ProblemsetAnswer{
-			Id:              int32(v.ID),
-			ProblemsetId:    int32(v.ProblemsetID),
-			CorrectCount:    int32(v.CorrectCount),
-			AnsweredCount:   int32(v.AnsweredCount),
-			WrongCount:      int32(v.WrongCount),
-			UnansweredCount: int32(v.UnansweredCount),
-			CreatedAt:       timestamppb.New(v.CreatedAt),
+			Id:                   int32(v.ID),
+			ProblemsetId:         int32(v.ProblemsetID),
+			CorrectProblemIds:    v.CorrectProblemIDs,
+			AnsweredProblemIds:   v.AnsweredProblemIDs,
+			WrongProblemIds:      v.WrongProblemIDs,
+			UnansweredProblemIds: v.UnansweredProblemIDs,
+			CreatedAt:            timestamppb.New(v.CreatedAt),
 		}
 		if v.SubmittedAt != nil {
 			d.SubmittedAt = timestamppb.New(*v.SubmittedAt)
@@ -1133,8 +1151,10 @@ func (s *ProblemService) UpdateProblemsetAnswer(ctx context.Context, req *v1.Upd
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	update := &biz.ProblemsetAnswer{
-		ID:     int(req.AnswerId),
-		Answer: req.Answer,
+		ID:           int(req.AnswerId),
+		Answer:       req.Answer,
+		UserID:       answer.UserID,
+		ProblemsetID: answer.ProblemsetID,
 	}
 	if req.Answer == "" {
 		update.Answer = answer.Answer

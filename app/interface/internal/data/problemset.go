@@ -37,17 +37,18 @@ type Problemset struct {
 }
 
 type ProblemsetAnswer struct {
-	ID              int
-	ProblemsetID    int
-	UserID          int
-	Answer          string
-	AnsweredCount   int
-	UnansweredCount int
-	CorrectCount    int
-	WrongCount      int
-	SubmittedAt     *time.Time
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	ID                   int
+	ProblemsetID         int
+	UserID               int
+	Answer               string
+	AnsweredProblemIDs   string // 回答题目题目
+	UnansweredProblemIDs string // 未回答题目
+	CorrectProblemIDs    string // 正确题目
+	WrongProblemIDs      string // 错误题目
+	SubmissionIDs        string // 编程题提交ID
+	SubmittedAt          *time.Time
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 type ProblemsetProblem struct {
@@ -397,16 +398,16 @@ func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.List
 	var res []*biz.ProblemsetAnswer
 	for _, v := range rv {
 		res = append(res, &biz.ProblemsetAnswer{
-			ID:              v.ID,
-			ProblemsetID:    v.ProblemsetID,
-			UserID:          v.UserID,
-			Answer:          v.Answer,
-			AnsweredCount:   v.AnsweredCount,
-			UnansweredCount: v.UnansweredCount,
-			CorrectCount:    v.CorrectCount,
-			WrongCount:      v.WrongCount,
-			SubmittedAt:     v.SubmittedAt,
-			CreatedAt:       v.CreatedAt,
+			ID:                   v.ID,
+			ProblemsetID:         v.ProblemsetID,
+			UserID:               v.UserID,
+			Answer:               v.Answer,
+			AnsweredProblemIDs:   v.AnsweredProblemIDs,
+			UnansweredProblemIDs: v.UnansweredProblemIDs,
+			CorrectProblemIDs:    v.CorrectProblemIDs,
+			WrongProblemIDs:      v.WrongProblemIDs,
+			SubmittedAt:          v.SubmittedAt,
+			CreatedAt:            v.CreatedAt,
 		})
 	}
 	return res, count
@@ -415,28 +416,40 @@ func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.List
 // GetProblemsetAnswer .
 func (r *ProblemsetRepo) GetProblemsetAnswer(ctx context.Context, pid int, answerid int) (*biz.ProblemsetAnswer, error) {
 	var v ProblemsetAnswer
-	err := r.data.db.Model(&ProblemsetAnswer{}).
+	err := r.data.db.WithContext(ctx).Model(&ProblemsetAnswer{}).
 		First(&v, "id = ?", answerid).
 		Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.ProblemsetAnswer{
-		ID:              v.ID,
-		ProblemsetID:    v.ProblemsetID,
-		UserID:          v.UserID,
-		Answer:          v.Answer,
-		AnsweredCount:   v.AnsweredCount,
-		UnansweredCount: v.UnansweredCount,
-		CorrectCount:    v.CorrectCount,
-		WrongCount:      v.WrongCount,
-		SubmittedAt:     v.SubmittedAt,
-		CreatedAt:       v.CreatedAt,
-	}, nil
+	answer := &biz.ProblemsetAnswer{
+		ID:                   v.ID,
+		ProblemsetID:         v.ProblemsetID,
+		UserID:               v.UserID,
+		Answer:               v.Answer,
+		AnsweredProblemIDs:   v.AnsweredProblemIDs,
+		UnansweredProblemIDs: v.UnansweredProblemIDs,
+		CorrectProblemIDs:    v.CorrectProblemIDs,
+		WrongProblemIDs:      v.WrongProblemIDs,
+		SubmissionIDs:        v.SubmissionIDs,
+		SubmittedAt:          v.SubmittedAt,
+		CreatedAt:            v.CreatedAt,
+	}
+	return answer, nil
 }
 
 // UpdateProblemsetAnswer .
 func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, answer *biz.ProblemsetAnswer) error {
+	update := ProblemsetAnswer{
+		ID:                   answer.ID,
+		Answer:               answer.Answer,
+		AnsweredProblemIDs:   answer.AnsweredProblemIDs,
+		UnansweredProblemIDs: answer.UnansweredProblemIDs,
+		CorrectProblemIDs:    answer.CorrectProblemIDs,
+		WrongProblemIDs:      answer.WrongProblemIDs,
+		SubmissionIDs:        answer.SubmissionIDs,
+		SubmittedAt:          answer.SubmittedAt,
+	}
 	return r.data.db.WithContext(ctx).
-		Updates(answer).Error
+		Updates(update).Error
 }

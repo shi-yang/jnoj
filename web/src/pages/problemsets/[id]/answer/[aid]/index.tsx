@@ -4,8 +4,32 @@ import { SettingState, setting } from '@/store/reducers/setting';
 import { useRouter } from 'next/router';
 import { getProblemset, getProblemsetAnswer, listProblemsetProblems } from '@/api/problemset';
 import Head from 'next/head';
-import { Card, Divider, Link, Typography } from '@arco-design/web-react';
+import { Anchor, Button, Card, Divider, Link, Typography } from '@arco-design/web-react';
 import ExamProblemsList from '@/modules/problemsets/ExamProblemList';
+import styles from './styles/index.module.less';
+const AnchorLink = Anchor.Link;
+
+function AnswerSheet({problems, answerState}: {problems:any[], answerState: any}) {
+  return (
+    <div className={styles['answer-sheet-container']}>
+      <div className='container'>
+        <Anchor
+          affix={false}
+          style={{ backgroundColor: 'var(--color-bg-2)', width: '85px' }}
+        >
+          {problems.map((item, index) => (
+            <AnchorLink
+              key={index}
+              href={`#problem-${item.problemId}`}
+              title={<Button status={answerState[item.problemId] && answerState[item.problemId] === 'correct' ? 'success' : 'danger'}>{index + 1}</Button>}
+            />
+          ))}
+        </Anchor>
+      </div>
+    </div>
+  );
+}
+
 function Page() {
   const router = useRouter();
   const { id, aid } = router.query;
@@ -13,6 +37,8 @@ function Page() {
   const settings = useAppSelector<SettingState>(setting);
   const [answer, setAnswer] = useState({});
   const [problems, setProblems] = useState([]);
+  const [answerState, setAnswerState] = useState({});
+  const [submissions, setSubmissions] = useState({});
   useEffect(() => {
     fetchData();
   }, []);
@@ -30,6 +56,29 @@ function Page() {
         if (res.data.answer !== '') {
           setAnswer(JSON.parse(res.data.answer));
         }
+        const state = {};
+        if (res.data.correctProblemIds !== '') {
+          res.data.correctProblemIds.split(',').forEach(item => {
+            state[item] = 'correct';
+          });
+        }
+        if (res.data.wrongProblemIds !== '') {
+          res.data.wrongProblemIds.split(',').forEach(item => {
+            state[item] = 'wrong';
+          });
+        }
+        if (res.data.unansweredProblemIds !== '') {
+          res.data.unansweredProblemIds.split(',').forEach(item => {
+            state[item] = 'unAnswered';
+          });
+        }
+        setAnswerState(state);
+        // 处理提交
+        const subs = {};
+        res.data.submissions.forEach(item => {
+          subs[item.problemId] = item;
+        });
+        setSubmissions(subs);
       });
   }
   return (
@@ -50,7 +99,8 @@ function Page() {
             </div>
             <Divider />
             <Card>
-              <ExamProblemsList problems={problems} answer={answer} />
+              <AnswerSheet problems={problems} answerState={answerState} />
+              <ExamProblemsList problems={problems} answer={answer} submissions={submissions} />
             </Card>
           </div>
         </div>
