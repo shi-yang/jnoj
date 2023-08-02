@@ -35,6 +35,8 @@ type StandingUser struct {
 	Who string
 	// 用户ID
 	UserId int
+	// 用户头像
+	UserAvatar string
 	// 解答
 	Solved int
 	// 是否参与排名。只有正式选手才参与排名
@@ -88,6 +90,7 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 		u := &StandingUser{
 			UserId:       user.UserID,
 			Who:          user.Name,
+			UserAvatar:   user.UserAvatar,
 			IsRank:       user.Role == ContestRoleOfficialPlayer,
 			VirtualStart: user.VirtualStart,
 			VirtualEnd:   user.VirtualEnd,

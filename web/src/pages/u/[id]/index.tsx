@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getUserProfile, getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
 import HeatMap from '@uiw/react-heat-map';
-import { Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import { Avatar, Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, PageHeader, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -164,7 +164,7 @@ export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
   const { id } = router.query;
-  const [user, setUser] = useState({username: '', nickname: '', role: ''});
+  const [user, setUser] = useState({username: '', nickname: '', avatar: '', role: ''});
   const settings = useAppSelector<SettingState>(setting);
   const [calendarOptions, setCalendarOptions] = useState([]);
   const [profile, setProfile] = useState({
@@ -342,22 +342,35 @@ export default function UserPage() {
         <title>{`${user.username} - ${settings.name}`}</title>
       </Head>
       <div className='container'>
-        <div className={styles['header-container']}>
-          <Typography.Title>
-            {user.nickname} <Divider type='vertical' /><small>{user.username}</small>
-          </Typography.Title>
-          {
-            (user.role === 'ADMIN' || user.role === 'OFFICIAL_USER' || user.role === 'SUPER_ADMIN') &&
-            <Tooltip content={t['officialUser']}>
-              <PassValidIcon />
-            </Tooltip>
-          }
-          {
-            user.role === 'VIP_USER' &&
-            <Tooltip content={t['vipUser']}>
-              <VIPIcon />
-            </Tooltip>
-          }
+        <div>
+          <PageHeader
+            title={
+              <div>
+                {user.avatar !== '' && (
+                  <Avatar size={80}>
+                    <img src={user.avatar} alt='avatar' />
+                  </Avatar>
+                )} {user.nickname}
+              </div>
+            }
+            subTitle={user.username}
+            extra={
+              <div>
+                {
+                  (user.role === 'ADMIN' || user.role === 'OFFICIAL_USER' || user.role === 'SUPER_ADMIN') &&
+                  <Tooltip content={t['officialUser']}>
+                    <PassValidIcon />
+                  </Tooltip>
+                }
+                {
+                  user.role === 'VIP_USER' &&
+                  <Tooltip content={t['vipUser']}>
+                    <VIPIcon />
+                  </Tooltip>
+                }
+              </div>
+            }
+          />
         </div>
         <Grid.Row gutter={[24, 12]}>
           <Grid.Col xs={24} md={6}>

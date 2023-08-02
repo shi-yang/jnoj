@@ -3,6 +3,8 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/UpdateUser"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.user.UserService/UpdateUserAvatar"
+  middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/UpdateUserPassword"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/CreateUser"

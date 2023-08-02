@@ -74,6 +74,7 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 	resp := &v1.GetUserInfoResponse{
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,
+		Avatar:   user.Avatar,
 	}
 	// 权限
 	resources := biz.ListRoleResources(role)
@@ -101,19 +102,14 @@ func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.
 		Nickname: res.Nickname,
 		Username: res.Username,
 		Role:     v1.User_UserRole(res.Role),
+		Avatar:   res.Avatar,
 	}, nil
 }
 
 // UpdateUser 修改用户信息
 func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.User, error) {
-	user, err := s.uc.GetUser(ctx, int(req.Id))
-	if err != nil {
-		return nil, err
-	}
 	uid, _ := auth.GetUserID(ctx)
-	if user.ID != uid {
-		return nil, v1.ErrorForbidden("")
-	}
+	user, _ := s.uc.GetUser(ctx, uid)
 	user.Nickname = req.Nickname
 	s.uc.UpdateUser(ctx, user)
 	up := &biz.UserProfile{
@@ -134,6 +130,17 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 		Id:       int32(user.ID),
 		Nickname: user.Nickname,
 	}, nil
+}
+
+// UpdateUserAvatar 修改用户头像
+func (s *UserService) UpdateUserAvatar(ctx context.Context, req *v1.UpdateUserAvatarRequest) (*v1.UpdateUserAvatarResponse, error) {
+	userId, _ := auth.GetUserID(ctx)
+	user, _ := s.uc.GetUser(ctx, userId)
+	u, err := s.uc.UpdateUserAvatar(ctx, user, req)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.UpdateUserAvatarResponse{Url: u.Avatar}, err
 }
 
 // GetUserProfile 获取用户信息

@@ -47,7 +47,14 @@ export default function UserAvatar() {
     <Dropdown droplist={droplist} position='br'>
       <Button type='text'>
         <Avatar size={32} style={{ cursor: 'pointer' }}>
-          <IconUser />
+          {user.avatar !== '' ? (
+            <img
+              alt='avatar'
+              src={user.avatar}
+            />
+          ) : (
+            <IconUser />
+          )}
         </Avatar>
         <span>{ user.nickname }</span>
       </Button>

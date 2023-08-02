@@ -732,6 +732,8 @@ func (m *ContestStandingUser) validate(all bool) error {
 
 	// no validation rules for Who
 
+	// no validation rules for UserAvatar
+
 	// no validation rules for UserId
 
 	// no validation rules for Solved
@@ -2261,6 +2263,8 @@ func (m *ContestUser) validate(all bool) error {
 	// no validation rules for UserId
 
 	// no validation rules for UserNickname
+
+	// no validation rules for UserAvatar
 
 	if all {
 		switch v := interface{}(m.GetVirtualStart()).(type) {

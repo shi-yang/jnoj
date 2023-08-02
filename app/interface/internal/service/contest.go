@@ -164,14 +164,15 @@ func (s *ContestService) GetContestStanding(ctx context.Context, req *v1.GetCont
 	resp := new(v1.GetContestStandingResponse)
 	for _, v := range res {
 		u := &v1.ContestStandingUser{
-			Rank:      int32(v.Rank),
-			Who:       v.Who,
-			UserId:    int32(v.UserId),
-			Solved:    int32(v.Solved),
-			IsRank:    v.IsRank,
-			IsVirtual: v.VirtualStart != nil,
-			Score:     int32(v.Score),
-			MaxScore:  int32(v.MaxScore),
+			Rank:       int32(v.Rank),
+			Who:        v.Who,
+			UserAvatar: v.UserAvatar,
+			UserId:     int32(v.UserId),
+			Solved:     int32(v.Solved),
+			IsRank:     v.IsRank,
+			IsVirtual:  v.VirtualStart != nil,
+			Score:      int32(v.Score),
+			MaxScore:   int32(v.MaxScore),
 		}
 		u.Problem = make(map[int32]*v1.ContestStandingUser_Problem)
 		for k, p := range v.Problem {
@@ -367,6 +368,7 @@ func (s *ContestService) ListContestUsers(ctx context.Context, req *v1.ListConte
 			Id:           int32(v.ID),
 			UserId:       int32(v.UserID),
 			UserNickname: v.UserNickname,
+			UserAvatar:   v.UserAvatar,
 			Name:         v.Name,
 			Role:         v1.ContestUserRole(v.Role),
 			OldRating:    int32(v.OldRating),
@@ -412,6 +414,7 @@ func (s *ContestService) GetContestUser(ctx context.Context, req *v1.GetContestU
 		Name:           contestUser.Name,
 		UserId:         int32(contestUser.UserID),
 		UserNickname:   contestUser.UserNickname,
+		UserAvatar:     contestUser.UserAvatar,
 		SpecialEffects: contestUser.SpecialEffects,
 		Role:           v1.ContestUserRole(contestUser.Role),
 		OldRating:      int32(contestUser.OldRating),

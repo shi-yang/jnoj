@@ -34,6 +34,7 @@ const OperationUserServiceListUserProfileUserBadges = "/jnoj.interface.v1.user.U
 const OperationUserServiceLogin = "/jnoj.interface.v1.user.UserService/Login"
 const OperationUserServiceRegister = "/jnoj.interface.v1.user.UserService/Register"
 const OperationUserServiceUpdateUser = "/jnoj.interface.v1.user.UserService/UpdateUser"
+const OperationUserServiceUpdateUserAvatar = "/jnoj.interface.v1.user.UserService/UpdateUserAvatar"
 const OperationUserServiceUpdateUserPassword = "/jnoj.interface.v1.user.UserService/UpdateUserPassword"
 
 type UserServiceHTTPServer interface {
@@ -48,12 +49,14 @@ type UserServiceHTTPServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
+	UpdateUserAvatar(context.Context, *UpdateUserAvatarRequest) (*UpdateUserAvatarResponse, error)
 	UpdateUserPassword(context.Context, *UpdateUserPasswordRequest) (*emptypb.Empty, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.user.UserService/GetUserInfo", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUser", auth.User())
+	s.Use("/jnoj.interface.v1.user.UserService/UpdateUserAvatar", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUserPassword", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/CreateUser", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/GetUserProfile", auth.Guest())
@@ -64,6 +67,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
+	r.POST("/users/{id}/avatar", _UserService_UpdateUserAvatar0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile", _UserService_GetUserProfile0_HTTP_Handler(srv))
 	r.PUT("/users/{id}/password", _UserService_UpdateUserPassword0_HTTP_Handler(srv))
 	r.GET("/users/{id}/profile_count", _UserService_GetUserProfileCount0_HTTP_Handler(srv))
@@ -188,6 +192,28 @@ func _UserService_UpdateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 			return err
 		}
 		reply := out.(*User)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_UpdateUserAvatar0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateUserAvatarRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceUpdateUserAvatar)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateUserAvatar(ctx, req.(*UpdateUserAvatarRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UpdateUserAvatarResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -336,6 +362,7 @@ type UserServiceHTTPClient interface {
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterResponse, err error)
 	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *User, err error)
+	UpdateUserAvatar(ctx context.Context, req *UpdateUserAvatarRequest, opts ...http.CallOption) (rsp *UpdateUserAvatarResponse, err error)
 	UpdateUserPassword(ctx context.Context, req *UpdateUserPasswordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
@@ -484,6 +511,19 @@ func (c *UserServiceHTTPClientImpl) UpdateUser(ctx context.Context, in *UpdateUs
 	opts = append(opts, http.Operation(OperationUserServiceUpdateUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) UpdateUserAvatar(ctx context.Context, in *UpdateUserAvatarRequest, opts ...http.CallOption) (*UpdateUserAvatarResponse, error) {
+	var out UpdateUserAvatarResponse
+	pattern := "/users/{id}/avatar"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceUpdateUserAvatar))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

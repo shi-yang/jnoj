@@ -16,12 +16,25 @@ func Migrate(db *gorm.DB) {
 		MigrateAddUserProfile20230719(),
 		MigrateAddProblemsetType20230727(),
 		MigrateCreateProblemsetAnswer20230801(),
+		MigrateAddUserAvatar20230802(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddUserAvatar20230802() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddUserAvatar20230802",
+		Migrate: func(d *gorm.DB) error {
+			return d.Exec("ALTER TABLE `user` ADD `avatar` VARCHAR(255) NOT NULL DEFAULT '' AFTER `nickname`;").Error
+		},
+		Rollback: func(d *gorm.DB) error {
+			return d.Exec("ALTER TABLE `user` DROP `avatar`;").Error
+		},
+	}
 }
 
 func MigrateCreateProblemsetAnswer20230801() *gormigrate.Migration {

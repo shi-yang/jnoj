@@ -844,6 +844,8 @@ func (m *GetUserInfoResponse) validate(all bool) error {
 
 	// no validation rules for Username
 
+	// no validation rules for Avatar
+
 	{
 		sorted_keys := make([]string, len(m.GetPermissions()))
 		i := 0
@@ -1000,6 +1002,8 @@ func (m *User) validate(all bool) error {
 	// no validation rules for Realname
 
 	// no validation rules for Role
+
+	// no validation rules for Avatar
 
 	if len(errors) > 0 {
 		return UserMultiError(errors)
@@ -1326,6 +1330,218 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdateUserRequestValidationError{}
+
+// Validate checks the field values on UpdateUserAvatarRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateUserAvatarRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateUserAvatarRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateUserAvatarRequestMultiError, or nil if none found.
+func (m *UpdateUserAvatarRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateUserAvatarRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for AvatarFile
+
+	// no validation rules for AvatarName
+
+	if len(errors) > 0 {
+		return UpdateUserAvatarRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateUserAvatarRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateUserAvatarRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateUserAvatarRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateUserAvatarRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateUserAvatarRequestMultiError) AllErrors() []error { return m }
+
+// UpdateUserAvatarRequestValidationError is the validation error returned by
+// UpdateUserAvatarRequest.Validate if the designated constraints aren't met.
+type UpdateUserAvatarRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateUserAvatarRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateUserAvatarRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateUserAvatarRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateUserAvatarRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateUserAvatarRequestValidationError) ErrorName() string {
+	return "UpdateUserAvatarRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateUserAvatarRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateUserAvatarRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateUserAvatarRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateUserAvatarRequestValidationError{}
+
+// Validate checks the field values on UpdateUserAvatarResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateUserAvatarResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateUserAvatarResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateUserAvatarResponseMultiError, or nil if none found.
+func (m *UpdateUserAvatarResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateUserAvatarResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Url
+
+	if len(errors) > 0 {
+		return UpdateUserAvatarResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateUserAvatarResponseMultiError is an error wrapping multiple validation
+// errors returned by UpdateUserAvatarResponse.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateUserAvatarResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateUserAvatarResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateUserAvatarResponseMultiError) AllErrors() []error { return m }
+
+// UpdateUserAvatarResponseValidationError is the validation error returned by
+// UpdateUserAvatarResponse.Validate if the designated constraints aren't met.
+type UpdateUserAvatarResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateUserAvatarResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateUserAvatarResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateUserAvatarResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateUserAvatarResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateUserAvatarResponseValidationError) ErrorName() string {
+	return "UpdateUserAvatarResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateUserAvatarResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateUserAvatarResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateUserAvatarResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateUserAvatarResponseValidationError{}
 
 // Validate checks the field values on UpdateUserPasswordRequest with the rules
 // defined in the proto definition for this message. If any rules are

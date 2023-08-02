@@ -38,6 +38,7 @@ func (s *GroupService) ListGroups(ctx context.Context, req *v1.ListGroupsRequest
 			MemberCount:  int32(v.MemberCount),
 			UserId:       int32(v.UserID),
 			UserNickname: v.UserNickname,
+			UserAvatar:   v.UserAvatar,
 		})
 	}
 	return resp, nil
@@ -140,12 +141,13 @@ func (s *GroupService) ListGroupUsers(ctx context.Context, req *v1.ListGroupUser
 	resp.Total = count
 	for _, v := range data {
 		u := &v1.GroupUser{
-			Id:        int32(v.ID),
-			GroupId:   int32(v.GroupID),
-			UserId:    int32(v.UserID),
-			Nickname:  v.Nickname,
-			CreatedAt: timestamppb.New(v.CreatedAt),
-			Role:      v1.GroupUserRole(v.Role),
+			Id:         int32(v.ID),
+			GroupId:    int32(v.GroupID),
+			UserId:     int32(v.UserID),
+			Nickname:   v.Nickname,
+			UserAvatar: v.UserAvatar,
+			CreatedAt:  timestamppb.New(v.CreatedAt),
+			Role:       v1.GroupUserRole(v.Role),
 		}
 		resp.Data = append(resp.Data, u)
 	}

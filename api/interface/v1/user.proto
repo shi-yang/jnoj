@@ -50,6 +50,13 @@ service UserService {
             body: "*"
         };
     };
+    // 修改用户头像
+    rpc UpdateUserAvatar (UpdateUserAvatarRequest) returns (UpdateUserAvatarResponse) {
+        option (google.api.http) = {
+            post: "/users/{id}/avatar"
+            body: "*"
+        };
+    };
     // 获取用户信息
     rpc GetUserProfile (GetUserProfileRequest) returns (UserProfile) {
         option (google.api.http) = {
@@ -142,7 +149,8 @@ message GetUserInfoResponse {
     int32 id = 1;
     string nickname = 2;
     string username = 3;
-    map<string, google.protobuf.ListValue> permissions = 4;
+    string avatar = 4;
+    map<string, google.protobuf.ListValue> permissions = 5;
 }
 
 message User {
@@ -158,6 +166,7 @@ message User {
     string username = 3;
     string realname = 4;
     UserRole role = 5;
+    string avatar = 6;
 }
 
 message GetUserRequest {
@@ -174,6 +183,16 @@ message UpdateUserRequest {
     google.protobuf.Timestamp birthday = 7;
     string company = 8;
     string job = 9;
+}
+
+message UpdateUserAvatarRequest {
+    int32 id = 1;
+    string avatar_file = 2;
+    string avatar_name = 3;
+}
+
+message UpdateUserAvatarResponse {
+    string url = 1;
 }
 
 message UpdateUserPasswordRequest {

@@ -24,6 +24,7 @@ type Group struct {
 	Role           int // 当前登录用户的角色
 	UserID         int
 	UserNickname   string
+	UserAvatar     string
 	CreatedAt      time.Time
 	Team           *Group
 }
@@ -35,12 +36,13 @@ const (
 
 // GroupUser .
 type GroupUser struct {
-	ID        int
-	GroupID   int
-	UserID    int
-	Role      int
-	Nickname  string
-	CreatedAt time.Time
+	ID         int
+	GroupID    int
+	UserID     int
+	Role       int
+	Nickname   string
+	UserAvatar string
+	CreatedAt  time.Time
 }
 
 const (

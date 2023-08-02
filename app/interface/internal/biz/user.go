@@ -23,6 +23,7 @@ type User struct {
 	ID          int
 	Username    string
 	Nickname    string
+	Avatar      string
 	Email       string
 	Phone       string
 	Password    string
@@ -69,6 +70,7 @@ type UserRepo interface {
 	FindByID(context.Context, int) (*User, error)
 	GetUserProfile(context.Context, int) (*UserProfile, error)
 	UpdateUserProfile(context.Context, *UserProfile) (*UserProfile, error)
+	UpdateUserAvatar(context.Context, *User, *v1.UpdateUserAvatarRequest) (*User, error)
 	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
 	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
@@ -219,6 +221,10 @@ func (uc *UserUsecase) UpdateUserPassowrd(ctx context.Context, u *User, oldPassw
 	}
 	password, _ := password.GeneratePasswordHash(newPassword)
 	return uc.repo.UpdateUser(ctx, &User{ID: u.ID, Password: password})
+}
+
+func (uc *UserUsecase) UpdateUserAvatar(ctx context.Context, user *User, req *v1.UpdateUserAvatarRequest) (*User, error) {
+	return uc.repo.UpdateUserAvatar(ctx, user, req)
 }
 
 func (uc *UserUsecase) GetUserProfile(ctx context.Context, id int) (*UserProfile, error) {

@@ -74,6 +74,8 @@ func (m *Group) validate(all bool) error {
 
 	// no validation rules for UserNickname
 
+	// no validation rules for UserAvatar
+
 	// no validation rules for Role
 
 	// no validation rules for Type
@@ -935,6 +937,8 @@ func (m *GroupUser) validate(all bool) error {
 	// no validation rules for Id
 
 	// no validation rules for Nickname
+
+	// no validation rules for UserAvatar
 
 	// no validation rules for UserId
 

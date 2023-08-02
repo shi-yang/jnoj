@@ -34,7 +34,7 @@ type ContestUser struct {
 func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestUsersRequest) ([]*biz.ContestUser, int64) {
 	count := int64(0)
 	db := r.data.db.WithContext(ctx).
-		Select("c.id, c.user_id, c.name, c.role, c.virtual_start, c.virtual_end, c.old_rating, c.new_rating, c.rated_at, user.nickname").
+		Select("c.id, c.user_id, c.name, c.role, c.virtual_start, c.virtual_end, c.old_rating, c.new_rating, c.rated_at, user.nickname, user.avatar").
 		Table("contest_user as c").
 		Joins("LEFT JOIN user on user.id = c.user_id").
 		Where("c.contest_id = ?", req.ContestId)
@@ -73,7 +73,7 @@ func (r *contestRepo) ListContestUsers(ctx context.Context, req *v1.ListContestU
 		var virtualEnd sql.NullTime
 		var ratedAt sql.NullTime
 		rows.Scan(&v.ID, &v.UserID, &v.Name, &v.Role, &virtualStart,
-			&virtualEnd, &v.OldRating, &v.NewRating, &ratedAt, &v.UserNickname)
+			&virtualEnd, &v.OldRating, &v.NewRating, &ratedAt, &v.UserNickname, &v.UserAvatar)
 		v.RatingChanged = v.NewRating - v.OldRating
 		if virtualStart.Valid {
 			v.VirtualStart = &virtualStart.Time
@@ -102,7 +102,7 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 		Model(&ContestUser{}).
 		Where("contest_id = ? and user_id = ?", cid, uid).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname")
+			return db.Select("id, nickname, avatar")
 		}).
 		First(&res).
 		Error
@@ -118,6 +118,7 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 		VirtualStart:   res.VirtualStart,
 		VirtualEnd:     res.VirtualEnd,
 		UserNickname:   res.User.Nickname,
+		UserAvatar:     res.User.Avatar,
 		OldRating:      res.OldRating,
 		NewRating:      res.NewRating,
 		SpecialEffects: res.SpecialEffects,

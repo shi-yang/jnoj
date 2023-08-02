@@ -86,10 +86,11 @@ message Group {
     string invitation_code = 7;
     int32 user_id = 8;
     string user_nickname = 9;
-    GroupUserRole role = 10;
-    GroupType type = 11;
-    Group team = 12;
-    google.protobuf.Timestamp created_at = 13;
+    string user_avatar = 10;
+    GroupUserRole role = 11;
+    GroupType type = 12;
+    Group team = 13;
+    google.protobuf.Timestamp created_at = 14;
 }
 
 message ListGroupsRequest {
@@ -141,10 +142,11 @@ enum GroupUserRole {
 message GroupUser {
     int32 id = 1;
     string nickname = 2;
-    int32 user_id = 3;
-    int32 group_id = 4;
-    GroupUserRole role = 5;
-    google.protobuf.Timestamp created_at = 6;
+    string user_avatar = 3;
+    int32 user_id = 4;
+    int32 group_id = 5;
+    GroupUserRole role = 6;
+    google.protobuf.Timestamp created_at = 7;
 }
 
 message ListGroupUsersRequest {

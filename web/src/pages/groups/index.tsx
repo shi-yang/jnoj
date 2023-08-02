@@ -154,7 +154,13 @@ export default function Index() {
                       avatar={
                         <Space>
                           <Avatar size={24} style={{ backgroundColor: '#3370ff' }}>
-                            <IconUser />
+                            {
+                              item.userAvatar !== '' ? (
+                                <img alt='avatar' src={item.userAvatar} />
+                              ) : (
+                                <IconUser />
+                              )
+                            }
                           </Avatar>
                           <Typography.Text>{item.userNickname}</Typography.Text>
                         </Space>

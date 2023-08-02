@@ -234,13 +234,14 @@ message ContestStandingUser {
     }
     int32 rank = 1;
     string who = 2;
-    int32 user_id = 3;
-    int32 solved = 4;
-    bool is_rank = 5;
-    bool is_virtual = 6;
-    int32 score = 7;
-    int32 max_score = 8;
-    map<int32, Problem> problem = 9;
+    string user_avatar = 3;
+    int32 user_id = 4;
+    int32 solved = 5;
+    bool is_rank = 6;
+    bool is_virtual = 7;
+    int32 score = 8;
+    int32 max_score = 9;
+    map<int32, Problem> problem = 10;
 }
 
 message GetContestStandingResponse {
@@ -377,11 +378,12 @@ message ContestUser {
     string name = 2;
     int32 user_id = 3;
     string user_nickname = 4;
-    google.protobuf.Timestamp virtual_start = 5;
-    int32 old_rating = 6;
-    int32 new_rating = 7;
-    ContestUserRole role = 8;
-    string special_effects = 9;
+    string user_avatar = 5;
+    google.protobuf.Timestamp virtual_start = 6;
+    int32 old_rating = 7;
+    int32 new_rating = 8;
+    ContestUserRole role = 9;
+    string special_effects = 10;
 }
 
 message ListContestUsersRequest {

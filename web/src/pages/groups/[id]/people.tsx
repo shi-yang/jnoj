@@ -1,6 +1,6 @@
 import { createGroupUser, deleteGroupUser, getGroupUser, listGroupUsers, updateGroupUser } from '@/api/group';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
+import { Avatar, Button, Card, Form, Input, Link, Message, Modal, PaginationProps, Popconfirm, Radio, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
 import { IconCloseCircle, IconDelete, IconEdit, IconPlus, IconShareInternal } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
@@ -46,7 +46,15 @@ function People() {
       title: t['people.column.nickname'],
       dataIndex: 'nickname',
       align: 'center' as 'center',
-      render: (col, record) => <Link href={`/u/${record.userId}`}>{col}</Link>
+      render: (col, record) => (
+        <Link href={`/u/${record.userId}`}>
+          {record.userAvatar !== '' && (
+            <Avatar size={18}>
+              <img src={record.userAvatar} alt='user avatar' />
+            </Avatar>
+          )} {col}
+        </Link>
+      )
     },
     {
       title: t['people.column.role'],

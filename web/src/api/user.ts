@@ -68,3 +68,7 @@ export function getUserProfileCount(id: number) {
 export function listUserProfileUserBadges(id: number) {
   return axios.get(`/users/${id}/profile_user_badges`);
 }
+
+export function updateUserAvatar(id, data) {
+  return axios.post(`/users/${id}/avatar`, data);
+}

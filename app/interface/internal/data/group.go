@@ -66,7 +66,7 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 	db := r.data.db.WithContext(ctx).
 		Model(&Group{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname")
+			return db.Select("id, nickname, avatar")
 		})
 	if req.Name != "" {
 		db.Where("name like ?", fmt.Sprintf("%%%s%%", req.Name))
@@ -103,6 +103,7 @@ func (r *groupRepo) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (
 		}
 		if v.User != nil {
 			g.UserNickname = v.User.Nickname
+			g.UserAvatar = v.User.Avatar
 		}
 		rv = append(rv, g)
 	}
@@ -242,7 +243,7 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 	count := int64(0)
 	r.data.db.WithContext(ctx).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname")
+			return db.Select("id, nickname, avatar")
 		}).
 		Where("group_id = ?", req.Id).
 		Order("role, id").
@@ -251,12 +252,13 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 	rv := make([]*biz.GroupUser, 0)
 	for _, v := range res {
 		u := &biz.GroupUser{
-			ID:        v.ID,
-			Nickname:  v.Nickname,
-			UserID:    v.UserID,
-			GroupID:   v.GroupID,
-			Role:      v.Role,
-			CreatedAt: v.CreatedAt,
+			ID:         v.ID,
+			Nickname:   v.Nickname,
+			UserAvatar: v.User.Avatar,
+			UserID:     v.UserID,
+			GroupID:    v.GroupID,
+			Role:       v.Role,
+			CreatedAt:  v.CreatedAt,
 		}
 		if u.Nickname == "" {
 			u.Nickname = v.User.Nickname

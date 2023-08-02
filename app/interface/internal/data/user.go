@@ -1,14 +1,20 @@
 package data
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"net/url"
+	"path"
+	"strconv"
+	"strings"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	objectstorage "jnoj/pkg/object_storage"
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -34,6 +40,7 @@ type User struct {
 	ID        int
 	Username  string
 	Nickname  string
+	Avatar    string
 	Password  string
 	Email     string
 	Phone     string
@@ -78,6 +85,9 @@ type UserUserBadge struct {
 // 用户勋章储存路径 %d 勋章ID， %s 名称
 const userBadgeFilePath = "/user/badge/%d/%s"
 
+// 用户头像储存路径 %d 用户ID，%s 上传文件名
+const userAvatarFilePath = "/user/avatar/%d/%s"
+
 func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	res := User{}
 	err := r.data.db.WithContext(ctx).
@@ -95,6 +105,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 		ID:       res.ID,
 		Username: res.Username,
 		Nickname: res.Nickname,
+		Avatar:   res.Avatar,
 		Email:    res.Email,
 		Phone:    res.Phone,
 		Role:     res.Role,
@@ -142,6 +153,46 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	return u, err
 }
 
+func (r *userRepo) UpdateUserAvatar(ctx context.Context, u *biz.User, req *v1.UpdateUserAvatarRequest) (*biz.User, error) {
+	store := objectstorage.NewSeaweed()
+	// 解析 base64 文件
+	decodedBytes, err := base64.StdEncoding.DecodeString(req.AvatarFile)
+	if err != nil {
+		return nil, err
+	}
+	// 限制2M
+	if len(decodedBytes) > 2*1024*1024 {
+		return nil, errors.New("图片过大")
+	}
+	// 删除旧头像
+	if u.Avatar != "" {
+		baseUrl, _ := url.JoinPath(
+			r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+			r.data.conf.ObjectStorage.PublicBucket.Bucket,
+		)
+		storeName := strings.Replace(u.Avatar, baseUrl, "", 1)
+		store.DeleteObject(r.data.conf.ObjectStorage.PublicBucket, storeName)
+	}
+
+	// 上传新头像
+	fileUnixName := strconv.FormatInt(time.Now().UnixNano(), 10)
+	storeName := fmt.Sprintf(userAvatarFilePath, u.ID, fileUnixName+path.Ext(req.AvatarName))
+	err = store.PutObject(r.data.conf.ObjectStorage.PublicBucket, storeName, bytes.NewReader(decodedBytes))
+	if err != nil {
+		return u, err
+	}
+	u.Avatar, _ = url.JoinPath(
+		r.data.conf.ObjectStorage.PublicBucket.Endpoint,
+		r.data.conf.ObjectStorage.PublicBucket.Bucket,
+		storeName,
+	)
+	err = r.data.db.WithContext(ctx).
+		Model(u).
+		UpdateColumn("avatar", u.Avatar).
+		Error
+	return u, err
+}
+
 func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 	var o User
 	err := r.data.db.WithContext(ctx).
@@ -154,6 +205,7 @@ func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
 		ID:       o.ID,
 		Username: o.Username,
 		Nickname: o.Nickname,
+		Avatar:   o.Avatar,
 		Role:     o.Role,
 		Status:   o.Status,
 		Password: o.Password,

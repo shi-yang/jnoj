@@ -1,6 +1,6 @@
 import { listContestProblems, listContestSubmissions, getContestStanding } from '@/api/contest';
 import useLocale from '@/utils/useLocale';
-import { Divider, Link, List, Modal, PaginationProps, Space, Switch, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
+import { Avatar, Divider, Link, List, Modal, PaginationProps, Space, Switch, Table, TableColumnProps, Tooltip, Typography } from '@arco-design/web-react';
 import { IconCheck, IconCheckCircle, IconClockCircle, IconClose, IconCloseCircle, IconQuestionCircle } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
@@ -57,7 +57,13 @@ const basicColumn = (t: any):TableColumnProps[] => [
     render: (_, record) => (
       <>
         <Link href={`/u/${record.userId}`} target='_blank'>
-          {record.who}
+          {
+            record.userAvatar !== '' && (
+              <Avatar size={18}>
+                <img src={record.userAvatar} alt='user avatar' />
+              </Avatar>
+            )
+          } {record.who}
         </Link>
         {record.isVirtual && <sup>虚拟</sup>}
       </>
