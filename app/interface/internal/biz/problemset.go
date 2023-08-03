@@ -263,7 +263,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 		choiceArr := make([]string, 0)
 		// 处理选项
 		for i := 0; choiceIndex > 0; i++ {
-			if choiceIndex&1 == 1 && row[i] != "" {
+			if choiceIndex&1 == 1 && len(row) > i && row[i] != "" {
 				choiceArr = append(choiceArr, row[i])
 			}
 			choiceIndex >>= 1
@@ -315,7 +315,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 				}
 				answers = append(answers, row[columnMap[ColumnAnswer]])
 			}
-			choices, _ = json.Marshal(make([]string, len(answers), len(answers)))
+			choices, _ = json.Marshal(make([]string, len(answers)))
 		} else {
 			// 其它情况尚未支持
 			failedReason = append(failedReason, fmt.Sprintf("第%d行，添加失败，尚未支持的题目类型", index+2))
@@ -336,7 +336,10 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 			name = re.ReplaceAllString(name, "________")
 		}
 		// 处理解析
-		note := row[columnMap[ColumnAnswerDetail]]
+		note := ""
+		if columnMap[ColumnAnswerDetail] < len(row) {
+			note = row[columnMap[ColumnAnswerDetail]]
+		}
 		statement := &ProblemStatement{
 			Name:   name,
 			Legend: row[columnMap[ColumnContent]],

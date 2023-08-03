@@ -116,9 +116,9 @@ const ProblemsList = ({ problems, answer, submissions }: { problems: any[], answ
         <List.Item key={index} id={`problem-${item.problemId}`}>
           {item.statement && (
             item.statement.type === 'CODE' ? (
-              <RenderProgrammingItem statement={item.statement} answer={answer[`problem-${item.problemId}`]} index={index} submission={submissions && submissions[item.problemId]} problem={item} />
+              <RenderProgrammingItem statement={item.statement} answer={answer && answer[`problem-${item.problemId}`]} index={index} submission={submissions && submissions[item.problemId]} problem={item} />
             ) : (
-              <RenderObjectiveItem statement={item.statement} answer={answer[`problem-${item.problemId}`]} index={index} />
+              <RenderObjectiveItem statement={item.statement} answer={answer && answer[`problem-${item.problemId}`]} index={index} />
             )
           )}
         </List.Item>
