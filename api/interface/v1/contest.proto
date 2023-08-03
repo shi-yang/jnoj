@@ -56,7 +56,7 @@ service ContestService {
         };
     };
     // 创建比赛题目
-    rpc CreateContestProblem (CreateContestProblemRequest) returns (ContestProblem) {
+    rpc CreateContestProblem (CreateContestProblemRequest) returns (CreateContestProblemResponse) {
         option (google.api.http) = {
             post: "/contests/{id}/problems"
             body: "*"
@@ -365,7 +365,16 @@ message ContestProblem {// 题目类型：标准输入输出、函数题
 
 message CreateContestProblemRequest {
     int32 id = 1;
-    int32 problem_id = 2;
+    repeated int32 problem_ids = 2;
+}
+
+message CreateContestProblemResponse {
+    message Problem {
+        int32 problem_id = 1;
+        string reason = 2;
+    }
+    repeated Problem success = 1;
+    repeated Problem failed = 2;
 }
 
 message DeleteContestProblemRequest {

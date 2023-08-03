@@ -2044,8 +2044,6 @@ func (m *CreateContestProblemRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for ProblemId
-
 	if len(errors) > 0 {
 		return CreateContestProblemRequestMultiError(errors)
 	}
@@ -2126,6 +2124,177 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateContestProblemRequestValidationError{}
+
+// Validate checks the field values on CreateContestProblemResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateContestProblemResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateContestProblemResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateContestProblemResponseMultiError, or nil if none found.
+func (m *CreateContestProblemResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateContestProblemResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetSuccess() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CreateContestProblemResponseValidationError{
+						field:  fmt.Sprintf("Success[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CreateContestProblemResponseValidationError{
+						field:  fmt.Sprintf("Success[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CreateContestProblemResponseValidationError{
+					field:  fmt.Sprintf("Success[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetFailed() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CreateContestProblemResponseValidationError{
+						field:  fmt.Sprintf("Failed[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CreateContestProblemResponseValidationError{
+						field:  fmt.Sprintf("Failed[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CreateContestProblemResponseValidationError{
+					field:  fmt.Sprintf("Failed[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return CreateContestProblemResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateContestProblemResponseMultiError is an error wrapping multiple
+// validation errors returned by CreateContestProblemResponse.ValidateAll() if
+// the designated constraints aren't met.
+type CreateContestProblemResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateContestProblemResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateContestProblemResponseMultiError) AllErrors() []error { return m }
+
+// CreateContestProblemResponseValidationError is the validation error returned
+// by CreateContestProblemResponse.Validate if the designated constraints
+// aren't met.
+type CreateContestProblemResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateContestProblemResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateContestProblemResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateContestProblemResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateContestProblemResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateContestProblemResponseValidationError) ErrorName() string {
+	return "CreateContestProblemResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateContestProblemResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateContestProblemResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateContestProblemResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateContestProblemResponseValidationError{}
 
 // Validate checks the field values on DeleteContestProblemRequest with the
 // rules defined in the proto definition for this message. If any rules are
@@ -5541,6 +5710,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ContestProblem_SampleTestValidationError{}
+
+// Validate checks the field values on CreateContestProblemResponse_Problem
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *CreateContestProblemResponse_Problem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateContestProblemResponse_Problem
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// CreateContestProblemResponse_ProblemMultiError, or nil if none found.
+func (m *CreateContestProblemResponse_Problem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateContestProblemResponse_Problem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProblemId
+
+	// no validation rules for Reason
+
+	if len(errors) > 0 {
+		return CreateContestProblemResponse_ProblemMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateContestProblemResponse_ProblemMultiError is an error wrapping multiple
+// validation errors returned by
+// CreateContestProblemResponse_Problem.ValidateAll() if the designated
+// constraints aren't met.
+type CreateContestProblemResponse_ProblemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateContestProblemResponse_ProblemMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateContestProblemResponse_ProblemMultiError) AllErrors() []error { return m }
+
+// CreateContestProblemResponse_ProblemValidationError is the validation error
+// returned by CreateContestProblemResponse_Problem.Validate if the designated
+// constraints aren't met.
+type CreateContestProblemResponse_ProblemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateContestProblemResponse_ProblemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateContestProblemResponse_ProblemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateContestProblemResponse_ProblemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateContestProblemResponse_ProblemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateContestProblemResponse_ProblemValidationError) ErrorName() string {
+	return "CreateContestProblemResponse_ProblemValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateContestProblemResponse_ProblemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateContestProblemResponse_Problem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateContestProblemResponse_ProblemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateContestProblemResponse_ProblemValidationError{}
 
 // Validate checks the field values on
 // BatchCreateContestUsersRequest_ContestUser with the rules defined in the

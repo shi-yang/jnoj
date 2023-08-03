@@ -3,7 +3,6 @@ package biz
 import (
 	"context"
 	"errors"
-	v1 "jnoj/api/interface/v1"
 	"jnoj/internal/middleware/auth"
 	"time"
 )
@@ -84,11 +83,11 @@ func (uc *ContestUsecase) CreateContestProblem(ctx context.Context, c *ContestPr
 		return nil, errors.New("problem not found")
 	}
 	if !problem.HasPermission(ctx, ProblemPermissionView) {
-		return nil, v1.ErrorPermissionDenied("problem permission denied")
+		return nil, errors.New("problem permission denied")
 	}
 	verification, err := uc.problemRepo.GetProblemVerification(ctx, c.ProblemID)
 	if err != nil || verification.VerificationStatus != VerificationStatusSuccess {
-		return nil, v1.ErrorProblemNotVerification("problem not verification")
+		return nil, errors.New("problem not verification")
 	}
 	// 检查题目是否已经在比赛里
 	_, err = uc.repo.GetContestProblemByProblemID(ctx, c.ContestID, c.ProblemID)

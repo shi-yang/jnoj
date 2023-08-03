@@ -268,7 +268,7 @@ func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetConte
 }
 
 // CreateContestProblem 创建比赛题目
-func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.CreateContestProblemRequest) (*v1.ContestProblem, error) {
+func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.CreateContestProblemRequest) (*v1.CreateContestProblemResponse, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.Id))
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
@@ -276,16 +276,24 @@ func (s *ContestService) CreateContestProblem(ctx context.Context, req *v1.Creat
 	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	problem, err := s.uc.CreateContestProblem(ctx, &biz.ContestProblem{
-		ProblemID: int(req.ProblemId),
-		ContestID: int(req.Id),
-	})
-	if err != nil {
-		return nil, err
+	resp := new(v1.CreateContestProblemResponse)
+	for _, problemId := range req.ProblemIds {
+		_, err := s.uc.CreateContestProblem(ctx, &biz.ContestProblem{
+			ProblemID: int(problemId),
+			ContestID: int(req.Id),
+		})
+		if err != nil {
+			resp.Failed = append(resp.Failed, &v1.CreateContestProblemResponse_Problem{
+				ProblemId: int32(problemId),
+				Reason:    err.Error(),
+			})
+		} else {
+			resp.Success = append(resp.Success, &v1.CreateContestProblemResponse_Problem{
+				ProblemId: int32(problemId),
+			})
+		}
 	}
-	return &v1.ContestProblem{
-		Id: int32(problem.ID),
-	}, nil
+	return resp, nil
 }
 
 // DeleteContestProblem 删除比赛题目

@@ -1,15 +1,15 @@
 import { createContestProblem, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
 import Editor from '@/components/MarkdownEditor';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select } from '@arco-design/web-react';
+import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select, Divider } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
-import dayjs from 'dayjs';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
 import locale from '../locale';
 const { RangePicker } = DatePicker;
 import styles from '../style/setting.module.less';
 import PermissionWrapper from '@/components/PermissionWrapper';
+import ProblemModalList from '@/modules/problem/problem-modal-list';
 
 const AddProblem = ({contestId, callback}: {contestId: number, callback: () => void}) => {
   const t = useLocale(locale);
@@ -19,11 +19,43 @@ const AddProblem = ({contestId, callback}: {contestId: number, callback: () => v
   function onOk() {
     form.validate().then((values) => {
       const data = {
-        problemId: values.problemId,
+        problemIds: values.problemIds,
       };
       setConfirmLoading(true);
       createContestProblem(contestId, data)
         .then(res => {
+          if (res.data.failed.length === 0) {
+            Message.success({
+              content: (
+                <div>
+                  已经成功添加：{res.data.success.length}
+                </div>
+              )
+            });
+          } else {
+            Message.error({
+              closable: true,
+              duration: 0,
+              content: (
+                <div>
+                  <p>成功添加：{res.data.success.length}</p>
+                  <p>以下题目添加失败：</p>
+                  <List
+                    dataSource={res.data.failed}
+                    render={(item, index) => (
+                      <List.Item>
+                        <Space split={<Divider type='vertical' />}>
+                          {item.problemId}
+                          {item.reason}
+                        </Space>
+                      </List.Item>
+                    )}
+                  >
+                  </List>
+                </div>
+              )
+            });
+          }
           setVisible(false);
           callback();
         })
@@ -32,6 +64,7 @@ const AddProblem = ({contestId, callback}: {contestId: number, callback: () => v
         })
         .finally(() => {
           setConfirmLoading(false);
+          form.resetFields();
         });
     });
   }
@@ -44,12 +77,17 @@ const AddProblem = ({contestId, callback}: {contestId: number, callback: () => v
         title={t['setting.info.addProblem']}
         visible={visible}
         onOk={onOk}
+        style={{width: 1100}}
         confirmLoading={confirmLoading}
         onCancel={() => setVisible(false)}
       >
+        <ProblemModalList onChange={(v) => {
+          form.setFieldValue('problemIds', v);
+        }} />
+        <Divider />
         <Form form={form}>
-          <Form.Item label='题目ID' required field='problemId' rules={[{ required: true }]}>
-            <Input placeholder='' />
+          <Form.Item label='题目ID' required field='problemIds' rules={[{ required: true }]}>
+            <Select mode='multiple' allowClear allowCreate></Select>
           </Form.Item>
         </Form>
       </Modal>

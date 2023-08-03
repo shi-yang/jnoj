@@ -51,7 +51,7 @@ type ContestServiceHTTPServer interface {
 	BatchCreateContestUsers(context.Context, *BatchCreateContestUsersRequest) (*BatchCreateContestUsersResponse, error)
 	CalculateContestRating(context.Context, *CalculateContestRatingRequest) (*emptypb.Empty, error)
 	CreateContest(context.Context, *CreateContestRequest) (*Contest, error)
-	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*ContestProblem, error)
+	CreateContestProblem(context.Context, *CreateContestProblemRequest) (*CreateContestProblemResponse, error)
 	CreateContestUser(context.Context, *CreateContestUserRequest) (*ContestUser, error)
 	DeleteContestProblem(context.Context, *DeleteContestProblemRequest) (*emptypb.Empty, error)
 	DeleteContestUser(context.Context, *DeleteContestUserRequest) (*emptypb.Empty, error)
@@ -287,7 +287,7 @@ func _ContestService_CreateContestProblem0_HTTP_Handler(srv ContestServiceHTTPSe
 		if err != nil {
 			return err
 		}
-		reply := out.(*ContestProblem)
+		reply := out.(*CreateContestProblemResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -626,7 +626,7 @@ type ContestServiceHTTPClient interface {
 	BatchCreateContestUsers(ctx context.Context, req *BatchCreateContestUsersRequest, opts ...http.CallOption) (rsp *BatchCreateContestUsersResponse, err error)
 	CalculateContestRating(ctx context.Context, req *CalculateContestRatingRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	CreateContest(ctx context.Context, req *CreateContestRequest, opts ...http.CallOption) (rsp *Contest, err error)
-	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *ContestProblem, err error)
+	CreateContestProblem(ctx context.Context, req *CreateContestProblemRequest, opts ...http.CallOption) (rsp *CreateContestProblemResponse, err error)
 	CreateContestUser(ctx context.Context, req *CreateContestUserRequest, opts ...http.CallOption) (rsp *ContestUser, err error)
 	DeleteContestProblem(ctx context.Context, req *DeleteContestProblemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteContestUser(ctx context.Context, req *DeleteContestUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -695,8 +695,8 @@ func (c *ContestServiceHTTPClientImpl) CreateContest(ctx context.Context, in *Cr
 	return &out, err
 }
 
-func (c *ContestServiceHTTPClientImpl) CreateContestProblem(ctx context.Context, in *CreateContestProblemRequest, opts ...http.CallOption) (*ContestProblem, error) {
-	var out ContestProblem
+func (c *ContestServiceHTTPClientImpl) CreateContestProblem(ctx context.Context, in *CreateContestProblemRequest, opts ...http.CallOption) (*CreateContestProblemResponse, error) {
+	var out CreateContestProblemResponse
 	pattern := "/contests/{id}/problems"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationContestServiceCreateContestProblem))
