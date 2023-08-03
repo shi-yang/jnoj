@@ -29,6 +29,34 @@ type Group struct {
 	Team           *Group
 }
 
+// HasPermission 是否有权限
+// 查看权限，规则要求：
+// 1、公开情况下，比赛结束
+// 2、管理员
+// 3、比赛不是私有
+// 4、参赛用户
+func (g *Group) HasPermission(ctx context.Context, t int) bool {
+	userID, role := auth.GetUserID(ctx)
+	// update
+	// 满足以下条件，可以有小组的任何权限
+	// 1. 创建人
+	// 2. 角色是管理员，角色可能继承自小组管理
+	// 3. 后台分配的特定角色用户
+	if g.UserID == userID || g.Role == GroupUserRoleAdmin || CheckAccess(role, ResourceGroup) {
+		return true
+	}
+	// view
+	if t == GroupPermissionView {
+		return g.Role != GroupUserRoleGuest || g.Privacy == GroupPrivatePublic
+	}
+	return false
+}
+
+const (
+	GroupPermissionView   = iota // 查看权限
+	GroupPermissionUpdate        // 修改权限
+)
+
 const (
 	GroupTypeGroup = iota
 	GroupTypeTeam

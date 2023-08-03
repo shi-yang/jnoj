@@ -213,6 +213,13 @@ func (uc *ContestUsecase) CreateContest(ctx context.Context, c *Contest) (*Conte
 	c.Type = ContestTypeICPC
 	if c.GroupId != 0 {
 		c.Membership = ContestMembershipGroupUser
+		group, err := uc.groupRepo.GetGroup(ctx, c.GroupId)
+		if err != nil {
+			return nil, v1.ErrorBadRequest(err.Error())
+		}
+		if !group.HasPermission(ctx, GroupPermissionUpdate) {
+			return nil, v1.ErrorForbidden("group has no permission to update")
+		}
 	}
 	return uc.repo.CreateContest(ctx, c)
 }
