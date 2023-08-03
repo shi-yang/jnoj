@@ -206,6 +206,7 @@ func (c *ContestStandingIOI) Sort(contest *Contest, users []*ContestUser, proble
 		u := &StandingUser{
 			UserId:       user.UserID,
 			Who:          user.Name,
+			UserAvatar:   user.UserAvatar,
 			IsRank:       user.Role == ContestRoleOfficialPlayer,
 			VirtualStart: user.VirtualStart,
 		}
@@ -318,6 +319,7 @@ func (c *ContestStandingOI) Sort(contest *Contest, users []*ContestUser, problem
 		u := &StandingUser{
 			UserId:       user.UserID,
 			Who:          user.Name,
+			UserAvatar:   user.UserAvatar,
 			IsRank:       user.Role == ContestRoleOfficialPlayer,
 			VirtualStart: user.VirtualStart,
 		}
