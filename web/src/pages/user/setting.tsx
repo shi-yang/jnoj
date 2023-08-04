@@ -52,6 +52,7 @@ function UserAvatarUpload() {
         customRequest={uploadFile}
         fileList={file ? [file] : []}
         showUploadList={false}
+        accept='image/*'
         onChange={(_, currentFile) => {
           setFile({
             ...currentFile,
