@@ -4708,6 +4708,8 @@ func (m *Problemset) validate(all bool) error {
 
 	// no validation rules for ProblemCount
 
+	// no validation rules for MemberCount
+
 	// no validation rules for Role
 
 	for idx, item := range m.GetProblems() {

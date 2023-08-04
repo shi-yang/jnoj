@@ -32,6 +32,7 @@ type Problemset struct {
 	Membership         int    // 加入资格
 	InvitationCode     string // 邀请码
 	ProblemCount       int
+	MemberCount        int
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 	DeletedAt          gorm.DeletedAt
@@ -108,6 +109,7 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 			Description:  v.Description,
 			CreatedAt:    v.CreatedAt,
 			ProblemCount: v.ProblemCount,
+			MemberCount:  v.MemberCount,
 			UserID:       v.UserID,
 			Membership:   v.Membership,
 			User: &biz.User{
@@ -137,6 +139,7 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 		Type:           res.Type,
 		Description:    res.Description,
 		ProblemCount:   res.ProblemCount,
+		MemberCount:    res.MemberCount,
 		Membership:     res.Membership,
 		InvitationCode: res.InvitationCode,
 		CreatedAt:      res.CreatedAt,
@@ -270,12 +273,14 @@ func (r *ProblemsetRepo) CreateProblemsetUser(ctx context.Context, u *biz.Proble
 		Create(&create).Error
 	u.ID = create.ID
 	r.UpdateProblemsetUserAccepted(ctx, u.ProblemsetID, u.UserID)
+	r.UpdateProblemsetMemberCount(ctx, u.ProblemsetID)
 	return u, err
 }
 
 // DeleteProblemsetUser 删除题单用户
 func (r *ProblemsetRepo) DeleteProblemsetUser(ctx context.Context, sid int, uid int) error {
 	err := r.data.db.WithContext(ctx).Delete(&ProblemsetUser{}, "problemset_id = ? and user_id = ?", sid, uid).Error
+	r.UpdateProblemsetMemberCount(ctx, sid)
 	return err
 }
 
@@ -297,6 +302,18 @@ func (r *ProblemsetRepo) UpdateProblemsetUserAccepted(ctx context.Context, sid i
 		Model(&ProblemsetUser{}).
 		Where("problemset_id = ? and user_id = ?", sid, uid).
 		UpdateColumn("accepted_count", count)
+}
+
+// UpdateProblemsetMemberCount 更新题单用户数
+func (r *ProblemsetRepo) UpdateProblemsetMemberCount(ctx context.Context, sid int) {
+	countQuery := r.data.db.WithContext(ctx).
+		Select("COUNT(*)").
+		Model(&ProblemsetUser{}).
+		Where("problemset_id = ?", sid)
+	r.data.db.WithContext(ctx).
+		Model(&Problemset{}).
+		Where("id = ?", sid).
+		UpdateColumn("member_count", countQuery)
 }
 
 func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) ([]*biz.ProblemsetProblem, int64) {

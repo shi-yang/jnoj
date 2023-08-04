@@ -682,10 +682,11 @@ message Problemset {
     ProblemsetMembership membership = 6;
     string invitation_code = 7;
     int32 problem_count = 8;
-    ProblemsetRole role = 9;
-    repeated ProblemsetProblem problems = 10;
-    google.protobuf.Timestamp created_at = 11;
-    google.protobuf.Timestamp updated_at = 12;
+    int32 member_count = 9;
+    ProblemsetRole role = 10;
+    repeated ProblemsetProblem problems = 11;
+    google.protobuf.Timestamp created_at = 12;
+    google.protobuf.Timestamp updated_at = 13;
 }
 
 message ListProblemsetsRequest {

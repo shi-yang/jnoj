@@ -789,6 +789,7 @@ func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProble
 			Type:         v1.ProblemsetType(v.Type),
 			Description:  v.Description,
 			ProblemCount: int32(v.ProblemCount),
+			MemberCount:  int32(v.MemberCount),
 			Membership:   v1.ProblemsetMembership(v.Membership),
 			User: &v1.Problemset_User{
 				Id:       int32(v.User.ID),
@@ -813,6 +814,7 @@ func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemse
 		Type:           v1.ProblemsetType(res.Type),
 		Description:    res.Description,
 		ProblemCount:   int32(res.ProblemCount),
+		MemberCount:    int32(res.MemberCount),
 		CreatedAt:      timestamppb.New(res.CreatedAt),
 		Membership:     v1.ProblemsetMembership(res.Membership),
 		InvitationCode: res.InvitationCode,

@@ -29,6 +29,7 @@ type Problemset struct {
 	Membership     int    // 加入资格
 	InvitationCode string // 邀请码
 	ProblemCount   int
+	MemberCount    int
 	User           *User
 	CreatedAt      time.Time
 }

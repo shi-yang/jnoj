@@ -58,14 +58,39 @@ func MigrateAddProblemsetPermission20230803() *gormigrate.Migration {
 					Scan(&count)
 				d.Exec("INSERT INTO `problemset_user` (`problemset_id`, `user_id`, `accepted_count`) VALUES (?, ?, ?)", entityId, userId, count)
 			}
+			err = d.Exec("ALTER TABLE `problemset` ADD `member_count` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `problem_count`;").Error
+			if err != nil {
+				return err
+			}
+			// 修正刚刚添加的 member_count 字段
+			type Problemset struct {
+				ID          int
+				MemberCount int
+			}
+			var sets []Problemset
+			d.Find(&sets)
+			for _, set := range sets {
+				countQuery := d.Select("COUNT(*)").
+					Table("problemset_user").
+					Where("problemset_id = ?", set.ID)
+				d.Model(&Problemset{}).Where("id = ?", set.ID).Update("member_count", countQuery)
+			}
 			err = d.Exec("ALTER TABLE `problemset` ADD `membership` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `description`;").Error
 			if err != nil {
 				return err
 			}
-			return d.Exec("ALTER TABLE `problemset` ADD `invitation_code` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' AFTER `membership`;").Error
+			err = d.Exec("ALTER TABLE `problemset` ADD `invitation_code` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' AFTER `membership`;").Error
+			if err != nil {
+				return err
+			}
+			return nil
 		},
 		Rollback: func(d *gorm.DB) error {
-			err := d.Exec("DROP TABLE `problemset_answer").Error
+			err := d.Exec("DROP TABLE `problemset_user`").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `problemset` DROP `member_count`;").Error
 			if err != nil {
 				return err
 			}

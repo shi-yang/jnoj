@@ -7,6 +7,7 @@ import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import locale from './locale';
 import styles from './style/all.module.less';
+import { IconUser } from '@arco-design/web-react/icon';
 
 export default function All() {
   const t = useLocale(locale);
@@ -94,13 +95,19 @@ export default function All() {
           <Grid.Row gutter={24} className={styles['card-content']}>
             {problemsets.map((item, index) => (
               <Grid.Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6} key={index}>
-                <Link className={styles['card-block']} href={`/problemsets/${item.id}`}>
+                <Link hoverable={false} className={styles['card-block']} href={`/problemsets/${item.id}`}>
                   <Card
                     bordered={true}
+                    hoverable
                     size='small'
                     title={
                       item.name
                     }
+                    actions={[
+                      <span key={index} className='icon-hover'>
+                        <IconUser /> {item.memberCount}
+                      </span>,
+                    ]}
                     extra={<Tag>{t[`all.problemset.type.${item.type}`]}</Tag>}
                   >
                     <div className={styles.content}>
@@ -108,11 +115,15 @@ export default function All() {
                         {item.description}
                       </Typography.Paragraph>
                     </div>
-                    <Descriptions
-                      size="small"
-                      data={[
-                        { label: '题目数量', value: item.problemCount  },
-                      ]}
+                    <Card.Meta
+                      avatar={
+                        <Descriptions
+                          size="small"
+                          data={[
+                            { label: '题目数量', value: item.problemCount  },
+                          ]}
+                        />
+                      }
                     />
                   </Card>
                 </Link>
