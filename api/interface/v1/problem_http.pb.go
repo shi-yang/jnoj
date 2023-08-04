@@ -33,12 +33,14 @@ const OperationProblemServiceCreateProblemStatement = "/jnoj.interface.v1.Proble
 const OperationProblemServiceCreateProblemTest = "/jnoj.interface.v1.ProblemService/CreateProblemTest"
 const OperationProblemServiceCreateProblemset = "/jnoj.interface.v1.ProblemService/CreateProblemset"
 const OperationProblemServiceCreateProblemsetAnswer = "/jnoj.interface.v1.ProblemService/CreateProblemsetAnswer"
+const OperationProblemServiceCreateProblemsetUser = "/jnoj.interface.v1.ProblemService/CreateProblemsetUser"
 const OperationProblemServiceDeleteProblemFile = "/jnoj.interface.v1.ProblemService/DeleteProblemFile"
 const OperationProblemServiceDeleteProblemFromProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset"
 const OperationProblemServiceDeleteProblemLanguage = "/jnoj.interface.v1.ProblemService/DeleteProblemLanguage"
 const OperationProblemServiceDeleteProblemStatement = "/jnoj.interface.v1.ProblemService/DeleteProblemStatement"
 const OperationProblemServiceDeleteProblemTest = "/jnoj.interface.v1.ProblemService/DeleteProblemTest"
 const OperationProblemServiceDeleteProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemset"
+const OperationProblemServiceDeleteProblemsetUser = "/jnoj.interface.v1.ProblemService/DeleteProblemsetUser"
 const OperationProblemServiceDownloadProblems = "/jnoj.interface.v1.ProblemService/DownloadProblems"
 const OperationProblemServiceGetProblem = "/jnoj.interface.v1.ProblemService/GetProblem"
 const OperationProblemServiceGetProblemFile = "/jnoj.interface.v1.ProblemService/GetProblemFile"
@@ -58,6 +60,7 @@ const OperationProblemServiceListProblemTests = "/jnoj.interface.v1.ProblemServi
 const OperationProblemServiceListProblems = "/jnoj.interface.v1.ProblemService/ListProblems"
 const OperationProblemServiceListProblemsetAnswers = "/jnoj.interface.v1.ProblemService/ListProblemsetAnswers"
 const OperationProblemServiceListProblemsetProblems = "/jnoj.interface.v1.ProblemService/ListProblemsetProblems"
+const OperationProblemServiceListProblemsetUsers = "/jnoj.interface.v1.ProblemService/ListProblemsetUsers"
 const OperationProblemServiceListProblemsets = "/jnoj.interface.v1.ProblemService/ListProblemsets"
 const OperationProblemServicePackProblem = "/jnoj.interface.v1.ProblemService/PackProblem"
 const OperationProblemServiceRunProblemFile = "/jnoj.interface.v1.ProblemService/RunProblemFile"
@@ -84,12 +87,14 @@ type ProblemServiceHTTPServer interface {
 	CreateProblemTest(context.Context, *CreateProblemTestRequest) (*ProblemTest, error)
 	CreateProblemset(context.Context, *CreateProblemsetRequest) (*Problemset, error)
 	CreateProblemsetAnswer(context.Context, *CreateProblemsetAnswerRequest) (*ProblemsetAnswer, error)
+	CreateProblemsetUser(context.Context, *CreateProblemsetUserRequest) (*ProblemsetUser, error)
 	DeleteProblemFile(context.Context, *DeleteProblemFileRequest) (*emptypb.Empty, error)
 	DeleteProblemFromProblemset(context.Context, *DeleteProblemFromProblemsetRequest) (*emptypb.Empty, error)
 	DeleteProblemLanguage(context.Context, *DeleteProblemLanguageRequest) (*emptypb.Empty, error)
 	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*emptypb.Empty, error)
 	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*emptypb.Empty, error)
 	DeleteProblemset(context.Context, *DeleteProblemsetRequest) (*emptypb.Empty, error)
+	DeleteProblemsetUser(context.Context, *DeleteProblemsetUserRequest) (*emptypb.Empty, error)
 	DownloadProblems(context.Context, *DownloadProblemsRequest) (*DownloadProblemsResponse, error)
 	GetProblem(context.Context, *GetProblemRequest) (*Problem, error)
 	GetProblemFile(context.Context, *GetProblemFileRequest) (*ProblemFile, error)
@@ -109,6 +114,7 @@ type ProblemServiceHTTPServer interface {
 	ListProblems(context.Context, *ListProblemsRequest) (*ListProblemsResponse, error)
 	ListProblemsetAnswers(context.Context, *ListProblemsetAnswersRequest) (*ListProblemsetAnswersResponse, error)
 	ListProblemsetProblems(context.Context, *ListProblemsetProblemsRequest) (*ListProblemsetProblemsResponse, error)
+	ListProblemsetUsers(context.Context, *ListProblemsetUsersRequest) (*ListProblemsetUsersResponse, error)
 	ListProblemsets(context.Context, *ListProblemsetsRequest) (*ListProblemsetsResponse, error)
 	PackProblem(context.Context, *PackProblemRequest) (*emptypb.Empty, error)
 	RunProblemFile(context.Context, *RunProblemFileRequest) (*emptypb.Empty, error)
@@ -146,6 +152,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/VerifyProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/PackProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/RunProblemFile", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/GetProblemset", auth.Guest())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetRequest", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemset", auth.User())
@@ -155,6 +162,9 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/SortProblemsetProblems", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetProblems", auth.Guest())
+	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetUsers", auth.Guest())
+	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemsetUser", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetUser", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/GetProblemsetAnswer", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetAnswers", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemsetAnswer", auth.User())
@@ -196,6 +206,9 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.POST("/problemsets", _ProblemService_CreateProblemset0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}", _ProblemService_DeleteProblemset0_HTTP_Handler(srv))
 	r.PUT("/problemsets/{id}", _ProblemService_UpdateProblemset0_HTTP_Handler(srv))
+	r.GET("/problemsets/{id}/users", _ProblemService_ListProblemsetUsers0_HTTP_Handler(srv))
+	r.POST("/problemsets/{id}/users", _ProblemService_CreateProblemsetUser0_HTTP_Handler(srv))
+	r.DELETE("/problemsets/{id}/users/{user_id}", _ProblemService_DeleteProblemsetUser0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems", _ProblemService_ListProblemsetProblems0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems/{pid}", _ProblemService_GetProblemsetProblem0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems/{pid}/lateral", _ProblemService_GetProblemsetLateralProblem0_HTTP_Handler(srv))
@@ -991,6 +1004,72 @@ func _ProblemService_UpdateProblemset0_HTTP_Handler(srv ProblemServiceHTTPServer
 	}
 }
 
+func _ProblemService_ListProblemsetUsers0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListProblemsetUsersRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceListProblemsetUsers)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListProblemsetUsers(ctx, req.(*ListProblemsetUsersRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListProblemsetUsersResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_CreateProblemsetUser0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateProblemsetUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceCreateProblemsetUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateProblemsetUser(ctx, req.(*CreateProblemsetUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ProblemsetUser)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_DeleteProblemsetUser0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteProblemsetUserRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceDeleteProblemsetUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteProblemsetUser(ctx, req.(*DeleteProblemsetUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_ListProblemsetProblems0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListProblemsetProblemsRequest
@@ -1285,12 +1364,14 @@ type ProblemServiceHTTPClient interface {
 	CreateProblemTest(ctx context.Context, req *CreateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	CreateProblemset(ctx context.Context, req *CreateProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
 	CreateProblemsetAnswer(ctx context.Context, req *CreateProblemsetAnswerRequest, opts ...http.CallOption) (rsp *ProblemsetAnswer, err error)
+	CreateProblemsetUser(ctx context.Context, req *CreateProblemsetUserRequest, opts ...http.CallOption) (rsp *ProblemsetUser, err error)
 	DeleteProblemFile(ctx context.Context, req *DeleteProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemFromProblemset(ctx context.Context, req *DeleteProblemFromProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemLanguage(ctx context.Context, req *DeleteProblemLanguageRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemset(ctx context.Context, req *DeleteProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteProblemsetUser(ctx context.Context, req *DeleteProblemsetUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DownloadProblems(ctx context.Context, req *DownloadProblemsRequest, opts ...http.CallOption) (rsp *DownloadProblemsResponse, err error)
 	GetProblem(ctx context.Context, req *GetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	GetProblemFile(ctx context.Context, req *GetProblemFileRequest, opts ...http.CallOption) (rsp *ProblemFile, err error)
@@ -1310,6 +1391,7 @@ type ProblemServiceHTTPClient interface {
 	ListProblems(ctx context.Context, req *ListProblemsRequest, opts ...http.CallOption) (rsp *ListProblemsResponse, err error)
 	ListProblemsetAnswers(ctx context.Context, req *ListProblemsetAnswersRequest, opts ...http.CallOption) (rsp *ListProblemsetAnswersResponse, err error)
 	ListProblemsetProblems(ctx context.Context, req *ListProblemsetProblemsRequest, opts ...http.CallOption) (rsp *ListProblemsetProblemsResponse, err error)
+	ListProblemsetUsers(ctx context.Context, req *ListProblemsetUsersRequest, opts ...http.CallOption) (rsp *ListProblemsetUsersResponse, err error)
 	ListProblemsets(ctx context.Context, req *ListProblemsetsRequest, opts ...http.CallOption) (rsp *ListProblemsetsResponse, err error)
 	PackProblem(ctx context.Context, req *PackProblemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	RunProblemFile(ctx context.Context, req *RunProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -1464,6 +1546,19 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemsetAnswer(ctx context.Contex
 	return &out, err
 }
 
+func (c *ProblemServiceHTTPClientImpl) CreateProblemsetUser(ctx context.Context, in *CreateProblemsetUserRequest, opts ...http.CallOption) (*ProblemsetUser, error) {
+	var out ProblemsetUser
+	pattern := "/problemsets/{id}/users"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceCreateProblemsetUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *ProblemServiceHTTPClientImpl) DeleteProblemFile(ctx context.Context, in *DeleteProblemFileRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/problems/{id}/files/{sid}"
@@ -1534,6 +1629,19 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemset(ctx context.Context, in 
 	pattern := "/problemsets/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemset))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) DeleteProblemsetUser(ctx context.Context, in *DeleteProblemsetUserRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problemsets/{id}/users/{user_id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemsetUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
@@ -1781,6 +1889,19 @@ func (c *ProblemServiceHTTPClientImpl) ListProblemsetProblems(ctx context.Contex
 	pattern := "/problemsets/{id}/problems"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceListProblemsetProblems))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) ListProblemsetUsers(ctx context.Context, in *ListProblemsetUsersRequest, opts ...http.CallOption) (*ListProblemsetUsersResponse, error) {
+	var out ListProblemsetUsersResponse
+	pattern := "/problemsets/{id}/users"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceListProblemsetUsers))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

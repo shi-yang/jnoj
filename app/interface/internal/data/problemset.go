@@ -10,6 +10,7 @@ import (
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
+	"jnoj/internal/middleware/auth"
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -28,12 +29,23 @@ type Problemset struct {
 	Type               int
 	Description        string
 	UserID             int
+	Membership         int    // 加入资格
+	InvitationCode     string // 邀请码
 	ProblemCount       int
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 	DeletedAt          gorm.DeletedAt
 	ProblemsetProblems []*ProblemsetProblem `gorm:"ForeignKey:ProblemsetID"`
 	User               *User                `gorm:"ForeighKey:UserID"`
+}
+
+type ProblemsetUser struct {
+	ID            int
+	ProblemsetID  int
+	UserID        int
+	AcceptedCount int // 过题量
+	CreatedAt     time.Time
+	User          *User `json:"user" gorm:"foreignKey:UserID"`
 }
 
 type ProblemsetAnswer struct {
@@ -97,6 +109,7 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 			CreatedAt:    v.CreatedAt,
 			ProblemCount: v.ProblemCount,
 			UserID:       v.UserID,
+			Membership:   v.Membership,
 			User: &biz.User{
 				ID:       v.User.ID,
 				Nickname: v.User.Nickname,
@@ -112,26 +125,41 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 	var res Problemset
 	err := r.data.db.Model(Problemset{}).
 		Preload("User", func(t *gorm.DB) *gorm.DB {
-			return t.Select("ID", "Nickname", "Username")
+			return t.Select("ID", "Nickname", "Username", "Avatar")
 		}).
 		First(&res, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
-	return &biz.Problemset{
-		ID:           res.ID,
-		Name:         res.Name,
-		Type:         res.Type,
-		Description:  res.Description,
-		ProblemCount: res.ProblemCount,
-		CreatedAt:    res.CreatedAt,
-		UserID:       res.UserID,
+	set := &biz.Problemset{
+		ID:             res.ID,
+		Name:           res.Name,
+		Type:           res.Type,
+		Description:    res.Description,
+		ProblemCount:   res.ProblemCount,
+		Membership:     res.Membership,
+		InvitationCode: res.InvitationCode,
+		CreatedAt:      res.CreatedAt,
+		UserID:         res.UserID,
 		User: &biz.User{
 			ID:       res.User.ID,
 			Nickname: res.User.Nickname,
 			Username: res.User.Username,
+			Avatar:   res.User.Avatar,
 		},
-	}, err
+	}
+	// 查询登录用户的角色
+	set.Role = biz.ProblemsetRoleGuest
+	if uid, role := auth.GetUserID(ctx); uid != 0 {
+		problemsetUser := r.GetProblemsetUser(ctx, res.ID, uid)
+		if problemsetUser != nil {
+			set.Role = biz.ProblemsetRolePlayer
+		}
+		if uid == res.UserID || biz.CheckAccess(role, biz.ResourceProblem) {
+			set.Role = biz.ProblemsetRoleAdmin
+		}
+	}
+	return set, err
 }
 
 // CreateProblemset .
@@ -155,8 +183,10 @@ func (r *ProblemsetRepo) UpdateProblemset(ctx context.Context, b *biz.Problemset
 	err := r.data.db.WithContext(ctx).
 		Model(&Problemset{ID: b.ID}).
 		Updates(map[string]interface{}{
-			"name":        b.Name,
-			"description": b.Description,
+			"name":            b.Name,
+			"description":     b.Description,
+			"membership":      b.Membership,
+			"invitation_code": b.InvitationCode,
 		}).Error
 	return &biz.Problemset{ID: b.ID}, err
 }
@@ -179,6 +209,94 @@ func (r *ProblemsetRepo) DeleteProblemset(ctx context.Context, id int) error {
 	}
 	tx.Commit()
 	return nil
+}
+
+// ListProblemsetUsers 获取题单的用户
+func (r *ProblemsetRepo) ListProblemsetUsers(ctx context.Context, req *v1.ListProblemsetUsersRequest) ([]*biz.ProblemsetUser, int64) {
+	res := []ProblemsetUser{}
+	count := int64(0)
+	page := pagination.NewPagination(req.Page, req.PerPage)
+	db := r.data.db.WithContext(ctx).
+		Model(&ProblemsetUser{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname, avatar")
+		})
+	db.Where("problemset_id = ?", req.Id)
+	db.Count(&count)
+	db.Offset(page.GetOffset()).
+		Limit(page.GetPageSize()).
+		Find(&res)
+	rv := make([]*biz.ProblemsetUser, 0)
+	for _, v := range res {
+		g := &biz.ProblemsetUser{
+			ID:            v.ID,
+			UserID:        v.UserID,
+			UserNickname:  v.User.Nickname,
+			UserAvatar:    v.User.Avatar,
+			AcceptedCount: v.AcceptedCount,
+			CreatedAt:     v.CreatedAt,
+		}
+		rv = append(rv, g)
+	}
+	return rv, count
+}
+
+// GetProblemsetUser 查询题单用户信息
+func (r *ProblemsetRepo) GetProblemsetUser(ctx context.Context, sid int, uid int) *biz.ProblemsetUser {
+	var res ProblemsetUser
+	err := r.data.db.WithContext(ctx).
+		Model(&ProblemsetUser{}).
+		Where("problemset_id = ? and user_id = ?", sid, uid).
+		First(&res).
+		Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil
+	}
+	return &biz.ProblemsetUser{
+		ID:            res.ID,
+		UserID:        res.UserID,
+		AcceptedCount: res.AcceptedCount,
+		CreatedAt:     res.CreatedAt,
+	}
+}
+
+// CreateProblemsetUser 添加用户到题单
+func (r *ProblemsetRepo) CreateProblemsetUser(ctx context.Context, u *biz.ProblemsetUser) (*biz.ProblemsetUser, error) {
+	var create = ProblemsetUser{
+		ProblemsetID: u.ProblemsetID,
+		UserID:       u.UserID,
+	}
+	err := r.data.db.WithContext(ctx).
+		Create(&create).Error
+	u.ID = create.ID
+	r.UpdateProblemsetUserAccepted(ctx, u.ProblemsetID, u.UserID)
+	return u, err
+}
+
+// DeleteProblemsetUser 删除题单用户
+func (r *ProblemsetRepo) DeleteProblemsetUser(ctx context.Context, sid int, uid int) error {
+	err := r.data.db.WithContext(ctx).Delete(&ProblemsetUser{}, "problemset_id = ? and user_id = ?", sid, uid).Error
+	return err
+}
+
+// UpdateProblemsetUserAccepted 更新用户本题单过提数
+func (r *ProblemsetRepo) UpdateProblemsetUserAccepted(ctx context.Context, sid int, uid int) {
+	var count int
+	problemIds := r.data.db.WithContext(ctx).
+		Select("problem_id").
+		Model(&ProblemsetProblem{}).
+		Where("problemset_id = ?", sid)
+	r.data.db.WithContext(ctx).
+		Model(&Submission{}).
+		Select("COUNT(DISTINCT problem_id) AS accepted_count").
+		Where("user_id = ?", uid).
+		Where("verdict = ?", biz.SubmissionVerdictAccepted).
+		Where("problem_id in (?)", problemIds).
+		Scan(&count)
+	r.data.db.WithContext(ctx).
+		Model(&ProblemsetUser{}).
+		Where("problemset_id = ? and user_id = ?", sid, uid).
+		UpdateColumn("accepted_count", count)
 }
 
 func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) ([]*biz.ProblemsetProblem, int64) {

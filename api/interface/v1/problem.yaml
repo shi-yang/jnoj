@@ -42,6 +42,8 @@ rules:
 - selector: "/jnoj.interface.v1.ProblemService/RunProblemFile"
   middleware: "jnoj/internal/middleware/auth.User()"
 # 题单
+- selector: "/jnoj.interface.v1.ProblemService/GetProblemset"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector: "/jnoj.interface.v1.ProblemService/CreateProblemset"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/DeleteProblemsetRequest"
@@ -60,6 +62,13 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemsetProblems"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+
+- selector: "/jnoj.interface.v1.ProblemService/ListProblemsetUsers"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.ProblemService/CreateProblemsetUser"
+  middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.ProblemService/DeleteProblemsetUser"
+  middleware: "jnoj/internal/middleware/auth.User()"
 
 - selector: "/jnoj.interface.v1.ProblemService/GetProblemsetAnswer"
   middleware: "jnoj/internal/middleware/auth.User()"

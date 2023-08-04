@@ -244,6 +244,25 @@ service ProblemService {
             body: "*"
         };
     }
+    // 获取题单的用户
+    rpc ListProblemsetUsers (ListProblemsetUsersRequest) returns (ListProblemsetUsersResponse) {
+        option (google.api.http) = {
+            get: "/problemsets/{id}/users"
+        };
+    }
+    // 添加用户到题单
+    rpc CreateProblemsetUser (CreateProblemsetUserRequest) returns (ProblemsetUser) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/users"
+            body: "*"
+        };
+    }
+    // 删除题单用户
+    rpc DeleteProblemsetUser (DeleteProblemsetUserRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/problemsets/{id}/users/{user_id}"
+        };
+    }
     // 获取题单的题目
     rpc ListProblemsetProblems (ListProblemsetProblemsRequest) returns (ListProblemsetProblemsResponse) {
         option (google.api.http) = {
@@ -638,6 +657,17 @@ enum ProblemsetType {
     EXAM = 1;
 }
 
+enum ProblemsetMembership {
+    ALLOW_ANYONE = 0;
+    INVITATION_CODE = 1;
+}
+
+enum ProblemsetRole {
+    GUEST = 0;
+    PLAYER = 1;
+    ADMIN = 2;
+}
+
 message Problemset {
     message User {
         int32 id = 1;
@@ -649,10 +679,13 @@ message Problemset {
     ProblemsetType type = 3;
     User user = 4;
     string description = 5;
-    int32 problem_count = 6;
-    repeated ProblemsetProblem problems = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    ProblemsetMembership membership = 6;
+    string invitation_code = 7;
+    int32 problem_count = 8;
+    ProblemsetRole role = 9;
+    repeated ProblemsetProblem problems = 10;
+    google.protobuf.Timestamp created_at = 11;
+    google.protobuf.Timestamp updated_at = 12;
 }
 
 message ListProblemsetsRequest {
@@ -685,6 +718,39 @@ message UpdateProblemsetRequest {
     int32 id = 1;
     string name = 2;
     string description = 3;
+    ProblemsetMembership membership = 4;
+    string invitation_code = 5;
+}
+
+message ProblemsetUser {
+    int32 id = 1;
+    int32 user_id = 2;
+    string user_nickname = 3;
+    string user_avatar = 4;
+    int32 accepted_count = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message ListProblemsetUsersRequest {
+    int32 id = 1;
+    int32 page = 2;
+    int32 per_page = 3;
+}
+
+message ListProblemsetUsersResponse {
+    repeated ProblemsetUser data = 1;
+    int32 total = 2;
+}
+
+message CreateProblemsetUserRequest {
+    int32 id = 1;
+    string username = 2;
+    string invitation_code = 3;
+}
+
+message DeleteProblemsetUserRequest {
+    int32 id = 1;
+    int32 user_id = 2;
 }
 
 message ListProblemsetProblemsRequest {

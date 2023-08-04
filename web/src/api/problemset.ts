@@ -82,3 +82,18 @@ export function getProblemsetAnswer(id, answerId) {
 export function updateProblemsetAnswer(id, answerId, data) {
   return axios.put(`/problemsets/${id}/answers/${answerId}`, data);
 }
+
+// 获取题单用户列表
+export function listProblemsetUsers(id, params) {
+  return axios.get(`/problemsets/${id}/users`, {params});
+}
+
+// 创建题单用户
+export function createProblemsetUser(id, data) {
+  return axios.post(`/problemsets/${id}/users`, data);
+}
+
+// 删除题单用户
+export function deleteProblemsetUser(id, userId) {
+  return axios.delete(`/problemsets/${id}/users/${userId}`);
+}

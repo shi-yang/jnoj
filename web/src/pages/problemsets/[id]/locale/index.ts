@@ -21,6 +21,7 @@ const i18n = {
     'objective.type.CHOICE': 'Multiple Choice Question',
     'objective.type.MULTIPLE': 'Multiple Response Question',
     'objective.type.FILLBLANK': 'Fill-in-the-Blank Question',
+    'invitationCode': 'Invitation Code',
   },
   'zh-CN': {
     'page.title': '题目列表',
@@ -44,6 +45,7 @@ const i18n = {
     'objective.type.CHOICE': '单选题',
     'objective.type.MULTIPLE': '多选题',
     'objective.type.FILLBLANK': '填空题',
+    'invitationCode': '邀请码',
   },
 };
 

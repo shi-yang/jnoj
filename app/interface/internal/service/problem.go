@@ -789,6 +789,7 @@ func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProble
 			Type:         v1.ProblemsetType(v.Type),
 			Description:  v.Description,
 			ProblemCount: int32(v.ProblemCount),
+			Membership:   v1.ProblemsetMembership(v.Membership),
 			User: &v1.Problemset_User{
 				Id:       int32(v.User.ID),
 				Nickname: v.User.Nickname,
@@ -806,19 +807,26 @@ func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemse
 	if err != nil {
 		return nil, err
 	}
-	return &v1.Problemset{
-		Id:           int32(res.ID),
-		Name:         res.Name,
-		Type:         v1.ProblemsetType(res.Type),
-		Description:  res.Description,
-		ProblemCount: int32(res.ProblemCount),
-		CreatedAt:    timestamppb.New(res.CreatedAt),
+	set := &v1.Problemset{
+		Id:             int32(res.ID),
+		Name:           res.Name,
+		Type:           v1.ProblemsetType(res.Type),
+		Description:    res.Description,
+		ProblemCount:   int32(res.ProblemCount),
+		CreatedAt:      timestamppb.New(res.CreatedAt),
+		Membership:     v1.ProblemsetMembership(res.Membership),
+		InvitationCode: res.InvitationCode,
+		Role:           v1.ProblemsetRole(res.Role),
 		User: &v1.Problemset_User{
 			Id:       int32(res.User.ID),
 			Nickname: res.User.Nickname,
 			Username: res.User.Username,
 		},
-	}, nil
+	}
+	if set.Role != biz.ProblemsetRoleAdmin {
+		set.InvitationCode = ""
+	}
+	return set, nil
 }
 
 // CreateProblemset 创建题单
@@ -864,9 +872,11 @@ func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdatePro
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	res, err := s.problemsetUc.UpdateProblemset(ctx, &biz.Problemset{
-		ID:          int(req.Id),
-		Name:        req.Name,
-		Description: req.Description,
+		ID:             int(req.Id),
+		Name:           req.Name,
+		Description:    req.Description,
+		Membership:     int(req.Membership),
+		InvitationCode: req.InvitationCode,
 	})
 	if err != nil {
 		return nil, err
@@ -874,6 +884,45 @@ func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdatePro
 	return &v1.Problemset{
 		Id: int32(res.ID),
 	}, nil
+}
+
+// ListProblemsetUsers 获取题单的用户
+func (s *ProblemService) ListProblemsetUsers(ctx context.Context, req *v1.ListProblemsetUsersRequest) (*v1.ListProblemsetUsersResponse, error) {
+	res, count := s.problemsetUc.ListProblemsetUsers(ctx, req)
+	resp := new(v1.ListProblemsetUsersResponse)
+	resp.Total = int32(count)
+	for _, v := range res {
+		resp.Data = append(resp.Data, &v1.ProblemsetUser{
+			Id:            int32(v.ID),
+			UserId:        int32(v.UserID),
+			UserNickname:  v.UserNickname,
+			UserAvatar:    v.UserAvatar,
+			AcceptedCount: int32(v.AcceptedCount),
+			CreatedAt:     timestamppb.New(v.CreatedAt),
+		})
+	}
+	return resp, nil
+}
+
+// CreateProblemsetUser 添加用户到题单
+func (s *ProblemService) CreateProblemsetUser(ctx context.Context, req *v1.CreateProblemsetUserRequest) (*v1.ProblemsetUser, error) {
+	res, err := s.problemsetUc.CreateProblemsetUser(ctx, req)
+	if err != nil {
+		return nil, v1.ErrorBadRequest(err.Error())
+	}
+	return &v1.ProblemsetUser{
+		Id: int32(res.ID),
+	}, nil
+}
+
+// DeleteProblemsetUser 删除题单用户
+func (s *ProblemService) DeleteProblemsetUser(ctx context.Context, req *v1.DeleteProblemsetUserRequest) (*emptypb.Empty, error) {
+	problemset, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorNotFound(err.Error())
+	}
+	err = s.problemsetUc.DeleteProblemsetUser(ctx, problemset.ID, int(req.UserId))
+	return nil, err
 }
 
 // ListProblemsetProblems 获取题单的题目

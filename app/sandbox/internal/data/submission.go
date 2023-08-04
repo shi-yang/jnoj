@@ -17,7 +17,6 @@ import (
 	_ "github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/wagslane/go-rabbitmq"
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -76,42 +75,6 @@ type SubmissionInfo struct {
 	RunInfo      string
 }
 
-type Problem struct {
-	ID                 int
-	Name               string
-	Type               int
-	TimeLimit          int64
-	MemoryLimit        int64
-	AcceptedCount      int
-	SubmitCount        int
-	UserID             int
-	CheckerID          int
-	VerificationStatus int
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	DeletedAt          gorm.DeletedAt
-}
-
-type ProblemTest struct {
-	ID            int
-	ProblemID     int
-	Order         int
-	Name          string // 测试点名称
-	InputSize     int64  // 输入文件大小
-	InputPreview  string // 输入文件预览
-	OutputSize    int64  // 输出文件大小
-	OutputPreview string // 输出文件预览
-	Remark        string
-	UserID        int
-	IsExample     bool
-	IsTestPoint   bool
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-}
-
-const problemTestInputPath = "/problem_tests/%d/%d.in"
-const problemTestOutputPath = "/problem_tests/%d/%d.out"
-
 type ContestProblem struct {
 	ID            int
 	Number        int
@@ -153,6 +116,26 @@ func (r *submissionRepo) UpdateProblem(ctx context.Context, p *biz.Problem) (*bi
 		Omit(clause.Associations).
 		Updates(&update).Error
 	return nil, err
+}
+
+// UpdateProblemsetUserAccepted 更新用户本题单过提数
+func (r *submissionRepo) UpdateProblemsetUserAccepted(ctx context.Context, sid int, uid int) {
+	var count int
+	problemIds := r.data.db.WithContext(ctx).
+		Select("problem_id").
+		Model(&ProblemsetProblem{}).
+		Where("problemset_id = ?", sid)
+	r.data.db.WithContext(ctx).
+		Model(&Submission{}).
+		Select("COUNT(DISTINCT problem_id) AS accepted_count").
+		Where("user_id = ?", uid).
+		Where("verdict = ?", biz.SubmissionVerdictAccepted).
+		Where("problem_id in (?)", problemIds).
+		Scan(&count)
+	r.data.db.WithContext(ctx).
+		Model(&ProblemsetUser{}).
+		Where("problemset_id = ? and user_id = ?", sid, uid).
+		UpdateColumn("accepted_count", count)
 }
 
 // GetContestProblemByProblemID .

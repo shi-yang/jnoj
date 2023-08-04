@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Divider, Form, InputNumber,
+  Button, Card, Divider, Form,
   Message, Modal, PaginationProps, Popconfirm,
   Select,
   Table, TableColumnProps, Typography
 } from '@arco-design/web-react';
 import {
-  addProblemToProblemset, batchAddProblemToProblemset, deleteProblemFromProblemset,
+  batchAddProblemToProblemset, deleteProblemFromProblemset,
   listProblemsetProblems, sortProblemsetProblems
 } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
@@ -14,7 +14,6 @@ import locale from './locale';
 import { IconPlus, IconDragDotVertical } from '@arco-design/web-react/icon';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import ProblemModalList from '@/modules/problem/problem-modal-list';
-import { batch } from 'react-redux';
 
 const arrayMoveMutate = (array, from, to) => {
   const startIndex = to < 0 ? array.length + to : to;
@@ -218,14 +217,8 @@ function Problems({problemset}: {problemset:any}) {
     },
   };
   return (
-    <Card
-      title='题目列表'
-      extra={
-        <div>
-          <AddProblem problemsetId={problemsetId} callback={fetchData} />
-        </div>
-      }
-    >
+    <Card>
+      <AddProblem problemsetId={problemsetId} callback={fetchData} />
       <Table
         rowKey={r => r.id}
         className='arco-drag-table-container'

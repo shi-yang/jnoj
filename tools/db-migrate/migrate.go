@@ -17,12 +17,65 @@ func Migrate(db *gorm.DB) {
 		MigrateAddProblemsetType20230727(),
 		MigrateCreateProblemsetAnswer20230801(),
 		MigrateAddUserAvatar20230802(),
+		MigrateAddProblemsetPermission20230803(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddProblemsetPermission20230803() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddProblemsetPermission20230803",
+		Migrate: func(d *gorm.DB) error {
+			err := d.Exec("CREATE TABLE `problemset_user` (" +
+				"`id` INT UNSIGNED NOT NULL AUTO_INCREMENT, " +
+				"`problemset_id` INT UNSIGNED NOT NULL," +
+				"`user_id` INT UNSIGNED NOT NULL," +
+				"`accepted_count` INT UNSIGNED NOT NULL DEFAULT '0'," +
+				"`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+				"PRIMARY KEY (`id`)" +
+				") ENGINE = InnoDB;").Error
+			if err != nil {
+				return err
+			}
+			// 补充 problemset_user 数据
+			rows, _ := d.Select("DISTINCT user_id, entity_id").
+				Table("submission").
+				Where("entity_type = 0").Rows()
+			for rows.Next() {
+				var userId, entityId, count int
+				rows.Scan(&userId, &entityId)
+				problemIds := d.Select("problem_id").
+					Table("problemset_problem").
+					Where("problemset_id = ?", entityId)
+				d.Table("submission").Select("COUNT(DISTINCT problem_id) AS accepted_count").
+					Where("user_id = ?", userId).
+					Where("verdict = ?", 4).
+					Where("problem_id in (?)", problemIds).
+					Scan(&count)
+				d.Exec("INSERT INTO `problemset_user` (`problemset_id`, `user_id`, `accepted_count`) VALUES (?, ?, ?)", entityId, userId, count)
+			}
+			err = d.Exec("ALTER TABLE `problemset` ADD `membership` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `description`;").Error
+			if err != nil {
+				return err
+			}
+			return d.Exec("ALTER TABLE `problemset` ADD `invitation_code` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' AFTER `membership`;").Error
+		},
+		Rollback: func(d *gorm.DB) error {
+			err := d.Exec("DROP TABLE `problemset_answer").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `problemset` DROP `membership`;").Error
+			if err != nil {
+				return err
+			}
+			return d.Exec("ALTER TABLE `problemset` DROP `invitation_code`;").Error
+		},
+	}
 }
 
 func MigrateAddUserAvatar20230802() *gormigrate.Migration {

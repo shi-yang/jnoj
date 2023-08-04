@@ -19,16 +19,30 @@ import (
 
 // Problemset is a Problemset model.
 type Problemset struct {
-	ID           int
-	Name         string
-	Type         int
-	UserID       int
-	Order        int
-	Description  string
-	ProblemCount int
-	User         *User
-	CreatedAt    time.Time
+	ID             int
+	Name           string
+	Type           int
+	UserID         int
+	Order          int
+	Description    string
+	Role           int    // 登录用户角色
+	Membership     int    // 加入资格
+	InvitationCode string // 邀请码
+	ProblemCount   int
+	User           *User
+	CreatedAt      time.Time
 }
+
+const (
+	ProblemsetMembershipAllowAnyone    = iota // 允许任何人
+	ProblemsetMembershipInvitationCode        // 凭邀请码
+)
+
+const (
+	ProblemsetRoleGuest  = iota // 游客
+	ProblemsetRolePlayer        // 选手
+	ProblemsetRoleAdmin         // 管理
+)
 
 type ProblemsetAnswer struct {
 	ID                   int
@@ -78,6 +92,17 @@ type ProblemsetProblem struct {
 	SampleTests []*Test
 }
 
+type ProblemsetUser struct {
+	ID            int
+	ProblemsetID  int
+	UserID        int
+	UserNickname  string
+	UserAvatar    string
+	Role          int // 用户角色
+	AcceptedCount int // 过题量
+	CreatedAt     time.Time
+}
+
 // ProblemsetRepo is a Problemset repo.
 type ProblemsetRepo interface {
 	ListProblemsets(context.Context, *v1.ListProblemsetsRequest) ([]*Problemset, int64)
@@ -93,6 +118,10 @@ type ProblemsetRepo interface {
 	DeleteProblemFromProblemset(ctx context.Context, sid int, order int) error
 	SortProblemsetProblems(ctx context.Context, req *v1.SortProblemsetProblemsRequest) error
 
+	ListProblemsetUsers(ctx context.Context, req *v1.ListProblemsetUsersRequest) ([]*ProblemsetUser, int64)
+	CreateProblemsetUser(ctx context.Context, g *ProblemsetUser) (*ProblemsetUser, error)
+	DeleteProblemsetUser(ctx context.Context, sid int, uid int) error
+
 	CreateProblemsetAnswer(ctx context.Context, answer *ProblemsetAnswer) (*ProblemsetAnswer, error)
 	ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) ([]*ProblemsetAnswer, int64)
 	GetProblemsetAnswer(ctx context.Context, pid int, answerid int) (*ProblemsetAnswer, error)
@@ -102,6 +131,7 @@ type ProblemsetRepo interface {
 // ProblemsetUsecase is a Problemset usecase.
 type ProblemsetUsecase struct {
 	repo           ProblemsetRepo
+	userRepo       UserRepo
 	problemRepo    ProblemRepo
 	submissionRepo SubmissionRepo
 	sandboxClient  sandboxV1.SandboxServiceClient
@@ -113,6 +143,7 @@ func NewProblemsetUsecase(
 	repo ProblemsetRepo,
 	problemRepo ProblemRepo,
 	submissionRepo SubmissionRepo,
+	userRepo UserRepo,
 	sandboxClient sandboxV1.SandboxServiceClient,
 	logger log.Logger,
 ) *ProblemsetUsecase {
@@ -120,6 +151,7 @@ func NewProblemsetUsecase(
 		repo:           repo,
 		problemRepo:    problemRepo,
 		submissionRepo: submissionRepo,
+		userRepo:       userRepo,
 		sandboxClient:  sandboxClient,
 		log:            log.NewHelper(logger),
 	}
@@ -148,6 +180,55 @@ func (uc *ProblemsetUsecase) UpdateProblemset(ctx context.Context, p *Problemset
 // DeleteProblemset delete a Problemset
 func (uc *ProblemsetUsecase) DeleteProblemset(ctx context.Context, id int) error {
 	return uc.repo.DeleteProblemset(ctx, id)
+}
+
+// ListProblemsetUsers 获取题单的用户
+func (uc *ProblemsetUsecase) ListProblemsetUsers(ctx context.Context, req *v1.ListProblemsetUsersRequest) ([]*ProblemsetUser, int64) {
+	return uc.repo.ListProblemsetUsers(ctx, req)
+}
+
+// CreateProblemsetUser 添加用户到题单
+// 刷题资格为任何人时，提交代码会自动加入，因此此时只需要对两种加入情况进行处理：
+// 1. 题单创建人在题单管理页面加入
+// 2. 刷题资格为邀请码时，用户填写邀请码来加入
+func (uc *ProblemsetUsecase) CreateProblemsetUser(ctx context.Context, req *v1.CreateProblemsetUserRequest) (*ProblemsetUser, error) {
+	problemset, err := uc.repo.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorBadRequest("problemset not found")
+	}
+	if req.Username == "" && req.InvitationCode == "" {
+		return nil, v1.ErrorBadRequest("username or invitation code is required")
+	}
+	uid, _ := auth.GetUserID(ctx)
+	// 管理后台加入，需要当前登录用户有权限
+	if req.Username != "" {
+		if problemset.Role != ProblemsetRoleAdmin {
+			return nil, v1.ErrorForbidden("permission denied")
+		}
+		user, err := uc.userRepo.GetUser(ctx, &User{Username: req.Username})
+		if err != nil {
+			return nil, v1.ErrorBadRequest("user not found")
+		}
+		uid = user.ID
+	}
+	// 用户邀请码方式加入，校验邀请码
+	if req.InvitationCode != "" {
+		if strings.TrimSpace(req.InvitationCode) != strings.TrimSpace(problemset.InvitationCode) {
+			return nil, v1.ErrorBadRequest("invalid invitation code")
+		}
+		if problemset.Role != ProblemsetRoleGuest {
+			return nil, v1.ErrorBadRequest("you are already in this problemset")
+		}
+	}
+	return uc.repo.CreateProblemsetUser(ctx, &ProblemsetUser{
+		UserID:       uid,
+		ProblemsetID: int(req.Id),
+	})
+}
+
+// DeleteProblemsetUser 删除题单用户
+func (uc *ProblemsetUsecase) DeleteProblemsetUser(ctx context.Context, sid int, uid int) error {
+	return uc.repo.DeleteProblemsetUser(ctx, sid, uid)
 }
 
 func (uc *ProblemsetUsecase) ListProblemsetProblems(ctx context.Context, problemset *Problemset, req *v1.ListProblemsetProblemsRequest) ([]*ProblemsetProblem, int64) {

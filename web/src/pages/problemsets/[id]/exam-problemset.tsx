@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Card, Checkbox, Divider, Empty, Form, Input, Link, List, Message, Popconfirm, Radio, Select, Space, Tag, Typography } from '@arco-design/web-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Anchor, Button, Card, Checkbox, Divider, Empty, Form, Input, Link, List, Message, PageHeader, Popconfirm, Radio, Select, Space, Tag, Tooltip, Typography } from '@arco-design/web-react';
 import { createProblemsetAnswer, getProblemsetAnswer, listProblemsetAnswers, listProblemsetProblems, updateProblemsetAnswer } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
@@ -15,6 +15,9 @@ import Editor from '@/components/Editor';
 import useStorage from '@/utils/useStorage';
 import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 import { IconSkin } from '@arco-design/web-react/icon';
+import duration from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
+dayjs.extend(duration);
 const AnchorLink = Anchor.Link;
 const themes = [
   'light', 'vs-dark'
@@ -238,6 +241,9 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
       router.reload();
     });
   }
+  function getDuration(submittedAt, createdAt) {
+    return dayjs.duration(dayjs(submittedAt).diff(createdAt, 'seconds'), 'seconds').format('H[h] m[m] s[s]').replace(/\b0+[a-z]+\s*/gi, '').trim();
+  }
   return (
     <Card>
       <Empty
@@ -249,12 +255,18 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
         dataSource={answers}
         render={(item, index) => (
           <List.Item key={index} extra={<div><Link href={`/problemsets/${problemset.id}/answer/${item.id}`}>查看</Link></div>}>
-            <Space>
-              <span>正确回答：{item.correctProblemIds === '' ? 0 : item.correctProblemIds.split(',').length}</span>
-              <span>错误回答：{item.wrongProblemIds === '' ? 0 : item.wrongProblemIds.split(',').length}</span>
-              <span>未回答：{item.unansweredProblemIds === '' ? 0 : item.unansweredProblemIds.split(',').length}</span>
-              <span>开始时间：{FormatTime(item.createdAt)}</span>
-              <span>提交时间：{FormatTime(item.submittedAt)}</span>
+            <Space direction='vertical'>
+              <Space>
+                <span>正确回答：{item.correctProblemIds === '' ? 0 : item.correctProblemIds.split(',').length}</span>
+                <span>错误回答：{item.wrongProblemIds === '' ? 0 : item.wrongProblemIds.split(',').length}</span>
+                <span>未回答：{item.unansweredProblemIds === '' ? 0 : item.unansweredProblemIds.split(',').length}</span>
+              </Space>
+              <Space>
+                <Typography.Text type='secondary'>开始时间：{FormatTime(item.createdAt)}</Typography.Text>
+                <Tooltip content={'提交时间：' + FormatTime(item.submittedAt)}>
+                  <Typography.Text type='secondary'>持续时长：{getDuration(item.submittedAt, item.createdAt)}</Typography.Text>
+                </Tooltip>
+              </Space>
             </Space>
           </List.Item>
         )}
@@ -263,6 +275,29 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
   );
 }
 
+function Timer({initialTime}: {initialTime: any}) {
+  const t = useLocale(locale);
+  const [time, setTime] = useState(0);
+  const idRef = useRef(null);
+  useEffect(() => {
+    setTime(dayjs(new Date()).diff(initialTime, 'seconds'));
+  }, [initialTime]);
+  useEffect(() => {
+    idRef.current = setInterval(() => setTime(v => v + 1), 1000);
+    return () => {
+      clearInterval(idRef.current);
+      idRef.current = null;
+    };
+  }, []);
+  return (
+    <Tooltip content={'开始时间：' + FormatTime(initialTime)}>
+      <Button>
+        {dayjs.duration(time, 'seconds').format('HH:mm:ss')}
+      </Button>
+    </Tooltip>
+  );
+};
+
 function Page({problemset}: {problemset:any}) {
   const t = useLocale(locale);
   const router = useRouter();
@@ -270,6 +305,7 @@ function Page({problemset}: {problemset:any}) {
   const [problems, setProblems] = useState([]);
   const [form] = Form.useForm();
   const [answers, setAnswers] = useState({});
+  const [answerCreatedAt, setAnswerCreatedAt] = useState(0);
   const [answersList, setAnswersList] = useState([]);
   const [unsubmitAnswerId, setUnsubmitAnswerId] = useState(0);
   useEffect(() => {
@@ -288,6 +324,7 @@ function Page({problemset}: {problemset:any}) {
   useEffect(() => {
     if (unsubmitAnswerId) {
       getProblemsetAnswer(problemset.id, unsubmitAnswerId).then(res => {
+        setAnswerCreatedAt(res.data.createdAt);
         if (res.data.answer !== '') {
           const ans = JSON.parse(res.data.answer);
           setAnswers(ans);
@@ -312,46 +349,41 @@ function Page({problemset}: {problemset:any}) {
     setAnswers(v);
   }
   return (
-    <>
-      <div className='container'>
+    <div>
+      <PageHeader
+        title={problemset.name}
+        style={{ background: 'var(--color-bg-2)' }}
+        extra={unsubmitAnswerId !== 0 && <Timer initialTime={answerCreatedAt} />}
+      >
+        {problemset.description}
+      </PageHeader>
+      <Divider />
+      {unsubmitAnswerId !== 0 ? (
         <div>
-          <div className={styles['header']}>
-            <div>
-              <Typography.Title>
-                {problemset.name}
-              </Typography.Title>
-            </div>
-            <div>{problemset.description}</div>
-          </div>
-          <Divider />
-          {unsubmitAnswerId !== 0 ? (
-            <div>
-              <AnswerSheet unsubmitAnswerId={unsubmitAnswerId} problemset={problemset} answers={answers} problems={problems} />
-              <Card>
-                <Form form={form} onChange={onFormChange} onSubmit={onSubmit}>
-                  <List
-                    dataSource={problems}
-                    render={(item, index) => (
-                      <List.Item key={index} id={`problem-${item.problemId}`}>
-                        {item.statement && (
-                          item.statement.type === 'CODE' ? (
-                            <RenderProgrammingItem index={index} problem={item} statement={item.statement} />
-                          ) : (
-                            <RenderObjectiveItem index={index} statement={item.statement} />
-                          )
-                        )}
-                      </List.Item>
+          <AnswerSheet unsubmitAnswerId={unsubmitAnswerId} problemset={problemset} answers={answers} problems={problems} />
+          <Card>
+            <Form form={form} onChange={onFormChange} onSubmit={onSubmit}>
+              <List
+                dataSource={problems}
+                render={(item, index) => (
+                  <List.Item key={index} id={`problem-${item.problemId}`}>
+                    {item.statement && (
+                      item.statement.type === 'CODE' ? (
+                        <RenderProgrammingItem index={index} problem={item} statement={item.statement} />
+                      ) : (
+                        <RenderObjectiveItem index={index} statement={item.statement} />
+                      )
                     )}
-                  />
-                </Form>
-              </Card>
-            </div>
-          ) : (
-            <AnswerHistory problemset={problemset} answers={answersList} />
-          )}
+                  </List.Item>
+                )}
+              />
+            </Form>
+          </Card>
         </div>
-      </div>
-    </>
+      ) : (
+        <AnswerHistory problemset={problemset} answers={answersList} />
+      )}
+    </div>
   );
 }
 

@@ -4,6 +4,7 @@ import {
   Grid,
   Breadcrumb,
   Link,
+  Tabs,
 } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -18,6 +19,9 @@ import { getProblemset } from '@/api/problemset';
 import ExamProblems from './exam-problems';
 import SimpleProblems from './simple-problems';
 import Info from './info';
+import User from './user';
+
+const TabPane = Tabs.TabPane;
 
 function Index(props) {
   const t = useLocale(locale);
@@ -67,12 +71,21 @@ function Index(props) {
               </Breadcrumb>
             </Grid.Col>
           </Grid.Row>
-          <Info problemset={problemset} />
-          {problemset.type === 'SIMPLE' ? (
-            <SimpleProblems problemset={problemset} />
-          ) : (
-            <ExamProblems problemset={problemset} />
-          )}
+          <Tabs defaultActiveTab='info' destroyOnHide>
+            <TabPane key='info' title={t['tab.baseInfo']}>
+              <Info problemset={problemset} />
+            </TabPane>
+            <TabPane key='problem' title={t['tab.problem']}>
+              {problemset.type === 'SIMPLE' ? (
+                <SimpleProblems problemset={problemset} />
+              ) : (
+                <ExamProblems problemset={problemset} />
+              )}
+            </TabPane>
+            <TabPane key='user' title={t['tab.user']}>
+              <User problemset={problemset} />
+            </TabPane>
+          </Tabs>
         </div>
       )}
     </>

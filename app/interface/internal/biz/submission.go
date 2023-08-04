@@ -271,10 +271,13 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 	}
 	// 处理比赛的提交
 	if s.EntityType == SubmissionEntityTypeContest {
-		// TODO 判断提交权限
-		_, err := uc.contestRepo.GetContest(ctx, s.EntityID)
+		contest, err := uc.contestRepo.GetContest(ctx, s.EntityID)
 		if err != nil {
 			return nil, v1.ErrorContestNotFound(err.Error())
+		}
+		// 判断提交权限
+		if !contest.HasPermission(ctx, ContestPermissionView) {
+			return nil, v1.ErrorForbidden("permission denied")
 		}
 		// 用户没有参赛时，自动注册
 		if contestUser := uc.contestRepo.GetContestUser(ctx, s.EntityID, s.UserID); contestUser == nil {
@@ -301,6 +304,21 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		problem, err = uc.problemRepo.GetProblem(ctx, p.ProblemID)
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
+		}
+		// 判断提交权限
+		problemset, err := uc.problemsetRepo.GetProblemset(ctx, s.EntityID)
+		if err != nil {
+			return nil, v1.ErrorNotFound(err.Error())
+		}
+		if problemset.Role == ProblemsetRoleGuest {
+			if problemset.Membership == ProblemsetMembershipInvitationCode {
+				return nil, v1.ErrorForbidden("permission denied")
+			}
+			// 新用户，自动加入本题单
+			uc.problemsetRepo.CreateProblemsetUser(ctx, &ProblemsetUser{
+				ProblemsetID: problemset.ID,
+				UserID:       s.UserID,
+			})
 		}
 		problem.SubmitCount += 1
 		uc.problemRepo.UpdateProblem(ctx, problem)

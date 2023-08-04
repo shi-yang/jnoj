@@ -91,9 +91,9 @@ const BatchCreateModal = ({ problemset, callback }: {problemset: any, callback: 
   return (
     <>
       {contextHolder}
-      <Button onClick={() => setVisible(true)} type='primary' icon={<IconPlus />}>批量添加</Button>
+      <Button onClick={() => setVisible(true)} type='primary' icon={<IconPlus />}>添加</Button>
       <Modal
-        title='批量添加'
+        title='添加'
         style={{ width: 1100 }}
         visible={visible}
         confirmLoading={confirmLoading}

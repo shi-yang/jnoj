@@ -135,6 +135,7 @@ type SubmissionRepo interface {
 
 	GetProblem(context.Context, int) (*Problem, error)
 	UpdateProblem(context.Context, *Problem) (*Problem, error)
+	UpdateProblemsetUserAccepted(ctx context.Context, sid int, uid int)
 	GetProblemFile(context.Context, *ProblemFile) (*ProblemFile, error)
 	ListProblemTests(ctx context.Context, problemId int, isTestPoint bool) []*Test
 
@@ -266,6 +267,7 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 		if s.EntityType == SubmissionEntityTypeProblemset {
 			problem.AcceptedCount += 1
 			uc.repo.UpdateProblem(ctx, problem)
+			uc.repo.UpdateProblemsetUserAccepted(ctx, s.EntityID, s.UserID)
 		} else if s.EntityType == SubmissionEntityTypeContest {
 			contestProblem, err := uc.repo.GetContestProblemByProblemID(ctx, s.EntityID, s.ProblemID)
 			if err != nil {
