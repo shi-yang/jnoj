@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     command: bash -c "cd app/interface && make build && ./bin/server -conf ./configs/config.yaml"
     environment:
-      MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
-      REDIS_ADDR: redis:6379
-      USER_CONTENT_DOMAIN: https://usercontent.yourdomain.com
+      MYSQL_SOURCE: ${MYSQL_SOURCE}
+      REDIS_ADDR: ${REDIS_ADDR}
+      USER_CONTENT_DOMAIN: ${USER_CONTENT_DOMAIN}
     ports:
       - 8092:8000
     volumes:
@@ -26,9 +26,9 @@ services:
       dockerfile: Dockerfile
     command: bash -c "cd app/admin && make build && ./bin/server -conf ./configs/config.yaml"
     environment:
-      MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
-      REDIS_ADDR: redis:6379
-      USER_CONTENT_DOMAIN: https://usercontent.yourdomain.com
+      MYSQL_SOURCE: ${MYSQL_SOURCE}
+      REDIS_ADDR: ${REDIS_ADDR}
+      USER_CONTENT_DOMAIN: ${USER_CONTENT_DOMAIN}
     ports:
       - 8093:8000
     volumes:
@@ -45,9 +45,9 @@ services:
       dockerfile: DockerfileSandbox
     command: bash -c "cd app/sandbox && make build && ./bin/server -conf ./configs/config.yaml"
     environment:
-      MYSQL_SOURCE: root:123456@tcp(mysql:3306)/jnoj?charset=utf8mb4&parseTime=True&loc=Local
-      REDIS_ADDR: redis:6379
-      USER_CONTENT_DOMAIN: https://usercontent.yourdomain.com
+      MYSQL_SOURCE: ${MYSQL_SOURCE}
+      REDIS_ADDR: ${REDIS_ADDR}
+      USER_CONTENT_DOMAIN: ${USER_CONTENT_DOMAIN}
     volumes:
       - ..:/go/src/sandbox
     depends_on:
@@ -58,7 +58,7 @@ services:
     privileged: true
 
   consul:
-    image: consul:latest
+    image: consul:1.15.4
     ports:
       - "9502:8500"
     command: agent -server -bootstrap -ui -node=1 -client=0.0.0.0
