@@ -8,6 +8,7 @@ import "google/api/annotations.proto";
 import "validate/validate.proto";
 
 service SandboxsService {
+    // 运行程序
     rpc Run (RunRequest) returns (RunResponse) {
         option (google.api.http) = {
             post: "/sandboxs"
@@ -25,7 +26,9 @@ message RunRequest {
     int32 language = 3;
     // 针对 函数题，需要查询对应的输入输出主体函数
     optional int32 language_id = 4;
+    // 内存限制
     int64 memory_limit = 5 [(validate.rules).int64 = {gte:4, lte: 1024}];
+    // 时间限制
     int64 time_limit = 6 [(validate.rules).int64 = {gte:250, lte: 15000}];
 }
 

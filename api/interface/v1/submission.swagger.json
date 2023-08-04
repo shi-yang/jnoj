@@ -89,6 +89,17 @@
         },
         "parameters": [
           {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "collectionFormat": "multi"
+          },
+          {
             "name": "problemId",
             "in": "query",
             "required": false,
@@ -110,7 +121,7 @@
             "format": "int32"
           },
           {
-            "name": "verdicts",
+            "name": "verdict",
             "in": "query",
             "required": false,
             "type": "array",
@@ -126,6 +137,12 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string"
           },
           {
             "name": "page",
@@ -313,6 +330,13 @@
           "format": "int32",
           "title": "题目ID"
         },
+        "problemName": {
+          "type": "string"
+        },
+        "problemNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
         "language": {
           "type": "integer",
           "format": "int32",
@@ -338,6 +362,20 @@
           "type": "integer",
           "format": "int32"
         },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "entityId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entityType": {
+          "$ref": "#/definitions/v1SubmissionEntityType"
+        },
         "info": {
           "$ref": "#/definitions/v1SubmissionInfo"
         },
@@ -360,10 +398,12 @@
     "v1CreateSubmissionRequest": {
       "type": "object",
       "properties": {
-        "problemId": {
+        "entityId": {
           "type": "integer",
-          "format": "int32",
-          "title": "题目ID"
+          "format": "int32"
+        },
+        "entityType": {
+          "$ref": "#/definitions/v1SubmissionEntityType"
         },
         "language": {
           "type": "integer",
@@ -373,11 +413,6 @@
         "source": {
           "type": "string",
           "title": "源码"
-        },
-        "contestId": {
-          "type": "integer",
-          "format": "int32",
-          "title": "比赛相关"
         },
         "problemNumber": {
           "type": "integer",
@@ -399,6 +434,16 @@
           "format": "int64"
         }
       }
+    },
+    "v1SubmissionEntityType": {
+      "type": "string",
+      "enum": [
+        "PROBLEMSET",
+        "CONTEST",
+        "PROBLEM_FILE",
+        "PROBLEM_VERIFY"
+      ],
+      "default": "PROBLEMSET"
     },
     "v1SubmissionInfo": {
       "type": "object",

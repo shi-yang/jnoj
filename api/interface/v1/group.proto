@@ -16,23 +16,27 @@ service GroupService {
             get: "/groups"
         };
     }
+    // 获取小组信息
     rpc GetGroup (GetGroupRequest) returns (Group) {
         option (google.api.http) = {
             get: "/groups/{id}"
         };
     }
+    // 创建小组
     rpc CreateGroup (CreateGroupRequest) returns (Group) {
         option (google.api.http) = {
             post: "/groups"
             body: "*"
         };
     }
+    // 修改小组信息
     rpc UpdateGroup (UpdateGroupRequest) returns (Group) {
         option (google.api.http) = {
             put: "/groups/{id}"
             body: "*"
         };
     }
+    // 删除小组
     rpc DeleteGroup (DeleteGroupRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/groups/{id}"
@@ -44,6 +48,7 @@ service GroupService {
             get: "/groups/{id}/users"
         };
     }
+    // 获取小组用户信息
     rpc GetGroupUser (GetGroupUserRequest) returns (GroupUser) {
         option (google.api.http) = {
             get: "/groups/{gid}/users/{uid}"

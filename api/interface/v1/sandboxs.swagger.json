@@ -23,7 +23,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1RunResponse"
+              "$ref": "#/definitions/sandboxsRunResponse"
             }
           },
           "default": {
@@ -39,7 +39,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1RunRequest"
+              "$ref": "#/definitions/sandboxsRunRequest"
             }
           }
         ],
@@ -77,7 +77,7 @@
       },
       "additionalProperties": {}
     },
-    "v1RunRequest": {
+    "sandboxsRunRequest": {
       "type": "object",
       "properties": {
         "source": {
@@ -85,7 +85,10 @@
           "title": "源码"
         },
         "stdin": {
-          "type": "string",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
           "title": "输入"
         },
         "language": {
@@ -108,7 +111,21 @@
         }
       }
     },
-    "v1RunResponse": {
+    "sandboxsRunResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sandboxsRunResult"
+          }
+        },
+        "compileMsg": {
+          "type": "string"
+        }
+      }
+    },
+    "sandboxsRunResult": {
       "type": "object",
       "properties": {
         "stdout": {
@@ -128,9 +145,6 @@
         "exitCode": {
           "type": "integer",
           "format": "int32"
-        },
-        "compileMsg": {
-          "type": "string"
         },
         "errMsg": {
           "type": "string"
