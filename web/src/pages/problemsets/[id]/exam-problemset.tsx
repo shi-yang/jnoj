@@ -39,10 +39,13 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
   }
   return (
     <div className={styles['answer-sheet-container']}>
-      <div className='container'>
+      <Card className='container' bordered style={{padding: 0}}>
         <Anchor
           affix={false}
-          style={{ backgroundColor: 'var(--color-bg-2)', width: '85px' }}
+          lineless
+          direction='horizontal'
+          className={styles['arco-anchor-list']}
+          style={{ backgroundColor: 'var(--color-bg-2)' }}
         >
           {problems.map((item, index) => (
             <AnchorLink
@@ -51,17 +54,16 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
               title={<Button status={answers[`problem-${item.problemId}`] && answers[`problem-${item.problemId}`].every(item => item) ? 'success' : 'default'}>{index + 1}</Button>}
             />
           ))}
-          <AnchorLink title={
-            <Popconfirm
-              focusLock
-              title='确认交卷'
-              onOk={() => onSubmit()}
-            >
-              <Button type='primary'>交卷</Button>
-            </Popconfirm>
-          } />
         </Anchor>
-      </div>
+        <Popconfirm
+          focusLock
+          style={{zIndex: 10000}}
+          title='确认交卷'
+          onOk={() => onSubmit()}
+        >
+          <Button type='primary'>交卷</Button>
+        </Popconfirm>
+      </Card>
     </div>
   );
 }

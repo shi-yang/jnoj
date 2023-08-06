@@ -12,10 +12,13 @@ const AnchorLink = Anchor.Link;
 function AnswerSheet({problems, answerState}: {problems:any[], answerState: any}) {
   return (
     <div className={styles['answer-sheet-container']}>
-      <div className='container'>
+      <Card className='container'>
         <Anchor
           affix={false}
-          style={{ backgroundColor: 'var(--color-bg-2)', width: '85px' }}
+          lineless
+          direction='horizontal'
+          className={styles['arco-anchor-list']}
+          style={{ backgroundColor: 'var(--color-bg-2)' }}
         >
           {problems.map((item, index) => (
             <AnchorLink
@@ -25,7 +28,7 @@ function AnswerSheet({problems, answerState}: {problems:any[], answerState: any}
             />
           ))}
         </Anchor>
-      </div>
+      </Card>
     </div>
   );
 }
