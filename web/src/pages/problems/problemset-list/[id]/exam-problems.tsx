@@ -175,12 +175,12 @@ const Page = ({problemset}: {problemset:any}) => {
     };
     listProblemsetProblems(problemset.id, params)
       .then((res) => {
-        setProblems(res.data.data);
+        setProblems(res.data.problems);
         setPatination({
           ...pagination,
           current,
           pageSize,
-          total: res.data.total,
+          total: res.data.problemTotal,
         });
       });
   }

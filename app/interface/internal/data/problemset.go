@@ -25,6 +25,8 @@ type ProblemsetRepo struct {
 
 type Problemset struct {
 	ID                 int
+	ParentID           int
+	ChildOrder         int
 	Name               string
 	Type               int
 	Description        string
@@ -38,6 +40,8 @@ type Problemset struct {
 	DeletedAt          gorm.DeletedAt
 	ProblemsetProblems []*ProblemsetProblem `gorm:"ForeignKey:ProblemsetID"`
 	User               *User                `gorm:"ForeighKey:UserID"`
+	Parent             *Problemset          `gorm:"foreignkey:ParentID"`
+	Children           []*Problemset        `gorm:"foreignkey:ParentID"`
 }
 
 type ProblemsetUser struct {
@@ -87,6 +91,9 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 	page := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
 		Model(&res).
+		Preload("Parent", func(t *gorm.DB) *gorm.DB {
+			return t.Select("ID", "Name")
+		}).
 		Preload("User", func(t *gorm.DB) *gorm.DB {
 			return t.Select("ID", "Nickname", "Username")
 		})
@@ -102,7 +109,7 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 		Find(&res)
 	rv := make([]*biz.Problemset, 0)
 	for _, v := range res {
-		rv = append(rv, &biz.Problemset{
+		set := &biz.Problemset{
 			ID:           v.ID,
 			Name:         v.Name,
 			Type:         v.Type,
@@ -117,7 +124,14 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 				Nickname: v.User.Nickname,
 				Username: v.User.Username,
 			},
-		})
+		}
+		if v.Parent != nil {
+			set.Parent = &biz.Problemset{
+				ID:   v.Parent.ID,
+				Name: v.Parent.Name,
+			}
+		}
+		rv = append(rv, set)
 	}
 	return rv, count
 }
@@ -128,6 +142,9 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 	err := r.data.db.Model(Problemset{}).
 		Preload("User", func(t *gorm.DB) *gorm.DB {
 			return t.Select("ID", "Nickname", "Username", "Avatar")
+		}).
+		Preload("Children", func(t *gorm.DB) *gorm.DB {
+			return t.Select("ID", "Name", "ParentID", "Type", "MemberCount").Order("child_order asc")
 		}).
 		First(&res, "id = ?", id).Error
 	if err != nil {
@@ -150,6 +167,14 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 			Username: res.User.Username,
 			Avatar:   res.User.Avatar,
 		},
+	}
+	for _, v := range res.Children {
+		set.Children = append(set.Children, &biz.Problemset{
+			ID:          v.ID,
+			Name:        v.Name,
+			MemberCount: v.MemberCount,
+			Type:        v.Type,
+		})
 	}
 	// 查询登录用户的角色
 	set.Role = biz.ProblemsetRoleGuest
@@ -212,6 +237,20 @@ func (r *ProblemsetRepo) DeleteProblemset(ctx context.Context, id int) error {
 	}
 	tx.Commit()
 	return nil
+}
+
+// CreateProblemsetChild .
+func (r *ProblemsetRepo) CreateProblemsetChild(ctx context.Context, sid, cid int) error {
+	return r.data.db.WithContext(ctx).
+		Model(&Problemset{ID: cid}).
+		UpdateColumn("parent_id", sid).Error
+}
+
+// DeleteProblemsetChild .
+func (r *ProblemsetRepo) DeleteProblemsetChild(ctx context.Context, sid, cid int) error {
+	return r.data.db.WithContext(ctx).
+		Model(&Problemset{ID: cid}).
+		UpdateColumn("parent_id", 0).Error
 }
 
 // ListProblemsetUsers 获取题单的用户
@@ -359,8 +398,11 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 	db.Group("pp.id, ps.name").
 		Order("pp.order").
 		Count(&count)
-	db.Offset(page.GetOffset()).
-		Limit(page.GetPageSize())
+
+	if page.GetPageSize() > 0 {
+		db.Offset(page.GetOffset()).
+			Limit(page.GetPageSize())
+	}
 
 	rows, _ := db.Rows()
 	for rows.Next() {

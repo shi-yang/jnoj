@@ -52,12 +52,12 @@ function ProblemList({problemsetID = 0}: {problemsetID: number}) {
     };
     listProblemsetProblems(problemsetID, params)
       .then((res) => {
-        setProblems(res.data.data);
+        setProblems(res.data.problems);
         setPatination({
           ...pagination,
           current,
           pageSize,
-          total: res.data.total,
+          total: res.data.problemTotal,
         });
         setLoading(false);
       });

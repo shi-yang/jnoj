@@ -778,7 +778,7 @@ func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProble
 	resp := new(v1.ListProblemsetsResponse)
 	resp.Total = count
 	for _, v := range res {
-		resp.Data = append(resp.Data, &v1.Problemset{
+		set := &v1.Problemset{
 			Id:           int32(v.ID),
 			Name:         v.Name,
 			Type:         v1.ProblemsetType(v.Type),
@@ -792,7 +792,14 @@ func (s *ProblemService) ListProblemsets(ctx context.Context, req *v1.ListProble
 				Username: v.User.Username,
 			},
 			CreatedAt: timestamppb.New(v.CreatedAt),
-		})
+		}
+		if v.Parent != nil {
+			set.Parent = &v1.Problemset{
+				Id:   int32(v.Parent.ID),
+				Name: v.Parent.Name,
+			}
+		}
+		resp.Data = append(resp.Data, set)
 	}
 	return resp, nil
 }
@@ -819,6 +826,12 @@ func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemse
 			Nickname: res.User.Nickname,
 			Username: res.User.Username,
 		},
+	}
+	if res.Parent != nil {
+		set.Parent = &v1.Problemset{
+			Id:   int32(res.Parent.ID),
+			Name: res.Parent.Name,
+		}
 	}
 	if set.Role != biz.ProblemsetRoleAdmin {
 		set.InvitationCode = ""
@@ -883,6 +896,16 @@ func (s *ProblemService) UpdateProblemset(ctx context.Context, req *v1.UpdatePro
 	}, nil
 }
 
+// CreateProblemsetChild 给题单新增子题单
+func (s *ProblemService) CreateProblemsetChild(ctx context.Context, req *v1.CreateProblemsetChildRequest) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, s.problemsetUc.CreateProblemsetChild(ctx, int(req.Id), int(req.ChildId))
+}
+
+// DeleteProblemsetChild 删除题单的子题单
+func (s *ProblemService) DeleteProblemsetChild(ctx context.Context, req *v1.DeleteProblemsetChildRequest) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, s.problemsetUc.DeleteProblemsetChild(ctx, int(req.Id), int(req.ChildId))
+}
+
 // ListProblemsetUsers 获取题单的用户
 func (s *ProblemService) ListProblemsetUsers(ctx context.Context, req *v1.ListProblemsetUsersRequest) (*v1.ListProblemsetUsersResponse, error) {
 	res, count := s.problemsetUc.ListProblemsetUsers(ctx, req)
@@ -924,13 +947,44 @@ func (s *ProblemService) DeleteProblemsetUser(ctx context.Context, req *v1.Delet
 
 // ListProblemsetProblems 获取题单的题目
 func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.ListProblemsetProblemsRequest) (*v1.ListProblemsetProblemsResponse, error) {
+	resp := new(v1.ListProblemsetProblemsResponse)
 	problemset, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
+	// 如果有子题单，查询子题单的题目
+	for _, child := range problemset.Children {
+		var respProblems []*v1.ProblemsetProblem
+		problems, _ := s.problemsetUc.ListProblemsetProblems(ctx, child, &v1.ListProblemsetProblemsRequest{
+			Id:      int32(child.ID),
+			PerPage: -1,
+		})
+		for _, v := range problems {
+			respProblems = append(respProblems, &v1.ProblemsetProblem{
+				Id:            int32(v.ID),
+				Name:          v.Name,
+				Type:          v1.ProblemType(v.Type),
+				Order:         int32(v.Order),
+				TimeLimit:     int32(v.TimeLimit),
+				MemoryLimit:   int32(v.MemoryLimit),
+				SubmitCount:   int32(v.SubmitCount),
+				AcceptedCount: int32(v.AcceptedCount),
+				ProblemsetId:  int32(child.ID),
+				ProblemId:     int32(v.ProblemID),
+				Source:        v.Source,
+				Tags:          v.Tags,
+				Status:        v1.ProblemsetProblem_Status(v.Status),
+			})
+		}
+		resp.Problemsets = append(resp.Problemsets, &v1.Problemset{
+			Id:       int32(child.ID),
+			Name:     child.Name,
+			Type:     v1.ProblemsetType(child.Type),
+			Problems: respProblems,
+		})
+	}
 	res, count := s.problemsetUc.ListProblemsetProblems(ctx, problemset, req)
-	resp := new(v1.ListProblemsetProblemsResponse)
-	resp.Total = count
+	resp.ProblemTotal = count
 	for _, v := range res {
 		p := &v1.ProblemsetProblem{
 			Id:            int32(v.ID),
@@ -965,7 +1019,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
 			p.Statement.Legend = re.ReplaceAllString(v.Statement.Legend, "`________`")
 		}
-		resp.Data = append(resp.Data, p)
+		resp.Problems = append(resp.Problems, p)
 	}
 	return resp, nil
 }

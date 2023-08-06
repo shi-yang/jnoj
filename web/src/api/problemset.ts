@@ -25,6 +25,16 @@ export function deleteProblemset(id) {
   return axios.delete(`/problemsets/${id}`);
 }
 
+// 添加子题单
+export function createProblemsetChild(id, data) {
+  return axios.post(`/problemsets/${id}/children`, data);
+}
+
+// 删除子题单
+export function deleteProblemsetChild(id, childId) {
+  return axios.delete(`/problemsets/${id}/children/${childId}`);
+}
+
 // 获取题单的题目
 export function listProblemsetProblems(id, params) {
   return axios.get(`/problemsets/${id}/problems`, {params});

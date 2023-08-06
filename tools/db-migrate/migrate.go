@@ -18,12 +18,25 @@ func Migrate(db *gorm.DB) {
 		MigrateCreateProblemsetAnswer20230801(),
 		MigrateAddUserAvatar20230802(),
 		MigrateAddProblemsetPermission20230803(),
+		MigrateAddProblemsetChild20230805(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddProblemsetChild20230805() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddProblemsetChild20230805",
+		Migrate: func(d *gorm.DB) error {
+			return d.Exec("ALTER TABLE `problemset` ADD `parent_id` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `id`, ADD `child_order` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `parent_id`;").Error
+		},
+		Rollback: func(d *gorm.DB) error {
+			return d.Exec("ALTER TABLE `problemset` DROP `parent_id`, DROP `child_order`;").Error
+		},
+	}
 }
 
 func MigrateAddProblemsetPermission20230803() *gormigrate.Migration {

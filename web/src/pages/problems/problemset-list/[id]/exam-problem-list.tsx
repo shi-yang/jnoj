@@ -1,5 +1,5 @@
 import useLocale from '@/utils/useLocale';
-import { Typography, Radio, Checkbox, List, Tag, Space, Button, Message, Popconfirm, Popover } from '@arco-design/web-react';
+import { Typography, Radio, Checkbox, List, Tag, Space, Button, Message, Popconfirm, Popover, Link } from '@arco-design/web-react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
@@ -139,12 +139,15 @@ const ProblemsList = ({ problemsetId, problems, fetchData }: { problemsetId: num
       render={(item, index) => (
         <List.Item key={index} extra={
           <Space>
+            <Link href={`/problems/${item.problemId}/update`}>
+              <Button type='text'>编辑</Button>
+            </Link>
             <Popconfirm
               focusLock
               content='确定要移除吗?'
               onOk={() => removeProblem(item.order)}
             >
-              <Button>移除</Button>
+              <Button type='text'>移除</Button>
             </Popconfirm>
             <Popover position='right' content={
               <Space direction='vertical'>

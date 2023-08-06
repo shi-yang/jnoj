@@ -45,7 +45,7 @@ function Page() {
   function fetchData() {
     listProblemsetProblems(id, {perPage: 100})
       .then(res => {
-        setProblems(res.data.data);
+        setProblems(res.data.problems);
       });
     getProblemset(id)
       .then((res) => {

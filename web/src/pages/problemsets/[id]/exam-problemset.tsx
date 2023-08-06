@@ -309,7 +309,7 @@ function Page({problemset}: {problemset:any}) {
   const [answersList, setAnswersList] = useState([]);
   const [unsubmitAnswerId, setUnsubmitAnswerId] = useState(0);
   useEffect(() => {
-    listProblemsetProblems(id, {perPage: 100}).then(res => setProblems(res.data.data));
+    listProblemsetProblems(id, {perPage: 100}).then(res => setProblems(res.data.problems));
     listProblemsetAnswers(problemset.id, {}).then(res => {
       const {data} = res.data;
       data.forEach((item:any) => {

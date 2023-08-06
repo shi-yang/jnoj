@@ -34,9 +34,11 @@ type RunRequest struct {
 	// 语言
 	Language int32 `protobuf:"varint,3,opt,name=language,proto3" json:"language,omitempty"`
 	// 针对 函数题，需要查询对应的输入输出主体函数
-	LanguageId  *int32 `protobuf:"varint,4,opt,name=language_id,json=languageId,proto3,oneof" json:"language_id,omitempty"`
-	MemoryLimit int64  `protobuf:"varint,5,opt,name=memory_limit,json=memoryLimit,proto3" json:"memory_limit,omitempty"`
-	TimeLimit   int64  `protobuf:"varint,6,opt,name=time_limit,json=timeLimit,proto3" json:"time_limit,omitempty"`
+	LanguageId *int32 `protobuf:"varint,4,opt,name=language_id,json=languageId,proto3,oneof" json:"language_id,omitempty"`
+	// 内存限制
+	MemoryLimit int64 `protobuf:"varint,5,opt,name=memory_limit,json=memoryLimit,proto3" json:"memory_limit,omitempty"`
+	// 时间限制
+	TimeLimit int64 `protobuf:"varint,6,opt,name=time_limit,json=timeLimit,proto3" json:"time_limit,omitempty"`
 }
 
 func (x *RunRequest) Reset() {

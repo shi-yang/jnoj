@@ -33,6 +33,7 @@ const OperationProblemServiceCreateProblemStatement = "/jnoj.interface.v1.Proble
 const OperationProblemServiceCreateProblemTest = "/jnoj.interface.v1.ProblemService/CreateProblemTest"
 const OperationProblemServiceCreateProblemset = "/jnoj.interface.v1.ProblemService/CreateProblemset"
 const OperationProblemServiceCreateProblemsetAnswer = "/jnoj.interface.v1.ProblemService/CreateProblemsetAnswer"
+const OperationProblemServiceCreateProblemsetChild = "/jnoj.interface.v1.ProblemService/CreateProblemsetChild"
 const OperationProblemServiceCreateProblemsetUser = "/jnoj.interface.v1.ProblemService/CreateProblemsetUser"
 const OperationProblemServiceDeleteProblemFile = "/jnoj.interface.v1.ProblemService/DeleteProblemFile"
 const OperationProblemServiceDeleteProblemFromProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset"
@@ -40,6 +41,7 @@ const OperationProblemServiceDeleteProblemLanguage = "/jnoj.interface.v1.Problem
 const OperationProblemServiceDeleteProblemStatement = "/jnoj.interface.v1.ProblemService/DeleteProblemStatement"
 const OperationProblemServiceDeleteProblemTest = "/jnoj.interface.v1.ProblemService/DeleteProblemTest"
 const OperationProblemServiceDeleteProblemset = "/jnoj.interface.v1.ProblemService/DeleteProblemset"
+const OperationProblemServiceDeleteProblemsetChild = "/jnoj.interface.v1.ProblemService/DeleteProblemsetChild"
 const OperationProblemServiceDeleteProblemsetUser = "/jnoj.interface.v1.ProblemService/DeleteProblemsetUser"
 const OperationProblemServiceDownloadProblems = "/jnoj.interface.v1.ProblemService/DownloadProblems"
 const OperationProblemServiceGetProblem = "/jnoj.interface.v1.ProblemService/GetProblem"
@@ -87,6 +89,7 @@ type ProblemServiceHTTPServer interface {
 	CreateProblemTest(context.Context, *CreateProblemTestRequest) (*ProblemTest, error)
 	CreateProblemset(context.Context, *CreateProblemsetRequest) (*Problemset, error)
 	CreateProblemsetAnswer(context.Context, *CreateProblemsetAnswerRequest) (*ProblemsetAnswer, error)
+	CreateProblemsetChild(context.Context, *CreateProblemsetChildRequest) (*emptypb.Empty, error)
 	CreateProblemsetUser(context.Context, *CreateProblemsetUserRequest) (*ProblemsetUser, error)
 	DeleteProblemFile(context.Context, *DeleteProblemFileRequest) (*emptypb.Empty, error)
 	DeleteProblemFromProblemset(context.Context, *DeleteProblemFromProblemsetRequest) (*emptypb.Empty, error)
@@ -94,6 +97,7 @@ type ProblemServiceHTTPServer interface {
 	DeleteProblemStatement(context.Context, *DeleteProblemStatementRequest) (*emptypb.Empty, error)
 	DeleteProblemTest(context.Context, *DeleteProblemTestRequest) (*emptypb.Empty, error)
 	DeleteProblemset(context.Context, *DeleteProblemsetRequest) (*emptypb.Empty, error)
+	DeleteProblemsetChild(context.Context, *DeleteProblemsetChildRequest) (*emptypb.Empty, error)
 	DeleteProblemsetUser(context.Context, *DeleteProblemsetUserRequest) (*emptypb.Empty, error)
 	DownloadProblems(context.Context, *DownloadProblemsRequest) (*DownloadProblemsResponse, error)
 	GetProblem(context.Context, *GetProblemRequest) (*Problem, error)
@@ -156,6 +160,8 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetRequest", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemset", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemsetChild", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetChild", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/AddProblemToProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemsetPreview", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemset", auth.User())
@@ -206,6 +212,8 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.POST("/problemsets", _ProblemService_CreateProblemset0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}", _ProblemService_DeleteProblemset0_HTTP_Handler(srv))
 	r.PUT("/problemsets/{id}", _ProblemService_UpdateProblemset0_HTTP_Handler(srv))
+	r.POST("/problemsets/{id}/children", _ProblemService_CreateProblemsetChild0_HTTP_Handler(srv))
+	r.DELETE("/problemsets/{id}/children/{child_id}", _ProblemService_DeleteProblemsetChild0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/users", _ProblemService_ListProblemsetUsers0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/users", _ProblemService_CreateProblemsetUser0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}/users/{user_id}", _ProblemService_DeleteProblemsetUser0_HTTP_Handler(srv))
@@ -1004,6 +1012,50 @@ func _ProblemService_UpdateProblemset0_HTTP_Handler(srv ProblemServiceHTTPServer
 	}
 }
 
+func _ProblemService_CreateProblemsetChild0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateProblemsetChildRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceCreateProblemsetChild)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateProblemsetChild(ctx, req.(*CreateProblemsetChildRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _ProblemService_DeleteProblemsetChild0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteProblemsetChildRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceDeleteProblemsetChild)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteProblemsetChild(ctx, req.(*DeleteProblemsetChildRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_ListProblemsetUsers0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListProblemsetUsersRequest
@@ -1364,6 +1416,7 @@ type ProblemServiceHTTPClient interface {
 	CreateProblemTest(ctx context.Context, req *CreateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	CreateProblemset(ctx context.Context, req *CreateProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
 	CreateProblemsetAnswer(ctx context.Context, req *CreateProblemsetAnswerRequest, opts ...http.CallOption) (rsp *ProblemsetAnswer, err error)
+	CreateProblemsetChild(ctx context.Context, req *CreateProblemsetChildRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	CreateProblemsetUser(ctx context.Context, req *CreateProblemsetUserRequest, opts ...http.CallOption) (rsp *ProblemsetUser, err error)
 	DeleteProblemFile(ctx context.Context, req *DeleteProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemFromProblemset(ctx context.Context, req *DeleteProblemFromProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -1371,6 +1424,7 @@ type ProblemServiceHTTPClient interface {
 	DeleteProblemStatement(ctx context.Context, req *DeleteProblemStatementRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemTest(ctx context.Context, req *DeleteProblemTestRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemset(ctx context.Context, req *DeleteProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteProblemsetChild(ctx context.Context, req *DeleteProblemsetChildRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemsetUser(ctx context.Context, req *DeleteProblemsetUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DownloadProblems(ctx context.Context, req *DownloadProblemsRequest, opts ...http.CallOption) (rsp *DownloadProblemsResponse, err error)
 	GetProblem(ctx context.Context, req *GetProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
@@ -1546,6 +1600,19 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemsetAnswer(ctx context.Contex
 	return &out, err
 }
 
+func (c *ProblemServiceHTTPClientImpl) CreateProblemsetChild(ctx context.Context, in *CreateProblemsetChildRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problemsets/{id}/children"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceCreateProblemsetChild))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *ProblemServiceHTTPClientImpl) CreateProblemsetUser(ctx context.Context, in *CreateProblemsetUserRequest, opts ...http.CallOption) (*ProblemsetUser, error) {
 	var out ProblemsetUser
 	pattern := "/problemsets/{id}/users"
@@ -1629,6 +1696,19 @@ func (c *ProblemServiceHTTPClientImpl) DeleteProblemset(ctx context.Context, in 
 	pattern := "/problemsets/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemset))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) DeleteProblemsetChild(ctx context.Context, in *DeleteProblemsetChildRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problemsets/{id}/children/{child_id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationProblemServiceDeleteProblemsetChild))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {

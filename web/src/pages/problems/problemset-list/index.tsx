@@ -8,8 +8,9 @@ import {
   Tooltip,
   Input,
   Button,
+  Breadcrumb,
 } from '@arco-design/web-react';
-import { IconDownload, IconSearch } from '@arco-design/web-react/icon';
+import { IconDownload, IconRight, IconSearch } from '@arco-design/web-react/icon';
 import useLocale from '@/utils/useLocale';
 import SearchForm from './form';
 import locale from './locale';
@@ -33,8 +34,6 @@ function Page() {
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
-  const [id, setId] = useState(0);
-  const [visible, setVisible] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const inputRef = useRef(null);
 
@@ -56,7 +55,15 @@ function Page() {
     },
     {
       title: t['searchTable.columns.name'],
-      dataIndex: 'name'
+      dataIndex: 'name',
+      render: (x, record) => (
+        <Space split={<IconRight />}>
+          {record.parent && (
+            <Link href={`/problemsets/${record.parent.id}`} target='_blank'>{record.parent.name}</Link>
+          )}
+          <Link href={`/problemsets/${record.id}`} target='_blank'>{x}</Link>
+        </Space>
+      )
     },
     {
       title: t['searchTable.columns.type'],

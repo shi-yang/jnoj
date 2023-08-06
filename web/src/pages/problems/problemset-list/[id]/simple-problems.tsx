@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button, Card, Divider, Form,
+  Input,
+  Link,
+  List,
   Message, Modal, PaginationProps, Popconfirm,
   Select,
+  Space,
   Table, TableColumnProps, Typography
 } from '@arco-design/web-react';
 import {
-  batchAddProblemToProblemset, deleteProblemFromProblemset,
+  batchAddProblemToProblemset, createProblemset, createProblemsetChild, deleteProblemFromProblemset,
+  deleteProblemsetChild,
   listProblemsetProblems, sortProblemsetProblems
 } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
@@ -14,6 +19,119 @@ import locale from './locale';
 import { IconPlus, IconDragDotVertical } from '@arco-design/web-react/icon';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import ProblemModalList from '@/modules/problem/problem-modal-list';
+
+function AddProblem({problemsetId, callback}: {problemsetId: number, callback?:() => void}) {
+  const t = useLocale(locale);
+  const [visible, setVisible] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
+
+  function onOk() {
+    form.validate().then((values) => {
+      setConfirmLoading(true);
+      batchAddProblemToProblemset(problemsetId, values)
+        .then(res => {
+          if (res.data.failedReason.length > 0) {
+            Message.error({
+              content: (
+                <div>
+                  {res.data.failedReason.map(v => (
+                    <Typography.Paragraph key={v} style={{marginBottom: 0}}>
+                      {v}
+                    </Typography.Paragraph>
+                  ))}
+                </div>
+              )
+            });
+          }
+          setVisible(false);
+          callback();
+        })
+        .catch(err => {
+          Message.error(err.response.data.message);
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    });
+  }
+
+  return (
+    <div>
+      <Button type="primary" style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
+        添加题目
+      </Button>
+      <Modal
+        title='添加题目'
+        visible={visible}
+        onOk={onOk}
+        style={{width: 1100}}
+        confirmLoading={confirmLoading}
+        onCancel={() => setVisible(false)}
+      >
+        <ProblemModalList onChange={(v) => {
+          form.setFieldValue('problemIds', v);
+        }} />
+        <Divider />
+        <Form
+          form={form}
+        >
+          <Form.Item  label={t['update.table.add.form.problemId']} required field='problemIds' rules={[{ required: true }]}>
+            <Select mode='multiple' allowClear allowCreate></Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
+
+function AddProblemsetChild({problemsetId, callback}: {problemsetId: number, callback?:() => void}) {
+  const t = useLocale(locale);
+  const [visible, setVisible] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
+
+  function onOk() {
+    form.validate().then((values) => {
+      setConfirmLoading(true);
+      createProblemsetChild(problemsetId, values)
+        .then(res => {
+          Message.success('添加成功');
+          setVisible(false);
+          callback();
+        })
+        .catch(err => {
+          Message.error(err.response.data.message);
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    });
+  }
+
+  return (
+    <div>
+      <Button type="primary" style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
+        添加子题单
+      </Button>
+      <Modal
+        title='添加子题单'
+        visible={visible}
+        onOk={onOk}
+        confirmLoading={confirmLoading}
+        onCancel={() => setVisible(false)}
+      >
+        <Form
+          form={form}
+        >
+          <Form.Item  label='题单ID' required field='childId' rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
 
 const arrayMoveMutate = (array, from, to) => {
   const startIndex = to < 0 ? array.length + to : to;
@@ -43,10 +161,11 @@ const SortableWrapper = SortableContainer((props) => {
 const SortableItem = SortableElement((props) => {
   return <tr {...props} />;
 });
-function Problems({problemset}: {problemset:any}) {
+function Page({problemset}: {problemset:any}) {
   const problemsetId = problemset.id;
   const t = useLocale(locale);
   const [problems, setProblems] = useState([]);
+  const [problemsetChildren, setProblemsetChildren] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -68,12 +187,13 @@ function Problems({problemset}: {problemset:any}) {
     };
     listProblemsetProblems(problemsetId, params)
       .then((res) => {
-        setProblems(res.data.data);
+        setProblems(res.data.problems);
+        setProblemsetChildren(res.data.problemsets);
         setPatination({
           ...pagination,
           current,
           pageSize,
-          total: res.data.total,
+          total: res.data.problemTotal,
         });
         setLoading(false);
       });
@@ -86,14 +206,25 @@ function Problems({problemset}: {problemset:any}) {
       pageSize,
     });
   }
-  function removeProblem(pid) {
+  function removeProblem(pid: number) {
     deleteProblemFromProblemset(problemsetId, pid)
       .then(res => {
         Message.success('已移除');
         fetchData();
       });
   }
-
+  function removeProblemsetChild(pid) {
+    deleteProblemsetChild(problemsetId, pid)
+      .then(res => {
+        Message.success('已移除');
+        fetchData();
+      });
+  }
+  
+  const DraggableRow = (props: any) => {
+    const { record, index, ...rest } = props;
+    return <SortableItem index={index} {...rest} />;
+  };
   const columns: TableColumnProps[] = [
     {
       key: 'id',
@@ -115,15 +246,15 @@ function Problems({problemset}: {problemset:any}) {
     {
       key: 'action',
       title: t['update.table.column.action'],
-      dataIndex: 'action',
+      dataIndex: 'order',
       align: 'center',
-      render: (_, record) => (
+      render: (x) => (
         <>
           <Popconfirm
             focusLock
             title={t['update.table.column.action.remove.tips']}
             onOk={() => {
-              removeProblem(record.order);
+              removeProblem(x);
             }}
             onCancel={() => {
             }}
@@ -169,11 +300,6 @@ function Problems({problemset}: {problemset:any}) {
     />
   );
 
-  const DraggableRow = (props: any) => {
-    const { record, index, ...rest } = props;
-    return <SortableItem index={index} {...rest} />;
-  };
-
   const components = {
     header: {
       operations: ({ selectionNode, expandNode }) => [
@@ -218,7 +344,10 @@ function Problems({problemset}: {problemset:any}) {
   };
   return (
     <Card>
-      <AddProblem problemsetId={problemsetId} callback={fetchData} />
+      <Space>
+        <AddProblem problemsetId={problemsetId} callback={fetchData} />
+        <AddProblemsetChild problemsetId={problemsetId} callback={fetchData} />
+      </Space>
       <Table
         rowKey={r => r.id}
         className='arco-drag-table-container'
@@ -229,73 +358,32 @@ function Problems({problemset}: {problemset:any}) {
         columns={columns}
         data={problems}
       />
+      <Divider />
+      <List
+        style={{ width: 622 }}
+        header='子题单'
+        dataSource={problemsetChildren}
+        render={(item, index) => (
+          <List.Item key={index} actions={[
+            <span key={index} className='list-demo-actions-button'>
+              <Popconfirm
+                focusLock
+                title='移除子题单'
+                content='你确定需要从本题单中移除该子题单吗？移除子题单并不意味着删除该子题单'
+                onOk={() => removeProblemsetChild(item.id)}
+              >
+                <Button>移除</Button>
+              </Popconfirm>
+            </span>
+          ]}>
+            <List.Item.Meta
+              title={<Link href={`/problems/problemset-list/${item.id}`}>{item.name}</Link>}
+            />
+          </List.Item>
+        )}
+      />
     </Card>
   );
 }
 
-function AddProblem({problemsetId, callback}: {problemsetId: number, callback?:() => void}) {
-  const t = useLocale(locale);
-  const [visible, setVisible] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [form] = Form.useForm();
-
-  function onOk() {
-    form.validate().then((values) => {
-      setConfirmLoading(true);
-      batchAddProblemToProblemset(problemsetId, values)
-        .then(res => {
-          if (res.data.failedReason.length > 0) {
-            Message.error({
-              content: (
-                <div>
-                  {res.data.failedReason.map(v => (
-                    <Typography.Paragraph key={v} style={{marginBottom: 0}}>
-                      {v}
-                    </Typography.Paragraph>
-                  ))}
-                </div>
-              )
-            });
-          }
-          setVisible(false);
-          callback();
-        })
-        .catch(err => {
-          Message.error(err.response.data.message);
-        })
-        .finally(() => {
-          setConfirmLoading(false);
-        });
-    });
-  }
-
-  return (
-    <div>
-      <Button type="primary" style={{ marginBottom: 10 }} icon={<IconPlus />} onClick={() => setVisible(true)}>
-        {t['update.table.add']}
-      </Button>
-      <Modal
-        title={t['update.table.add']}
-        visible={visible}
-        onOk={onOk}
-        style={{width: 1100}}
-        confirmLoading={confirmLoading}
-        onCancel={() => setVisible(false)}
-      >
-        <ProblemModalList onChange={(v) => {
-          form.setFieldValue('problemIds', v);
-        }} />
-        <Divider />
-        <Form
-          form={form}
-        >
-          <Form.Item  label={t['update.table.add.form.problemId']} required field='problemIds' rules={[{ required: true }]}>
-            <Select mode='multiple' allowClear allowCreate></Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
-  );
-}
-
-export default Problems;
+export default Page;

@@ -244,6 +244,19 @@ service ProblemService {
             body: "*"
         };
     }
+    // 给题单添加子题单
+    rpc CreateProblemsetChild (CreateProblemsetChildRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/children"
+            body: "*"
+        };
+    }
+    // 删除题单的子题单
+    rpc DeleteProblemsetChild (DeleteProblemsetChildRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/problemsets/{id}/children/{child_id}"
+        };
+    }
     // 获取题单的用户
     rpc ListProblemsetUsers (ListProblemsetUsersRequest) returns (ListProblemsetUsersResponse) {
         option (google.api.http) = {
@@ -687,6 +700,7 @@ message Problemset {
     repeated ProblemsetProblem problems = 11;
     google.protobuf.Timestamp created_at = 12;
     google.protobuf.Timestamp updated_at = 13;
+    Problemset parent = 14;
 }
 
 message ListProblemsetsRequest {
@@ -721,6 +735,16 @@ message UpdateProblemsetRequest {
     string description = 3;
     ProblemsetMembership membership = 4;
     string invitation_code = 5;
+}
+
+message CreateProblemsetChildRequest {
+    int32 id = 1;
+    int32 child_id = 2;
+}
+
+message DeleteProblemsetChildRequest {
+    int32 id = 1;
+    int32 child_id = 2;
 }
 
 message ProblemsetUser {
@@ -793,8 +817,10 @@ message ProblemsetProblem {
 }
 
 message ListProblemsetProblemsResponse {
-    repeated ProblemsetProblem data = 1;
-    int64 total = 2;
+    repeated ProblemsetProblem problems = 1;
+    int64 problem_total = 2;
+    repeated Problemset problemsets = 3;
+    int64 problemset_total = 4;
 }
 
 message GetProblemsetProblemRequest {

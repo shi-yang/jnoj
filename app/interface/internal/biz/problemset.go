@@ -20,10 +20,11 @@ import (
 // Problemset is a Problemset model.
 type Problemset struct {
 	ID             int
+	ParentID       int
+	ChildOrder     int
 	Name           string
 	Type           int
 	UserID         int
-	Order          int
 	Description    string
 	Role           int    // 登录用户角色
 	Membership     int    // 加入资格
@@ -32,6 +33,8 @@ type Problemset struct {
 	MemberCount    int
 	User           *User
 	CreatedAt      time.Time
+	Children       []*Problemset
+	Parent         *Problemset
 }
 
 const (
@@ -111,6 +114,10 @@ type ProblemsetRepo interface {
 	CreateProblemset(context.Context, *Problemset) (*Problemset, error)
 	UpdateProblemset(context.Context, *Problemset) (*Problemset, error)
 	DeleteProblemset(context.Context, int) error
+
+	CreateProblemsetChild(ctx context.Context, sid int, childId int) error
+	DeleteProblemsetChild(ctx context.Context, sid int, childId int) error
+
 	ListProblemsetProblems(context.Context, *v1.ListProblemsetProblemsRequest) ([]*ProblemsetProblem, int64)
 	ListProblemsetProblemStatements(context.Context, []int) map[int]*ProblemStatement
 	GetProblemsetProblem(ctx context.Context, sid int, order int) (*ProblemsetProblem, error)
@@ -181,6 +188,40 @@ func (uc *ProblemsetUsecase) UpdateProblemset(ctx context.Context, p *Problemset
 // DeleteProblemset delete a Problemset
 func (uc *ProblemsetUsecase) DeleteProblemset(ctx context.Context, id int) error {
 	return uc.repo.DeleteProblemset(ctx, id)
+}
+
+// CreateProblemsetChild create a ProblemsetChild
+func (uc *ProblemsetUsecase) CreateProblemsetChild(ctx context.Context, sid int, childId int) error {
+	problemset, err := uc.repo.GetProblemset(ctx, sid)
+	if err != nil {
+		return v1.ErrorBadRequest("problemset not found")
+	}
+	// 权限校验
+	if problemset.Role != ProblemsetRoleAdmin {
+		return v1.ErrorForbidden("no permission")
+	}
+	child, err := uc.repo.GetProblemset(ctx, childId)
+	if err != nil {
+		return v1.ErrorBadRequest("problemset not found")
+	}
+	// 权限校验
+	if child.Role != ProblemsetRoleAdmin {
+		return v1.ErrorForbidden("no permission")
+	}
+	// 禁止套娃，已经有儿子的，不能作为其它题单的儿子
+	if len(child.Children) > 0 {
+		return v1.ErrorBadRequest("child has children")
+	}
+	// 已经有父亲的，不能作为其它题单的儿子
+	if child.ParentID != 0 {
+		return v1.ErrorBadRequest("child has parent")
+	}
+	return uc.repo.CreateProblemsetChild(ctx, sid, childId)
+}
+
+// DeleteProblemsetChild delete a ProblemsetChild
+func (uc *ProblemsetUsecase) DeleteProblemsetChild(ctx context.Context, sid int, childId int) error {
+	return uc.repo.DeleteProblemsetChild(ctx, sid, childId)
 }
 
 // ListProblemsetUsers 获取题单的用户
