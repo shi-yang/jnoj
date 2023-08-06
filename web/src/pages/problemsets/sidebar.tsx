@@ -17,6 +17,7 @@ export default function Sidebar() {
     const params = {
       page: 1,
       perPage: 6,
+      type: 'SIMPLE'
     };
     listProblemsets(params)
       .then((res) => {
