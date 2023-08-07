@@ -50,6 +50,7 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
           {problems.map((item, index) => (
             <AnchorLink
               key={index}
+              className={styles['arco-anchor-item']}
               href={`#problem-${item.problemId}`}
               title={<Button status={answers[`problem-${item.problemId}`] && answers[`problem-${item.problemId}`].every(item => item) ? 'success' : 'default'}>{index + 1}</Button>}
             />
@@ -87,19 +88,30 @@ function RenderObjectiveItem({index, statement}: {index: number, statement: any}
         {statement.title}
       </Typography.Title>
       <Typography.Paragraph>
-        <ReactMarkdown
-          remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex, rehypeHighlight]}
-        >
-          {`${index + 1}. ${legend}`}
-        </ReactMarkdown>
+        <div className='markdown-body'>
+          <ReactMarkdown
+            remarkPlugins={[remarkMath]}
+            rehypePlugins={[rehypeKatex, rehypeHighlight]}
+          >
+            {`${index + 1}. ${legend}`}
+          </ReactMarkdown>
+        </div>
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (
           <Form.Item field={`problem-${statement.problemId}`}>
             <Radio.Group direction='vertical' options={
               choices.map((item, index) => 
-                ({label: item, value: item})
+                ({label: (
+                  <div className='markdown-body markdown-choice'>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkMath]}
+                      rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                    >
+                      {item}
+                    </ReactMarkdown>
+                  </div>
+                ), value: item})
               )
             } />
           </Form.Item>
@@ -108,7 +120,16 @@ function RenderObjectiveItem({index, statement}: {index: number, statement: any}
           <Form.Item field={`problem-${statement.problemId}`}>
             <Checkbox.Group direction='vertical' options={
               choices.map((item, index) => 
-                ({label: item, value: item})
+                ({label: (
+                  <div className='markdown-body markdown-choice'>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkMath]}
+                      rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                    >
+                      {item}
+                    </ReactMarkdown>
+                  </div>
+                ), value: item})
               )
             }/>
           </Form.Item>
@@ -362,8 +383,7 @@ function Page({problemset}: {problemset:any}) {
       <Divider />
       {unsubmitAnswerId !== 0 ? (
         <div>
-          <AnswerSheet unsubmitAnswerId={unsubmitAnswerId} problemset={problemset} answers={answers} problems={problems} />
-          <Card>
+          <Card style={{height: 'calc(100vh - 412px)', overflow: 'hidden'}} bodyStyle={{height: '100%', overflow: 'scroll', padding: 0}}>
             <Form form={form} onChange={onFormChange} onSubmit={onSubmit}>
               <List
                 dataSource={problems}
@@ -381,6 +401,7 @@ function Page({problemset}: {problemset:any}) {
               />
             </Form>
           </Card>
+          <AnswerSheet unsubmitAnswerId={unsubmitAnswerId} problemset={problemset} answers={answers} problems={problems} />
         </div>
       ) : (
         <AnswerHistory problemset={problemset} answers={answersList} />

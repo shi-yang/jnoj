@@ -40,7 +40,16 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
         {(statement.type == 'CHOICE') && (
           <Radio.Group direction='vertical' options={
             choices.map((item, index) => 
-              ({label: item, value: index})
+              ({label: (
+                <div className='markdown-body markdown-choice'>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                  >
+                    {item}
+                  </ReactMarkdown>
+                </div>
+              ), value: item})
             )
           }>
           </Radio.Group>
@@ -48,7 +57,16 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
         {(statement.type == 'MULTIPLE') && (
           <Checkbox.Group direction='vertical' options={
             choices.map((item, index) => 
-              ({label: item, value: item})
+              ({label: (
+                <div className='markdown-body markdown-choice'>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                  >
+                    {item}
+                  </ReactMarkdown>
+                </div>
+              ), value: item})
             )
           }>
           </Checkbox.Group>
@@ -61,7 +79,9 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
       )}
       {statement.output && statement.output !== '' && (
         <Typography.Paragraph>
-        答案：<Space split={<Divider type='vertical' />}>{JSON.parse(statement.output).map((item, index) => (<Tag key={index}>{item}</Tag>))}</Space>
+        答案：<Space split={<Divider type='vertical' />}>
+          {JSON.parse(statement.output).map((item, index) => (<Tag key={index}>{item}</Tag>))}
+          </Space>
         </Typography.Paragraph>
       )}
       <Typography.Paragraph>
