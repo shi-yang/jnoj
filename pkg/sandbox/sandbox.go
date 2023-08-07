@@ -3,11 +3,12 @@ package sandbox
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"syscall"
@@ -20,6 +21,18 @@ import (
 )
 
 func init() {
+	// GC
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		for range ticker.C {
+			var mem runtime.MemStats
+			runtime.ReadMemStats(&mem)
+			if mem.HeapInuse > uint64(64*1024*1024) {
+				runtime.GC()
+				debug.FreeOSMemory()
+			}
+		}
+	}()
 	reexec.Register("sandboxInit", sandboxInit)
 	if reexec.Init() {
 		os.Exit(0)
@@ -32,9 +45,9 @@ type Result struct {
 	// Memory 消耗内存
 	Memory int64
 	// Stdout 程序输出
-	Stdout string
+	Stdout []byte
 	// Stderr 程序错误输出
-	Stderr string
+	Stderr []byte
 	// RuntimeErr 运行出错信息
 	RuntimeErr string
 	// Err 记录系统错误信息
@@ -99,6 +112,7 @@ func sandboxInit() {
 	}
 
 	// 执行准备：命令、输入输出等
+	// TODO 限制程序输出
 	var stderr bytes.Buffer
 	cmd := exec.Command(runCommand[0], runCommand[1:]...)
 	cmd.Stdin = os.Stdin
@@ -131,7 +145,7 @@ func sandboxInit() {
 	}
 
 	r.ExitCode = cmd.ProcessState.ExitCode()
-	r.Stderr = stderr.String()
+	r.Stderr = stderr.Bytes()
 	r.Memory = cmd.ProcessState.SysUsage().(*syscall.Rusage).Maxrss
 	result, _ := json.Marshal(r)
 	_, _ = os.Stdout.Write(result)
@@ -179,14 +193,27 @@ func Run(basedir string, lang *Language, input []byte, memoryLimit int64, timeLi
 	}
 	_ = cmd.Run()
 	_ = json.Unmarshal(stdout.Bytes(), &result)
-	outputFile, err := os.Open(filepath.Join(basedir, "output.txt"))
+
+	outputPath := filepath.Join(basedir, "output.txt")
+	fileInfo, err := os.Stat(outputPath)
+	if err != nil {
+		result.Err = err.Error()
+		return
+	}
+
+	fileSize := fileInfo.Size()
+	const maxSize = 127 * 1024 * 1024 // 程序输出太大不理会
+	if fileSize > maxSize {
+		result.Err = "output file too large"
+		return
+	}
+	outputFile, err := os.Open(outputPath)
 	if err != nil {
 		result.Err = err.Error()
 		return
 	}
 	defer outputFile.Close()
 	output, _ := io.ReadAll(outputFile)
-	result.Stdout = string(output)
-	fmt.Println(stderr.String())
+	result.Stdout = output
 	return
 }

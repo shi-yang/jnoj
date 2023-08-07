@@ -237,14 +237,6 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	for i, subtask := range res.Subtasks {
 		for j, v := range subtask.Tests {
 			if isGenerateOutput {
-				var outputPreview string
-				if len(v.Stdout) > 32 {
-					outputPreview = string([]byte(v.Stdout)[:32])
-				} else {
-					outputPreview = string(v.Stdout)
-				}
-				// 保存输出
-				uc.repo.UpdateProblemTestStdOutput(ctx, problemTest.Subtasks[i].TestData[j].ID, []byte(v.Stdout), outputPreview)
 			}
 			res.Subtasks[i].Tests[j].Stdin = substrLength([]byte(v.Stdin), 99)
 			res.Subtasks[i].Tests[j].Stdout = substrLength([]byte(v.Stdout), 99)
@@ -391,8 +383,8 @@ func (uc *SubmissionUsecase) runTests(
 			}()
 			// 开始运行
 			runRes := sandbox.Run(workDir, &sandbox.Languages[langCode], []byte(test.Input), problem.MemoryLimit, problem.TimeLimit)
-			var checkerRes *sandbox.Result
 			// 准备运行 checker 所需文件
+			var checkerRes *sandbox.Result
 			if runRes.RuntimeErr == "" && !isGenerateOutput {
 				_ = os.WriteFile(filepath.Join(workDir, "user.stdout"), []byte(runRes.Stdout), 0444)
 				_ = os.WriteFile(filepath.Join(workDir, "data.in"), []byte(test.Input), 0444)
@@ -400,6 +392,17 @@ func (uc *SubmissionUsecase) runTests(
 				// 执行 checker
 				uc.log.Info("Run checker:", workDir)
 				checkerRes = sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 10000)
+			}
+			// 用于生成输出文件
+			if isGenerateOutput {
+				var outputPreview string
+				if len(runRes.Stdout) > 32 {
+					outputPreview = string(runRes.Stdout[:32])
+				} else {
+					outputPreview = string(runRes.Stdout)
+				}
+				// 保存输出
+				uc.repo.UpdateProblemTestStdOutput(ctx, test.ID, runRes.Stdout, outputPreview)
 			}
 			uc.log.Infof("Submission[%d] runing test [%d/%d] done...", submissionId, currentTest, problemTest.TotalTest)
 			// 记录 Memory 最大值
@@ -412,16 +415,16 @@ func (uc *SubmissionUsecase) runTests(
 			}
 			// 记录结果
 			t := SubmissionTest{
-				Stdin:      string(test.Input),
-				Stdout:     runRes.Stdout,
-				Stderr:     runRes.Stderr,
-				Answer:     string(test.Output),
 				RuntimeErr: runRes.RuntimeErr,
 				Memory:     runRes.Memory,
 				Time:       runRes.Time,
 				ExitCode:   int(runRes.ExitCode),
 				Verdict:    SubmissionVerdictAccepted,
 			}
+			t.Stdin = substrLength(test.Input, 99)
+			t.Stdout = substrLength(runRes.Stdout, 99)
+			t.Stderr = substrLength(runRes.Stderr, 99)
+			t.Answer = substrLength(test.Output, 99)
 			if checkerRes != nil {
 				t.CheckerStdout = substrLength([]byte(checkerRes.Stderr), 99)
 				t.CheckerExitCode = int(checkerRes.ExitCode)

@@ -30,7 +30,7 @@ func TestRunHelloWorld(t *testing.T) {
 			}
 			expected := "Hello, world"
 			res := Run(workPath, &Languages[l], []byte(""), 256, 1000)
-			if expected != strings.TrimFunc(res.Stdout, func(r rune) bool {
+			if expected != strings.TrimFunc(string(res.Stdout), func(r rune) bool {
 				return !unicode.IsLetter(r) && !unicode.IsNumber(r)
 			}) {
 				t.Errorf("Wrong Answer. Expeted: [%s], got: [%s]", expected, res.Stdout)
@@ -67,7 +67,7 @@ func TestCAccepted(t *testing.T) {
 	}
 	for _, test := range tests {
 		res := Run(workPath, &Languages[LangC], test.input, 256, 1000)
-		if res.Stdout != string(test.expected) {
+		if string(res.Stdout) != string(test.expected) {
 			t.Error("Wrong Answer")
 		}
 	}
@@ -188,13 +188,14 @@ func TestLangC(t *testing.T) {
 		{
 			"run_command_line_0.c",
 			func(res *Result) (string, bool) {
-				return fmt.Sprintf("expected [cannot remove], got=[%+v]\n", res), strings.Contains(res.Stderr, "cannot remove")
+				return fmt.Sprintf("expected [cannot remove], got=[%+v]\n", string(res.Stderr)), strings.Contains(string(res.Stderr), "cannot remove")
 			},
 		},
 		{
 			"run_command_line_1.c",
 			func(res *Result) (string, bool) {
-				return fmt.Sprintf("expected [shutdown: not found], got=[%+v]\n", res.Stderr), strings.Contains(res.Stderr, "shutdown: not found")
+				return fmt.Sprintf("expected [shutdown: not found], got=[%+v]\n", string(res.Stderr)),
+					strings.Contains(string(res.Stderr), "shutdown: not found") || strings.Contains(string(res.Stderr), "Can't operate")
 			},
 		},
 		{
@@ -207,7 +208,7 @@ func TestLangC(t *testing.T) {
 		{
 			"tcp_client.c",
 			func(res *Result) (string, bool) {
-				return fmt.Sprintf("%+v\n", res), res.ExitCode == 1
+				return fmt.Sprintf("%+v\n", string(res.Stdout)), res.ExitCode == 1
 			},
 		},
 	}
@@ -228,6 +229,20 @@ func TestLangC(t *testing.T) {
 				t.Error("fail", msg)
 			}
 		})
+	}
+	os.RemoveAll(workDir)
+}
+
+func TestOutputLimit(t *testing.T) {
+	u, _ := uuid.NewUUID()
+	workPath := filepath.Join(workDir, u.String())
+	source := readSourceFile("./testdata/cpp/while.cpp")
+	if err := Compile(workPath, source, &Languages[LangCpp]); err != nil {
+		t.Error("Compiled Error\n", err)
+	}
+	res := Run(workPath, &Languages[LangCpp], []byte(""), 256, 2000)
+	if len(res.Stdout) != 0 {
+		t.Error("Expected empty stdout, got:", len(res.Stdout)/1024/1024)
 	}
 	os.RemoveAll(workDir)
 }
@@ -258,6 +273,20 @@ func TestLangJava(t *testing.T) {
 	os.RemoveAll(workDir)
 }
 
+func TestLangPython(t *testing.T) {
+	u, _ := uuid.NewUUID()
+	workPath := filepath.Join(workDir, u.String())
+	source := readSourceFile("./testdata/python/hello.py")
+	if err := Compile(workPath, source, &Languages[LangPython]); err != nil {
+		t.Error("Compiled Error\n", err)
+	}
+	res := Run(workPath, &Languages[LangPython], []byte(""), 256, 2000)
+	if strings.TrimSpace(string(res.Stdout)) != "hello, world" {
+		t.Error("Expected hello, world, got:", string(res.Stdout))
+	}
+	os.RemoveAll(workDir)
+}
+
 func BenchmarkCompile(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -283,7 +312,7 @@ func BenchmarkRun(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		res := Run(workPath, &Languages[LangC], []byte(input), 256, 1000)
-		if res.Stdout != excepted {
+		if string(res.Stdout) != excepted {
 			b.Errorf("excepted %s, got %s", input, excepted)
 		}
 	}

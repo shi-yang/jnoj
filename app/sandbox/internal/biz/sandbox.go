@@ -61,8 +61,8 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (r
 		res.ExitCode = int32(runRes.ExitCode)
 		res.Memory = runRes.Memory
 		res.Time = runRes.Time
-		res.Stdout = runRes.Stdout
-		res.Stderr = runRes.Stderr
+		res.Stdout = string(runRes.Stdout)
+		res.Stderr = string(runRes.Stderr)
 		res.ErrMsg = runRes.Err
 		if req.CheckerSource != nil {
 			err := sandbox.Compile(workDir, *req.CheckerSource, checkerLanguage)
@@ -74,7 +74,7 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *sandboxV1.RunRequest) (r
 			_ = os.WriteFile(filepath.Join(workDir, "data.out"), []byte(*req.Answer), 0444)
 			checkerRes := sandbox.Run(workDir, checkerLanguage, []byte(""), 256, 2000)
 			res.CheckerExitCode = int32(checkerRes.ExitCode)
-			res.CheckerStdout = checkerRes.Stderr
+			res.CheckerStdout = string(checkerRes.Stderr)
 		}
 		resp.Result = append(resp.Result, &res)
 	}
