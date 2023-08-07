@@ -10,7 +10,6 @@ import (
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
-	"regexp"
 	"strings"
 	"time"
 
@@ -1016,8 +1015,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 				Note:      v.Statement.Note,
 				Type:      v1.ProblemStatementType(v.Statement.Type),
 			}
-			re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
-			p.Statement.Legend = re.ReplaceAllString(v.Statement.Legend, "`________`")
+			p.Statement.Legend = s.uc.ReplaceObjectiveStatementBrackets(v.Statement.Legend)
 		}
 		resp.Problems = append(resp.Problems, p)
 	}
@@ -1065,8 +1063,7 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 			if v.Type == biz.ProblemStatementTypeFillBlank {
 				var ans []string
 				json.Unmarshal([]byte(v.Output), &ans)
-				re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
-				statement.Legend = re.ReplaceAllString(v.Legend, "`________`")
+				statement.Legend = s.uc.ReplaceObjectiveStatementBrackets(v.Legend)
 				for i := 0; i < len(ans); i++ {
 					ans[i] = ""
 				}

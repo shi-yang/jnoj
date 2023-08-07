@@ -9,6 +9,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -282,4 +283,31 @@ func (uc *ProblemUsecase) DownloadProblems(ctx context.Context, ids []int32) (re
 		}
 	}
 	return
+}
+
+// ReplaceObjectiveStatementBrackets 替换题目中的 { } 为下划线，用于填空题
+// "{床前明月光}，疑似地上霜" => "_______，疑似地上霜"
+// 不在 $$ 内，因为此时会属于 katex 语法
+func (uc *ProblemUsecase) ReplaceObjectiveStatementBrackets(str string) string {
+	var result strings.Builder
+	var inDollar bool
+	var inBracket bool
+	for i := 0; i < len(str); i++ {
+		if str[i] == '$' {
+			inDollar = !inDollar
+		}
+		if !inDollar {
+			if str[i] == '{' {
+				inBracket = true
+				result.WriteString("_______")
+			} else if str[i] == '}' {
+				inBracket = false
+				continue
+			}
+		}
+		if !inBracket {
+			result.WriteByte(str[i])
+		}
+	}
+	return result.String()
 }
