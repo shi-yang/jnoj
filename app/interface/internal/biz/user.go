@@ -72,7 +72,7 @@ type UserRepo interface {
 	UpdateUserProfile(context.Context, *UserProfile) (*UserProfile, error)
 	UpdateUserAvatar(context.Context, *User, *v1.UpdateUserAvatarRequest) (*User, error)
 	GetUserProfileCalendar(context.Context, *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error)
-	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error)
+	GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileContestProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileGroupProblemSolved(ctx context.Context, uid int, page int, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error)
 	GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUserProfileCountResponse, error)
@@ -241,7 +241,7 @@ func (uc *UserUsecase) GetUserProfileCalendar(ctx context.Context, req *v1.GetUs
 
 func (uc *UserUsecase) GetUserProfileProblemSolved(ctx context.Context, req *v1.GetUserProfileProblemSolvedRequest) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	if req.Type.String() == "PROBLEMSET" {
-		return uc.repo.GetUserProfileProblemsetProblemSolved(ctx, int(req.Id))
+		return uc.repo.GetUserProfileProblemsetProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
 	} else if req.Type.String() == "CONTEST" {
 		return uc.repo.GetUserProfileContestProblemSolved(ctx, int(req.Id), int(req.Page), int(req.PerPage))
 	}

@@ -300,7 +300,7 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 	return res, nil
 }
 
-func (r *userRepo) GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int) (*v1.GetUserProfileProblemSolvedResponse, error) {
+func (r *userRepo) GetUserProfileProblemsetProblemSolved(ctx context.Context, uid int, page, pageSize int) (*v1.GetUserProfileProblemSolvedResponse, error) {
 	res := new(v1.GetUserProfileProblemSolvedResponse)
 	// 题目数量统计
 	var submissions []struct {
@@ -322,12 +322,18 @@ func (r *userRepo) GetUserProfileProblemsetProblemSolved(ctx context.Context, ui
 		}
 	}
 
+	userProblemsetSubQuery := r.data.db.WithContext(ctx).Select("DISTINCT(problemset_id)").Model(&ProblemsetUser{}).Where("user_id = ?", uid)
 	var problemsets []Problemset
-	r.data.db.WithContext(ctx).
+	pager := pagination.NewPagination(int32(page), int32(pageSize))
+	db := r.data.db.WithContext(ctx).
 		Model(&Problemset{}).
+		Where("id in (?)", userProblemsetSubQuery).
 		Preload("ProblemsetProblems", func(db *gorm.DB) *gorm.DB {
 			return db.Select("`order`, problem_id, problemset_id")
-		}).
+		})
+	db.Count(&res.Total).
+		Offset(pager.GetOffset()).
+		Limit(pager.GetPageSize()).
 		Find(&problemsets)
 	for _, problemset := range problemsets {
 		var s v1.GetUserProfileProblemSolvedResponse_Problemset

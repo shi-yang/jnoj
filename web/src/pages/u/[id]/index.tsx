@@ -239,9 +239,15 @@ export default function UserPage() {
   useEffect(() => {
     const { current, pageSize } = pagination;
     if (problemSolvedProgressTab === 'problemset') {
-      getUserProfileProblemSolved(id, {type: 'PROBLEMSET'})
+      getUserProfileProblemSolved(id, {type: 'PROBLEMSET', page: current, perPage: pageSize})
         .then(res => {
           setProfileProblemsets(res.data.problemsets);
+          setPagination({
+            ...pagination,
+            current,
+            pageSize,
+            total: res.data.total,
+          });
         });
     } else if (problemSolvedProgressTab === 'contest') {
       getUserProfileProblemSolved(id, {type: 'CONTEST', page: current, perPage: pageSize})
