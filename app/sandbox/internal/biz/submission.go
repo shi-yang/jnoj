@@ -476,7 +476,7 @@ func (uc *SubmissionUsecase) runTests(
 					t.Verdict = SubmissionVerdictWrongAnswer
 				}
 			}
-			uc.log.Infof("Submission[%d] runing test [%d/%d] verdict:%d, memory:%d, time:%d",
+			uc.log.Infof("Submission[%d] runing test [%d/%d] verdict:%s, memory:%d, time:%d",
 				submissionId, currentTest, problemTest.TotalTest, VerdictToText(t.Verdict), t.Memory, t.Time)
 			if t.Verdict == SubmissionVerdictAccepted && !problemTest.HasSubtask {
 				t.Score = 100 / float32(problemTest.TotalTest)
