@@ -104,6 +104,31 @@ const (
 	SubmissionVerdictSysemError
 )
 
+func VerdictToText(verdict int) string {
+	switch verdict {
+	case SubmissionVerdictPending:
+		return "Pending"
+	case SubmissionVerdictCompileError:
+		return "Compile Error"
+	case SubmissionVerdictWrongAnswer:
+		return "Wrong Answer"
+	case SubmissionVerdictAccepted:
+		return "Accepted"
+	case SubmissionVerdictPresentationError:
+		return "Presentation Error"
+	case SubmissionVerdictTimeLimit:
+		return "Time Limit"
+	case SubmissionVerdictMemoryLimit:
+		return "Memory Limit"
+	case SubmissionVerdictRuntimeError:
+		return "Runtime Error"
+	case SubmissionVerdictSysemError:
+		return "System Error"
+	default:
+		return ""
+	}
+}
+
 const (
 	SubmissionEntityTypeProblemset = iota
 	SubmissionEntityTypeContest
@@ -236,8 +261,6 @@ func (uc *SubmissionUsecase) RunSubmission(ctx context.Context, id int) error {
 	res := uc.runTests(ctx, s.ID, source, s.Language, s.UserID, problem, problemTest, isGenerateOutput)
 	for i, subtask := range res.Subtasks {
 		for j, v := range subtask.Tests {
-			if isGenerateOutput {
-			}
 			res.Subtasks[i].Tests[j].Stdin = substrLength([]byte(v.Stdin), 99)
 			res.Subtasks[i].Tests[j].Stdout = substrLength([]byte(v.Stdout), 99)
 			res.Subtasks[i].Tests[j].Stderr = substrLength([]byte(v.Stderr), 99)
@@ -453,6 +476,8 @@ func (uc *SubmissionUsecase) runTests(
 					t.Verdict = SubmissionVerdictWrongAnswer
 				}
 			}
+			uc.log.Infof("Submission[%d] runing test [%d/%d] verdict:%d, memory:%d, time:%d",
+				submissionId, currentTest, problemTest.TotalTest, VerdictToText(t.Verdict), t.Memory, t.Time)
 			if t.Verdict == SubmissionVerdictAccepted && !problemTest.HasSubtask {
 				t.Score = 100 / float32(problemTest.TotalTest)
 			}
