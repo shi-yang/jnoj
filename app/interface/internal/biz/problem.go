@@ -288,15 +288,22 @@ func (uc *ProblemUsecase) DownloadProblems(ctx context.Context, ids []int32) (re
 // ReplaceObjectiveStatementBrackets 替换题目中的 { } 为下划线，用于填空题
 // "{床前明月光}，疑似地上霜" => "_______，疑似地上霜"
 // 不在 $$ 内，因为此时会属于 katex 语法
+// 不在 ```内，因为此时会展示为 html 代码
 func (uc *ProblemUsecase) ReplaceObjectiveStatementBrackets(str string) string {
 	var result strings.Builder
 	var inDollar bool
 	var inBracket bool
+	var inBacktick bool
 	for i := 0; i < len(str); i++ {
 		if str[i] == '$' {
 			inDollar = !inDollar
 		}
-		if !inDollar {
+		if str[i] == '`' && i+1 < len(str) && str[i+1] == '`' && i+2 < len(str) && str[i+2] == '`' {
+			inBacktick = !inBacktick
+			result.WriteString("```")
+			continue
+		}
+		if !inDollar && !inBacktick {
 			if str[i] == '{' {
 				inBracket = true
 				result.WriteString("_______")
