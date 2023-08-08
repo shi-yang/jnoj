@@ -272,7 +272,7 @@ export default function ObjectivePage(props: any) {
                                             },
                                           ]}
                                         >
-                                          <Input />
+                                          <Input.TextArea autoSize={{ minRows: 2 }} />
                                         </Form.Item>
                                         <Button
                                           icon={<IconDelete />}

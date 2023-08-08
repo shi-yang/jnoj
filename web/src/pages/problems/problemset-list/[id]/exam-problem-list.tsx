@@ -27,7 +27,6 @@ function RenderObjectiveItem({statement, index}: {statement: any, index: number}
         <Tag color='blue'>
           {t[`objective.type.${statement.type}`]}
         </Tag>
-        {statement.title}
       </Typography.Title>
       <Typography.Paragraph>
         <Markdown content={`${index + 1}. ${legend}`} />
@@ -36,7 +35,16 @@ function RenderObjectiveItem({statement, index}: {statement: any, index: number}
         {(statement.type == 'CHOICE') && (
           <Radio.Group direction='vertical' options={
             choices.map((item, index) => 
-              ({label: item, value: index})
+              ({label: (
+                <div className='markdown-body markdown-choice'>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                  >
+                    {item}
+                  </ReactMarkdown>
+                </div>
+              ), value: item})
             )
           }>
           </Radio.Group>
@@ -44,7 +52,16 @@ function RenderObjectiveItem({statement, index}: {statement: any, index: number}
         {(statement.type == 'MULTIPLE') && (
           <Checkbox.Group direction='vertical' options={
             choices.map((item, index) => 
-              ({label: item, value: item})
+              ({label: (
+                <div className='markdown-body markdown-choice'>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                  >
+                    {item}
+                  </ReactMarkdown>
+                </div>
+              ), value: item})
             )
           }>
           </Checkbox.Group>
