@@ -461,8 +461,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 			name += string(char)
 		}
 		if strings.Contains(row[columnMap[ColumnType]], ColumnTypeFillBlank) {
-			re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
-			name = re.ReplaceAllString(name, "________")
+			name = uc.ReplaceObjectiveStatementBrackets(name)
 		}
 		// 处理解析
 		note := ""
@@ -505,8 +504,8 @@ func (uc *ProblemsetUsecase) previewBatchAddProblemToProblemset(ctx context.Cont
 			Note:   v.Statements[0].Note,
 		}
 		if statement.Type == v1.ProblemStatementType_MULTIPLE {
-			re := regexp.MustCompile(`\{.*?\}`) // 匹配 {} 及里面的内容替换为下划线
-			statement.Legend = re.ReplaceAllString(statement.Legend, "________")
+			// 匹配 {} 及里面的内容替换为下划线
+			statement.Legend = uc.ReplaceObjectiveStatementBrackets(statement.Legend)
 		}
 		problem := &v1.ProblemsetProblem{
 			Name:      v.Name,
@@ -698,4 +697,38 @@ func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, 
 	answer.UnansweredProblemIDs = strings.Join(unanswered, ",")
 	answer.SubmissionIDs = strings.Join(submissionIds, ",")
 	return nil
+}
+
+// ReplaceObjectiveStatementBrackets 替换题目中的 { } 为下划线，用于填空题
+// "{床前明月光}，疑似地上霜" => "_______，疑似地上霜"
+// 不在 $$ 内，因为此时会属于 katex 语法
+// 不在 ```内，因为此时会展示为 html 代码
+func (uc *ProblemsetUsecase) ReplaceObjectiveStatementBrackets(str string) string {
+	var result strings.Builder
+	var inDollar bool
+	var inBracket bool
+	var inBacktick bool
+	for i := 0; i < len(str); i++ {
+		if str[i] == '$' {
+			inDollar = !inDollar
+		}
+		if str[i] == '`' && i+1 < len(str) && str[i+1] == '`' && i+2 < len(str) && str[i+2] == '`' {
+			inBacktick = !inBacktick
+			result.WriteString("```")
+			continue
+		}
+		if !inDollar && !inBacktick {
+			if str[i] == '{' {
+				inBracket = true
+				result.WriteString("\\_\\_\\_\\_\\_\\_\\_")
+			} else if str[i] == '}' {
+				inBracket = false
+				continue
+			}
+		}
+		if !inBracket {
+			result.WriteByte(str[i])
+		}
+	}
+	return result.String()
 }

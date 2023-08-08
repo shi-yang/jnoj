@@ -840,7 +840,10 @@ func (s *ProblemService) GetProblemset(ctx context.Context, req *v1.GetProblemse
 
 // CreateProblemset 创建题单
 func (s *ProblemService) CreateProblemset(ctx context.Context, req *v1.CreateProblemsetRequest) (*v1.Problemset, error) {
-	uid, _ := auth.GetUserID(ctx)
+	uid, role := auth.GetUserID(ctx)
+	if role == biz.UserRoleRegular {
+		return nil, v1.ErrorForbidden("forbidden")
+	}
 	res, err := s.problemsetUc.CreateProblemset(ctx, &biz.Problemset{
 		Name:        req.Name,
 		UserID:      uid,
@@ -1030,7 +1033,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 				Note:      v.Statement.Note,
 				Type:      v1.ProblemStatementType(v.Statement.Type),
 			}
-			p.Statement.Legend = s.uc.ReplaceObjectiveStatementBrackets(v.Statement.Legend)
+			p.Statement.Legend = s.problemsetUc.ReplaceObjectiveStatementBrackets(v.Statement.Legend)
 		}
 		resp.Problems = append(resp.Problems, p)
 	}
@@ -1078,7 +1081,7 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 			if v.Type == biz.ProblemStatementTypeFillBlank {
 				var ans []string
 				json.Unmarshal([]byte(v.Output), &ans)
-				statement.Legend = s.uc.ReplaceObjectiveStatementBrackets(v.Legend)
+				statement.Legend = s.problemsetUc.ReplaceObjectiveStatementBrackets(v.Legend)
 				for i := 0; i < len(ans); i++ {
 					ans[i] = ""
 				}
@@ -1106,7 +1109,7 @@ func (s *ProblemService) GetProblemsetLateralProblem(ctx context.Context, req *v
 	}, nil
 }
 
-// CreateProblemset 添加题目到题单
+// AddProblemToProblemset 添加题目到题单
 func (s *ProblemService) AddProblemToProblemset(ctx context.Context, req *v1.AddProblemToProblemsetRequest) (*emptypb.Empty, error) {
 	// 题单是否存在
 	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
