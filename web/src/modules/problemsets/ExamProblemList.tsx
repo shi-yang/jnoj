@@ -12,7 +12,7 @@ import SubmissionVerdict from '../submission/SubmissionVerdict';
 import SubmissionDrawer from '../submission/SubmissionDrawer';
 import Markdown from '@/components/MarkdownView';
 
-function RenderObjectiveItem({statement, answer, index}: {statement: any, answer?:any, index: number}) {
+function RenderObjectiveItem({statement, answer, index, problem}: {statement: any, answer?:any, index: number, problem:any}) {
   const t = useLocale(locale);
   let choices = [];
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
@@ -24,11 +24,14 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
   }
   return (
     <div>
-      <Typography.Title heading={6} style={{marginBottom: 0}}>
+      <Space>
         <Tag color='blue'>
           {t[`objective.type.${statement.type}`]}
         </Tag>
-      </Typography.Title>
+        <Tag color='green'>
+          分数：{problem.score}
+        </Tag>
+      </Space>
       <Typography.Paragraph>
         <Markdown content={`${index + 1}. ` + legend} />
       </Typography.Paragraph>
@@ -132,9 +135,20 @@ const ProblemsList = ({ problems, answer, submissions }: { problems: any[], answ
         <List.Item key={index} id={`problem-${item.problemId}`}>
           {item.statement && (
             item.statement.type === 'CODE' ? (
-              <RenderProgrammingItem statement={item.statement} answer={answer && answer[`problem-${item.problemId}`]} index={index} submission={submissions && submissions[item.problemId]} problem={item} />
+              <RenderProgrammingItem
+                statement={item.statement}
+                answer={answer && answer[`problem-${item.problemId}`]}
+                index={index}
+                submission={submissions && submissions[item.problemId]}
+                problem={item}
+              />
             ) : (
-              <RenderObjectiveItem statement={item.statement} answer={answer && answer[`problem-${item.problemId}`]} index={index} />
+              <RenderObjectiveItem
+                statement={item.statement}
+                answer={answer && answer[`problem-${item.problemId}`]}
+                index={index}
+                problem={item}
+              />
             )
           )}
         </List.Item>

@@ -52,6 +52,7 @@ type ProblemsetAnswer struct {
 	ID                   int
 	ProblemsetID         int
 	UserID               int
+	Score                float32
 	Answer               string
 	AnsweredProblemIDs   string // 回答题目题目
 	UnansweredProblemIDs string // 未回答题目
@@ -71,15 +72,16 @@ const (
 
 // HasPermission 是否有权限修改
 func (p *Problemset) HasPermission(ctx context.Context) bool {
-	uid, _ := auth.GetUserID(ctx)
-	return uid == p.UserID
+	uid, role := auth.GetUserID(ctx)
+	return uid == p.UserID || role != UserRoleSuperAdmin
 }
 
 // ProblemsetProblem Problemset's Problem model.
 type ProblemsetProblem struct {
 	ID            int
 	Name          string
-	Order         int // 题目次序 1,2,3,4
+	Order         int     // 题目次序 1,2,3,4
+	Score         float32 // 题目分数
 	Type          int
 	ProblemID     int
 	ProblemsetID  int
@@ -121,6 +123,7 @@ type ProblemsetRepo interface {
 
 	ListProblemsetProblems(context.Context, *v1.ListProblemsetProblemsRequest) ([]*ProblemsetProblem, int64)
 	ListProblemsetProblemStatements(context.Context, []int) map[int]*ProblemStatement
+	UpdateProblemsetProblem(ctx context.Context, sid int, pid int, problem *ProblemsetProblem) (*ProblemsetProblem, error)
 	GetProblemsetProblem(ctx context.Context, sid int, order int) (*ProblemsetProblem, error)
 	GetProblemsetLateralProblem(context.Context, int, int) (int, int)
 	AddProblemToProblemset(context.Context, *ProblemsetProblem) error
@@ -314,6 +317,10 @@ func (uc *ProblemsetUsecase) GetProblemsetProblem(ctx context.Context, sid int, 
 	return uc.repo.GetProblemsetProblem(ctx, sid, order)
 }
 
+func (uc *ProblemsetUsecase) UpdateProblemsetProblem(ctx context.Context, sid int, pid int, problem *ProblemsetProblem) (*ProblemsetProblem, error) {
+	return uc.repo.UpdateProblemsetProblem(ctx, sid, pid, problem)
+}
+
 func (uc *ProblemsetUsecase) GetProblemsetLateralProblem(ctx context.Context, id int, pid int) (int, int) {
 	return uc.repo.GetProblemsetLateralProblem(ctx, id, pid)
 }
@@ -373,7 +380,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 			columnMap[ColumnAnswer] = index
 		} else if strings.Contains(column, "解析") {
 			columnMap[ColumnAnswerDetail] = index
-		} else if strings.Contains(column, "分值") {
+		} else if strings.Contains(column, "分值") || strings.Contains(column, "分数") {
 			columnMap[ColumnScore] = index
 		} else if strings.Contains(column, "选项") {
 			// 利用二进制的方式来储存选项位置
@@ -381,7 +388,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 		}
 	}
 	var (
-		problems     []*Problem
+		problems     []*ProblemsetProblem
 		total        int
 		failedReason []string
 	)
@@ -406,7 +413,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 			// 单选，答案处理
 			choice := row[columnMap[ColumnAnswer]]
 			for _, v := range choiceArr {
-				if len(v) > 0 && string(v[0]) == choice {
+				if len(v) > 0 && strings.Contains(v, choice) {
 					answers = append(answers, v)
 					break
 				}
@@ -468,6 +475,12 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 		if columnMap[ColumnAnswerDetail] < len(row) {
 			note = row[columnMap[ColumnAnswerDetail]]
 		}
+		// 处理分数
+		score := float32(0)
+		if columnMap[ColumnScore] < len(row) {
+			v, _ := strconv.ParseFloat(row[columnMap[ColumnScore]], 32)
+			score = float32(v)
+		}
 		statement := &ProblemStatement{
 			Name:   name,
 			Legend: row[columnMap[ColumnContent]],
@@ -477,11 +490,11 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 			Note:   note,
 			UserID: uid,
 		}
-		problem := &Problem{
-			Type:       ProblemTypeObjective,
-			Name:       name,
-			UserID:     uid,
-			Statements: []*ProblemStatement{statement},
+		problem := &ProblemsetProblem{
+			Type:      ProblemTypeObjective,
+			Name:      name,
+			Score:     score,
+			Statement: statement,
 		}
 		problems = append(problems, problem)
 	}
@@ -492,16 +505,16 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemsetPreview(ctx context.Cont
 }
 
 // previewBatchAddProblemToProblemset 返回预览
-func (uc *ProblemsetUsecase) previewBatchAddProblemToProblemset(ctx context.Context, problems []*Problem) (*v1.BatchAddProblemToProblemsetPreviewResponse, error) {
+func (uc *ProblemsetUsecase) previewBatchAddProblemToProblemset(ctx context.Context, problems []*ProblemsetProblem) (*v1.BatchAddProblemToProblemsetPreviewResponse, error) {
 	resp := new(v1.BatchAddProblemToProblemsetPreviewResponse)
 	for _, v := range problems {
 		statement := &v1.ProblemStatement{
-			Name:   v.Statements[0].Name,
-			Legend: v.Statements[0].Legend,
-			Input:  v.Statements[0].Input,
-			Output: v.Statements[0].Output,
-			Type:   v1.ProblemStatementType(v.Statements[0].Type),
-			Note:   v.Statements[0].Note,
+			Name:   v.Statement.Name,
+			Legend: v.Statement.Legend,
+			Input:  v.Statement.Input,
+			Output: v.Statement.Output,
+			Type:   v1.ProblemStatementType(v.Statement.Type),
+			Note:   v.Statement.Note,
 		}
 		if statement.Type == v1.ProblemStatementType_MULTIPLE {
 			// 匹配 {} 及里面的内容替换为下划线
@@ -511,6 +524,7 @@ func (uc *ProblemsetUsecase) previewBatchAddProblemToProblemset(ctx context.Cont
 			Name:      v.Name,
 			Type:      v1.ProblemType(v.Type),
 			Statement: statement,
+			Score:     v.Score,
 		}
 		resp.Problems = append(resp.Problems, problem)
 	}
@@ -521,6 +535,7 @@ func (uc *ProblemsetUsecase) previewBatchAddProblemToProblemset(ctx context.Cont
 func (uc *ProblemsetUsecase) BatchAddProblemToProblemset(ctx context.Context, problemset *Problemset, req *v1.BatchAddProblemToProblemsetRequest) (*v1.BatchAddProblemToProblemsetResponse, error) {
 	uid, _ := auth.GetUserID(ctx)
 	resp := new(v1.BatchAddProblemToProblemsetResponse)
+	// 基于题目ID 去添加
 	for _, id := range req.ProblemIds {
 		// 题目是否存在
 		problem, err := uc.problemRepo.GetProblem(ctx, int(id))
@@ -550,6 +565,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemset(ctx context.Context, pr
 			ProblemsetID: problemset.ID,
 		})
 	}
+	// 客观题批量添加
 	for _, v := range req.Problems {
 		problem, err := uc.problemRepo.CreateProblem(ctx, &Problem{
 			Name:   v.Name,
@@ -573,6 +589,7 @@ func (uc *ProblemsetUsecase) BatchAddProblemToProblemset(ctx context.Context, pr
 		uc.repo.AddProblemToProblemset(ctx, &ProblemsetProblem{
 			ProblemID:    problem.ID,
 			ProblemsetID: problemset.ID,
+			Score:        v.Score,
 		})
 	}
 	return resp, nil
@@ -612,6 +629,7 @@ func (uc *ProblemsetUsecase) GetProblemsetAnswer(ctx context.Context, pid int, a
 	return answer, err
 }
 
+// UpdateProblemsetAnswer 更新答案
 func (uc *ProblemsetUsecase) UpdateProblemsetAnswer(ctx context.Context, id int, answer *ProblemsetAnswer) error {
 	// 交卷，阅卷
 	if answer.SubmittedAt != nil {
@@ -620,6 +638,7 @@ func (uc *ProblemsetUsecase) UpdateProblemsetAnswer(ctx context.Context, id int,
 	return uc.repo.UpdateProblemsetAnswer(ctx, id, answer)
 }
 
+// judgeProblemsetAnswer 判断答案，阅卷
 func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, answer *ProblemsetAnswer) error {
 	_, err := uc.repo.GetProblemset(ctx, id)
 	if err != nil {
@@ -645,6 +664,7 @@ func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, 
 		wrong         []string
 		unanswered    []string
 		submissionIds []string
+		score         float32 // 总得分
 	)
 	for _, problem := range problems {
 		v, ok := answerMap[fmt.Sprintf("problem-%d", problem.ProblemID)]
@@ -657,6 +677,7 @@ func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, 
 		if problem.Type == ProblemTypeObjective {
 			userAnswer, _ := json.Marshal(v)
 			if isAnswerMatched(string(userAnswer), problem.Statement.Output) {
+				score += problem.Score
 				correct = append(correct, strconv.Itoa(problem.ProblemID))
 			} else {
 				wrong = append(wrong, strconv.Itoa(problem.ProblemID))
@@ -696,6 +717,7 @@ func (uc *ProblemsetUsecase) judgeProblemsetAnswer(ctx context.Context, id int, 
 	answer.WrongProblemIDs = strings.Join(wrong, ",")
 	answer.UnansweredProblemIDs = strings.Join(unanswered, ",")
 	answer.SubmissionIDs = strings.Join(submissionIds, ",")
+	answer.Score = score
 	return nil
 }
 

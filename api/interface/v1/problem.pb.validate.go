@@ -6762,6 +6762,8 @@ func (m *ProblemsetProblem) validate(all bool) error {
 
 	}
 
+	// no validation rules for Score
+
 	if len(errors) > 0 {
 		return ProblemsetProblemMultiError(errors)
 	}
@@ -7123,6 +7125,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetProblemsetProblemRequestValidationError{}
+
+// Validate checks the field values on UpdateProblemsetProblemRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateProblemsetProblemRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateProblemsetProblemRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// UpdateProblemsetProblemRequestMultiError, or nil if none found.
+func (m *UpdateProblemsetProblemRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateProblemsetProblemRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Pid
+
+	// no validation rules for Score
+
+	if len(errors) > 0 {
+		return UpdateProblemsetProblemRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateProblemsetProblemRequestMultiError is an error wrapping multiple
+// validation errors returned by UpdateProblemsetProblemRequest.ValidateAll()
+// if the designated constraints aren't met.
+type UpdateProblemsetProblemRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateProblemsetProblemRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateProblemsetProblemRequestMultiError) AllErrors() []error { return m }
+
+// UpdateProblemsetProblemRequestValidationError is the validation error
+// returned by UpdateProblemsetProblemRequest.Validate if the designated
+// constraints aren't met.
+type UpdateProblemsetProblemRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateProblemsetProblemRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateProblemsetProblemRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateProblemsetProblemRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateProblemsetProblemRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateProblemsetProblemRequestValidationError) ErrorName() string {
+	return "UpdateProblemsetProblemRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateProblemsetProblemRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateProblemsetProblemRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateProblemsetProblemRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateProblemsetProblemRequestValidationError{}
 
 // Validate checks the field values on GetProblemsetLateralProblemRequest with
 // the rules defined in the proto definition for this message. If any rules
@@ -9337,6 +9448,8 @@ func (m *ProblemsetAnswer) validate(all bool) error {
 	// no validation rules for WrongProblemIds
 
 	// no validation rules for SubmissionIds
+
+	// no validation rules for Score
 
 	for idx, item := range m.GetSubmissions() {
 		_, _ = idx, item

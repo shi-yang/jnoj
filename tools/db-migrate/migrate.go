@@ -19,12 +19,40 @@ func Migrate(db *gorm.DB) {
 		MigrateAddUserAvatar20230802(),
 		MigrateAddProblemsetPermission20230803(),
 		MigrateAddProblemsetChild20230805(),
+		MigrateAddProblemsetExamScore20230809(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddProblemsetExamScore20230809() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddProblemsetExamScore20230809",
+		Migrate: func(d *gorm.DB) error {
+			err := d.Exec("ALTER TABLE `problemset_user` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `created_at`;").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `problemset_problem` ADD `score` FLOAT UNSIGNED NOT NULL DEFAULT '0' AFTER `order`;").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `problemset_answer` ADD `score` FLOAT UNSIGNED NOT NULL DEFAULT '0' AFTER `user_id`;").Error
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		Rollback: func(d *gorm.DB) error {
+			d.Exec("ALTER TABLE `problemset_user` DROP `updated_at`;")
+			d.Exec("ALTER TABLE `problemset_problem` DROP `score`;")
+			d.Exec("ALTER TABLE `problemset_answer` DROP `score`;")
+			return nil
+		},
+	}
 }
 
 func MigrateAddProblemsetChild20230805() *gormigrate.Migration {

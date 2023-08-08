@@ -77,6 +77,7 @@ const OperationProblemServiceUpdateProblemStatement = "/jnoj.interface.v1.Proble
 const OperationProblemServiceUpdateProblemTest = "/jnoj.interface.v1.ProblemService/UpdateProblemTest"
 const OperationProblemServiceUpdateProblemset = "/jnoj.interface.v1.ProblemService/UpdateProblemset"
 const OperationProblemServiceUpdateProblemsetAnswer = "/jnoj.interface.v1.ProblemService/UpdateProblemsetAnswer"
+const OperationProblemServiceUpdateProblemsetProblem = "/jnoj.interface.v1.ProblemService/UpdateProblemsetProblem"
 const OperationProblemServiceVerifyProblem = "/jnoj.interface.v1.ProblemService/VerifyProblem"
 
 type ProblemServiceHTTPServer interface {
@@ -134,6 +135,7 @@ type ProblemServiceHTTPServer interface {
 	UpdateProblemTest(context.Context, *UpdateProblemTestRequest) (*ProblemTest, error)
 	UpdateProblemset(context.Context, *UpdateProblemsetRequest) (*Problemset, error)
 	UpdateProblemsetAnswer(context.Context, *UpdateProblemsetAnswerRequest) (*emptypb.Empty, error)
+	UpdateProblemsetProblem(context.Context, *UpdateProblemsetProblemRequest) (*ProblemsetProblem, error)
 	VerifyProblem(context.Context, *VerifyProblemRequest) (*emptypb.Empty, error)
 }
 
@@ -171,6 +173,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemFromProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/SortProblemsetProblems", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetProblems", auth.Guest())
+	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemsetProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsetUsers", auth.Guest())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemsetUser", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetUser", auth.User())
@@ -223,6 +226,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.DELETE("/problemsets/{id}/users/{user_id}", _ProblemService_DeleteProblemsetUser0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems", _ProblemService_ListProblemsetProblems0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems/{pid}", _ProblemService_GetProblemsetProblem0_HTTP_Handler(srv))
+	r.PUT("/problemsets/{id}/problems/{pid}", _ProblemService_UpdateProblemsetProblem0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/problems/{pid}/lateral", _ProblemService_GetProblemsetLateralProblem0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/problems", _ProblemService_AddProblemToProblemset0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/batch_problems_preview", _ProblemService_BatchAddProblemToProblemsetPreview0_HTTP_Handler(srv))
@@ -1192,6 +1196,28 @@ func _ProblemService_GetProblemsetProblem0_HTTP_Handler(srv ProblemServiceHTTPSe
 	}
 }
 
+func _ProblemService_UpdateProblemsetProblem0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateProblemsetProblemRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceUpdateProblemsetProblem)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateProblemsetProblem(ctx, req.(*UpdateProblemsetProblemRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ProblemsetProblem)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_GetProblemsetLateralProblem0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetProblemsetLateralProblemRequest
@@ -1486,6 +1512,7 @@ type ProblemServiceHTTPClient interface {
 	UpdateProblemTest(ctx context.Context, req *UpdateProblemTestRequest, opts ...http.CallOption) (rsp *ProblemTest, err error)
 	UpdateProblemset(ctx context.Context, req *UpdateProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
 	UpdateProblemsetAnswer(ctx context.Context, req *UpdateProblemsetAnswerRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	UpdateProblemsetProblem(ctx context.Context, req *UpdateProblemsetProblemRequest, opts ...http.CallOption) (rsp *ProblemsetProblem, err error)
 	VerifyProblem(ctx context.Context, req *VerifyProblemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
@@ -2191,6 +2218,19 @@ func (c *ProblemServiceHTTPClientImpl) UpdateProblemsetAnswer(ctx context.Contex
 	pattern := "/problemsets/{id}/answers/{answer_id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemsetAnswer))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) UpdateProblemsetProblem(ctx context.Context, in *UpdateProblemsetProblemRequest, opts ...http.CallOption) (*ProblemsetProblem, error) {
+	var out ProblemsetProblem
+	pattern := "/problemsets/{id}/problems/{pid}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceUpdateProblemsetProblem))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

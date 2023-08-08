@@ -35,13 +35,16 @@ const BatchCreateModal = ({ problemset, callback }: {problemset: any, callback: 
       };
       batchAddProblemToProblemsetPreview(problemset.id, data).then(res => {
         onSuccess();
+        const totalScore = res.data.problems.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.score;
+        }, 0);
         modal.confirm({
           title: '确认添加',
           style: {width: '800px'},
           content: <div>
             <div>
               <Typography.Paragraph>总数：{res.data.total}，点击“确定”，将会添加解析成功数，如果需要修正解析失败，请点击“取消”或关闭当前对话框，并修正Excel文件后再重新上传。</Typography.Paragraph>
-              <Typography.Paragraph>解析成功：{res.data.total - res.data.failedReason.length}</Typography.Paragraph>
+              <Typography.Paragraph>解析成功：{res.data.total - res.data.failedReason.length}，解析成功题目总分数：{totalScore}</Typography.Paragraph>
               <Typography.Paragraph bold>解析失败：{res.data.failedReason.length}</Typography.Paragraph>
               {res.data.failedReason && res.data.failedReason.map((item, index) => (
                 <Typography.Paragraph key={index} style={{ color: 'red' }}>{item}</Typography.Paragraph>
@@ -162,6 +165,7 @@ const Page = ({problemset}: {problemset:any}) => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
+  const [totalScore, setTotalScore] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -175,6 +179,10 @@ const Page = ({problemset}: {problemset:any}) => {
     };
     listProblemsetProblems(problemset.id, params)
       .then((res) => {
+        const total = res.data.problems.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.score;
+        }, 0);
+        setTotalScore(total);
         setProblems(res.data.problems);
         setPatination({
           ...pagination,
@@ -186,11 +194,19 @@ const Page = ({problemset}: {problemset:any}) => {
   }
 
   return (
-    <Card title='题目列表' extra={
-      <div>
-        <BatchCreateModal problemset={problemset} callback={fetchData} />
-      </div>
-    }>
+    <Card
+      title={
+        <Space split={<Divider type='vertical'/>}>
+          <span>题目数量：{problems.length}</span>
+          <span>总分数：{totalScore}</span>
+        </Space>
+      }
+      extra={
+        <div>
+          <BatchCreateModal problemset={problemset} callback={fetchData} />
+        </div>
+      }
+    >
       <div className='container'>
         <ProblemsList problemsetId={problemset.id} problems={problems} fetchData={fetchData} />
       </div>

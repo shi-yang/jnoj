@@ -991,6 +991,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 				Source:        v.Source,
 				Tags:          v.Tags,
 				Status:        v1.ProblemsetProblem_Status(v.Status),
+				Score:         v.Score,
 			})
 		}
 		resp.Problemsets = append(resp.Problemsets, &v1.Problemset{
@@ -1017,6 +1018,7 @@ func (s *ProblemService) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 			Source:        v.Source,
 			Tags:          v.Tags,
 			Status:        v1.ProblemsetProblem_Status(v.Status),
+			Score:         v.Score,
 		}
 		for _, t := range v.SampleTests {
 			p.SampleTests = append(p.SampleTests, &v1.SampleTest{
@@ -1100,7 +1102,25 @@ func (s *ProblemService) GetProblemsetProblem(ctx context.Context, req *v1.GetPr
 	return resp, nil
 }
 
-// GetProblemsetProblem 获取题单的题目
+// UpdateProblemsetProblem 修改题单的题目
+func (s *ProblemService) UpdateProblemsetProblem(ctx context.Context, req *v1.UpdateProblemsetProblemRequest) (*v1.ProblemsetProblem, error) {
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if !set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	// 修改题目信息
+	_, err = s.problemsetUc.UpdateProblemsetProblem(ctx, int(req.Id), int(req.Pid), &biz.ProblemsetProblem{
+		Score: req.Score,
+	})
+	return nil, err
+}
+
+// GetProblemsetLateralProblem 获取题单上一题、下一题题号
 func (s *ProblemService) GetProblemsetLateralProblem(ctx context.Context, req *v1.GetProblemsetLateralProblemRequest) (*v1.GetProblemsetLateralProblemResponse, error) {
 	previous, next := s.problemsetUc.GetProblemsetLateralProblem(ctx, int(req.Id), int(req.Pid))
 	return &v1.GetProblemsetLateralProblemResponse{
@@ -1274,6 +1294,7 @@ func (s *ProblemService) ListProblemsetAnswers(ctx context.Context, req *v1.List
 			AnsweredProblemIds:   v.AnsweredProblemIDs,
 			WrongProblemIds:      v.WrongProblemIDs,
 			UnansweredProblemIds: v.UnansweredProblemIDs,
+			Score:                v.Score,
 			CreatedAt:            timestamppb.New(v.CreatedAt),
 		}
 		if v.SubmittedAt != nil {

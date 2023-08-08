@@ -49,6 +49,10 @@ export function getProblemsetProblem(id, order) {
   return axios.get(`/problemsets/${id}/problems/${order}`);
 }
 
+export function updateProblemsetProblem(id, pid, data) {
+  return axios.put(`/problemsets/${id}/problems/${pid}`, data);
+}
+
 export function getProblemsetLateralProblem(id, order) {
   return axios.get(`/problemsets/${id}/problems/${order}/lateral`);
 }

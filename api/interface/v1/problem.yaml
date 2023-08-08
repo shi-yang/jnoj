@@ -68,6 +68,8 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemsetProblems"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.ProblemService/UpdateProblemsetProblem"
+  middleware: "jnoj/internal/middleware/auth.User()"
 
 - selector: "/jnoj.interface.v1.ProblemService/ListProblemsetUsers"
   middleware: "jnoj/internal/middleware/auth.Guest()"

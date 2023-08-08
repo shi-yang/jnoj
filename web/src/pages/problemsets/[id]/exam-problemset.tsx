@@ -70,7 +70,7 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
   );
 }
 
-function RenderObjectiveItem({index, statement}: {index: number, statement: any}) {
+function RenderObjectiveItem({index, statement, problem}: {index: number, statement: any, problem:any}) {
   const t = useLocale(locale);
   let choices = [];
   if (statement.input !== '') {
@@ -82,12 +82,14 @@ function RenderObjectiveItem({index, statement}: {index: number, statement: any}
   }
   return (
     <div>
-      <Typography.Title heading={5} style={{marginBottom: 0}}>
+      <Space>
         <Tag color='blue'>
           {t[`objective.type.${statement.type}`]}
         </Tag>
-        {statement.title}
-      </Typography.Title>
+        <Tag color='green'>
+          分数 {problem.score}
+        </Tag>
+      </Space>
       <Typography.Paragraph>
         <Markdown content={`${index + 1}. ${legend}`} />
       </Typography.Paragraph>
@@ -272,6 +274,9 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
         dataSource={answers}
         render={(item, index) => (
           <List.Item key={index} extra={<div><Link href={`/problemsets/${problemset.id}/answer/${item.id}`}>查看</Link></div>}>
+            <Typography.Title heading={4}>
+              得分：{item.score}
+            </Typography.Title>
             <Space direction='vertical'>
               <Space>
                 <span>正确回答：{item.correctProblemIds === '' ? 0 : item.correctProblemIds.split(',').length}</span>
@@ -387,7 +392,7 @@ function Page({problemset}: {problemset:any}) {
                       item.statement.type === 'CODE' ? (
                         <RenderProgrammingItem index={index} problem={item} statement={item.statement} />
                       ) : (
-                        <RenderObjectiveItem index={index} statement={item.statement} />
+                        <RenderObjectiveItem index={index} problem={item} statement={item.statement} />
                       )
                     )}
                   </List.Item>

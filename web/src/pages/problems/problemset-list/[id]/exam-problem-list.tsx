@@ -1,18 +1,19 @@
 import useLocale from '@/utils/useLocale';
 import { Typography, Radio, Checkbox, List, Tag, Space, Button, Message, Popconfirm, Popover, Link } from '@arco-design/web-react';
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import locale from './locale';
-import { deleteProblemFromProblemset, sortProblemsetProblems } from '@/api/problemset';
+import { deleteProblemFromProblemset, sortProblemsetProblems, updateProblemsetProblem } from '@/api/problemset';
 import { IconDown, IconDragDot, IconUp } from '@arco-design/web-react/icon';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import Markdown from '@/components/MarkdownView';
 
-function RenderObjectiveItem({statement, index}: {statement: any, index: number}) {
+function RenderObjectiveItem({statement, index, problem, problemsetId, onUpdate}: {statement: any, index: number, problem:any, problemsetId: number, onUpdate: () => void}) {
   const t = useLocale(locale);
+  const [score, setScore] = useState<number>(problem.score);
   let choices = [];
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
     choices = JSON.parse(statement.input);
@@ -21,13 +22,24 @@ function RenderObjectiveItem({statement, index}: {statement: any, index: number}
   if (statement.type === 'FILLBLANK') {
     legend = statement.legend.replace(/{.*?}/g, '`________`');
   }
+  function onChangeScore(v) {
+    setScore(Number(v));
+    updateProblemsetProblem(problemsetId, problem.problemId, {score: Number(v)})
+      .then(res => {
+        Message.success('已保存');
+        onUpdate();
+      });
+  }
   return (
     <div>
-      <Typography.Title heading={5} style={{marginBottom: 0}}>
+      <Space>
         <Tag color='blue'>
           {t[`objective.type.${statement.type}`]}
         </Tag>
-      </Typography.Title>
+        <Tag color='green'>
+          分数：<Typography.Text editable={{onChange:(v) => setScore(v), onEnd: onChangeScore}}>{score}</Typography.Text>
+        </Tag>
+      </Space>
       <Typography.Paragraph>
         <Markdown content={`${index + 1}. ${legend}`} />
       </Typography.Paragraph>
@@ -85,7 +97,7 @@ function RenderObjectiveItem({statement, index}: {statement: any, index: number}
   );
 }
 
-function RenderProgrammingItem({statement, problem}: {statement: any, problem:any}) {
+function RenderProgrammingItem({statement, problem, index}: {statement: any, problem:any, index:number}) {
   const t = useLocale(locale);
   return (
     <div>
@@ -174,9 +186,9 @@ const ProblemsList = ({ problemsetId, problems, fetchData }: { problemsetId: num
         }>
           {item.statement && (
             item.statement.type === 'CODE' ? (
-              <RenderProgrammingItem problem={item} statement={item.statement} />
+              <RenderProgrammingItem problem={item} statement={item.statement} index={index} />
             ) : (
-              <RenderObjectiveItem statement={item.statement} index={index} />
+              <RenderObjectiveItem statement={item.statement} problem={item} index={index} problemsetId={problemsetId} onUpdate={fetchData} />
             )
           )}
         </List.Item>

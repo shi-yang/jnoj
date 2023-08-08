@@ -50,6 +50,7 @@ type ProblemsetUser struct {
 	UserID        int
 	AcceptedCount int // 过题量
 	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	User          *User `json:"user" gorm:"foreignKey:UserID"`
 }
 
@@ -57,6 +58,7 @@ type ProblemsetAnswer struct {
 	ID                   int
 	ProblemsetID         int
 	UserID               int
+	Score                float32 // 得分
 	Answer               string
 	AnsweredProblemIDs   string // 回答题目题目
 	UnansweredProblemIDs string // 未回答题目
@@ -73,6 +75,7 @@ type ProblemsetProblem struct {
 	ProblemID    int
 	ProblemsetID int
 	Order        int
+	Score        float32  // 分数
 	Problem      *Problem `gorm:"ForeignKey:ProblemID"`
 }
 
@@ -441,6 +444,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 		pp.order,
 		ps.name,
 		pp.problem_id,
+		pp.score,
 		problem.type,
 		problem.accepted_count,
 		problem.submit_count,
@@ -484,7 +488,7 @@ func (r *ProblemsetRepo) ListProblemsetProblems(ctx context.Context, req *v1.Lis
 	for rows.Next() {
 		p := &biz.ProblemsetProblem{}
 		var tags string
-		rows.Scan(&p.ID, &p.Order, &p.Name, &p.ProblemID, &p.Type, &p.AcceptedCount, &p.SubmitCount, &p.Source, &tags)
+		rows.Scan(&p.ID, &p.Order, &p.Name, &p.ProblemID, &p.Score, &p.Type, &p.AcceptedCount, &p.SubmitCount, &p.Source, &tags)
 		if len(tags) != 0 {
 			p.Tags = strings.Split(tags, ",")
 		}
@@ -531,6 +535,17 @@ func (r *ProblemsetRepo) GetProblemsetProblem(ctx context.Context, sid int, orde
 	}, nil
 }
 
+// UpdateProblemsetProblem .
+func (r *ProblemsetRepo) UpdateProblemsetProblem(ctx context.Context, sid int, pid int, problem *biz.ProblemsetProblem) (*biz.ProblemsetProblem, error) {
+	err := r.data.db.WithContext(ctx).
+		Model(&ProblemsetProblem{}).
+		Where("problemset_id = ? and `problem_id` = ?", sid, pid).
+		Updates(map[string]interface{}{
+			"score": problem.Score,
+		}).Error
+	return &biz.ProblemsetProblem{}, err
+}
+
 // GetProblemsetLateralProblem .
 func (r *ProblemsetRepo) GetProblemsetLateralProblem(ctx context.Context, id int, pid int) (int, int) {
 	var previous, next int
@@ -560,6 +575,7 @@ func (r *ProblemsetRepo) AddProblemToProblemset(ctx context.Context, problem *bi
 		err := db.Create(&ProblemsetProblem{
 			ProblemID:    problem.ProblemID,
 			ProblemsetID: problem.ProblemsetID,
+			Score:        problem.Score,
 			Order:        maxOrder + 1,
 		}).Error
 		if err != nil {
@@ -657,6 +673,7 @@ func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.List
 			ID:                   v.ID,
 			ProblemsetID:         v.ProblemsetID,
 			UserID:               v.UserID,
+			Score:                v.Score,
 			Answer:               v.Answer,
 			AnsweredProblemIDs:   v.AnsweredProblemIDs,
 			UnansweredProblemIDs: v.UnansweredProblemIDs,
@@ -683,6 +700,7 @@ func (r *ProblemsetRepo) GetProblemsetAnswer(ctx context.Context, pid int, answe
 		ProblemsetID:         v.ProblemsetID,
 		UserID:               v.UserID,
 		Answer:               v.Answer,
+		Score:                v.Score,
 		AnsweredProblemIDs:   v.AnsweredProblemIDs,
 		UnansweredProblemIDs: v.UnansweredProblemIDs,
 		CorrectProblemIDs:    v.CorrectProblemIDs,
@@ -699,6 +717,7 @@ func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, ans
 	update := ProblemsetAnswer{
 		ID:                   answer.ID,
 		Answer:               answer.Answer,
+		Score:                answer.Score,
 		AnsweredProblemIDs:   answer.AnsweredProblemIDs,
 		UnansweredProblemIDs: answer.UnansweredProblemIDs,
 		CorrectProblemIDs:    answer.CorrectProblemIDs,
