@@ -3,7 +3,7 @@ import { Card, Divider, Link, PageHeader, PaginationProps, Space, Table, TableCo
 import { useRouter } from 'next/router';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { IconCheckCircle, IconExclamationCircle, IconUser } from '@arco-design/web-react/icon';
+import { IconCheckCircle, IconExclamationCircle, IconRight, IconUser } from '@arco-design/web-react/icon';
 import { listProblemsetProblems } from '@/api/problemset';
 import styles from './style/index.module.less';
 
@@ -120,7 +120,16 @@ function Problem({problemset}: {problemset:any}) {
   return (
     <div>
       <PageHeader
-        title={problemset.name}
+        title={
+          <Space split={<IconRight />}>
+            {problemset.parent && (
+              <Link href={`/problemsets/${problemset.parent.id}`}>
+                {problemset.parent.name}
+              </Link>
+            )}
+            {problemset.name}
+          </Space>
+        }
         style={{ background: 'var(--color-bg-2)' }}
         extra={
           <div><IconUser />{problemset.memberCount}</div>

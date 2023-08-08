@@ -146,6 +146,9 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 		Preload("User", func(t *gorm.DB) *gorm.DB {
 			return t.Select("ID", "Nickname", "Username", "Avatar")
 		}).
+		Preload("Parent", func(t *gorm.DB) *gorm.DB {
+			return t.Select("ID", "Name")
+		}).
 		Preload("Children", func(t *gorm.DB) *gorm.DB {
 			return t.Select("ID", "Name", "ParentID", "Type", "MemberCount").Order("child_order asc")
 		}).
@@ -170,6 +173,12 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 			Username: res.User.Username,
 			Avatar:   res.User.Avatar,
 		},
+	}
+	if res.Parent != nil {
+		set.Parent = &biz.Problemset{
+			ID:   res.Parent.ID,
+			Name: res.Parent.Name,
+		}
 	}
 	for _, v := range res.Children {
 		set.Children = append(set.Children, &biz.Problemset{

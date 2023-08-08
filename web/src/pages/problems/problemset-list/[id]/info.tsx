@@ -43,7 +43,7 @@ const App = ({problemset}: {problemset:any}) => {
           <Input />
         </FormItem>
         <FormItem field='description' label={t['description']}>
-          <Input.TextArea placeholder='' />
+          <Input.TextArea placeholder='' autoSize={{ minRows: 3 }}  />
         </FormItem>
         <Form.Item label={t['membership']} required field='membership' rules={[{ required: true }]}
           help='邀请码情况下，你可在“用户”标签页中查看和管理可刷本题单的用户'

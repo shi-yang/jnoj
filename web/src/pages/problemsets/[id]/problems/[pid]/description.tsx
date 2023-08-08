@@ -1,4 +1,4 @@
-import { Button, Drawer, Link, List, PaginationProps } from '@arco-design/web-react';
+import { Button, Drawer, Link, List, PaginationProps, Space } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/description.module.less';
@@ -121,7 +121,14 @@ function Problemset({problemset}: any) {
       <Drawer
         width={332}
         title={
-          <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
+          <Space split={<IconRight />}>
+            {problemset.parent && (
+              <Link href={`/problemsets/${problemset.parent.id}`}>
+                {problemset.parent.name}
+              </Link>
+            )}
+            <Link href={`/problemsets/${problemset.id}`} target='_blank'>{problemset.name}</Link>
+          </Space>
         }
         visible={visible}
         placement='left'
