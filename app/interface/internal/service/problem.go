@@ -1256,6 +1256,10 @@ func (s *ProblemService) GetProblemsetAnswer(ctx context.Context, req *v1.GetPro
 
 // ListProblemsetAnswers 获取题单回答列表
 func (s *ProblemService) ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) (*v1.ListProblemsetAnswersResponse, error) {
+	userId, _ := auth.GetUserID(ctx)
+	if req.UserId == 0 {
+		req.UserId = int32(userId)
+	}
 	res, count := s.problemsetUc.ListProblemsetAnswers(ctx, req)
 	resp := new(v1.ListProblemsetAnswersResponse)
 	resp.Total = int32(count)

@@ -147,7 +147,7 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 			return t.Select("ID", "Nickname", "Username", "Avatar")
 		}).
 		Preload("Parent", func(t *gorm.DB) *gorm.DB {
-			return t.Select("ID", "Name")
+			return t.Select("ID", "Name", "UserID")
 		}).
 		Preload("Children", func(t *gorm.DB) *gorm.DB {
 			return t.Select("ID", "Name", "ParentID", "Type", "MemberCount").Order("child_order asc")
@@ -176,8 +176,9 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 	}
 	if res.Parent != nil {
 		set.Parent = &biz.Problemset{
-			ID:   res.Parent.ID,
-			Name: res.Parent.Name,
+			ID:     res.Parent.ID,
+			Name:   res.Parent.Name,
+			UserID: res.Parent.UserID,
 		}
 	}
 	for _, v := range res.Children {
@@ -191,12 +192,23 @@ func (r *ProblemsetRepo) GetProblemset(ctx context.Context, id int) (*biz.Proble
 	// 查询登录用户的角色
 	set.Role = biz.ProblemsetRoleGuest
 	if uid, role := auth.GetUserID(ctx); uid != 0 {
+		// 先查询在当前题单中的角色
 		problemsetUser := r.GetProblemsetUser(ctx, res.ID, uid)
 		if problemsetUser != nil {
 			set.Role = biz.ProblemsetRolePlayer
 		}
 		if uid == res.UserID || biz.CheckAccess(role, biz.ResourceProblem) {
 			set.Role = biz.ProblemsetRoleAdmin
+		}
+		// 如果在当前题单中没有角色，则查询父题单的角色，继承父题单的权限
+		if set.Parent != nil && set.Role == biz.ProblemsetRoleGuest {
+			parentProblemsetUser := r.GetProblemsetUser(ctx, res.ID, uid)
+			if parentProblemsetUser != nil {
+				set.Role = biz.ProblemsetRolePlayer
+			}
+			if uid == res.Parent.UserID {
+				set.Role = biz.ProblemsetRoleAdmin
+			}
 		}
 	}
 	return set, err
@@ -630,10 +642,13 @@ func (r *ProblemsetRepo) CreateProblemsetAnswer(ctx context.Context, answer *biz
 func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) ([]*biz.ProblemsetAnswer, int64) {
 	var rv []*ProblemsetAnswer
 	var count int64
-	r.data.db.WithContext(ctx).
+	db := r.data.db.WithContext(ctx).
 		Model(&ProblemsetAnswer{}).
-		Where("problemset_id = ?", req.Id).
-		Count(&count).
+		Where("problemset_id = ?", req.Id)
+	if req.UserId != 0 {
+		db.Where("user_id = ?", req.UserId)
+	}
+	db.Count(&count).
 		Order("id desc").
 		Find(&rv)
 	var res []*biz.ProblemsetAnswer
