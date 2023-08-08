@@ -117,6 +117,7 @@ type ProblemsetRepo interface {
 
 	CreateProblemsetChild(ctx context.Context, sid int, childId int) error
 	DeleteProblemsetChild(ctx context.Context, sid int, childId int) error
+	SortProblemsetChild(ctx context.Context, req *v1.SortProblemsetChildRequest) error
 
 	ListProblemsetProblems(context.Context, *v1.ListProblemsetProblemsRequest) ([]*ProblemsetProblem, int64)
 	ListProblemsetProblemStatements(context.Context, []int) map[int]*ProblemStatement
@@ -222,6 +223,11 @@ func (uc *ProblemsetUsecase) CreateProblemsetChild(ctx context.Context, sid int,
 // DeleteProblemsetChild delete a ProblemsetChild
 func (uc *ProblemsetUsecase) DeleteProblemsetChild(ctx context.Context, sid int, childId int) error {
 	return uc.repo.DeleteProblemsetChild(ctx, sid, childId)
+}
+
+// SortProblemsetChild 调整子题单顺序
+func (uc *ProblemsetUsecase) SortProblemsetChild(ctx context.Context, req *v1.SortProblemsetChildRequest) error {
+	return uc.repo.SortProblemsetChild(ctx, req)
 }
 
 // ListProblemsetUsers 获取题单的用户

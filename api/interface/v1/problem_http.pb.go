@@ -67,6 +67,7 @@ const OperationProblemServiceListProblemsets = "/jnoj.interface.v1.ProblemServic
 const OperationProblemServicePackProblem = "/jnoj.interface.v1.ProblemService/PackProblem"
 const OperationProblemServiceRunProblemFile = "/jnoj.interface.v1.ProblemService/RunProblemFile"
 const OperationProblemServiceSortProblemTests = "/jnoj.interface.v1.ProblemService/SortProblemTests"
+const OperationProblemServiceSortProblemsetChild = "/jnoj.interface.v1.ProblemService/SortProblemsetChild"
 const OperationProblemServiceSortProblemsetProblems = "/jnoj.interface.v1.ProblemService/SortProblemsetProblems"
 const OperationProblemServiceUpdateProblem = "/jnoj.interface.v1.ProblemService/UpdateProblem"
 const OperationProblemServiceUpdateProblemChecker = "/jnoj.interface.v1.ProblemService/UpdateProblemChecker"
@@ -123,6 +124,7 @@ type ProblemServiceHTTPServer interface {
 	PackProblem(context.Context, *PackProblemRequest) (*emptypb.Empty, error)
 	RunProblemFile(context.Context, *RunProblemFileRequest) (*emptypb.Empty, error)
 	SortProblemTests(context.Context, *SortProblemTestsRequest) (*emptypb.Empty, error)
+	SortProblemsetChild(context.Context, *SortProblemsetChildRequest) (*emptypb.Empty, error)
 	SortProblemsetProblems(context.Context, *SortProblemsetProblemsRequest) (*emptypb.Empty, error)
 	UpdateProblem(context.Context, *UpdateProblemRequest) (*Problem, error)
 	UpdateProblemChecker(context.Context, *UpdateProblemCheckerRequest) (*emptypb.Empty, error)
@@ -158,10 +160,11 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/RunProblemFile", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/GetProblemset", auth.Guest())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemset", auth.User())
-	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetRequest", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemsetChild", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemsetChild", auth.User())
+	s.Use("/jnoj.interface.v1.ProblemService/SortProblemsetChild", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/AddProblemToProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemsetPreview", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/BatchAddProblemToProblemset", auth.User())
@@ -214,6 +217,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	r.PUT("/problemsets/{id}", _ProblemService_UpdateProblemset0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/children", _ProblemService_CreateProblemsetChild0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}/children/{child_id}", _ProblemService_DeleteProblemsetChild0_HTTP_Handler(srv))
+	r.POST("/problemsets/{id}/child/sort", _ProblemService_SortProblemsetChild0_HTTP_Handler(srv))
 	r.GET("/problemsets/{id}/users", _ProblemService_ListProblemsetUsers0_HTTP_Handler(srv))
 	r.POST("/problemsets/{id}/users", _ProblemService_CreateProblemsetUser0_HTTP_Handler(srv))
 	r.DELETE("/problemsets/{id}/users/{user_id}", _ProblemService_DeleteProblemsetUser0_HTTP_Handler(srv))
@@ -1056,6 +1060,28 @@ func _ProblemService_DeleteProblemsetChild0_HTTP_Handler(srv ProblemServiceHTTPS
 	}
 }
 
+func _ProblemService_SortProblemsetChild0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SortProblemsetChildRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProblemServiceSortProblemsetChild)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SortProblemsetChild(ctx, req.(*SortProblemsetChildRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _ProblemService_ListProblemsetUsers0_HTTP_Handler(srv ProblemServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListProblemsetUsersRequest
@@ -1450,6 +1476,7 @@ type ProblemServiceHTTPClient interface {
 	PackProblem(ctx context.Context, req *PackProblemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	RunProblemFile(ctx context.Context, req *RunProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	SortProblemTests(ctx context.Context, req *SortProblemTestsRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	SortProblemsetChild(ctx context.Context, req *SortProblemsetChildRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	SortProblemsetProblems(ctx context.Context, req *SortProblemsetProblemsRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateProblem(ctx context.Context, req *UpdateProblemRequest, opts ...http.CallOption) (rsp *Problem, err error)
 	UpdateProblemChecker(ctx context.Context, req *UpdateProblemCheckerRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -2034,6 +2061,19 @@ func (c *ProblemServiceHTTPClientImpl) SortProblemTests(ctx context.Context, in 
 	pattern := "/problems/{id}/test/sort"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceSortProblemTests))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ProblemServiceHTTPClientImpl) SortProblemsetChild(ctx context.Context, in *SortProblemsetChildRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/problemsets/{id}/child/sort"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProblemServiceSortProblemsetChild))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

@@ -35,6 +35,11 @@ export function deleteProblemsetChild(id, childId) {
   return axios.delete(`/problemsets/${id}/children/${childId}`);
 }
 
+// 题单列表子题单排序
+export function sortProblemsetChild(id, pids) {
+  return axios.post(`/problemsets/${id}/child/sort`, pids);
+}
+
 // 获取题单的题目
 export function listProblemsetProblems(id, params) {
   return axios.get(`/problemsets/${id}/problems`, {params});

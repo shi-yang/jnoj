@@ -257,6 +257,13 @@ service ProblemService {
             delete: "/problemsets/{id}/children/{child_id}"
         };
     }
+    // 对题单的子题单进行排序
+    rpc SortProblemsetChild (SortProblemsetChildRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/problemsets/{id}/child/sort"
+            body: "*"
+        };
+    };
     // 获取题单的用户
     rpc ListProblemsetUsers (ListProblemsetUsersRequest) returns (ListProblemsetUsersResponse) {
         option (google.api.http) = {
@@ -706,8 +713,9 @@ message Problemset {
 message ListProblemsetsRequest {
     string name = 1;
     repeated ProblemsetType type = 2;
-    int32 page = 3;
-    int32 per_page = 4;
+    optional int32 parent_id = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListProblemsetsResponse {
@@ -745,6 +753,15 @@ message CreateProblemsetChildRequest {
 message DeleteProblemsetChildRequest {
     int32 id = 1;
     int32 child_id = 2;
+}
+
+message SortProblemsetChildRequest {
+    int32 id = 1;
+    message Child {
+        int32 order = 1;
+        int32 id = 2;
+    }
+    repeated Child ids = 2;
 }
 
 message ProblemsetUser {

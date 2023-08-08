@@ -5,18 +5,19 @@ import {
   Link,
   List,
   Message, Modal, PaginationProps, Popconfirm,
+  Popover,
   Select,
   Space,
   Table, TableColumnProps, Typography
 } from '@arco-design/web-react';
 import {
-  batchAddProblemToProblemset, createProblemset, createProblemsetChild, deleteProblemFromProblemset,
+  batchAddProblemToProblemset, createProblemsetChild, deleteProblemFromProblemset,
   deleteProblemsetChild,
-  listProblemsetProblems, sortProblemsetProblems
+  listProblemsetProblems, sortProblemsetChild, sortProblemsetProblems
 } from '@/api/problemset';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { IconPlus, IconDragDotVertical } from '@arco-design/web-react/icon';
+import { IconPlus, IconDragDotVertical, IconUp, IconDown, IconDragDot } from '@arco-design/web-react/icon';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import ProblemModalList from '@/modules/problem/problem-modal-list';
 
@@ -284,6 +285,44 @@ function Page({problemset}: {problemset:any}) {
         });
     }
   }
+  function sortProblemset(index, action) {
+    if (action === 'up' && index === 0) {
+      Message.error('无法移动');
+      return;
+    }
+    if (action === 'down' && index === problemsetChildren.length - 1) {
+      Message.error('无法移动');
+      return;
+    }
+    const ids = [];
+    if (action === 'up') {
+      // 与前一个进行交换
+      ids.push({
+        id: problemsetChildren[index].id,
+        order: problemsetChildren[index].childOrder
+      }, {
+        id: problemsetChildren[index - 1].id,
+        order: problemsetChildren[index - 1].childOrder
+      });
+    } else {
+      // 与后一个进行交换
+      ids.push({
+        id: problemsetChildren[index + 1].id,
+        order: problemsetChildren[index + 1].childOrder
+      }, {
+        id: problemsetChildren[index].id,
+        order: problemsetChildren[index].childOrder
+      });
+    }
+    sortProblemsetChild(problemsetId, {ids})
+      .then(res => {
+        Message.success('已保存');
+        fetchData();
+      })
+      .catch((err) => {
+        Message.error('保存失败');
+      });
+  }
 
   const DraggableContainer = (props) => (
     <SortableWrapper
@@ -364,17 +403,27 @@ function Page({problemset}: {problemset:any}) {
         header='子题单'
         dataSource={problemsetChildren}
         render={(item, index) => (
-          <List.Item key={index} actions={[
-            <span key={index} className='list-demo-actions-button'>
-              <Popconfirm
-                focusLock
-                title='移除子题单'
-                content='你确定需要从本题单中移除该子题单吗？移除子题单并不意味着删除该子题单'
-                onOk={() => removeProblemsetChild(item.id)}
-              >
-                <Button>移除</Button>
-              </Popconfirm>
-            </span>
+          <List.Item key={index} extra={[
+            <Link key={index} href={`/problems/problemset-list/${item.id}`}>
+              <Button type='text'>编辑</Button>
+            </Link>,
+            <Popconfirm
+              key={index}
+              focusLock
+              title='移除子题单'
+              content='你确定需要从本题单中移除该子题单吗？移除子题单并不意味着删除该子题单'
+              onOk={() => removeProblemsetChild(item.id)}
+            >
+              <Button type='text'>移除</Button>
+            </Popconfirm>,
+            <Popover key={index} position='right' content={
+              <Space direction='vertical'>
+                <Button icon={<IconUp />} disabled={index === 0} onClick={() => sortProblemset(index, 'up')}>上移</Button>
+                <Button icon={<IconDown />} disabled={index === problemsetChildren.length - 1} onClick={() => sortProblemset(index, 'down')}>下移</Button>
+              </Space>
+            }>
+              <Button type='text'><IconDragDot /></Button>
+            </Popover>,
           ]}>
             <List.Item.Meta
               title={<Link href={`/problems/problemset-list/${item.id}`}>{item.name}</Link>}

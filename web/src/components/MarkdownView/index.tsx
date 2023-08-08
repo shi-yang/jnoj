@@ -13,7 +13,7 @@ export default function Markdown({content}: {content: string}) {
     <ReactMarkdown
       className='markdown-body'
       remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeHighlight, rehypeKatex]}
+      rehypePlugins={[rehypeHighlight, [rehypeKatex, {strict : false}]]}
     >
       {content}
     </ReactMarkdown>

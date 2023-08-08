@@ -100,6 +100,9 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 	if req.Name != "" {
 		db.Where("name like ?", "%"+req.Name+"%")
 	}
+	if req.ParentId != nil {
+		db.Where("parent_id = ?", req.ParentId)
+	}
 	if len(req.Type) > 0 {
 		db.Where("type in (?)", req.Type)
 	}
@@ -251,6 +254,58 @@ func (r *ProblemsetRepo) DeleteProblemsetChild(ctx context.Context, sid, cid int
 	return r.data.db.WithContext(ctx).
 		Model(&Problemset{ID: cid}).
 		UpdateColumn("parent_id", 0).Error
+}
+
+// SortProblemsetProblems .
+func (r *ProblemsetRepo) SortProblemsetChild(ctx context.Context, req *v1.SortProblemsetChildRequest) error {
+	if len(req.Ids) == 0 {
+		return nil
+	}
+	tx := r.data.db.WithContext(ctx).Begin()
+	// 查出所有子题单
+	var children []Problemset
+	tx.Select("id, child_order").
+		Model(&Problemset{}).
+		Where("parent_id = ?", req.Id).
+		Order("child_order").
+		Find(&children)
+	// 调整顺序
+	found := -1
+	for index, child := range children {
+		if found == -1 {
+			for _, v := range req.Ids {
+				if int(v.Id) == child.ID {
+					found = index
+				}
+			}
+		}
+		if found != -1 {
+			for idx, v := range req.Ids {
+				if int(v.Id) == child.ID {
+					children[index].ChildOrder = idx + found
+				}
+			}
+		}
+	}
+	if found == -1 {
+		return nil
+	}
+	// 调整题目顺序
+	for index, item := range children {
+		// 没有变化的不用调整
+		if item.ChildOrder == index {
+			continue
+		}
+		err := tx.Model(&Problemset{ID: int(item.ID)}).
+			Update("`child_order`", item.ChildOrder).
+			Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	tx.Commit()
+	return nil
 }
 
 // ListProblemsetUsers 获取题单的用户

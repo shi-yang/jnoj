@@ -9,8 +9,9 @@ import locale from './locale';
 import { deleteProblemFromProblemset, sortProblemsetProblems } from '@/api/problemset';
 import { IconDown, IconDragDot, IconUp } from '@arco-design/web-react/icon';
 import ProblemContent from '@/modules/problem/ProblemContent';
+import Markdown from '@/components/MarkdownView';
 
-function RenderObjectiveItem({statement}: {statement: any}) {
+function RenderObjectiveItem({statement, index}: {statement: any, index: number}) {
   const t = useLocale(locale);
   let choices = [];
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
@@ -29,12 +30,7 @@ function RenderObjectiveItem({statement}: {statement: any}) {
         {statement.title}
       </Typography.Title>
       <Typography.Paragraph>
-        <ReactMarkdown
-          remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex, rehypeHighlight]}
-        >
-          {legend}
-        </ReactMarkdown>
+        <Markdown content={`${index + 1}. ${legend}`} />
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (
@@ -163,7 +159,7 @@ const ProblemsList = ({ problemsetId, problems, fetchData }: { problemsetId: num
             item.statement.type === 'CODE' ? (
               <RenderProgrammingItem problem={item} statement={item.statement} />
             ) : (
-              <RenderObjectiveItem statement={item.statement} />
+              <RenderObjectiveItem statement={item.statement} index={index} />
             )
           )}
         </List.Item>

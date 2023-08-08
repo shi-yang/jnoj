@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Divider, Link, PageHeader, PaginationProps, Table, TableColumnProps, Typography } from '@arco-design/web-react';
+import { Card, Divider, Link, PageHeader, PaginationProps, Space, Table, TableColumnProps, Typography } from '@arco-design/web-react';
 import { useRouter } from 'next/router';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
@@ -130,19 +130,23 @@ function Problem({problemset}: {problemset:any}) {
       </PageHeader>
       <Divider />
       <Card>
-        <ProblemTable problems={problems} loading={loading}/>
-        {problemsetChildren.map((item, index) => (
-          <div key={index}>
-            <Link hoverable={false} href={`/problemsets/${item.id}`}>
-              <Typography.Title heading={4}>
-                {index+1}. {item.name}
-              </Typography.Title>
-            </Link>
-            {item.type !== 'EXAM' && (
-              <ProblemTable problems={item.problems} loading={loading} />
-            )}
-          </div>
-        ))}
+        {problems.length > 0 && (
+          <ProblemTable problems={problems} loading={loading}/>
+        )}
+        <Space direction='vertical' style={{width: '100%'}}>
+          {problemsetChildren.map((item, index) => (
+            <div key={index}>
+              <Link hoverable={false} href={`/problemsets/${item.id}`}>
+                <Typography.Title heading={5}>
+                  {`${index+1}. ${item.name}`}
+                </Typography.Title>
+              </Link>
+              {item.type !== 'EXAM' && (
+                <ProblemTable problems={item.problems} loading={loading} />
+              )}
+            </div>
+          ))}
+        </Space>
       </Card>
     </div>
   );

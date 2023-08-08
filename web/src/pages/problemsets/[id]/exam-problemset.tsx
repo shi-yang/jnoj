@@ -17,6 +17,7 @@ import { getProblemLanguage, listProblemLanguages } from '@/api/problem-file';
 import { IconSkin } from '@arco-design/web-react/icon';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
+import Markdown from '@/components/MarkdownView';
 dayjs.extend(duration);
 const AnchorLink = Anchor.Link;
 const themes = [
@@ -88,14 +89,7 @@ function RenderObjectiveItem({index, statement}: {index: number, statement: any}
         {statement.title}
       </Typography.Title>
       <Typography.Paragraph>
-        <div className='markdown-body'>
-          <ReactMarkdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex, rehypeHighlight]}
-          >
-            {`${index + 1}. ${legend}`}
-          </ReactMarkdown>
-        </div>
+        <Markdown content={`${index + 1}. ${legend}`} />
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (

@@ -4938,6 +4938,10 @@ func (m *ListProblemsetsRequest) validate(all bool) error {
 
 	// no validation rules for PerPage
 
+	if m.ParentId != nil {
+		// no validation rules for ParentId
+	}
+
 	if len(errors) > 0 {
 		return ListProblemsetsRequestMultiError(errors)
 	}
@@ -5797,6 +5801,144 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteProblemsetChildRequestValidationError{}
+
+// Validate checks the field values on SortProblemsetChildRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SortProblemsetChildRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SortProblemsetChildRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SortProblemsetChildRequestMultiError, or nil if none found.
+func (m *SortProblemsetChildRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SortProblemsetChildRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	for idx, item := range m.GetIds() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, SortProblemsetChildRequestValidationError{
+						field:  fmt.Sprintf("Ids[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, SortProblemsetChildRequestValidationError{
+						field:  fmt.Sprintf("Ids[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return SortProblemsetChildRequestValidationError{
+					field:  fmt.Sprintf("Ids[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return SortProblemsetChildRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SortProblemsetChildRequestMultiError is an error wrapping multiple
+// validation errors returned by SortProblemsetChildRequest.ValidateAll() if
+// the designated constraints aren't met.
+type SortProblemsetChildRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SortProblemsetChildRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SortProblemsetChildRequestMultiError) AllErrors() []error { return m }
+
+// SortProblemsetChildRequestValidationError is the validation error returned
+// by SortProblemsetChildRequest.Validate if the designated constraints aren't met.
+type SortProblemsetChildRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SortProblemsetChildRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SortProblemsetChildRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SortProblemsetChildRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SortProblemsetChildRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SortProblemsetChildRequestValidationError) ErrorName() string {
+	return "SortProblemsetChildRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SortProblemsetChildRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSortProblemsetChildRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SortProblemsetChildRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SortProblemsetChildRequestValidationError{}
 
 // Validate checks the field values on ProblemsetUser with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -10069,6 +10211,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = Problemset_UserValidationError{}
+
+// Validate checks the field values on SortProblemsetChildRequest_Child with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *SortProblemsetChildRequest_Child) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SortProblemsetChildRequest_Child with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// SortProblemsetChildRequest_ChildMultiError, or nil if none found.
+func (m *SortProblemsetChildRequest_Child) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SortProblemsetChildRequest_Child) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Order
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return SortProblemsetChildRequest_ChildMultiError(errors)
+	}
+
+	return nil
+}
+
+// SortProblemsetChildRequest_ChildMultiError is an error wrapping multiple
+// validation errors returned by
+// SortProblemsetChildRequest_Child.ValidateAll() if the designated
+// constraints aren't met.
+type SortProblemsetChildRequest_ChildMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SortProblemsetChildRequest_ChildMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SortProblemsetChildRequest_ChildMultiError) AllErrors() []error { return m }
+
+// SortProblemsetChildRequest_ChildValidationError is the validation error
+// returned by SortProblemsetChildRequest_Child.Validate if the designated
+// constraints aren't met.
+type SortProblemsetChildRequest_ChildValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SortProblemsetChildRequest_ChildValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SortProblemsetChildRequest_ChildValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SortProblemsetChildRequest_ChildValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SortProblemsetChildRequest_ChildValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SortProblemsetChildRequest_ChildValidationError) ErrorName() string {
+	return "SortProblemsetChildRequest_ChildValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SortProblemsetChildRequest_ChildValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSortProblemsetChildRequest_Child.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SortProblemsetChildRequest_ChildValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SortProblemsetChildRequest_ChildValidationError{}
 
 // Validate checks the field values on
 // SortProblemsetProblemsRequest_ProblemsetProblems with the rules defined in

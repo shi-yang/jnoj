@@ -905,6 +905,21 @@ func (s *ProblemService) DeleteProblemsetChild(ctx context.Context, req *v1.Dele
 	return &emptypb.Empty{}, s.problemsetUc.DeleteProblemsetChild(ctx, int(req.Id), int(req.ChildId))
 }
 
+// SortProblemsetChild 对题单的子题单进行排序
+func (s *ProblemService) SortProblemsetChild(ctx context.Context, req *v1.SortProblemsetChildRequest) (*emptypb.Empty, error) {
+	// 题单是否存在
+	set, err := s.problemsetUc.GetProblemset(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorProblemNotFound(err.Error())
+	}
+	// 是否有权限访问题单
+	if !set.HasPermission(ctx) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	err = s.problemsetUc.SortProblemsetChild(ctx, req)
+	return &emptypb.Empty{}, err
+}
+
 // ListProblemsetUsers 获取题单的用户
 func (s *ProblemService) ListProblemsetUsers(ctx context.Context, req *v1.ListProblemsetUsersRequest) (*v1.ListProblemsetUsersResponse, error) {
 	res, count := s.problemsetUc.ListProblemsetUsers(ctx, req)

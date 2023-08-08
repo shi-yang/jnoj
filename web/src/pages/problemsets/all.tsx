@@ -35,6 +35,7 @@ export default function All() {
     const params = {
       page: current,
       perPage: pageSize,
+      parentId: 0,
       ...formParams,
     };
     listProblemsets(params)

@@ -10,6 +10,7 @@ import ProblemContent from '../problem/ProblemContent';
 import Highlight from '@/components/Highlight';
 import SubmissionVerdict from '../submission/SubmissionVerdict';
 import SubmissionDrawer from '../submission/SubmissionDrawer';
+import Markdown from '@/components/MarkdownView';
 
 function RenderObjectiveItem({statement, answer, index}: {statement: any, answer?:any, index: number}) {
   const t = useLocale(locale);
@@ -29,12 +30,7 @@ function RenderObjectiveItem({statement, answer, index}: {statement: any, answer
         </Tag>
       </Typography.Title>
       <Typography.Paragraph>
-        <ReactMarkdown
-          remarkPlugins={[remarkMath]}
-          rehypePlugins={[rehypeKatex, rehypeHighlight]}
-        >
-          {`${index + 1}. ` + legend}
-        </ReactMarkdown>
+        <Markdown content={`${index + 1}. ` + legend} />
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (
