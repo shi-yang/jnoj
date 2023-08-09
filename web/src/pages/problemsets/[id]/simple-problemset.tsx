@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Divider, Link, PageHeader, PaginationProps, Space, Table, TableColumnProps, Typography } from '@arco-design/web-react';
+import { Button, Card, Divider, Link, PageHeader, PaginationProps, Space, Table, TableColumnProps, Typography } from '@arco-design/web-react';
 import { useRouter } from 'next/router';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
-import { IconCheckCircle, IconExclamationCircle, IconRight, IconUser } from '@arco-design/web-react/icon';
+import { IconCheckCircle, IconExclamationCircle, IconLink, IconRight, IconUser } from '@arco-design/web-react/icon';
 import { listProblemsetProblems } from '@/api/problemset';
 import styles from './style/index.module.less';
 
@@ -146,9 +146,7 @@ function Problem({problemset}: {problemset:any}) {
           {problemsetChildren.map((item, index) => (
             <div key={index}>
               <Link hoverable={false} href={`/problemsets/${item.id}`}>
-                <Typography.Title heading={5}>
-                  {`${index+1}. ${item.name}`}
-                </Typography.Title>
+                <Button icon={<IconLink />} type='text' size='large'>{`${index+1}. ${item.name}`}</Button>
               </Link>
               {item.type !== 'EXAM' && (
                 <ProblemTable problems={item.problems} loading={loading} />
