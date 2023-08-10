@@ -218,9 +218,9 @@ func (uc *GroupUsecase) DeleteGroupUser(ctx context.Context, gid, uid int) error
 // GetGroupRole 获取登录用户角色
 func (uc *GroupUsecase) GetGroupRole(ctx context.Context, group *Group) int {
 	group.Role = GroupUserRoleGuest
-	uid, _ := auth.GetUserID(ctx)
+	uid, role := auth.GetUserID(ctx)
 	if uid != 0 {
-		if group.UserID == uid {
+		if group.UserID == uid || CheckAccess(role, ResourceGroup) {
 			group.Role = GroupUserRoleAdmin
 		} else {
 			gu, err := uc.repo.GetGroupUser(ctx, group, uid)
