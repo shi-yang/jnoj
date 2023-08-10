@@ -1,5 +1,5 @@
 import { listUsers } from '@/api/user';
-import { AutoComplete, Input, Space } from '@arco-design/web-react';
+import { AutoComplete, Divider, Input, Space } from '@arco-design/web-react';
 import React, { useState } from 'react';
 const { Option } = AutoComplete;
 
@@ -18,8 +18,8 @@ export default function SearchInputUsername(props: any) {
         setData(
           res.data.data.map((item, index) => {
             return (
-              <Option key={index} value={item.nickname}>
-                <Space>
+              <Option key={index} value={item.username}>
+                <Space split={<Divider type='vertical' />}>
                   <span>ID：{item.id}</span>
                   <span>用户名：{item.username}</span>
                   {item.realname !== '' && <span>真实姓名：{item.realname}</span>}
