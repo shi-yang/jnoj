@@ -15,6 +15,7 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { IconPlus } from '@arco-design/web-react/icon';
 import { FormatTime } from '@/utils/format';
+import SearchInputUsername from '@/components/User/SearchInputUsername';
 
 function Page({problemset}: {problemset:any}) {
   const problemsetId = problemset.id;
@@ -176,12 +177,13 @@ function AddUser({problemsetId, callback}: {problemsetId: number, callback?:() =
         onOk={onOk}
         confirmLoading={confirmLoading}
         onCancel={() => setVisible(false)}
+        style={{width: 800}}
       >
         <Form
           form={form}
         >
           <Form.Item  label={t['user']} required field='username' rules={[{ required: true }]}>
-            <Input />
+            <SearchInputUsername />
           </Form.Item>
         </Form>
       </Modal>

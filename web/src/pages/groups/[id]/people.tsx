@@ -9,6 +9,8 @@ import Layout from './Layout';
 import locale from './locale';
 import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
+import SearchInputUsername from '@/components/User/SearchInputUsername';
+import { listUsers } from '@/api/user';
 
 function People() {
   const t = useLocale(locale);
@@ -231,6 +233,16 @@ function AddUser({group, callback}: any) {
     });
   }
 
+  function getRealname(username:string) {
+    listUsers({username}).then(res => {
+      if (res.data.data.length === 1) {
+        form.setFieldsValue({
+          nickname: res.data.data[0].realname,
+        });
+      }
+    });
+  }
+
   return (
     <div>
       {
@@ -249,6 +261,7 @@ function AddUser({group, callback}: any) {
         visible={visible}
         onOk={onOk}
         confirmLoading={confirmLoading}
+        style={{width: 800}}
         onCancel={() => setVisible(false)}
       >
         <Typography.Title heading={6}>
@@ -258,10 +271,10 @@ function AddUser({group, callback}: any) {
           form={form}
         >
           <Form.Item label={t['people.addUser.form.username']} required field='username' rules={[{ required: true }]}>
-            <Input placeholder='' />
+            <SearchInputUsername onChange={v => getRealname(v)}/>
           </Form.Item>
           <Form.Item label={t['people.addUser.form.nickname']} field='nickname'>
-            <Input placeholder='' />
+            <Input />
           </Form.Item>
         </Form>
         <Typography.Title heading={6}>

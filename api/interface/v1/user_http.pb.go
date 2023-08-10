@@ -31,6 +31,7 @@ const OperationUserServiceGetUserProfileCalendar = "/jnoj.interface.v1.user.User
 const OperationUserServiceGetUserProfileCount = "/jnoj.interface.v1.user.UserService/GetUserProfileCount"
 const OperationUserServiceGetUserProfileProblemSolved = "/jnoj.interface.v1.user.UserService/GetUserProfileProblemSolved"
 const OperationUserServiceListUserProfileUserBadges = "/jnoj.interface.v1.user.UserService/ListUserProfileUserBadges"
+const OperationUserServiceListUsers = "/jnoj.interface.v1.user.UserService/ListUsers"
 const OperationUserServiceLogin = "/jnoj.interface.v1.user.UserService/Login"
 const OperationUserServiceRegister = "/jnoj.interface.v1.user.UserService/Register"
 const OperationUserServiceUpdateUser = "/jnoj.interface.v1.user.UserService/UpdateUser"
@@ -46,6 +47,7 @@ type UserServiceHTTPServer interface {
 	GetUserProfileCount(context.Context, *GetUserProfileCountRequest) (*GetUserProfileCountResponse, error)
 	GetUserProfileProblemSolved(context.Context, *GetUserProfileProblemSolvedRequest) (*GetUserProfileProblemSolvedResponse, error)
 	ListUserProfileUserBadges(context.Context, *ListUserProfileUserBadgesRequest) (*ListUserProfileUserBadgesResponse, error)
+	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
@@ -58,6 +60,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUser", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUserAvatar", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/UpdateUserPassword", auth.User())
+	s.Use("/jnoj.interface.v1.user.UserService/ListUsers", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/CreateUser", auth.User())
 	s.Use("/jnoj.interface.v1.user.UserService/GetUserProfile", auth.Guest())
 	r := s.Route("/")
@@ -65,6 +68,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
 	r.GET("/captcha", _UserService_GetCaptcha0_HTTP_Handler(srv))
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
+	r.GET("/users", _UserService_ListUsers0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.PUT("/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
 	r.POST("/users/{id}/avatar", _UserService_UpdateUserAvatar0_HTTP_Handler(srv))
@@ -148,6 +152,25 @@ func _UserService_GetUserInfo0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx 
 			return err
 		}
 		reply := out.(*GetUserInfoResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_ListUsers0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListUsersRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceListUsers)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListUsers(ctx, req.(*ListUsersRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListUsersResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -359,6 +382,7 @@ type UserServiceHTTPClient interface {
 	GetUserProfileCount(ctx context.Context, req *GetUserProfileCountRequest, opts ...http.CallOption) (rsp *GetUserProfileCountResponse, err error)
 	GetUserProfileProblemSolved(ctx context.Context, req *GetUserProfileProblemSolvedRequest, opts ...http.CallOption) (rsp *GetUserProfileProblemSolvedResponse, err error)
 	ListUserProfileUserBadges(ctx context.Context, req *ListUserProfileUserBadgesRequest, opts ...http.CallOption) (rsp *ListUserProfileUserBadgesResponse, err error)
+	ListUsers(ctx context.Context, req *ListUsersRequest, opts ...http.CallOption) (rsp *ListUsersResponse, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterResponse, err error)
 	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *User, err error)
@@ -470,6 +494,19 @@ func (c *UserServiceHTTPClientImpl) ListUserProfileUserBadges(ctx context.Contex
 	pattern := "/users/{id}/profile_user_badges"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceListUserProfileUserBadges))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...http.CallOption) (*ListUsersResponse, error) {
+	var out ListUsersResponse
+	pattern := "/users"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceListUsers))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

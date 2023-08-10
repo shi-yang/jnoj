@@ -37,18 +37,19 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 }
 
 type User struct {
-	ID        int
-	Username  string
-	Nickname  string
-	Avatar    string
-	Password  string
-	Email     string
-	Phone     string
-	Role      int
-	Status    int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID          int
+	Username    string
+	Nickname    string
+	Avatar      string
+	Password    string
+	Email       string
+	Phone       string
+	Role        int
+	Status      int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
+	UserProfile *UserProfile `gorm:"ForeignKey:UserID"`
 }
 
 type UserProfile struct {
@@ -87,6 +88,39 @@ const userBadgeFilePath = "/user/badge/%d/%s"
 
 // 用户头像储存路径 %d 用户ID，%s 上传文件名
 const userAvatarFilePath = "/user/avatar/%d/%s"
+
+// ListUsers 查询用户列表
+func (r *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersRequest) []*biz.User {
+	res := []User{}
+	db := r.data.db.WithContext(ctx).
+		Model(&User{}).
+		Preload("UserProfile", func(db *gorm.DB) *gorm.DB {
+			return db.Select("user_id, realname")
+		})
+	if req.Keywords != nil {
+		db.Where("username like ?", fmt.Sprintf("%%%s%%", *req.Keywords))
+	}
+	if req.Username != nil {
+		db.Where("username = ?", *req.Username)
+	}
+	db.Limit(5).
+		Find(&res)
+	rv := make([]*biz.User, 0)
+	for _, v := range res {
+		u := &biz.User{
+			ID:       v.ID,
+			Username: v.Username,
+			Nickname: v.Nickname,
+		}
+		if v.UserProfile != nil {
+			u.UserProfile = &biz.UserProfile{
+				Realname: v.UserProfile.Realname,
+			}
+		}
+		rv = append(rv, u)
+	}
+	return rv
+}
 
 func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	res := User{}

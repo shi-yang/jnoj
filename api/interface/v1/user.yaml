@@ -7,6 +7,8 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/UpdateUserPassword"
   middleware: "jnoj/internal/middleware/auth.User()"
+- selector: "/jnoj.interface.v1.user.UserService/ListUsers"
+  middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/CreateUser"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.user.UserService/GetUserProfile"

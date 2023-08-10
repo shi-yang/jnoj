@@ -64,6 +64,7 @@ const (
 
 // UserRepo is a User repo.
 type UserRepo interface {
+	ListUsers(context.Context, *v1.ListUsersRequest) []*User
 	CreateUser(context.Context, *User) (*User, error)
 	GetUser(context.Context, *User) (*User, error)
 	UpdateUser(context.Context, *User) (*User, error)
@@ -201,6 +202,10 @@ func (uc *UserUsecase) VerifyCaptcha(ctx context.Context, email, phone, captcha 
 		return errors.New("wrong captcha")
 	}
 	return nil
+}
+
+func (uc *UserUsecase) ListUsers(ctx context.Context, req *v1.ListUsersRequest) []*User {
+	return uc.repo.ListUsers(ctx, req)
 }
 
 func (uc *UserUsecase) CreateUser(ctx context.Context, u *User) (*User, error) {

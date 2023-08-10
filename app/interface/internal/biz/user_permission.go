@@ -7,6 +7,8 @@ const (
 	ResourceProblem    = "problem"    // 题目
 	ResourceContest    = "contest"    // 比赛
 	ResourceGroup      = "group"      // 小组
+	ResourceUser       = "user"       // 用户
+	ResourceProblemset = "problemset" // 题单
 )
 
 // 定义全局变量，用于保存访问权限控制实例
@@ -34,6 +36,8 @@ func NewAccessControl() *AccessControl {
 		ResourceProblem,
 		ResourceContest,
 		ResourceGroup,
+		ResourceUser,
+		ResourceProblemset,
 	}
 
 	// 设置 管理员 可访问资源
@@ -42,6 +46,8 @@ func NewAccessControl() *AccessControl {
 		ResourceContest,
 		ResourceGroup,
 		ResourceProblem,
+		ResourceUser,
+		ResourceProblemset,
 	}
 
 	// 设置 官方用户可访问资源

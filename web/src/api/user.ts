@@ -29,6 +29,12 @@ export function getUserInfo() {
   return axios.get('/user/info');
 }
 
+export function listUsers(params) {
+  return axios.get('/users', {
+    params
+  });
+}
+
 export function getUsers(id) {
   return axios.get(`/users/${id}`);
 }

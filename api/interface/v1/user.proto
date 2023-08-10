@@ -37,6 +37,11 @@ service UserService {
             get: "/user/info"
         };
     };
+    rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
+        option (google.api.http) = {
+            get: "/users"
+        };
+    }
     // 获取用户主页信息
     rpc GetUser (GetUserRequest) returns (User) {
         option (google.api.http) = {
@@ -167,6 +172,15 @@ message User {
     string realname = 4;
     UserRole role = 5;
     string avatar = 6;
+}
+
+message ListUsersRequest {
+    optional string keywords = 1;
+    optional string username = 2;
+}
+
+message ListUsersResponse {
+    repeated User data = 1;
 }
 
 message GetUserRequest {

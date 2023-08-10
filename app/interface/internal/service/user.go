@@ -91,6 +91,28 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 	return resp, nil
 }
 
+// ListUsers 查询用户列表
+func (s *UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*v1.ListUsersResponse, error) {
+	_, role := auth.GetUserID(ctx)
+	users := s.uc.ListUsers(ctx, req)
+	resp := &v1.ListUsersResponse{}
+	for _, user := range users {
+		u := &v1.User{
+			Id:       int32(user.ID),
+			Nickname: user.Nickname,
+			Username: user.Username,
+		}
+		// 仅管理员及超级管理员可访问真实姓名
+		if biz.CheckAccess(role, biz.ResourceUser) {
+			if user.UserProfile != nil {
+				u.Realname = user.UserProfile.Realname
+			}
+		}
+		resp.Data = append(resp.Data, u)
+	}
+	return resp, nil
+}
+
 // GetUser 获取用户主页信息
 func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.User, error) {
 	res, err := s.uc.GetUser(ctx, int(req.Id))
