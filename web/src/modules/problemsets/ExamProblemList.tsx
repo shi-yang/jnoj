@@ -78,9 +78,7 @@ function RenderObjectiveItem({statement, answer, index, problem}: {statement: an
       )}
       {statement.output && statement.output !== '' && (
         <Typography.Paragraph>
-        答案：<Space split={<Divider type='vertical' />}>
-          {JSON.parse(statement.output).map((item, index) => (<Tag key={index}>{item}</Tag>))}
-          </Space>
+        答案：{statement.output}
         </Typography.Paragraph>
       )}
       <Typography.Paragraph>
