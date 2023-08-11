@@ -109,6 +109,9 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 	if len(req.Type) > 0 {
 		db.Where("type in (?)", req.Type)
 	}
+	if req.Membership != nil {
+		db.Where("membership = ?", req.Membership)
+	}
 	db.Count(&count)
 	db.Offset(page.GetOffset()).
 		Limit(page.GetPageSize()).

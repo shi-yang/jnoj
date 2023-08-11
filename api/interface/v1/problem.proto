@@ -721,8 +721,9 @@ message ListProblemsetsRequest {
     string name = 1;
     repeated ProblemsetType type = 2;
     optional int32 parent_id = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    optional ProblemsetMembership membership = 4;
+    int32 page = 5;
+    int32 per_page = 6;
 }
 
 message ListProblemsetsResponse {

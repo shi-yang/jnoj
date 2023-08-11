@@ -4942,6 +4942,10 @@ func (m *ListProblemsetsRequest) validate(all bool) error {
 		// no validation rules for ParentId
 	}
 
+	if m.Membership != nil {
+		// no validation rules for Membership
+	}
+
 	if len(errors) > 0 {
 		return ListProblemsetsRequestMultiError(errors)
 	}
