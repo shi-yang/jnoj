@@ -67,6 +67,10 @@ func (m *ListContestsRequest) validate(all bool) error {
 		// no validation rules for GroupId
 	}
 
+	if m.OrderBy != nil {
+		// no validation rules for OrderBy
+	}
+
 	if len(errors) > 0 {
 		return ListContestsRequestMultiError(errors)
 	}
