@@ -325,7 +325,9 @@ func (s *ProblemService) UploadProblemTest(ctx http.Context) error {
 	if err := ctx.BindVars(&in); err != nil {
 		return err
 	}
-	in.FileContent = fileContent
+	// 文件内容，将\r\n替换为\n
+	// 某些字符串按行读取会出现 \r\n 的字符数不符合预期
+	in.FileContent = bytes.Replace(fileContent, []byte("\r\n"), []byte("\n"), -1)
 	in.Filename = fileheader.Filename
 	http.SetOperation(ctx, v1.OperationProblemServiceCreateProblemTest)
 	h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
