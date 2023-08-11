@@ -45,8 +45,12 @@ function ContestList({groupId = 0}: {groupId?:number}) {
       groupId: groupId,
       page: current,
       perPage: pageSize,
+      orderBy: undefined,
       ...formParams,
     };
+    if (groupId) {
+      params.orderBy = 'start_time';
+    }
     listContests(params)
       .then((res) => {
         setData(res.data.data);

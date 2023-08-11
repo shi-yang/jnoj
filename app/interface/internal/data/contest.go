@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	v1 "jnoj/api/interface/v1"
@@ -70,8 +71,14 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	if req.GroupId != nil {
 		db.Where("group_id = ?", *req.GroupId)
 	}
-	db.Count(&count).
-		Order("id desc")
+	db.Count(&count)
+	if req.OrderBy != nil {
+		if strings.Contains(*req.OrderBy, "start_time") {
+			db.Order("start_time desc")
+		}
+	} else {
+		db.Order("id desc")
+	}
 	db.Offset(pager.GetOffset()).
 		Limit(pager.GetPageSize()).
 		Find(&res)
