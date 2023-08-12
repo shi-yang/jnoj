@@ -96,7 +96,7 @@ function RenderObjectiveItem({statement, answer, index, problem}: {statement: an
       )}
       {statement.output && statement.output !== '' && (
         <Typography.Paragraph>
-          答案：{statement.output}
+          答案：
           <Space>
             {correctAnswers.map((item, index) => (
               <div key={index} className='markdown-body markdown-choice'>
