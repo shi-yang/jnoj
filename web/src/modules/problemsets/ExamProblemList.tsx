@@ -22,6 +22,10 @@ function RenderObjectiveItem({statement, answer, index, problem}: {statement: an
   if (statement.type === 'FILLBLANK') {
     legend = statement.legend.replace(/{.*?}/g, '`________`');
   }
+  let correctAnswers = [];
+  if (statement.output !== '') {
+    correctAnswers = JSON.parse(statement.output);
+  }
   return (
     <div>
       <Space>
@@ -73,12 +77,38 @@ function RenderObjectiveItem({statement, answer, index, problem}: {statement: an
       </Typography.Paragraph>
       {answer && answer !== '' && (
         <Typography.Paragraph>
-        你的回答：<Space split={<Divider type='vertical' />}>{answer.map((item, index) => (<Tag key={index}>{item}</Tag>))}</Space>
+        你的回答：
+          <Space split={<Divider type='vertical' />}>
+            {answer.map((item, index) => (
+              <Tag key={index}>
+                <div key={index} className='markdown-body markdown-choice'>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                  >
+                    {item}
+                  </ReactMarkdown>
+                </div>
+              </Tag>)
+            )}
+          </Space>
         </Typography.Paragraph>
       )}
       {statement.output && statement.output !== '' && (
         <Typography.Paragraph>
-        答案：{statement.output}
+          答案：{statement.output}
+          <Space>
+            {correctAnswers.map((item, index) => (
+              <div key={index} className='markdown-body markdown-choice'>
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                >
+                  {item}
+                </ReactMarkdown>
+              </div>
+            ))}
+          </Space>
         </Typography.Paragraph>
       )}
       <Typography.Paragraph>

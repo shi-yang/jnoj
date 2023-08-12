@@ -15,8 +15,12 @@ function RenderObjectiveItem({statement, index, problem, problemsetId, onUpdate}
   const t = useLocale(locale);
   const [score, setScore] = useState<number>(problem.score);
   let choices = [];
+  let answers = [];
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
     choices = JSON.parse(statement.input);
+  }
+  if (statement.output !== '') {
+    answers = JSON.parse(statement.output);
   }
   let legend = statement.legend;
   if (statement.type === 'FILLBLANK') {
@@ -65,7 +69,7 @@ function RenderObjectiveItem({statement, index, problem, problemsetId, onUpdate}
           <Checkbox.Group direction='vertical' options={
             choices.map((item, index) => 
               ({label: (
-                <div className='markdown-body markdown-choice'>
+                <div key={index} className='markdown-body markdown-choice'>
                   <ReactMarkdown
                     remarkPlugins={[remarkMath]}
                     rehypePlugins={[rehypeKatex, rehypeHighlight]}
@@ -80,7 +84,19 @@ function RenderObjectiveItem({statement, index, problem, problemsetId, onUpdate}
         )}
       </Typography.Paragraph>
       <Typography.Paragraph>
-        答案：{statement.output}
+        答案：
+        <Space>
+          {answers.map((item, index) => (
+            <div key={index} className='markdown-body markdown-choice'>
+              <ReactMarkdown
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex, rehypeHighlight]}
+              >
+                {item}
+              </ReactMarkdown>
+            </div>
+          ))}
+        </Space>
       </Typography.Paragraph>
       <Typography.Paragraph>
         答案解析：

@@ -29,25 +29,20 @@ export default function ObjectivePage(props: any) {
           type: statement.type,
           note: statement.note,
         });
-        if (statement.type === 'CHOICE') {
-          if (statement.input !== '') {
-            statement.input = JSON.parse(statement.input);
-          }
+        if (statement.output !== '') {
+          statement.output = JSON.parse(statement.output);
+        } else {
+          statement.output = [];
+        }
+        if (statement.input !== '') {
+          statement.input = JSON.parse(statement.input);
+        } else {
+          statement.input = [];
+        }
+        if (statement.type === 'CHOICE' || statement.type === 'MULTIPLE') {
           statementForm.setFieldsValue({
             optionals: statement.input,
-            answer: statement.input.indexOf(statement.output)
-          });
-        } else if (statement.type === 'MULTIPLE') {
-          if (statement.input !== '') {
-            statement.input = JSON.parse(statement.input);
-          }
-          if (statement.output !== '') {
-            statement.output = JSON.parse(statement.output);
-          }
-          const choices = statement.input;
-          statementForm.setFieldsValue({
-            optionals: choices,
-            answer: statement.output.map(item => choices.indexOf(item))
+            answer: statement.output
           });
         } else {
           statementForm.setFieldsValue({
