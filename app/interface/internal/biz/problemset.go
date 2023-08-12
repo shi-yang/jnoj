@@ -737,6 +737,7 @@ func (uc *ProblemsetUsecase) ReplaceObjectiveStatementBrackets(str string) strin
 		if str[i] == '`' && i+1 < len(str) && str[i+1] == '`' && i+2 < len(str) && str[i+2] == '`' {
 			inBacktick = !inBacktick
 			result.WriteString("```")
+			i += 2
 			continue
 		}
 		if !inDollar && !inBacktick {
