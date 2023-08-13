@@ -418,12 +418,7 @@ func (uc *SubmissionUsecase) runTests(
 			}
 			// 用于生成输出文件
 			if isGenerateOutput {
-				var outputPreview string
-				if len(runRes.Stdout) > 32 {
-					outputPreview = string(runRes.Stdout[:32])
-				} else {
-					outputPreview = string(runRes.Stdout)
-				}
+				var outputPreview = substrLength(runRes.Stdout, 32)
 				// 保存输出
 				uc.repo.UpdateProblemTestStdOutput(ctx, test.ID, runRes.Stdout, outputPreview)
 			}
@@ -577,10 +572,12 @@ func copy(src, dst string) error {
 
 // substrLength 截取指定长度字符串，超过指定长度在末尾添加 "..."
 func substrLength(str []byte, length int) string {
-	if len(str) > length {
-		return string(str[:length]) + "..."
+	s := string(str)
+	if len(str) <= length {
+		return s
 	}
-	return string(str)
+	sRune := []rune(s)
+	return string(sRune[:length]) + "..."
 }
 
 // UpdateSubmission update a Submission
