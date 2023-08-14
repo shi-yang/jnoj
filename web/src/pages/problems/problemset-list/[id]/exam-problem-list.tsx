@@ -23,9 +23,6 @@ function RenderObjectiveItem({statement, index, problem, problemsetId, onUpdate}
     answers = JSON.parse(statement.output);
   }
   let legend = statement.legend;
-  if (statement.type === 'FILLBLANK') {
-    legend = statement.legend.replace(/{.*?}/g, '`________`');
-  }
   function onChangeScore(v) {
     setScore(Number(v));
     updateProblemsetProblem(problemsetId, problem.problemId, {score: Number(v)})
@@ -45,7 +42,8 @@ function RenderObjectiveItem({statement, index, problem, problemsetId, onUpdate}
         </Tag>
       </Space>
       <Typography.Paragraph>
-        <Markdown content={`${index + 1}. ${legend}`} />
+        {index + 1}.
+        <Markdown content={legend} />
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (

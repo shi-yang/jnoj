@@ -77,9 +77,6 @@ function RenderObjectiveItem({index, statement, problem}: {index: number, statem
     choices = JSON.parse(statement.input);
   }
   let legend = statement.legend;
-  if (statement.type === 'FILLBLANK') {
-    legend = statement.legend.replace(/{.*?}/g, '`________`');
-  }
   return (
     <div>
       <Space>
@@ -90,8 +87,8 @@ function RenderObjectiveItem({index, statement, problem}: {index: number, statem
           分数 {problem.score}
         </Tag>
       </Space>
-      <Typography.Paragraph>
-        <Markdown content={`${index + 1}. ${legend}`} />
+      <Typography.Paragraph>{index + 1}. 
+        <Markdown content={legend} />
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (

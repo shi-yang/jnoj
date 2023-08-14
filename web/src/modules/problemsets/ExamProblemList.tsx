@@ -18,10 +18,6 @@ function RenderObjectiveItem({statement, answer, index, problem}: {statement: an
   if (statement.input !== '' && (statement.type === 'CHOICE' || statement.type === 'MULTIPLE')) {
     choices = JSON.parse(statement.input);
   }
-  let legend = statement.legend;
-  if (statement.type === 'FILLBLANK') {
-    legend = statement.legend.replace(/{.*?}/g, '`________`');
-  }
   let correctAnswers = [];
   if (statement.output !== '') {
     correctAnswers = JSON.parse(statement.output);
@@ -37,7 +33,10 @@ function RenderObjectiveItem({statement, answer, index, problem}: {statement: an
         </Tag>
       </Space>
       <Typography.Paragraph>
-        <Markdown content={`${index + 1}. ` + legend} />
+        {index + 1}.
+        <Markdown
+          content={statement.legend}
+        />
       </Typography.Paragraph>
       <Typography.Paragraph>
         {(statement.type == 'CHOICE') && (
