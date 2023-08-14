@@ -573,10 +573,10 @@ func copy(src, dst string) error {
 // substrLength 截取指定长度字符串，超过指定长度在末尾添加 "..."
 func substrLength(str []byte, length int) string {
 	s := string(str)
-	if len(str) <= length {
+	sRune := []rune(s)
+	if len(sRune) <= length {
 		return s
 	}
-	sRune := []rune(s)
 	return string(sRune[:length]) + "..."
 }
 
