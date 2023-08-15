@@ -10,6 +10,40 @@ import CreateStatementModal from './create-statement';
 import Editor from '@/components/MarkdownEditor';
 const FormItem = Form.Item;
 
+// 查找题目中的 { } 数量
+// "{床前明月光}，疑似地上霜" => "_______，疑似地上霜"
+// 不在 $$ 内，因为此时会属于 katex 语法
+// 不在 ```内，因为此时会展示为 html 代码
+function getObjectiveStatementInput(str) {
+  let userInput = [];
+  let inDollar = false;
+  let inBracket = false;
+  let inBacktick = false;
+  let answer = '';
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === '$') {
+      inDollar = !inDollar;
+    }
+    if (str[i] === '`' && i + 1 < str.length && str[i + 1] === '`' && i + 2 < str.length && str[i + 2] === '`') {
+      inBacktick = !inBacktick;
+      i += 2;
+      continue;
+    }
+    if (!inDollar && !inBacktick) {
+      if (str[i] === '{') {
+        inBracket = true;
+      } else if (str[i] === '}') {
+        userInput.push(answer);
+        inBracket = false;
+        answer = '';
+      } else if (inBracket) {
+        answer += str[i];
+      }
+    }
+  }
+  return userInput;
+}
+
 export default function ObjectivePage(props: any) {
   const t = useLocale(locale);
   const [form] = Form.useForm();
@@ -91,21 +125,18 @@ export default function ObjectivePage(props: any) {
       };
       if (values.type === 'CHOICE') {
         data.input = JSON.stringify(values.optionals);
-        data.output = values.optionals[values.answer];
+        data.output = JSON.stringify([values.optionals[values.answer]]);
       } else if (values.type === 'MULTIPLE') {
         data.input = JSON.stringify(values.optionals);
         data.output = JSON.stringify(values.answer.map(item => values.optionals[item]));
       } else {
-        const regex = /\{([^}]+)\}/g;
-        let match;
-        const ans = [];
         const input = [];
-        while ((match = regex.exec(values.legend)) !== null) {
-          ans.push(match[1]);
+        const answers = getObjectiveStatementInput(values.legend);
+        answers.forEach((item) => {
           input.push('');
-        }
+        });
         data.input = JSON.stringify(input);
-        data.output = JSON.stringify(ans);
+        data.output = JSON.stringify(answers);
       }
       updateProblemStatement(props.problem.id, statements[current].id, data)
         .then(res => {
