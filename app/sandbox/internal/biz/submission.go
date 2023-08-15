@@ -77,6 +77,7 @@ type Problem struct {
 	TimeLimit     int64
 	MemoryLimit   int64
 	Checker       string
+	CheckerID     int
 	AcceptedCount int
 }
 
@@ -514,7 +515,7 @@ func (uc *SubmissionUsecase) runTests(
 
 func (uc *SubmissionUsecase) prepareChecker(workDir string, problem *Problem) error {
 	// checker 将放到 tmp 临时目录下
-	checkerPath := fmt.Sprintf(CheckerPath, problem.ID)
+	checkerPath := fmt.Sprintf(CheckerPath, problem.CheckerID)
 	tmpChecker, err := os.ReadFile(filepath.Join(checkerPath, "checker.txt"))
 	// checker 内容有变化，重新编译
 	if err != nil || (err == nil && string(tmpChecker) != problem.Checker) {

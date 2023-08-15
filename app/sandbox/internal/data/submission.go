@@ -103,7 +103,7 @@ func (r *submissionRepo) GetProblem(ctx context.Context, id int) (*biz.Problem, 
 		MemoryLimit:   p.MemoryLimit,
 		AcceptedCount: p.AcceptedCount,
 	}
-	res.Checker = r.getProblemChecker(ctx, id)
+	res.CheckerID, res.Checker = r.getProblemChecker(ctx, id)
 	return res, nil
 }
 
@@ -171,12 +171,12 @@ func (r *submissionRepo) UpdateContestProblem(ctx context.Context, c *biz.Contes
 	}, err
 }
 
-func (r *submissionRepo) getProblemChecker(ctx context.Context, id int) string {
+func (r *submissionRepo) getProblemChecker(ctx context.Context, id int) (int, string) {
 	var f ProblemFile
 	r.data.db.WithContext(ctx).
 		Where("id = (?)", r.data.db.Select("checker_id").Model(&Problem{}).Where("id = ?", id)).
 		First(&f)
-	return f.Content
+	return f.ID, f.Content
 }
 
 func (r *submissionRepo) ListProblemTests(ctx context.Context, id int, isTestPoint bool) []*biz.Test {
