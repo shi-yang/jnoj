@@ -35,12 +35,12 @@ function Layout(page) {
   const [isLoading, setIsLoading] = useState(true);
   function fetchData() {
     getGroup(id)
-      .then(res => {
+      .then(async (res) => {
         const g = res.data;
         setGroup(g);
         // 私有小组需要加入才能查看
         if (g.role === 'GUEST' && g.privacy === 0) {
-          router.push(`/groups/${g.id}/join`);
+          await router.push(`/groups/${g.id}/join`);
         }
         setIsLoading(false);
       });

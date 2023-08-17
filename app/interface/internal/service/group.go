@@ -101,8 +101,7 @@ func (s *GroupService) UpdateGroup(ctx context.Context, req *v1.UpdateGroupReque
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
-	role := s.uc.GetGroupRole(ctx, group)
-	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager {
+	if group.Role != biz.GroupUserRoleAdmin && group.Role != biz.GroupUserRoleManager {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	group.Name = req.Name
@@ -125,9 +124,8 @@ func (s *GroupService) DeleteGroup(ctx context.Context, req *v1.DeleteGroupReque
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
-	role := s.uc.GetGroupRole(ctx, group)
 	_, userRole := auth.GetUserID(ctx)
-	if role != biz.GroupUserRoleAdmin && !biz.CheckAccess(userRole, biz.ResourceGroup) {
+	if group.Role != biz.GroupUserRoleAdmin && !biz.CheckAccess(userRole, biz.ResourceGroup) {
 		return nil, v1.ErrorForbidden("permission denied")
 	}
 	err = s.uc.DeleteGroup(ctx, group.ID)
@@ -190,8 +188,7 @@ func (s *GroupService) UpdateGroupUser(ctx context.Context, req *v1.UpdateGroupU
 	if err != nil {
 		return nil, v1.ErrorNotFound(err.Error())
 	}
-	role := s.uc.GetGroupRole(ctx, group)
-	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager {
+	if group.Role != biz.GroupUserRoleAdmin && group.Role != biz.GroupUserRoleManager {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	update := &biz.GroupUser{
@@ -222,8 +219,7 @@ func (s *GroupService) DeleteGroupUser(ctx context.Context, req *v1.DeleteGroupU
 	uid, _ := auth.GetUserID(ctx)
 	_, err = s.uc.GetGroupUser(ctx, group, uid)
 	isLoginUserExistGroup := (err == nil && req.Uid == int32(uid))
-	role := s.uc.GetGroupRole(ctx, group)
-	if role != biz.GroupUserRoleAdmin && role != biz.GroupUserRoleManager && !isLoginUserExistGroup {
+	if group.Role != biz.GroupUserRoleAdmin && group.Role != biz.GroupUserRoleManager && !isLoginUserExistGroup {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
 	err = s.uc.DeleteGroupUser(ctx, int(req.Gid), int(req.Uid))

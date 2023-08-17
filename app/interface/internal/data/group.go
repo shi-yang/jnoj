@@ -134,6 +134,19 @@ func (r *groupRepo) GetGroup(ctx context.Context, id int) (*biz.Group, error) {
 		Type:           res.Type,
 		CreatedAt:      res.CreatedAt,
 	}
+	g.Role = biz.GroupUserRoleGuest
+	uid, role := auth.GetUserID(ctx)
+	// 获取登录用户角色
+	if uid != 0 {
+		if g.UserID == uid || biz.CheckAccess(role, biz.ResourceGroup) {
+			g.Role = biz.GroupUserRoleAdmin
+		} else {
+			gu, err := r.GetGroupUser(ctx, g, uid)
+			if err == nil {
+				g.Role = gu.Role
+			}
+		}
+	}
 	if res.Team != nil {
 		g.Team = &biz.Group{
 			ID:   res.Team.ID,

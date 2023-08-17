@@ -127,10 +127,8 @@ func (uc *GroupUsecase) GetGroup(ctx context.Context, id int) (*Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 登录用户角色
-	role := uc.GetGroupRole(ctx, g)
 	// 邀请码仅对管理员可见
-	if role == GroupUserRoleMember || role == GroupUserRoleGuest {
+	if g.Role == GroupUserRoleMember || g.Role == GroupUserRoleGuest {
 		g.InvitationCode = ""
 	}
 	return g, nil
@@ -190,8 +188,7 @@ func (uc *GroupUsecase) CreateGroupUser(ctx context.Context, req *v1.CreateGroup
 		return nil, v1.ErrorBadRequest("group not found")
 	}
 	// 邀请码的方式，需要验证邀请码
-	role := uc.GetGroupRole(ctx, group)
-	if role == GroupUserRoleGuest &&
+	if group.Role == GroupUserRoleGuest &&
 		group.Membership == GroupMembershipInvitationCode &&
 		strings.TrimSpace(group.InvitationCode) != strings.TrimSpace(req.InvitationCode) {
 		uc.log.Info(group.InvitationCode)
@@ -213,21 +210,4 @@ func (uc *GroupUsecase) UpdateGroupUser(ctx context.Context, g *GroupUser) (*Gro
 // DeleteGroupUser .
 func (uc *GroupUsecase) DeleteGroupUser(ctx context.Context, gid, uid int) error {
 	return uc.repo.DeleteGroupUser(ctx, gid, uid)
-}
-
-// GetGroupRole 获取登录用户角色
-func (uc *GroupUsecase) GetGroupRole(ctx context.Context, group *Group) int {
-	group.Role = GroupUserRoleGuest
-	uid, role := auth.GetUserID(ctx)
-	if uid != 0 {
-		if group.UserID == uid || CheckAccess(role, ResourceGroup) {
-			group.Role = GroupUserRoleAdmin
-		} else {
-			gu, err := uc.repo.GetGroupUser(ctx, group, uid)
-			if err == nil {
-				group.Role = gu.Role
-			}
-		}
-	}
-	return group.Role
 }

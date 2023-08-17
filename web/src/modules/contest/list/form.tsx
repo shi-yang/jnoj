@@ -10,6 +10,7 @@ import useLocale from '@/utils/useLocale';
 import styles from './style/index.module.less';
 import CreateModal from './create';
 import { getGroup } from '@/api/group';
+import PermissionWrapper from '@/components/PermissionWrapper';
 
 const { Row, Col } = Grid;
 const { useForm } = Form;
@@ -28,13 +29,14 @@ function SearchForm(props: {
     props.onSearch(values);
   };
 
-  const [canCreateContest, setCanCreateContest] = useState(true);
+  const [canCreateContest, setCanCreateContest] = useState(false);
 
   useEffect(() => {
     if (props.groupId) {
       getGroup(props.groupId).then(res => {
-        if (res.data.role === 'GUEST' || res.data.role === 'MEMBER')
-        setCanCreateContest(false);
+        if (res.data.role === 'ADMIN' || res.data.role === 'MANAGER') {
+          setCanCreateContest(true);
+        }
       });
     }
   }, []);
@@ -64,7 +66,13 @@ function SearchForm(props: {
         </Row>
       </Form>
       <div className={styles['right-button']}>
-        { canCreateContest && <CreateModal groupId={props.groupId} /> }
+        { canCreateContest ? (
+          <CreateModal groupId={props.groupId} />
+        ) : (
+          <PermissionWrapper requiredPermissions={[{resource: 'contest', actions: ['write']}]}>
+            <CreateModal groupId={props.groupId} />
+          </PermissionWrapper>
+        ) }
       </div>
     </div>
   );
