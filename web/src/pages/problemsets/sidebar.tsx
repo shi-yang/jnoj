@@ -16,15 +16,13 @@ export default function Sidebar() {
   function fetchData() {
     const params = {
       page: 1,
-      perPage: 6,
+      perPage: 11,
       type: 'SIMPLE',
-      parentId: 0,
+      my: true,      
     };
     listProblemsets(params)
       .then((res) => {
         const data = res.data.data;
-        // 不显示默认题单
-        data.shift();
         setProblemSets(data);
       });
   }
@@ -32,7 +30,7 @@ export default function Sidebar() {
   return isMounted && isLogged() && (
     <div className={styles['sidebar']}>
       <Card
-        title={t['problemset.title']}
+        title='我的题单'
         bordered
         extra={
           <Link href='/problemsets/all'>{t['problemset.sidebar.more']}</Link>

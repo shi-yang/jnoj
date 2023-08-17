@@ -161,6 +161,7 @@ func RegisterProblemServiceHTTPServer(s *http.Server, srv ProblemServiceHTTPServ
 	s.Use("/jnoj.interface.v1.ProblemService/PackProblem", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/RunProblemFile", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/GetProblemset", auth.Guest())
+	s.Use("/jnoj.interface.v1.ProblemService/ListProblemsets", auth.Guest())
 	s.Use("/jnoj.interface.v1.ProblemService/CreateProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/DeleteProblemset", auth.User())
 	s.Use("/jnoj.interface.v1.ProblemService/UpdateProblemset", auth.User())

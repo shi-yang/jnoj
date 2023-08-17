@@ -44,6 +44,8 @@ rules:
 # 题单
 - selector: "/jnoj.interface.v1.ProblemService/GetProblemset"
   middleware: "jnoj/internal/middleware/auth.Guest()"
+- selector: "/jnoj.interface.v1.ProblemService/ListProblemsets"
+  middleware: "jnoj/internal/middleware/auth.Guest()"
 - selector: "/jnoj.interface.v1.ProblemService/CreateProblemset"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.ProblemService/DeleteProblemset"

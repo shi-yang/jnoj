@@ -310,16 +310,17 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 		if err != nil {
 			return nil, v1.ErrorNotFound(err.Error())
 		}
+		// 判断刷题权限
 		if problemset.Role == ProblemsetRoleGuest {
 			if problemset.Membership == ProblemsetMembershipInvitationCode {
 				return nil, v1.ErrorForbidden("permission denied")
 			}
-			// 新用户，自动加入本题单
-			uc.problemsetRepo.CreateProblemsetUser(ctx, &ProblemsetUser{
-				ProblemsetID: problemset.ID,
-				UserID:       s.UserID,
-			})
 		}
+		// 自动加入本题单
+		uc.problemsetRepo.CreateProblemsetUser(ctx, &ProblemsetUser{
+			ProblemsetID: problemset.ID,
+			UserID:       s.UserID,
+		})
 		problem.SubmitCount += 1
 		uc.problemRepo.UpdateProblem(ctx, problem)
 		s.ProblemID = problem.ID

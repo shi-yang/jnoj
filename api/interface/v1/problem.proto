@@ -722,8 +722,9 @@ message ListProblemsetsRequest {
     repeated ProblemsetType type = 2;
     optional int32 parent_id = 3;
     optional ProblemsetMembership membership = 4;
-    int32 page = 5;
-    int32 per_page = 6;
+    optional bool my = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 
 message ListProblemsetsResponse {

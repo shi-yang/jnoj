@@ -112,6 +112,15 @@ func (r *ProblemsetRepo) ListProblemsets(ctx context.Context, req *v1.ListProble
 	if req.Membership != nil {
 		db.Where("membership = ?", req.Membership)
 	}
+	if req.My != nil {
+		uid, _ := auth.GetUserID(ctx)
+		myProblemset := r.data.db.WithContext(ctx).
+			Select("problemset_id").
+			Model(&ProblemsetUser{}).
+			Where("user_id = ?", uid).
+			Order("updated_at")
+		db.Where("id in (?) OR user_id = ?", myProblemset, uid)
+	}
 	db.Count(&count)
 	db.Offset(page.GetOffset()).
 		Limit(page.GetPageSize()).
@@ -386,16 +395,18 @@ func (r *ProblemsetRepo) GetProblemsetUser(ctx context.Context, sid int, uid int
 
 // CreateProblemsetUser 添加用户到题单
 func (r *ProblemsetRepo) CreateProblemsetUser(ctx context.Context, u *biz.ProblemsetUser) (*biz.ProblemsetUser, error) {
-	var create = ProblemsetUser{
-		ProblemsetID: u.ProblemsetID,
-		UserID:       u.UserID,
+	var create = ProblemsetUser{}
+	result := r.data.db.WithContext(ctx).
+		FirstOrCreate(&create, ProblemsetUser{ProblemsetID: u.ProblemsetID, UserID: u.UserID})
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	err := r.data.db.WithContext(ctx).
-		Create(&create).Error
-	u.ID = create.ID
+	if result.RowsAffected > 0 {
+		r.UpdateProblemsetMemberCount(ctx, u.ProblemsetID)
+	}
 	r.UpdateProblemsetUserAccepted(ctx, u.ProblemsetID, u.UserID)
-	r.UpdateProblemsetMemberCount(ctx, u.ProblemsetID)
-	return u, err
+	u.ID = create.ID
+	return u, nil
 }
 
 // DeleteProblemsetUser 删除题单用户

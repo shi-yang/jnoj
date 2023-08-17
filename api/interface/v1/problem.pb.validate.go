@@ -4946,6 +4946,10 @@ func (m *ListProblemsetsRequest) validate(all bool) error {
 		// no validation rules for Membership
 	}
 
+	if m.My != nil {
+		// no validation rules for My
+	}
+
 	if len(errors) > 0 {
 		return ListProblemsetsRequestMultiError(errors)
 	}
