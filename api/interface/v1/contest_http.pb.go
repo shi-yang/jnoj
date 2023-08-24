@@ -79,6 +79,7 @@ func RegisterContestServiceHTTPServer(s *http.Server, srv ContestServiceHTTPServ
 	s.Use("/jnoj.interface.v1.contest.ContestService/*Delete*", auth.User())
 	s.Use("/jnoj.interface.v1.contest.ContestService/ListContests", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/GetContest", auth.Guest())
+	s.Use("/jnoj.interface.v1.contest.ContestService/GetContestStanding", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/ListContestProblems", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/GetContestProblem", auth.Guest())
 	s.Use("/jnoj.interface.v1.contest.ContestService/CreateContestProblem", auth.User())
