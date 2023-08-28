@@ -1,0 +1,14 @@
+{
+  "position": 2,
+  "label": "比赛功能",
+  "collapsible": true,
+  "collapsed": false,
+  "className": "red",
+  "link": {
+    "type": "generated-index",
+    "title": "比赛功能"
+  },
+  "customProps": {
+    "description": ""
+  }
+}

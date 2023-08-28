@@ -1,0 +1,16 @@
+{
+  "position": 4,
+  "label": "最佳实践",
+  "collapsible": true,
+  "collapsed": false,
+  "className": "red",
+  "link": {
+    "type": "generated-index",
+    "title": "最佳实践"
+  },
+  "customProps": {
+    "description": ""
+  }
+}
+
+  
