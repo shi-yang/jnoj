@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Divider, Link, PageHeader, PaginationProps, Space, Table, TableColumnProps, Typography } from '@arco-design/web-react';
+import { Button, Card, Divider, Drawer, Link, PageHeader, PaginationProps, Space, Table, TableColumnProps, Typography } from '@arco-design/web-react';
 import { useRouter } from 'next/router';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { IconCheckCircle, IconExclamationCircle, IconLink, IconRight, IconUser } from '@arco-design/web-react/icon';
-import { listProblemsetProblems } from '@/api/problemset';
+import { listProblemsetProblems, listProblemsetUsers } from '@/api/problemset';
 import styles from './style/index.module.less';
 
 export const ProblemStatus = {
@@ -77,6 +77,85 @@ function ProblemTable({problems, loading}: {problems: any[], loading: boolean}) 
   );
 }
 
+function UserMember({problemset}: {problemset:any}) {
+  const [visible, setVisible] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPatination] = useState<PaginationProps>({
+    hideOnSinglePage: true,
+    sizeCanChange: true,
+    showTotal: true,
+    pageSize: 50,
+    current: 1,
+    pageSizeChangeResetCurrent: true,
+  });
+  const columns: TableColumnProps[] = [
+    {
+      title: '用户昵称',
+      dataIndex: 'userNickname',
+      align: 'center',
+      render: (col, item) => <Link href={`/u/${item.userId}`} target='_blank'>{col}</Link>
+    },
+    {
+      title: '解答数量',
+      dataIndex: 'acceptedCount',
+      align: 'center',
+    },
+  ];
+  function fetchData() {
+    const { current, pageSize } = pagination;
+    setLoading(true);
+    const params = {
+      page: current,
+      perPage: pageSize,
+    };
+    listProblemsetUsers(problemset.id, params)
+      .then((res) => {
+        setUsers(res.data.data);
+        setPatination({
+          ...pagination,
+          current,
+          pageSize,
+          total: res.data.total,
+        });
+        setLoading(false);
+      });
+  }
+  function onChangeTable({ current, pageSize }) {
+    setPatination({
+      ...pagination,
+      current,
+      pageSize,
+    });
+  }
+  useEffect(() => {
+    fetchData();
+  }, [pagination.current, pagination.pageSize]);
+  return (
+    <>
+      <Button onClick={() => setVisible(true)}>
+        <IconUser />{problemset.memberCount}
+      </Button>
+      <Drawer
+        width={400}
+        title={<span>用户列表</span>}
+        visible={visible}
+        footer={null}
+        onCancel={() => setVisible(false)}
+      >
+        <Table
+          rowKey={r => r.id}
+          loading={loading}
+          onChange={onChangeTable}
+          pagination={pagination}
+          columns={columns}
+          data={users}
+        />
+      </Drawer>
+    </>
+  );
+}
+
 function Problem({problemset}: {problemset:any}) {
   const t = useLocale(locale);
   const router = useRouter();
@@ -132,7 +211,7 @@ function Problem({problemset}: {problemset:any}) {
         }
         style={{ background: 'var(--color-bg-2)' }}
         extra={
-          <div><IconUser />{problemset.memberCount}</div>
+          <UserMember problemset={problemset} />
         }
       >
         {problemset.description}
