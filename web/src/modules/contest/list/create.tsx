@@ -26,7 +26,7 @@ function CreateModal({groupId = 0}: {groupId: number}) {
       setConfirmLoading(true);
       createContest(data).then(res => {
         Message.success('创建成功');
-        router.push(`/contests/${res.data.id}`);
+        window.location.replace(`/contests/${res.data.id}`);
       }).finally(() => {
         setConfirmLoading(false);
       });
