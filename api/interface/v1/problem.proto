@@ -779,13 +779,19 @@ message ProblemsetUser {
     string user_nickname = 3;
     string user_avatar = 4;
     int32 accepted_count = 5;
-    google.protobuf.Timestamp created_at = 6;
+    // 试卷模式：首次分数
+    float initial_score = 6;
+    // 试卷模式：最好分数
+    float best_score = 7;
+    google.protobuf.Timestamp created_at = 8;
 }
 
 message ListProblemsetUsersRequest {
     int32 id = 1;
-    int32 page = 2;
-    int32 per_page = 3;
+    string username = 2;
+    optional string order_by = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListProblemsetUsersResponse {

@@ -104,8 +104,10 @@ type ProblemsetUser struct {
 	UserID        int
 	UserNickname  string
 	UserAvatar    string
-	Role          int // 用户角色
-	AcceptedCount int // 过题量
+	Role          int     // 用户角色
+	AcceptedCount int     // 过题量
+	InitialScore  float32 // 试卷模式：首次分数
+	BestScore     float32 // 试卷模式：最好分数
 	CreatedAt     time.Time
 }
 

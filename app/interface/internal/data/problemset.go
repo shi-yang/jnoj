@@ -48,7 +48,9 @@ type ProblemsetUser struct {
 	ID            int
 	ProblemsetID  int
 	UserID        int
-	AcceptedCount int // 过题量
+	AcceptedCount int     // 过题量
+	InitialScore  float32 // 试卷模式：首次分数
+	BestScore     float32 // 试卷模式：最好分数
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	User          *User `json:"user" gorm:"foreignKey:UserID"`
@@ -355,7 +357,23 @@ func (r *ProblemsetRepo) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 			return db.Select("id, nickname, avatar")
 		})
 	db.Where("problemset_id = ?", req.Id)
+	if req.Username != "" {
+		userIds := r.data.db.WithContext(ctx).Select("id").Model(&User{}).Where("username like ?", req.Username+"%")
+		db.Where("user_id in (?)", userIds)
+	}
 	db.Count(&count)
+	if req.OrderBy != nil {
+		field := ""
+		if strings.Contains(*req.OrderBy, "initial") {
+			field = "initial_score"
+		} else {
+			field = "best_score"
+		}
+		if strings.Contains(*req.OrderBy, "desc") {
+			field += " desc"
+		}
+		db.Order(field)
+	}
 	db.Offset(page.GetOffset()).
 		Limit(page.GetPageSize()).
 		Find(&res)
@@ -367,6 +385,8 @@ func (r *ProblemsetRepo) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 			UserNickname:  v.User.Nickname,
 			UserAvatar:    v.User.Avatar,
 			AcceptedCount: v.AcceptedCount,
+			InitialScore:  v.InitialScore,
+			BestScore:     v.BestScore,
 			CreatedAt:     v.CreatedAt,
 		}
 		rv = append(rv, g)
@@ -416,7 +436,7 @@ func (r *ProblemsetRepo) DeleteProblemsetUser(ctx context.Context, sid int, uid 
 	return err
 }
 
-// UpdateProblemsetUserAccepted 更新用户本题单过提数
+// UpdateProblemsetUserAccepted 更新用户本题单过题数
 func (r *ProblemsetRepo) UpdateProblemsetUserAccepted(ctx context.Context, sid int, uid int) {
 	var count int
 	problemIds := r.data.db.WithContext(ctx).
@@ -738,6 +758,18 @@ func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, ans
 		WrongProblemIDs:      answer.WrongProblemIDs,
 		SubmissionIDs:        answer.SubmissionIDs,
 		SubmittedAt:          answer.SubmittedAt,
+	}
+	// 记录用户的分数
+	user := ProblemsetUser{}
+	err := r.data.db.WithContext(ctx).First(&user, "problemset_id = ? and user_id = ?", answer.ProblemsetID, answer.UserID).Error
+	if err == nil {
+		if user.BestScore < answer.Score {
+			user.BestScore = answer.Score
+		}
+		if user.InitialScore < 0 {
+			user.InitialScore = answer.Score
+		}
+		r.data.db.WithContext(ctx).Updates(user)
 	}
 	return r.data.db.WithContext(ctx).
 		Updates(update).Error

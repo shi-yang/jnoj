@@ -937,6 +937,8 @@ func (s *ProblemService) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 			UserNickname:  v.UserNickname,
 			UserAvatar:    v.UserAvatar,
 			AcceptedCount: int32(v.AcceptedCount),
+			InitialScore:  v.InitialScore,
+			BestScore:     v.BestScore,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
 		})
 	}

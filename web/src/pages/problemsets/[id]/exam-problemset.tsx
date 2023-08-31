@@ -18,6 +18,8 @@ import { IconSkin } from '@arco-design/web-react/icon';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 import Markdown from '@/components/MarkdownView';
+import { UserMember } from './user-member';
+
 dayjs.extend(duration);
 const AnchorLink = Anchor.Link;
 const themes = [
@@ -372,7 +374,11 @@ function Page({problemset}: {problemset:any}) {
       <PageHeader
         title={problemset.name}
         style={{ background: 'var(--color-bg-2)' }}
-        extra={unsubmitAnswerId !== 0 && <Timer initialTime={answerCreatedAt} />}
+        extra={unsubmitAnswerId !== 0 ? (
+          <Timer initialTime={answerCreatedAt} />
+        ) : (
+          <UserMember problemset={problemset} />
+        )}
       >
         {problemset.description}
       </PageHeader>

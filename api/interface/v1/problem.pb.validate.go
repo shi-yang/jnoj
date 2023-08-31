@@ -5980,6 +5980,10 @@ func (m *ProblemsetUser) validate(all bool) error {
 
 	// no validation rules for AcceptedCount
 
+	// no validation rules for InitialScore
+
+	// no validation rules for BestScore
+
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -6111,9 +6115,15 @@ func (m *ListProblemsetUsersRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for Username
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage
+
+	if m.OrderBy != nil {
+		// no validation rules for OrderBy
+	}
 
 	if len(errors) > 0 {
 		return ListProblemsetUsersRequestMultiError(errors)
