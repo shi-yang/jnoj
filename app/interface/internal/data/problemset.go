@@ -760,16 +760,18 @@ func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, ans
 		SubmittedAt:          answer.SubmittedAt,
 	}
 	// 记录用户的分数
-	user := ProblemsetUser{}
-	err := r.data.db.WithContext(ctx).First(&user, "problemset_id = ? and user_id = ?", answer.ProblemsetID, answer.UserID).Error
-	if err == nil {
-		if user.BestScore < answer.Score {
-			user.BestScore = answer.Score
+	if answer.SubmittedAt != nil {
+		user := ProblemsetUser{}
+		err := r.data.db.WithContext(ctx).First(&user, "problemset_id = ? and user_id = ?", answer.ProblemsetID, answer.UserID).Error
+		if err == nil {
+			if user.BestScore < answer.Score {
+				user.BestScore = answer.Score
+			}
+			if user.InitialScore < 0 {
+				user.InitialScore = answer.Score
+			}
+			r.data.db.WithContext(ctx).Updates(user)
 		}
-		if user.InitialScore < 0 {
-			user.InitialScore = answer.Score
-		}
-		r.data.db.WithContext(ctx).Updates(user)
 	}
 	return r.data.db.WithContext(ctx).
 		Updates(update).Error

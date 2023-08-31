@@ -2,6 +2,7 @@ package dbmigrate
 
 import (
 	"log"
+	"time"
 
 	gormigrate "jnoj/pkg/gormmigrate"
 	"jnoj/pkg/password"
@@ -33,7 +34,50 @@ func MigrateAddProblemsetUserScore20230831() *gormigrate.Migration {
 	return &gormigrate.Migration{
 		ID: "MigrateAddProblemsetUserScore20230831",
 		Migrate: func(d *gorm.DB) error {
-			return d.Exec("ALTER TABLE `problemset_user` ADD `initial_score` FLOAT NOT NULL DEFAULT '-1' AFTER `accepted_count`, ADD `best_score` FLOAT NOT NULL DEFAULT '0' AFTER `initial_score`;").Error
+			type ProblemsetAnswer struct {
+				ID           int
+				ProblemsetID int
+				UserID       int
+				Score        float32 // 得分
+				Answer       string
+				SubmittedAt  *time.Time
+				CreatedAt    time.Time
+				UpdatedAt    time.Time
+			}
+			type ProblemsetUser struct {
+				ID            int
+				ProblemsetID  int
+				UserID        int
+				AcceptedCount int     // 过题量
+				InitialScore  float32 // 试卷模式：首次分数
+				BestScore     float32 // 试卷模式：最好分数
+				CreatedAt     time.Time
+				UpdatedAt     time.Time
+			}
+			var answers []ProblemsetAnswer
+			d.Model(&ProblemsetAnswer{}).Find(&answers)
+			err := d.Exec("ALTER TABLE `problemset_user` ADD `initial_score` FLOAT NOT NULL DEFAULT '-1' AFTER `accepted_count`, ADD `best_score` FLOAT NOT NULL DEFAULT '0' AFTER `initial_score`;").Error
+			if err != nil {
+				return err
+			}
+			for _, answer := range answers {
+				// 更新已有数据
+				if answer.SubmittedAt != nil {
+					// 记录用户的分数
+					user := ProblemsetUser{}
+					err := d.First(&user, "problemset_id = ? and user_id = ?", answer.ProblemsetID, answer.UserID).Error
+					if err == nil {
+						if user.BestScore < answer.Score {
+							user.BestScore = answer.Score
+						}
+						if user.InitialScore < 0 {
+							user.InitialScore = answer.Score
+						}
+						d.Updates(user)
+					}
+				}
+			}
+			return nil
 		},
 		Rollback: func(d *gorm.DB) error {
 			return d.Exec("ALTER TABLE `problemset_user` DROP `initial_score`, DROP `best_score`;").Error
