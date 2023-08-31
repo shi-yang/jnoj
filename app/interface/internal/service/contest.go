@@ -236,7 +236,7 @@ func (s *ContestService) GetContestProblem(ctx context.Context, req *v1.GetConte
 	}
 	res, err := s.uc.GetContestProblem(ctx, int(req.Id), int(req.Number))
 	if err != nil {
-		return nil, err
+		return nil, v1.ErrorNotFound(err.Error())
 	}
 	resp := &v1.ContestProblem{
 		Id:            int32(res.ID),

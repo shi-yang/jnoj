@@ -1,31 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Grid, Slider, Statistic, Link, Popconfirm, Message, Button, Divider } from '@arco-design/web-react';
-import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconSettings, IconUserGroup, IconBook } from '@arco-design/web-react/icon';
+import { Layout, Typography, Grid, Slider, Statistic, Link, Popconfirm, Message, Button, Divider, Tooltip, Select, Tabs } from '@arco-design/web-react';
+import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconUserGroup, IconLanguage, IconMoonFill, IconSunFill, IconBook, IconSettings } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { exitVirtualContest, getContest, listContestProblems } from '@/api/contest';
+import { getUserInfo } from '@/store/reducers/user';
 import './mock';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
+import Logo from '@/assets/logo.png';
 import { FormatTime } from '@/utils/format';
 import { useRouter } from 'next/router';
-import { useAppSelector } from '@/hooks';
+import { useAppDispatch, useAppSelector } from '@/hooks';
 import { setting, SettingState } from '@/store/reducers/setting';
 import Head from 'next/head';
-import { ProblemStatus } from '@/modules/problemsets/list/constants';
 import ContestContext from './context';
 import dayjs from 'dayjs';
-import MainLayout from '@/components/Layouts/MainLayout';
 import Forbidden from './forbidden';
+import { GlobalContext } from '@/context';
+import IconButton from '@/components/Layouts/IconButton';
+import UserAvatar from '@/components/Layouts/UserAvatar';
+import { isLogged } from '@/utils/auth';
+import defaultLocale from '@/locale';
 
-const MenuItem = Menu.Item;
-const SubMenu = Menu.SubMenu;
-const Sider = Layout.Sider;
 const Header = Layout.Header;
 const Content = Layout.Content;
 const Row = Grid.Row;
 const Col = Grid.Col;
-const collapsedWidth = 60;
-const normalWidth = 220;
 
 function ContestHeader() {
   const t = useLocale(locale);
@@ -64,12 +64,6 @@ function ContestHeader() {
   }, []);
   return (
     <Header>
-      <Typography.Title className={styles.title}>{contest.name}</Typography.Title>
-      {contest.owner.type === 'GROUP' &&
-        <div className={styles['header-owner']}>
-          <Link href={`/groups/${contest.owner.id}`}><IconUserGroup />{contest.owner.name}</Link>
-        </div>
-      }
       <Row className={styles['contest-header-time']}>
         <Col md={8}>
           <div>
@@ -120,6 +114,9 @@ function ContestHeader() {
 
 function ContestLayout(page) {
   const t = useLocale(locale);
+  const dispatch = useAppDispatch();
+  const [isMounted, setIsMounted] = useState(false);
+  const { lang, setLang, theme, setTheme } = useContext(GlobalContext);
   const [contest, setContest] = useState({
     id: 0,
     name: '',
@@ -144,11 +141,8 @@ function ContestLayout(page) {
     problems: [],
   });
   const [loading, setLoading] = useState(true);
-  const [collapsed, setCollapsed] = useState(false);
-  const [siderWidth, setSiderWidth] = useState(normalWidth);
   const [problems, setProblems] = useState([]);
-  const [menuSelected, setMenuSelected] = useState('');
-  const [problemNumber, setProblemNumber] = useState('A');
+  const [activeTab, setActiveTab] = useState('info');
   const settings = useAppSelector<SettingState>(setting);
   const router = useRouter();
   const fetchData = () => {
@@ -158,7 +152,6 @@ function ContestLayout(page) {
         const { data } = res;
         setContest(data);
         if ((data.role !== 'ROLE_GUEST' && data.runningStatus !== 'NOT_STARTED') || (data.privacy === 'PUBLIC' && data.runningStatus === 'FINISHED')) {
-          setMenuSelected('');
           listContestProblems(router.query.id).then(res => {
             setProblems(res.data.data);
           });
@@ -170,23 +163,14 @@ function ContestLayout(page) {
   };
 
   useEffect(() => {
+    const r = router.pathname.split('/');
+    if (r.length === 4) {
+      setActiveTab(r[3]);
+    }
+    setIsMounted(true);
+    dispatch(getUserInfo());
     fetchData();
   }, []);
-
-  const onCollapse = (collapsed) => {
-    setCollapsed(collapsed);
-    setSiderWidth(collapsed ? collapsedWidth : normalWidth);
-  };
-
-  const handleMoving = (_, { width }) => {
-    if (width > collapsedWidth) {
-      setSiderWidth(width);
-      setCollapsed(!(width > collapsedWidth + 20));
-    } else {
-      setSiderWidth(collapsedWidth);
-      setCollapsed(true);
-    }
-  };
 
   const handleMenuClick = (key:string) => {
     if (key === 'info') {
@@ -195,72 +179,105 @@ function ContestLayout(page) {
     router.push(`/contests/${contest.id}/${key}`);
   };
 
-  const updateContest = (newContestData) => {
-    setContest(newContestData);
-  };
-
   return (
-    <MainLayout>
-      {!loading &&
-        <ContestContext.Provider value={{...contest, problems: problems, updateContest}}>
-          <div className={styles['contest-layout-basic']}>
-            <Head>
-              <title>{`${contest.name} - ${settings.name}`}</title>
-            </Head>
-            <Layout style={{height: '100%'}}>
-              <ContestHeader />
-              {
-                ((contest.role === 'ROLE_GUEST' && (contest.privacy === 'PRIVATE' || contest.runningStatus !== 'FINISHED')) ||
-                (contest.role !== 'ROLE_ADMIN' && contest.runningStatus === 'NOT_STARTED')) ? (
-                  <Forbidden />
-                ) : (
-                  <Layout style={{height: '100%'}}>
-                    <Sider
-                      collapsible
-                      theme='light'
-                      className={menuSelected === 'problem' ? styles['sider-problem'] : ''}
-                      style={{height: '100%'}}
-                      onCollapse={onCollapse}
-                      collapsed={collapsed}
-                      width={siderWidth}
-                      resizeBoxProps={{
-                        directions: ['right'],
-                        onMoving: handleMoving,
-                      }}
-                    >
-                      <div className='logo' />
-                      <Menu theme='light' autoOpen style={{ width: '100%' }} onClickMenuItem={handleMenuClick}>
-                        <MenuItem key='info'><IconHome /> {t['menu.info']}</MenuItem>
-                        <MenuItem key='standings'><IconOrderedList /> {t['menu.standings']}</MenuItem>
-                        <MenuItem key='submission'><IconFile /> {t['menu.submission']}</MenuItem>
-                        {contest.runningStatus === 'FINISHED' && <MenuItem key='editorial'><IconBook /> {t['menu.editorial']}</MenuItem>}
-                        {contest.role === 'ROLE_ADMIN' && <MenuItem key='setting'><IconSettings /> {t['menu.setting']}</MenuItem>}
-                        <SubMenu
-                          key='problem'
-                          title={<span><IconSelectAll /> {t['menu.problem']}</span>}
-                        >
-                          {problems.map(value => 
-                            <MenuItem key={`problem/${String.fromCharCode(65 + value.number)}`}>
-                              {String.fromCharCode(65 + value.number)}. {value.name}
-                              <span className='arco-menu-icon-suffix'>
-                                {ProblemStatus[value.status]}
-                              </span>
-                            </MenuItem>
-                          )}
-                        </SubMenu>
-                      </Menu>
-                    </Sider>
-                    <Content>
-                      {page}
-                    </Content>
-                  </Layout>
-                )
-              }
-            </Layout>
+    <Layout>
+      <Head>
+        <title>{`${contest.name} - ${settings.name}`}</title>
+      </Head>
+      <Header>
+        <div className={styles.navbar}>
+          <div className={styles.left}>
+            <Link href='/'>
+              <img style={{height: 21,  cursor: 'pointer' }} src={Logo.src} alt='logo' />
+            </Link>
           </div>
-        </ContestContext.Provider>
-      }
-    </MainLayout>
+          <div className={styles.title}>
+            <Typography.Title heading={2}>{contest.name}</Typography.Title>
+            {contest.owner.type === 'GROUP' &&
+              <div className={styles['header-owner']}>
+                <Link href={`/groups/${contest.owner.id}`}><IconUserGroup />{contest.owner.name}</Link>
+              </div>
+            }
+          </div>
+          <ul className={styles.right}>
+            <li>
+              <Select
+                triggerElement={<IconButton icon={<IconLanguage />} />}
+                options={[
+                  { label: '中文', value: 'zh-CN' },
+                  { label: 'English', value: 'en-US' },
+                ]}
+                value={lang}
+                triggerProps={{
+                  autoAlignPopupWidth: false,
+                  autoAlignPopupMinWidth: true,
+                  position: 'br',
+                }}
+                trigger="hover"
+                onChange={(value) => {
+                  setLang(value);
+                  const nextLang = defaultLocale[value];
+                  Message.info(`${nextLang['message.lang.tips']}${value}`);
+                }}
+              />
+            </li>
+            <li>
+              <Tooltip
+                content={
+                  theme === 'light'
+                    ? t['settings.navbar.theme.toDark']
+                    : t['settings.navbar.theme.toLight']
+                }
+              >
+                <IconButton
+                  icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
+                  onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                />
+              </Tooltip>
+            </li>
+            { isMounted && (isLogged()
+                ? <li>
+                  <UserAvatar />
+                </li>
+                : <li>
+                  <Link href='/user/login'>{ t['login'] }</Link>
+                </li>)
+            }
+          </ul>
+        </div>
+      </Header>
+      <Content className='container'>
+        {!loading &&
+          <ContestContext.Provider value={{...contest, problems: problems, updateContest: setContest}}>
+            <div className={styles['contest-layout-basic']}>
+              <Layout style={{height: '100%'}}>
+                <ContestHeader />
+                <Tabs defaultActiveTab='info' activeTab={activeTab} size='large' onClickTab={handleMenuClick} onChange={setActiveTab}>
+                  <Tabs.TabPane key='info' title={<span><IconHome /> {t['menu.info']}</span>}></Tabs.TabPane>
+                  <Tabs.TabPane key='problem/A' title={<span><IconSelectAll /> {t['menu.problem']}</span>}></Tabs.TabPane>
+                  <Tabs.TabPane key='submission' title={<span><IconFile /> {t['menu.submission']}</span>}></Tabs.TabPane>
+                  <Tabs.TabPane key='standings' title={<span><IconOrderedList /> {t['menu.standings']}</span>}></Tabs.TabPane>
+                  {contest.runningStatus === 'FINISHED' && <Tabs.TabPane key='editorial' title={<span><IconBook /> {t['menu.editorial']}</span>}></Tabs.TabPane>}
+                  {contest.role === 'ROLE_ADMIN' && <Tabs.TabPane key='setting' title={<span><IconSettings /> {t['menu.setting']}</span>}></Tabs.TabPane>}
+                </Tabs>
+                {
+                  ((contest.role === 'ROLE_GUEST' && (contest.privacy === 'PRIVATE' || contest.runningStatus !== 'FINISHED')) ||
+                  (contest.role !== 'ROLE_ADMIN' && contest.runningStatus === 'NOT_STARTED')) ? (
+                    <Forbidden />
+                  ) : (
+                    <Layout style={{height: '100%'}}>
+                      <Content>
+                        {page}
+                      </Content>
+                    </Layout>
+                  )
+                }
+              </Layout>
+            </div>
+          </ContestContext.Provider>
+        }
+      </Content>
+    </Layout>
   );
 }
 

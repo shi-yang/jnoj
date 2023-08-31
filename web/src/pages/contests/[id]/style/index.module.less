@@ -1,3 +1,49 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 100%;
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+  background-color: var(--color-bg-2);
+}
+.left {
+  display: flex;
+  align-items: center;
+}
+.title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  > h2 {
+    margin: 0 !important;
+    text-align: center;
+    font-weight: 700 !important;
+  }
+}
+.right {
+  display: flex;
+  list-style: none;
+  padding-right: 20px;
+
+  li {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  a {
+    text-decoration: none;
+    color: var(--color-text-1);
+    width: 32px;
+  }
+}
+
 .contest-layout-basic {
   height: 100%;
   background-color: var(--color-bg-1);
@@ -37,16 +83,14 @@
   background-color: var(--color-primary-light-3);
 }
 
-.title {
-  margin-bottom: 0 !important;
-  text-align: center;
-  font-weight: 700 !important;
-}
-
 .header-owner {
   text-align: center;
 }
 
 .sider-problem {
   height: calc(100vh - 288px) !important;
+}
+
+.info-container {
+  padding-top: 20px;
 }

@@ -18,6 +18,7 @@ import rehypeHighlight from 'rehype-highlight';
 import RegisterContest from '@/modules/contest/RegisterContest';
 import StatisticCard from '@/components/StatisticCard';
 import ContestLayout from './Layout';
+import styles from './style/index.module.less';
 
 function Info() {
   const t = useLocale(locale);
@@ -65,7 +66,7 @@ function Info() {
     fetchData();
   }, []);
   return (
-    <div>
+    <div className={styles['info-container']}>
       <StatisticCard items={[
         {
           icon: <IconCalendar fontSize={25} />,

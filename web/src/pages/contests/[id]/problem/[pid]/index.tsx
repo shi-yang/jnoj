@@ -1,12 +1,13 @@
 import { getContestProblem } from '@/api/contest';
 import React, { useContext, useEffect, useState } from 'react';
 import styles from '../../style/problem.module.less';
-import { Grid, ResizeBox, Typography } from '@arco-design/web-react';
+import { Divider, Empty, Grid, Link, List, Typography } from '@arco-design/web-react';
 import Editor from './editor';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import ContestContext from '../../context';
 import ContestLayout from '../../Layout';
 import { useRouter } from 'next/router';
+import { ProblemStatus } from '@/modules/problemsets/list/constants';
 
 function Problem() {
   const contest = useContext(ContestContext);
@@ -26,9 +27,6 @@ function Problem() {
       .then((res) => {
         setProblem(res.data);
       })
-      .catch(err => {
-        console.log(err);
-      })
       .finally(() => {
         setLoading(false);
       });
@@ -38,33 +36,51 @@ function Problem() {
   }, [contest.id, pid]);
   return (
     <div className={styles['container']}>
-      { !loading && (
-        <div className={styles['problem-layout']}>
-          <Grid.Row className={styles.header} justify='space-between' align='center'>
-            <Grid.Col span={24}>
-              <Typography.Title className={styles.title} heading={5}>
-                {pid} - {problem.statements[language].name}
-              </Typography.Title>
-            </Grid.Col>
-          </Grid.Row>
-          <ResizeBox.Split
-            max={0.8}
-            min={0.2}
-            className={styles['resize-box']}
-            panes={[
-              <div key='first' className={styles.left}>
-                {!loading && (
-                  <div className={styles['description-content']}>
-                    <ProblemContent problem={problem} statement={problem.statements[language]}></ProblemContent>
-                  </div>
-                )}
-              </div>,
-              <div key='second' className={styles.right}>
-                <Editor problem={problem} language={language} contest={contest} />
-              </div>,
-            ]}
-          />
-        </div>
+      {problem.statements.length > 0 ? (
+        <Grid.Row>
+          <Grid.Col span={20}>
+            { !loading && (
+              <div className={styles['problem-layout']}>
+                <Grid.Row className={styles.header} justify='space-between' align='center'>
+                  <Grid.Col span={24}>
+                    <Typography.Title className={styles.title} heading={5}>
+                      {pid} - {problem.statements[language].name}
+                    </Typography.Title>
+                  </Grid.Col>
+                </Grid.Row>
+                <div className={styles['description-content']}>
+                  <ProblemContent problem={problem} statement={problem.statements[language]}></ProblemContent>
+                </div>
+                <Divider orientation='left'>提交代码</Divider>
+                <div style={{height: '600px'}}>
+                  <Editor problem={problem} language={language} contest={contest} />
+                </div>
+              </div>
+            )}
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <List
+              size='small'
+              header={<div>题目列表</div>}
+              dataSource={contest.problems}
+              render={(item, index) => (
+                <List.Item
+                  key={index}
+                  actions={[
+                    <span key='status'>{ProblemStatus[item.status]}</span>
+                  ]}
+                >
+                  <Link href={`/contests/${contest.id}/problem/${String.fromCharCode(65 + item.number)}`}>
+                    <Typography.Text ellipsis style={{margin: 0}}>{String.fromCharCode(65 + item.number) + '.' + item.name}</Typography.Text>
+                  </Link>
+                </List.Item>
+              )}
+            >
+            </List>
+          </Grid.Col>
+        </Grid.Row>
+      ) : (
+        <Empty />
       )}
     </div>
   );
