@@ -309,7 +309,7 @@ const App = () => {
             contest.runningStatus === 'FINISHED' && (
               <Space>
                 <span>
-                  <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
+                  <Switch defaultChecked checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
                 </span>
                 <span>
                   <Switch defaultChecked checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowVirtualUser(e)} /> 含虚拟参赛
