@@ -86,9 +86,11 @@ function Index(props) {
             <TabPane key='user' title={t['tab.user']}>
               <User problemset={problemset} />
             </TabPane>
-            <TabPane key='answer' title={t['tab.answer']}>
-              <Answer problemset={problemset} />
-            </TabPane>
+            {problemset.type === 'EXAM' && (
+              <TabPane key='answer' title={t['tab.answer']}>
+                <Answer problemset={problemset} />
+              </TabPane>
+            )}
           </Tabs>
         </div>
       )}

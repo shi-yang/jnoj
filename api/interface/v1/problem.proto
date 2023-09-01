@@ -994,7 +994,10 @@ message ProblemsetAnswer {
 
 message ListProblemsetAnswersRequest {
     int32 id = 1;
-    int32 user_id = 2;
+    string username = 2;
+    optional bool my = 3;
+    int32 page = 4;
+    int32 per_page = 5;
 }
 
 message ListProblemsetAnswersResponse {

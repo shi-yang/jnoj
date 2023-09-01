@@ -328,7 +328,7 @@ function Page({problemset}: {problemset:any}) {
   const [unsubmitAnswerId, setUnsubmitAnswerId] = useState(0);
   useEffect(() => {
     listProblemsetProblems(id, {perPage: 100}).then(res => setProblems(res.data.problems));
-    listProblemsetAnswers(problemset.id, {}).then(res => {
+    listProblemsetAnswers(problemset.id, {my: true}).then(res => {
       const {data} = res.data;
       data.forEach((item:any) => {
         if (!item.submittedAt) {

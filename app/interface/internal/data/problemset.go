@@ -702,17 +702,25 @@ func (r *ProblemsetRepo) CreateProblemsetAnswer(ctx context.Context, answer *biz
 func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.ListProblemsetAnswersRequest) ([]*biz.ProblemsetAnswer, int64) {
 	var rv []*ProblemsetAnswer
 	var count int64
+	page := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
 		Model(&ProblemsetAnswer{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, nickname, avatar, username")
 		}).
 		Where("problemset_id = ?", req.Id)
-	if req.UserId != 0 {
-		db.Where("user_id = ?", req.UserId)
+	if req.My != nil && *req.My {
+		uid, _ := auth.GetUserID(ctx)
+		db.Where("user_id = ?", uid)
+	}
+	if req.Username != "" {
+		uids := r.data.db.WithContext(ctx).Select("id").Model(&User{}).Where("username = ?", req.Username)
+		db.Where("user_id in (?)", uids)
 	}
 	db.Count(&count).
 		Order("id desc").
+		Offset(page.GetOffset()).
+		Limit(page.GetPageSize()).
 		Find(&rv)
 	var res []*biz.ProblemsetAnswer
 	for _, v := range rv {

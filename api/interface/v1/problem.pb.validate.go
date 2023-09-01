@@ -9715,7 +9715,15 @@ func (m *ListProblemsetAnswersRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for UserId
+	// no validation rules for Username
+
+	// no validation rules for Page
+
+	// no validation rules for PerPage
+
+	if m.My != nil {
+		// no validation rules for My
+	}
 
 	if len(errors) > 0 {
 		return ListProblemsetAnswersRequestMultiError(errors)

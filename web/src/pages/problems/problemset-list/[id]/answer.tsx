@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Avatar,
   Card,
+  Input,
   Link,
   PaginationProps,
   Table, TableColumnProps
@@ -12,6 +13,7 @@ import {
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { FormatTime, FormatDuration } from '@/utils/format';
+import { IconSearch } from '@arco-design/web-react/icon';
 
 function Page({problemset}: {problemset:any}) {
   const problemsetId = problemset.id;
@@ -25,9 +27,11 @@ function Page({problemset}: {problemset:any}) {
     pageSizeChangeResetCurrent: true,
   });
   const [loading, setLoading] = useState(true);
+  const [formParams, setFormParams] = useState({});
+  const inputRef = useRef(null);
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   function fetchData() {
     const { current, pageSize } = pagination;
@@ -35,6 +39,7 @@ function Page({problemset}: {problemset:any}) {
     const params = {
       page: current,
       perPage: pageSize,
+      ...formParams,
     };
     listProblemsetAnswers(problemsetId, params)
       .then((res) => {
@@ -48,7 +53,8 @@ function Page({problemset}: {problemset:any}) {
         setLoading(false);
       });
   }
-  function onChangeTable({ current, pageSize }) {
+  function onChangeTable({ current, pageSize }, sorter, filters) {
+    setFormParams({...formParams, ...filters});
     setPatination({
       ...pagination,
       current,
@@ -62,7 +68,32 @@ function Page({problemset}: {problemset:any}) {
       title: t['username'],
       dataIndex: 'username',
       align: 'center',
-      render: (_, record) => record.user.username
+      render: (_, record) => record.user.username,
+      filterMultiple: false,
+      filterIcon: <IconSearch />,
+      filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+        return (
+          <div className='arco-table-custom-filter'>
+            <Input.Search
+              ref={inputRef}
+              searchButton
+              placeholder='输入用户名进行搜索'
+              value={filterKeys[0] || ''}
+              onChange={(value) => {
+                setFilterKeys(value ? [value] : []);
+              }}
+              onSearch={() => {
+                confirm();
+              }}
+            />
+          </div>
+        );
+      },
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => inputRef.current.focus(), 150);
+        }
+      },
     },
     {
       key: 'user',
@@ -81,7 +112,7 @@ function Page({problemset}: {problemset:any}) {
             } {record.user.username}
           </Link>
         </>
-      )
+      ),
     },
     {
       key: 'score',
