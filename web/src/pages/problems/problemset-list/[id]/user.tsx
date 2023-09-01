@@ -130,7 +130,7 @@ function Page({problemset}: {problemset:any}) {
             focusLock
             title={t['update.table.column.action.remove.tips']}
             onOk={() => {
-              removeUser(record.userId);
+              removeUser(record.user.id);
             }}
             onCancel={() => {
             }}
