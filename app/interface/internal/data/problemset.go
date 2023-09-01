@@ -789,7 +789,12 @@ func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, ans
 		SubmissionIDs:        answer.SubmissionIDs,
 		SubmittedAt:          answer.SubmittedAt,
 	}
-	// 记录用户的分数
+	err := r.data.db.WithContext(ctx).
+		Updates(update).Error
+	if err != nil {
+		return err
+	}
+	// 更新用户列表中用户的分数
 	if answer.SubmittedAt != nil {
 		user := ProblemsetUser{}
 		err := r.data.db.WithContext(ctx).First(&user, "problemset_id = ? and user_id = ?", answer.ProblemsetID, answer.UserID).Error
@@ -800,9 +805,20 @@ func (r *ProblemsetRepo) UpdateProblemsetAnswer(ctx context.Context, id int, ans
 			if user.InitialScore < 0 {
 				user.InitialScore = answer.Score
 			}
+			// 统计过题数
+			var correctProblemIDs []string
+			r.data.db.WithContext(ctx).Select("correct_problem_ids").
+				Model(&ProblemsetAnswer{}).
+				Find(&correctProblemIDs, "user_id = ? and problemset_id = ?", answer.UserID, answer.ProblemsetID)
+			correctIdMap := make(map[string]bool)
+			for _, ids := range correctProblemIDs {
+				for _, v := range strings.Split(ids, ",") {
+					correctIdMap[v] = true
+				}
+			}
+			user.AcceptedCount = len(correctIdMap)
 			r.data.db.WithContext(ctx).Updates(user)
 		}
 	}
-	return r.data.db.WithContext(ctx).
-		Updates(update).Error
+	return nil
 }
