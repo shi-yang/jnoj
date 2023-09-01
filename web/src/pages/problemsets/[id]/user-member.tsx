@@ -21,9 +21,9 @@ export function UserMember({problemset}: {problemset:any}) {
   const simpleColumns: TableColumnProps[] = [
     {
       title: '用户昵称',
-      dataIndex: 'userNickname',
+      dataIndex: 'user.nickname',
       align: 'center',
-      render: (col, item) => <Link href={`/u/${item.userId}`} target='_blank'>{col}</Link>,
+      render: (col, item) => <Link href={`/u/${item.user.id}`} target='_blank'>{col}</Link>,
       filterMultiple: false,
       filterIcon: <IconSearch />,
       filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
@@ -59,9 +59,9 @@ export function UserMember({problemset}: {problemset:any}) {
   const examColumns: TableColumnProps[] = [
     {
       title: '用户昵称',
-      dataIndex: 'userNickname',
+      dataIndex: 'user.nickname',
       align: 'center',
-      render: (col, item) => <Link href={`/u/${item.userId}`} target='_blank'>{col}</Link>,
+      render: (col, item) => <Link href={`/u/${item.user.id}`} target='_blank'>{col}</Link>,
       filterMultiple: false,
       filterIcon: <IconSearch />,
       filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {

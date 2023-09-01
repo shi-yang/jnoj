@@ -70,6 +70,7 @@ type ProblemsetAnswer struct {
 	SubmittedAt          *time.Time
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
+	User                 *User
 }
 
 type ProblemsetProblem struct {
@@ -354,7 +355,7 @@ func (r *ProblemsetRepo) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 	db := r.data.db.WithContext(ctx).
 		Model(&ProblemsetUser{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname, avatar")
+			return db.Select("id, nickname, avatar, username")
 		})
 	db.Where("problemset_id = ?", req.Id)
 	if req.Username != "" {
@@ -382,12 +383,16 @@ func (r *ProblemsetRepo) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 		g := &biz.ProblemsetUser{
 			ID:            v.ID,
 			UserID:        v.UserID,
-			UserNickname:  v.User.Nickname,
-			UserAvatar:    v.User.Avatar,
 			AcceptedCount: v.AcceptedCount,
 			InitialScore:  v.InitialScore,
 			BestScore:     v.BestScore,
 			CreatedAt:     v.CreatedAt,
+		}
+		g.User = &biz.User{
+			ID:       v.User.ID,
+			Username: v.User.Username,
+			Nickname: v.User.Nickname,
+			Avatar:   v.User.Avatar,
 		}
 		rv = append(rv, g)
 	}
@@ -415,7 +420,12 @@ func (r *ProblemsetRepo) GetProblemsetUser(ctx context.Context, sid int, uid int
 
 // CreateProblemsetUser 添加用户到题单
 func (r *ProblemsetRepo) CreateProblemsetUser(ctx context.Context, u *biz.ProblemsetUser) (*biz.ProblemsetUser, error) {
-	var create = ProblemsetUser{}
+	var create = ProblemsetUser{
+		InitialScore: u.InitialScore,
+		BestScore:    u.BestScore,
+		ProblemsetID: u.ProblemsetID,
+		UserID:       u.UserID,
+	}
 	result := r.data.db.WithContext(ctx).
 		FirstOrCreate(&create, ProblemsetUser{ProblemsetID: u.ProblemsetID, UserID: u.UserID})
 	if result.Error != nil {
@@ -694,6 +704,9 @@ func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.List
 	var count int64
 	db := r.data.db.WithContext(ctx).
 		Model(&ProblemsetAnswer{}).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, nickname, avatar, username")
+		}).
 		Where("problemset_id = ?", req.Id)
 	if req.UserId != 0 {
 		db.Where("user_id = ?", req.UserId)
@@ -703,7 +716,7 @@ func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.List
 		Find(&rv)
 	var res []*biz.ProblemsetAnswer
 	for _, v := range rv {
-		res = append(res, &biz.ProblemsetAnswer{
+		answer := &biz.ProblemsetAnswer{
 			ID:                   v.ID,
 			ProblemsetID:         v.ProblemsetID,
 			UserID:               v.UserID,
@@ -715,7 +728,16 @@ func (r *ProblemsetRepo) ListProblemsetAnswers(ctx context.Context, req *v1.List
 			WrongProblemIDs:      v.WrongProblemIDs,
 			SubmittedAt:          v.SubmittedAt,
 			CreatedAt:            v.CreatedAt,
-		})
+		}
+		if v.User != nil {
+			answer.User = &biz.User{
+				ID:       v.User.ID,
+				Nickname: v.User.Nickname,
+				Avatar:   v.User.Avatar,
+				Username: v.User.Username,
+			}
+		}
+		res = append(res, answer)
 	}
 	return res, count
 }

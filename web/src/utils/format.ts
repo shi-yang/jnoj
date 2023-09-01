@@ -1,4 +1,7 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
 
 export const FormatTime = (time: string | number | Date | dayjs.Dayjs, format?:string):string => {
   if (format) {
@@ -25,4 +28,8 @@ export const FormatMemorySize = (size:number):string =>  {
     return (size / 1024).toFixed(2) + 'MB';
   }
   return (size / (1024 * 1024)).toFixed(2) + 'GB';
+};
+
+export const FormatDuration = (submittedAt:any, createdAt:any):string => {
+  return dayjs.duration(dayjs(submittedAt).diff(createdAt, 'seconds'), 'seconds').format('H[h] m[m] s[s]').replace(/\b0+[a-z]+\s*/gi, '').trim();
 };

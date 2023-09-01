@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
-import { FormatTime } from '@/utils/format';
+import { FormatTime, FormatDuration } from '@/utils/format';
 import ProblemContent from '@/modules/problem/ProblemContent';
 import Editor from '@/components/Editor';
 import useStorage from '@/utils/useStorage';
@@ -259,9 +259,6 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
       router.reload();
     });
   }
-  function getDuration(submittedAt, createdAt) {
-    return dayjs.duration(dayjs(submittedAt).diff(createdAt, 'seconds'), 'seconds').format('H[h] m[m] s[s]').replace(/\b0+[a-z]+\s*/gi, '').trim();
-  }
   return (
     <Card>
       <Empty
@@ -285,7 +282,7 @@ function AnswerHistory({problemset, answers}: {problemset:any, answers: any[]}) 
               <Space>
                 <Typography.Text type='secondary'>开始时间：{FormatTime(item.createdAt)}</Typography.Text>
                 <Tooltip content={'提交时间：' + FormatTime(item.submittedAt)}>
-                  <Typography.Text type='secondary'>持续时长：{getDuration(item.submittedAt, item.createdAt)}</Typography.Text>
+                  <Typography.Text type='secondary'>持续时长：{FormatDuration(item.submittedAt, item.createdAt)}</Typography.Text>
                 </Tooltip>
               </Space>
             </Space>

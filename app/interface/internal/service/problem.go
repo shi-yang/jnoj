@@ -931,16 +931,22 @@ func (s *ProblemService) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 	resp := new(v1.ListProblemsetUsersResponse)
 	resp.Total = int32(count)
 	for _, v := range res {
-		resp.Data = append(resp.Data, &v1.ProblemsetUser{
+		user := &v1.ProblemsetUser{
 			Id:            int32(v.ID),
-			UserId:        int32(v.UserID),
-			UserNickname:  v.UserNickname,
-			UserAvatar:    v.UserAvatar,
 			AcceptedCount: int32(v.AcceptedCount),
 			InitialScore:  v.InitialScore,
 			BestScore:     v.BestScore,
 			CreatedAt:     timestamppb.New(v.CreatedAt),
-		})
+		}
+		if v.User != nil {
+			user.User = &v1.User{
+				Id:       int32(v.User.ID),
+				Nickname: v.User.Nickname,
+				Username: v.User.Username,
+				Avatar:   v.User.Avatar,
+			}
+		}
+		resp.Data = append(resp.Data, user)
 	}
 	return resp, nil
 }
@@ -1291,7 +1297,7 @@ func (s *ProblemService) ListProblemsetAnswers(ctx context.Context, req *v1.List
 	resp := new(v1.ListProblemsetAnswersResponse)
 	resp.Total = int32(count)
 	for _, v := range res {
-		d := &v1.ProblemsetAnswer{
+		answer := &v1.ProblemsetAnswer{
 			Id:                   int32(v.ID),
 			ProblemsetId:         int32(v.ProblemsetID),
 			CorrectProblemIds:    v.CorrectProblemIDs,
@@ -1302,9 +1308,17 @@ func (s *ProblemService) ListProblemsetAnswers(ctx context.Context, req *v1.List
 			CreatedAt:            timestamppb.New(v.CreatedAt),
 		}
 		if v.SubmittedAt != nil {
-			d.SubmittedAt = timestamppb.New(*v.SubmittedAt)
+			answer.SubmittedAt = timestamppb.New(*v.SubmittedAt)
 		}
-		resp.Data = append(resp.Data, d)
+		if v.User != nil {
+			answer.User = &v1.User{
+				Id:       int32(v.User.ID),
+				Nickname: v.User.Nickname,
+				Username: v.User.Username,
+				Avatar:   v.User.Avatar,
+			}
+		}
+		resp.Data = append(resp.Data, answer)
 	}
 	return resp, nil
 }

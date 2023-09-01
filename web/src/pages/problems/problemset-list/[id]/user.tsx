@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   Avatar,
-  Button, Card, Form, Input,
+  Button, Card, Form,
   Link,
   Message, Modal, PaginationProps, Popconfirm,
-  Table, TableColumnProps, Typography
+  Table, TableColumnProps
 } from '@arco-design/web-react';
 import {
   createProblemsetUser,
@@ -69,25 +69,26 @@ function Page({problemset}: {problemset:any}) {
 
   const columns: TableColumnProps[] = [
     {
-      key: 'userId',
-      title: t['userId'],
-      dataIndex: 'userId',
+      key: 'username',
+      title: t['username'],
+      dataIndex: 'user.username',
       align: 'center',
     },
     {
       key: 'user',
       title: t['user'],
       dataIndex: 'user',
+      align: 'center',
       render: (_, record) => (
         <>
           <Link href={`/u/${record.userId}`} target='_blank'>
             {
-              record.userAvatar !== '' && (
+              record.user.avatar  && (
                 <Avatar size={18}>
-                  <img src={record.userAvatar} alt='user avatar' />
+                  <img src={record.user.avatar} alt='user avatar' />
                 </Avatar>
               )
-            } {record.userNickname}
+            } {record.user.nickname}
           </Link>
         </>
       )
@@ -96,6 +97,19 @@ function Page({problemset}: {problemset:any}) {
       key: 'accepted',
       title: t['acceptedCount'],
       dataIndex: 'acceptedCount',
+      align: 'center',
+    },
+    {
+      key: 'initialScore',
+      title: t['initialScore'],
+      dataIndex: 'initialScore',
+      align: 'center',
+      render: col => col < 0 ? '-' : col
+    },
+    {
+      key: 'bestScore',
+      title: t['bestScore'],
+      dataIndex: 'bestScore',
       align: 'center',
     },
     {

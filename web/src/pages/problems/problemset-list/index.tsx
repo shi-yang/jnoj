@@ -21,6 +21,7 @@ import { useAppSelector } from '@/hooks';
 import { userInfo } from '@/store/reducers/user';
 import { FormatTime } from '@/utils/format';
 import { listProblemsets } from '@/api/problemset';
+import PermissionWrapper from '@/components/PermissionWrapper';
 
 function Page() {
   const t = useLocale(locale);
@@ -132,13 +133,23 @@ function Page() {
             <Link href={`/problemsets/${record.id}`} target='_blank'>{t['searchTable.columns.operations.view']}</Link>
           </Button>
           {
-            user.id === record.user.id &&
+            user.id === record.user.id ? (
               <Button
                 type="text"
                 size="small"
               >
                 <Link href={`/problems/problemset-list/${record.id}`}>{t['searchTable.columns.operations.update']}</Link>
               </Button>
+            ) : (
+              <PermissionWrapper requiredPermissions={[{resource: 'problemset', actions: ['write']}]}>
+                <Button
+                  type="text"
+                  size="small"
+                >
+                  <Link href={`/problems/problemset-list/${record.id}`}>{t['searchTable.columns.operations.update']}</Link>
+                </Button>
+              </PermissionWrapper>
+            )
           }
         </Space>
       ),

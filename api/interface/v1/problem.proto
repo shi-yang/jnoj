@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 import "v1/submission.proto";
+import "v1/user.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -775,15 +776,13 @@ message SortProblemsetChildRequest {
 
 message ProblemsetUser {
     int32 id = 1;
-    int32 user_id = 2;
-    string user_nickname = 3;
-    string user_avatar = 4;
-    int32 accepted_count = 5;
+    int32 accepted_count = 2;
     // 试卷模式：首次分数
-    float initial_score = 6;
+    float initial_score = 3;
     // 试卷模式：最好分数
-    float best_score = 7;
-    google.protobuf.Timestamp created_at = 8;
+    float best_score = 4;
+    user.User user = 5;
+    google.protobuf.Timestamp created_at = 6;
 }
 
 message ListProblemsetUsersRequest {
@@ -988,8 +987,9 @@ message ProblemsetAnswer {
     string submission_ids = 9;
     float score = 10;
     repeated Submission submissions = 11;
-    google.protobuf.Timestamp submitted_at = 12;
-    google.protobuf.Timestamp created_at = 13;
+    user.User user = 12;
+    google.protobuf.Timestamp submitted_at = 13;
+    google.protobuf.Timestamp created_at = 14;
 }
 
 message ListProblemsetAnswersRequest {

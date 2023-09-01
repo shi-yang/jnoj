@@ -63,6 +63,7 @@ type ProblemsetAnswer struct {
 	SubmittedAt          *time.Time // 提交时间
 	CreatedAt            time.Time  // 创建时间
 	UpdatedAt            time.Time
+	User                 *User
 }
 
 const (
@@ -102,13 +103,12 @@ type ProblemsetUser struct {
 	ID            int
 	ProblemsetID  int
 	UserID        int
-	UserNickname  string
-	UserAvatar    string
 	Role          int     // 用户角色
 	AcceptedCount int     // 过题量
 	InitialScore  float32 // 试卷模式：首次分数
 	BestScore     float32 // 试卷模式：最好分数
 	CreatedAt     time.Time
+	User          *User
 }
 
 // ProblemsetRepo is a Problemset repo.
@@ -276,6 +276,7 @@ func (uc *ProblemsetUsecase) CreateProblemsetUser(ctx context.Context, req *v1.C
 	return uc.repo.CreateProblemsetUser(ctx, &ProblemsetUser{
 		UserID:       uid,
 		ProblemsetID: int(req.Id),
+		InitialScore: -1,
 	})
 }
 

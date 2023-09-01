@@ -20,6 +20,7 @@ import ExamProblems from './exam-problems';
 import SimpleProblems from './simple-problems';
 import Info from './info';
 import User from './user';
+import Answer from './answer';
 
 const TabPane = Tabs.TabPane;
 
@@ -84,6 +85,9 @@ function Index(props) {
             </TabPane>
             <TabPane key='user' title={t['tab.user']}>
               <User problemset={problemset} />
+            </TabPane>
+            <TabPane key='answer' title={t['tab.answer']}>
+              <Answer problemset={problemset} />
             </TabPane>
           </Tabs>
         </div>
