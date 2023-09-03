@@ -285,10 +285,14 @@ func (c *ContestStandingIOI) Sort(contest *Contest, users []*ContestUser, proble
 		return res[i].Solved > res[j].Solved
 	})
 	rank := 1
+	prevScore := 0
 	for i := 0; i < len(res); i++ {
 		if res[i].IsRank {
 			res[i].Rank = rank
-			rank++
+			if prevScore != res[i].Score {
+				rank++
+			}
+			prevScore = res[i].Score
 		}
 	}
 	return res
@@ -395,10 +399,14 @@ func (c *ContestStandingOI) Sort(contest *Contest, users []*ContestUser, problem
 		return res[i].MaxScore > res[j].MaxScore
 	})
 	rank := 1
+	prevScore := 0
 	for i := 0; i < len(res); i++ {
 		if res[i].IsRank {
 			res[i].Rank = rank
-			rank++
+			if prevScore != res[i].Score {
+				rank++
+			}
+			prevScore = res[i].Score
 		}
 	}
 	return res
