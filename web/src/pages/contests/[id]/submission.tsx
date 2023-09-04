@@ -91,7 +91,7 @@ function Submission() {
     },
     {
       title: t['user'],
-      dataIndex: 'user',
+      dataIndex: 'username',
       align: 'center',
       render: (_, record) => <Link href={`/u/${record.user.id}`}>{record.user.nickname}</Link>,
       filterMultiple: false,
