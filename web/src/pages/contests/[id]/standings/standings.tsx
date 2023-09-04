@@ -248,7 +248,7 @@ const App = () => {
   const user = useAppSelector(userInfo);
   const contest = useContext(ContestContext);
   const [showMatchUsersOnly, setShowMatchUsersOnly] = useState(true);
-  const [showVirtualUser, setShowVirtualUser] = useState(false);
+  const [showVirtualUser, setShowVirtualUser] = useState(true);
   const [autoRefreshStanding, setAutoRefreshStanding] = useState(false);
 
   function fetchData() {
