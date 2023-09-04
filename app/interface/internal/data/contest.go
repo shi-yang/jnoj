@@ -268,10 +268,17 @@ func (uc *contestRepo) CronUpdateContestUserStanding(ctx context.Context) {
 func (r *contestRepo) ListContestStandingStats(ctx context.Context, req *v1.ListContestStandingStatsRequest) *v1.ListContestStandingStatsResponse {
 	var users []*ContestUser
 	db := r.data.db.WithContext(ctx).
-		Model(&users)
+		Model(&users).
+		Preload("Contest", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name, start_time")
+		})
 	db.Where("user_id in (?)", req.UserId)
 	if req.GroupId != 0 {
-		db.Where("group_id = ?", req.GroupId)
+		contestIds := r.data.db.WithContext(ctx).
+			Select("id").
+			Model(&Contest{}).
+			Where("group_id = ?", req.GroupId)
+		db.Where("contest_id in (?)", contestIds)
 	}
 	if len(req.ContestIds) != 0 {
 		db.Where("contest_id in (?)", req.ContestIds)
@@ -281,11 +288,11 @@ func (r *contestRepo) ListContestStandingStats(ctx context.Context, req *v1.List
 	for _, v := range users {
 		resp.Data = append(resp.Data, &v1.ListContestStandingStatsResponse_ContestStanding{
 			ContestId:   int32(v.ContestID),
-			ContestName: v.Name,
-			StartTime:   timestamppb.New(v.CreatedAt),
+			ContestName: v.Contest.Name,
+			StartTime:   timestamppb.New(v.Contest.StartTime),
 			Rank:        int32(v.Rank),
 			Score:       int32(v.Score),
 		})
 	}
-	return nil
+	return resp
 }
