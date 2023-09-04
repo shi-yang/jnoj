@@ -45,6 +45,11 @@ function People() {
 
   const columns:TableColumnProps[] = [
     {
+      title: t['people.column.username'],
+      dataIndex: 'username',
+      align: 'center' as 'center',
+    },
+    {
       title: t['people.column.nickname'],
       dataIndex: 'nickname',
       align: 'center' as 'center',

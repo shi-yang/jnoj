@@ -254,12 +254,19 @@ func (r *groupRepo) DeleteGroup(ctx context.Context, id int) error {
 func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRequest) ([]*biz.GroupUser, int64) {
 	res := []GroupUser{}
 	count := int64(0)
-	r.data.db.WithContext(ctx).
+	db := r.data.db.WithContext(ctx).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname, avatar")
+			return db.Select("id, nickname, avatar, username")
 		}).
-		Where("group_id = ?", req.Id).
-		Order("role, id").
+		Where("group_id = ?", req.Id)
+	if req.Username != "" {
+		usernameQuery := r.data.db.WithContext(ctx).
+			Select("id").
+			Model(&User{}).
+			Where("username like ?", req.Username+"%")
+		db.Where("user_id in (?)", usernameQuery)
+	}
+	db.Order("role, id").
 		Find(&res).
 		Count(&count)
 	rv := make([]*biz.GroupUser, 0)
@@ -267,6 +274,7 @@ func (r *groupRepo) ListGroupUsers(ctx context.Context, req *v1.ListGroupUsersRe
 		u := &biz.GroupUser{
 			ID:         v.ID,
 			Nickname:   v.Nickname,
+			Username:   v.User.Username,
 			UserAvatar: v.User.Avatar,
 			UserID:     v.UserID,
 			GroupID:    v.GroupID,

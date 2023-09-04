@@ -22,12 +22,30 @@ func Migrate(db *gorm.DB) {
 		MigrateAddProblemsetChild20230805(),
 		MigrateAddProblemsetExamScore20230809(),
 		MigrateAddProblemsetUserScore20230831(),
+		MigrateAddContestUserRank20230903(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddContestUserRank20230903() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddContestUserRank20230903",
+		Migrate: func(d *gorm.DB) error {
+			err := d.Exec("ALTER TABLE `contest_user` ADD `rank` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `user_id`, ADD `score` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `rank`;").Error
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		Rollback: func(d *gorm.DB) error {
+			d.Exec("ALTER TABLE `contest_user` DROP `rank`, DROP `score`;")
+			return nil
+		},
+	}
 }
 
 func MigrateAddProblemsetUserScore20230831() *gormigrate.Migration {

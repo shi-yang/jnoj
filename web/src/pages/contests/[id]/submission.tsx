@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Table, TableColumnProps, PaginationProps, Switch, Link } from '@arco-design/web-react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Button, Card, Table, TableColumnProps, PaginationProps, Switch, Link, Input } from '@arco-design/web-react';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import { LanguageMap } from '@/api/submission';
@@ -12,6 +12,7 @@ import { userInfo } from '@/store/reducers/user';
 import { useAppSelector } from '@/hooks';
 import { isLogged } from '@/utils/auth';
 import ContestLayout from './Layout';
+import { IconSearch } from '@arco-design/web-react/icon';
 function Submission() {
   const t = useLocale(locale);
   const contest = useContext(ContestContext);
@@ -22,6 +23,7 @@ function Submission() {
   const [id, setId] = useState(0);
   const [formParams, setFormParams] = useState({});
   const [isMounted, setIsMounted] = useState(false);
+  const inputRef = useRef(null);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -92,6 +94,31 @@ function Submission() {
       dataIndex: 'user',
       align: 'center',
       render: (_, record) => <Link href={`/u/${record.user.id}`}>{record.user.nickname}</Link>,
+      filterMultiple: false,
+      filterIcon: <IconSearch />,
+      filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+        return (
+          <div className='arco-table-custom-filter'>
+            <Input.Search
+              ref={inputRef}
+              searchButton
+              placeholder='输入用户名进行搜索'
+              value={filterKeys[0] || ''}
+              onChange={(value) => {
+                setFilterKeys(value ? [value] : []);
+              }}
+              onSearch={() => {
+                confirm();
+              }}
+            />
+          </div>
+        );
+      },
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => inputRef.current.focus(), 150);
+        }
+      },
     },
     {
       title: t['problem'],

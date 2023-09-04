@@ -69,6 +69,7 @@ type GroupUser struct {
 	UserID     int
 	Role       int
 	Nickname   string
+	Username   string
 	UserAvatar string
 	CreatedAt  time.Time
 }

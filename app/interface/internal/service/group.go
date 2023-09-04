@@ -143,6 +143,7 @@ func (s *GroupService) ListGroupUsers(ctx context.Context, req *v1.ListGroupUser
 			GroupId:    int32(v.GroupID),
 			UserId:     int32(v.UserID),
 			Nickname:   v.Nickname,
+			Username:   v.Username,
 			UserAvatar: v.UserAvatar,
 			CreatedAt:  timestamppb.New(v.CreatedAt),
 			Role:       v1.GroupUserRole(v.Role),

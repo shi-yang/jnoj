@@ -38,7 +38,7 @@ func (s *ContestService) ListContests(ctx context.Context, req *v1.ListContestsR
 			StartTime:        timestamppb.New(v.StartTime),
 			EndTime:          timestamppb.New(v.EndTime),
 			Type:             v1.ContestType(v.Type),
-			RunningStatus:    v1.Contest_RunningStatus(runningStatus),
+			RunningStatus:    v1.RunningStatus(runningStatus),
 			Privacy:          v1.ContestPrivacy(v.Privacy),
 			Membership:       v1.ContestMembership(v.Membership),
 			UserId:           int32(v.UserID),
@@ -77,7 +77,7 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		ParticipantCount: int32(res.ParticipantCount),
 		StartTime:        timestamppb.New(res.StartTime),
 		EndTime:          timestamppb.New(res.EndTime),
-		RunningStatus:    v1.Contest_RunningStatus(res.GetRunningStatus()),
+		RunningStatus:    v1.RunningStatus(res.GetRunningStatus()),
 		Role:             v1.ContestUserRole(res.Role),
 		Feature:          res.Feature,
 	}
@@ -595,4 +595,10 @@ func (s *ContestService) ListContestRatingChanges(ctx context.Context, req *v1.L
 		return nil, v1.ErrorNotFound(err.Error())
 	}
 	return s.uc.ListContestRatingChanges(ctx, contest, req.Page, req.PerPage)
+}
+
+// ListContestStandingStats 获取比赛排名统计列表
+func (s *ContestService) ListContestStandingStats(ctx context.Context, req *v1.ListContestStandingStatsRequest) (*v1.ListContestStandingStatsResponse, error) {
+	resp := s.uc.ListContestStandingStats(ctx, req)
+	return resp, nil
 }

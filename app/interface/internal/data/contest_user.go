@@ -19,6 +19,8 @@ type ContestUser struct {
 	UserID         int
 	Name           string
 	Role           int
+	Rank           int        // 最终排名
+	Score          int        // 得分
 	VirtualStart   *time.Time // 虚拟竞赛开始时间
 	VirtualEnd     *time.Time // 虚拟竞赛结束时间
 	OldRating      int        // 上场比赛竞赛积分
@@ -115,6 +117,8 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 		UserID:         res.UserID,
 		Name:           res.Name,
 		Role:           res.Role,
+		Rank:           res.Rank,
+		Score:          res.Score,
 		VirtualStart:   res.VirtualStart,
 		VirtualEnd:     res.VirtualEnd,
 		UserNickname:   res.User.Nickname,
@@ -154,10 +158,12 @@ func (r *contestRepo) UpdateContestUser(ctx context.Context, c *biz.ContestUser)
 		UserID:         c.UserID,
 		Name:           c.Name,
 		Role:           c.Role,
+		Rank:           c.Rank,
+		Score:          c.Score,
 		VirtualEnd:     c.VirtualEnd,
 		SpecialEffects: c.SpecialEffects,
 	}
-	updateColumns := []string{"name", "role", "special_effects"}
+	updateColumns := []string{"name", "role", "rank", "score", "special_effects"}
 	if c.VirtualEnd != nil {
 		updateColumns = append(updateColumns, "virtual_end")
 	}

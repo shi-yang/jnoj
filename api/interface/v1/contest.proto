@@ -157,14 +157,22 @@ service ContestService {
             get: "/contests/{contest_id}/special_effects"
         };
     }
+    // 获取比赛排名统计列表
+    rpc ListContestStandingStats (ListContestStandingStatsRequest) returns (ListContestStandingStatsResponse) {
+        option (google.api.http) = {
+            get: "/contest/standing_stats"
+        };
+    }
 }
 
 message ListContestsRequest {
     string name = 1;
     optional int32 group_id = 2;
-    optional string order_by = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    optional RunningStatus running_status = 3;
+    optional string order_by = 4;
+    google.protobuf.Timestamp end_time = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 message ListContestsResponse {
     repeated Contest data = 1;
@@ -256,6 +264,17 @@ enum ContestType {
     OI = 2;
 }
 
+enum RunningStatus {
+    // 尚未开始
+    NOT_STARTED = 0;
+    // 进行中
+    IN_PROGRESS = 1;
+    // 进行中（封榜）
+    FROZEN_STANDINGS = 2;
+    // 已结束
+    FINISHED = 3;
+}
+
 message Contest {
     int32 id = 1;
     string name = 2;
@@ -275,16 +294,6 @@ message Contest {
     google.protobuf.Timestamp virtual_start = 14;
     // 登录用户虚拟参赛结束时间
     google.protobuf.Timestamp virtual_end = 15;
-    enum RunningStatus {
-        // 尚未开始
-        NOT_STARTED = 0;
-        // 进行中
-        IN_PROGRESS = 1;
-        // 进行中（封榜）
-        FROZEN_STANDINGS = 2;
-        // 已结束
-        FINISHED = 3;
-    }
     // 运行状态
     RunningStatus running_status = 16;
     message Owner {
@@ -556,4 +565,21 @@ message ListContestRatingChangesRequest {
 message ListContestRatingChangesResponse {
     repeated ContestUser data = 1;
     int64 total = 2;
+}
+
+message ListContestStandingStatsRequest {
+    repeated int32 contest_ids = 1;
+    int32 group_id = 2;
+    repeated int32 user_id = 3;
+}
+
+message ListContestStandingStatsResponse {
+    message ContestStanding {
+        int32 contest_id = 1;
+        string contest_name = 2;
+        int32 rank = 3;
+        int32 score = 4;
+        google.protobuf.Timestamp start_time = 5;
+    }
+    repeated ContestStanding data = 1;
 }

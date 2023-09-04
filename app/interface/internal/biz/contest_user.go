@@ -16,6 +16,8 @@ type ContestUser struct {
 	Role           int
 	UserNickname   string
 	UserAvatar     string
+	Rank           int
+	Score          int
 	OldRating      int        // 上场比赛竞赛积分
 	NewRating      int        // 本场比赛竞赛积分
 	RatingChanged  int        // 积分增减

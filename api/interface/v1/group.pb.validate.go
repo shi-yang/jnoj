@@ -938,6 +938,8 @@ func (m *GroupUser) validate(all bool) error {
 
 	// no validation rules for Nickname
 
+	// no validation rules for Username
+
 	// no validation rules for UserAvatar
 
 	// no validation rules for UserId
@@ -1075,6 +1077,8 @@ func (m *ListGroupUsersRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Id
+
+	// no validation rules for Username
 
 	if len(errors) > 0 {
 		return ListGroupUsersRequestMultiError(errors)

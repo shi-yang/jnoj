@@ -12,6 +12,7 @@ import (
 	"jnoj/pkg/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -70,6 +71,14 @@ func (r *contestRepo) ListContests(ctx context.Context, req *v1.ListContestsRequ
 	}
 	if req.GroupId != nil {
 		db.Where("group_id = ?", *req.GroupId)
+	}
+	if req.RunningStatus != nil {
+		if *req.RunningStatus == v1.RunningStatus_FINISHED {
+			db.Where("end_time < ?", time.Now())
+		}
+	}
+	if req.EndTime != nil {
+		db.Where("end_time > ?", req.EndTime.AsTime())
 	}
 	db.Count(&count)
 	if req.OrderBy != nil {
@@ -248,4 +257,35 @@ func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, contest *bi
 		})
 	}
 	return
+}
+
+// CronUpdateContestUserStanding 定期更新比赛用户表
+// 通过定期查询的方式更新 ContestUser.Rank 字段
+func (uc *contestRepo) CronUpdateContestUserStanding(ctx context.Context) {
+}
+
+// ListContestStandingStats 获取比赛排名统计列表
+func (r *contestRepo) ListContestStandingStats(ctx context.Context, req *v1.ListContestStandingStatsRequest) *v1.ListContestStandingStatsResponse {
+	var users []*ContestUser
+	db := r.data.db.WithContext(ctx).
+		Model(&users)
+	db.Where("user_id in (?)", req.UserId)
+	if req.GroupId != 0 {
+		db.Where("group_id = ?", req.GroupId)
+	}
+	if len(req.ContestIds) != 0 {
+		db.Where("contest_id in (?)", req.ContestIds)
+	}
+	db.Find(&users)
+	var resp = new(v1.ListContestStandingStatsResponse)
+	for _, v := range users {
+		resp.Data = append(resp.Data, &v1.ListContestStandingStatsResponse_ContestStanding{
+			ContestId:   int32(v.ContestID),
+			ContestName: v.Name,
+			StartTime:   timestamppb.New(v.CreatedAt),
+			Rank:        int32(v.Rank),
+			Score:       int32(v.Score),
+		})
+	}
+	return nil
 }

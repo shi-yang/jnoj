@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/robfig/cron/v3"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Contest is a Contest model.
@@ -158,6 +160,8 @@ type ContestRepo interface {
 	UpdateContest(context.Context, *Contest) (*Contest, error)
 	DeleteContest(context.Context, int) error
 	ListContestAllSubmissions(ctx context.Context, contest *Contest) []*ContestSubmission
+	ListContestStandingStats(ctx context.Context, req *v1.ListContestStandingStatsRequest) *v1.ListContestStandingStatsResponse
+	CronUpdateContestUserStanding(ctx context.Context)
 	ContestProblemRepo
 	ContestUserRepo
 }
@@ -180,7 +184,7 @@ func NewContestUsecase(
 	userRepo UserRepo,
 	groupRepo GroupRepo,
 	logger log.Logger) *ContestUsecase {
-	return &ContestUsecase{
+	uc := &ContestUsecase{
 		repo:           repo,
 		problemRepo:    problemRepo,
 		submissionRepo: submissionRepo,
@@ -188,6 +192,14 @@ func NewContestUsecase(
 		groupRepo:      groupRepo,
 		log:            log.NewHelper(logger),
 	}
+	c := cron.New()
+	c.AddFunc("@hourly", func() {
+		// 定期更新比赛用户的排名
+		// TODO 此种方式有待优化
+		uc.CronUpdateContestUserStanding(context.TODO())
+	})
+	c.Start()
+	return uc
 }
 
 // ListContests list Contest
@@ -454,4 +466,30 @@ func (uc *ContestUsecase) ListContestRatingChanges(ctx context.Context, contest 
 		}
 	}
 	return resp, nil
+}
+
+// CronUpdateContestUserStanding 定期更新比赛用户表
+func (uc *ContestUsecase) CronUpdateContestUserStanding(ctx context.Context) {
+	contests, _ := uc.ListContests(ctx, &v1.ListContestsRequest{
+		RunningStatus: v1.RunningStatus_FINISHED.Enum(),
+		EndTime:       timestamppb.New(time.Now().Add(-time.Hour)),
+	})
+	for _, contest := range contests {
+		users, _ := uc.GetContestStanding(ctx, contest, -1, -1, true, false)
+		for _, user := range users {
+			contestUser := uc.repo.GetContestUser(ctx, contest.ID, user.UserId)
+			contestUser.Rank = user.Rank
+			contestUser.Score = user.Score
+			uc.repo.UpdateContestUser(ctx, contestUser)
+		}
+	}
+}
+
+// ListContestStandingStats 获取比赛排名统计列表
+func (uc *ContestUsecase) ListContestStandingStats(ctx context.Context, req *v1.ListContestStandingStatsRequest) *v1.ListContestStandingStatsResponse {
+	if len(req.UserId) == 0 {
+		uid, _ := auth.GetUserID(ctx)
+		req.UserId = []int32{int32(uid)}
+	}
+	return uc.repo.ListContestStandingStats(ctx, req)
 }

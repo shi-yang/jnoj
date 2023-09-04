@@ -147,15 +147,17 @@ enum GroupUserRole {
 message GroupUser {
     int32 id = 1;
     string nickname = 2;
-    string user_avatar = 3;
-    int32 user_id = 4;
-    int32 group_id = 5;
-    GroupUserRole role = 6;
-    google.protobuf.Timestamp created_at = 7;
+    string username = 3;
+    string user_avatar = 4;
+    int32 user_id = 5;
+    int32 group_id = 6;
+    GroupUserRole role = 7;
+    google.protobuf.Timestamp created_at = 8;
 }
 
 message ListGroupUsersRequest {
     int32 id = 1;
+    string username = 2;
 }
 
 message ListGroupUsersResponse {
