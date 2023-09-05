@@ -154,6 +154,19 @@ func (s *ContestService) CreateContest(ctx context.Context, req *v1.CreateContes
 	}, nil
 }
 
+// DeleteContest 删除比赛
+func (s *ContestService) DeleteContest(ctx context.Context, req *v1.DeleteContestRequest) (*emptypb.Empty, error) {
+	contest, err := s.uc.GetContest(ctx, int(req.Id))
+	if err != nil {
+		return nil, v1.ErrorContestNotFound(err.Error())
+	}
+	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
+		return nil, v1.ErrorPermissionDenied("permission denied")
+	}
+	s.uc.DeleteContest(ctx, contest.ID)
+	return &emptypb.Empty{}, nil
+}
+
 // GetContestStanding 获取比赛榜单
 func (s *ContestService) GetContestStanding(ctx context.Context, req *v1.GetContestStandingRequest) (*v1.GetContestStandingResponse, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.Id))

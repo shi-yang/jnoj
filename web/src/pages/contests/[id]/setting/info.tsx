@@ -1,7 +1,7 @@
-import { createContestProblem, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
+import { createContestProblem, deleteContest, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
 import Editor from '@/components/MarkdownEditor';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select, Divider } from '@arco-design/web-react';
+import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select, Divider, Alert } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
@@ -10,6 +10,7 @@ const { RangePicker } = DatePicker;
 import styles from '../style/setting.module.less';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import ProblemModalList from '@/modules/problem/problem-modal-list';
+import { useRouter } from 'next/router';
 
 const AddProblem = ({contestId, callback}: {contestId: number, callback: () => void}) => {
   const t = useLocale(locale);
@@ -118,6 +119,7 @@ const SettingInfo = () => {
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [problems, setProblems] = useState([]);
+  const router = useRouter();
   function onSubmit() {
     form.validate().then((values) => {
       const data = {
@@ -157,6 +159,12 @@ const SettingInfo = () => {
         Message.success('已删除');
         listProblems();
       });
+  }
+  function onDelete() {
+    deleteContest(contest.id).then(res => {
+      Message.success('已删除');
+      router.push('/contests');
+    });
   }
   useEffect(() => {
     let invitationCode = contest.invitationCode;
@@ -337,6 +345,22 @@ const SettingInfo = () => {
           )}
         />
       </Card>
+      <Divider />
+      <Alert
+        style={{ marginBottom: 20 }}
+        type='warning'
+        title='危险区域'
+        content={
+          <Popconfirm
+            focusLock
+            title='确定删除？'
+            content='此操作将删除此比赛及对应的提交记录，删除后数据不可恢复'
+            onOk={onDelete}
+          >
+            <Button type='primary' status='danger'>删除比赛</Button>
+          </Popconfirm>
+        }
+      />
     </div>
   );
 };

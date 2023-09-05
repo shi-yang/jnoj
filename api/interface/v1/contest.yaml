@@ -3,7 +3,7 @@ rules:
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector: "/jnoj.interface.v1.contest.ContestService/UpdateContest"
   middleware: "jnoj/internal/middleware/auth.User()"
-- selector: "/jnoj.interface.v1.contest.ContestService/*Delete*"
+- selector: "/jnoj.interface.v1.contest.ContestService/DeleteContest"
   middleware: "jnoj/internal/middleware/auth.User()"
 - selector : "/jnoj.interface.v1.contest.ContestService/ListContests"
   middleware: "jnoj/internal/middleware/auth.Guest()"

@@ -224,11 +224,41 @@ func (r *contestRepo) UpdateContest(ctx context.Context, c *biz.Contest) (*biz.C
 
 // DeleteContest .
 func (r *contestRepo) DeleteContest(ctx context.Context, id int) error {
-	err := r.data.db.WithContext(ctx).
-		Omit(clause.Associations).
-		Delete(Contest{ID: id}).
+	// 删除比赛
+	tx := r.data.db.WithContext(ctx).Begin()
+	err := tx.Omit(clause.Associations).
+		Delete(&Contest{ID: id}).
 		Error
-	return err
+	if err != nil {
+		tx.Callback()
+		return err
+	}
+	// 删除比赛用户
+	err = tx.Omit(clause.Associations).
+		Delete(&ContestUser{}, "contest_id = ?", id).
+		Error
+	if err != nil {
+		tx.Callback()
+		return err
+	}
+	// 删除比赛题目
+	err = tx.Omit(clause.Associations).
+		Delete(&ContestProblem{}, "contest_id = ?", id).
+		Error
+	if err != nil {
+		tx.Callback()
+		return err
+	}
+	// 删除比赛提交
+	err = tx.Omit(clause.Associations).
+		Delete(&Submission{}, "entity_id = ? and entity_type = ?", id, biz.SubmissionEntityTypeContest).
+		Error
+	if err != nil {
+		tx.Callback()
+		return err
+	}
+	tx.Commit()
+	return nil
 }
 
 func (r *contestRepo) ListContestAllSubmissions(ctx context.Context, contest *biz.Contest) (res []*biz.ContestSubmission) {

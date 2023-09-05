@@ -12,6 +12,10 @@ export function createContest(data) {
   return axios.post(`/contests`, data);
 }
 
+export function deleteContest(id) {
+  return axios.delete(`/contests/${id}`);
+}
+
 export function updateContest(id, data) {
   return axios.put(`/contests/${id}`, data);
 }
