@@ -302,10 +302,10 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 		start = time.Date(int(req.Year), 1, 1, 0, 0, 0, 0, time.UTC)
 		end = time.Date(int(req.Year)+1, 1, 1, 0, 0, 0, 0, time.UTC)
 	}
-	res.Start = start.Format("2006/01/02")
-	res.End = end.Format("2006/01/02")
+	res.Start = start.Format("2006-01-02")
+	res.End = end.Format("2006-01-02")
 	db := r.data.db.WithContext(ctx).
-		Select("DATE_FORMAT(created_at, '%Y/%m/%d') as date, count(*)").
+		Select("DATE_FORMAT(created_at, '%Y-%m-%d') as date, count(*)").
 		Table("submission").
 		Where("user_id = ? and entity_type = ?", req.Id, biz.SubmissionEntityTypeProblemset).
 		Where("created_at >= ? and created_at < ?", start, end)

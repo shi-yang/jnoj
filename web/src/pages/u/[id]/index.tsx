@@ -1,8 +1,10 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getUserProfile, getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
-import HeatMap from '@uiw/react-heat-map';
-import { Avatar, Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, PageHeader, Pagination, PaginationProps, Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography } from '@arco-design/web-react';
+import {
+  Avatar, Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, PageHeader, Pagination, PaginationProps,
+  Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography
+} from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
 import { useAppSelector } from '@/hooks';
@@ -17,6 +19,10 @@ import { FormatTime } from '@/utils/format';
 import StatisticCard from '@/components/StatisticCard';
 import { IconBook, IconFile, IconLocation, IconMan, IconMore, IconTrophy, IconUserGroup, IconWoman } from '@arco-design/web-react/icon';
 import ReactECharts from 'echarts-for-react';
+import CalHeatmap from 'cal-heatmap';
+import 'cal-heatmap/cal-heatmap.css';
+// @ts-ignore https://github.com/wa0x6e/cal-heatmap/issues/366
+import CalTooltip from 'cal-heatmap/plugins/Tooltip';
 
 function RecentlySubmission({userId}: {userId: number}) {
   const [data, setData] = useState([]);
@@ -155,6 +161,113 @@ function renderItemWithResponsive(item1: React.ReactNode, item2: React.ReactNode
   );
 }
 
+function SubmissionCalHeatmap() {
+  const router = useRouter();
+  const t = useLocale(locale);
+  const { id } = router.query;
+  const [calendarSelectYear, setCalendarSelectYear] = useState(0);
+  const [calendarOptions, setCalendarOptions] = useState([]);
+  const [profileCalendar, setProfileCalendar] = useState({
+    submissionCalendar: [],
+    totalSubmission: 0,
+    totalProblemSolved: 0,
+    totalActiveDays: 0,
+    start: '',
+    end: '',
+  });
+  const cal = new CalHeatmap();
+  useEffect(() => {
+    getUserProfileCalendar(id).
+      then(res => {
+        const { data } = res;
+        setProfileCalendar(data);
+        paint(data);
+        data.activeYears.forEach(item => {
+          setCalendarOptions(current => [...current, {
+            name: item,
+            value: item
+          }]);
+        });
+      });
+  }, [id]);
+  function paint(data:any) {
+    const div = document.getElementById('cal-heatmap');
+    if (div) {
+      while (div.firstChild) {
+        div.removeChild(div.firstChild);
+      }
+    }
+    cal.paint(
+      {
+        data: {
+          source: data.submissionCalendar,
+          x: 'date',
+          y: 'count',
+        },
+        date: { start: new Date(data.start), locale: 'zh' },
+        range: 12,
+        animationDuration: 100,
+        scale: { color: { type: 'diverging', scheme: 'PRGn', domain: [-10, 15] } },
+        domain: {
+          type: 'month',
+        },
+        subDomain: { type: 'day', radius: 2, height: 12, width: 12 },
+        itemSelector: '#cal-heatmap',
+      },
+      [
+        [
+          CalTooltip,
+          {
+            // @ts-ignore
+            text: function (date, value, dayjsDate) {
+              return (
+                (value ? value + '次提交' : '没有提交') + ' - ' + dayjsDate.format('LL')
+              );
+            },
+          },
+        ],
+      ]
+    );
+  }
+  function onCalendarSelectChange(e) {
+    setCalendarSelectYear(e);
+    getUserProfileCalendar(id, { year: e })
+      .then(res => {
+        const { data } = res;
+        setProfileCalendar(data);
+        paint(data);
+      });
+  }
+  return (
+    <Card
+      title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
+      extra={
+        <div>
+          <Space>
+            <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
+              <Select.Option value={0}>
+                {t['pastYear']}
+              </Select.Option>
+              {calendarOptions.map((option, index) => (
+                <Select.Option key={index} value={option.value}>
+                  {option.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Space>
+        </div>
+      }
+    >
+      <Space style={{minWidth: '355px', marginBottom: '20px'}}>
+        <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
+        <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
+        <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
+      </Space>
+      <div id="cal-heatmap"></div>
+    </Card>
+  );
+}
+
 const Color = {
   'NOT_START': 'gray',
   'INCORRECT': 'orange',
@@ -166,7 +279,6 @@ export default function UserPage() {
   const { id } = router.query;
   const [user, setUser] = useState({username: '', nickname: '', avatar: '', role: ''});
   const settings = useAppSelector<SettingState>(setting);
-  const [calendarOptions, setCalendarOptions] = useState([]);
   const [profile, setProfile] = useState({
     bio: '',
     location: '',
@@ -174,19 +286,10 @@ export default function UserPage() {
     gender: 0,
   });
   const [profileDescriptionData, setProfileDescriptionData] = useState([]);
-  const [profileCalendar, setProfileCalendar] = useState({
-    submissionCalendar: [],
-    totalSubmission: 0,
-    totalProblemSolved: 0,
-    totalActiveDays: 0,
-    start: '',
-    end: '',
-  });
   const [problemSolvedProgressTab, setProblemSolvedProgressTab] = useState('problemset');
   const [profileProblemsets, setProfileProblemsets] = useState([]);
   const [profileContests, setProfileContests] = useState([]);
   const [profileGroups, setProfileGroups] = useState([]);
-  const [calendarSelectYear, setCalendarSelectYear] = useState(0);
   const [profileUserBadges, setProfileUserBadges] = useState([]);
   const [profileCount, setProfileCount] = useState({
     contestRating: 0,
@@ -228,14 +331,6 @@ export default function UserPage() {
       trigger: 'axis',
     }
   });
-  function onCalendarSelectChange(e) {
-    setCalendarSelectYear(e);
-    getUserProfileCalendar(id, { year: e })
-      .then(res => {
-        const { data } = res;
-        setProfileCalendar(data);
-      });
-  }
   useEffect(() => {
     const { current, pageSize } = pagination;
     if (problemSolvedProgressTab === 'problemset') {
@@ -307,17 +402,6 @@ export default function UserPage() {
     listUserProfileUserBadges(Number(id))
       .then(res => {
         setProfileUserBadges(res.data.data);
-      });
-    getUserProfileCalendar(id).
-      then(res => {
-        const { data } = res;
-        setProfileCalendar(data);
-        data.activeYears.forEach(item => {
-          setCalendarOptions(current => [...current, {
-            name: item,
-            value: item
-          }]);
-        });
       });
     getUserProfileProblemSolved(id, {type: 'PROBLEMSET'})
       .then(res => {
@@ -478,47 +562,7 @@ export default function UserPage() {
               </Grid.Col>
             </Grid.Row>
             <Divider type='horizontal' />
-            <Card
-              title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
-              extra={
-                <div>
-                  <Space>
-                    <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
-                      <Select.Option value={0}>
-                        {t['pastYear']}
-                      </Select.Option>
-                      {calendarOptions.map((option, index) => (
-                        <Select.Option key={index} value={option.value}>
-                          {option.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Space>
-                </div>
-              }
-            >
-              <Space style={{minWidth: '355px', marginBottom: '20px'}}>
-                <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
-                <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
-                <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
-              </Space>
-              <HeatMap
-                value={profileCalendar.submissionCalendar}
-                width={'100%'}
-                height={250}
-                weekLabels={['日','一','二','三','四','五','六']}
-                monthLabels={['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']}
-                rectSize={21}
-                rectRender={(props, data) => {
-                  return (
-                    <Tooltip key={data.index} content={`${data.date}, ${data.count || 0} 次`}>
-                      <rect {...props} />
-                    </Tooltip>
-                  );
-                }}
-                startDate={new Date(profileCalendar.start)}
-              />
-            </Card>
+            <SubmissionCalHeatmap />
             <Divider type='horizontal' />
             <Card
               title='做题进度'
