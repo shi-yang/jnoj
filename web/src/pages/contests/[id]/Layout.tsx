@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Layout, Typography, Grid, Slider, Statistic, Link, Popconfirm, Message, Button, Divider, Tooltip, Select, Tabs } from '@arco-design/web-react';
+import { Layout, Typography, Grid, Slider, Statistic, Link, Popconfirm, Message, Button, Divider, Tooltip, Select, Tabs, Alert } from '@arco-design/web-react';
 import { IconHome, IconOrderedList, IconFile, IconSelectAll, IconUserGroup, IconLanguage, IconMoonFill, IconSunFill, IconBook, IconSettings } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { exitVirtualContest, getContest, listContestProblems } from '@/api/contest';
@@ -72,7 +72,13 @@ function ContestHeader() {
         </Col>
         <Col md={8}>
           <div style={{textAlign: 'center'}}>
-            <strong>{t['header.now']}</strong> {FormatTime(currentTime)}
+            {
+              contest.runningStatus !== 'FINISHED' ? (
+                <div><strong>{t['header.now']}</strong> {FormatTime(currentTime)}</div>
+              ) : (
+                <Typography.Text bold>已结束</Typography.Text>
+              )
+            }
             {contest.virtualStart !== null && contest.runningStatus !== 'FINISHED' && (
               <>
                 <sup>虚拟</sup>
@@ -100,14 +106,16 @@ function ContestHeader() {
           </div>
         </Col>
       </Row>
-      <Slider value={sliderValue} formatTooltip={(v) =>
-        <Statistic.Countdown
-          styleValue={{color: 'var(--color-neutral-1)', fontSize: '16px'}}
-          value={dayjs(contest.endTime)}
-          format='剩余 D 天 H 时 m 分 s 秒'
-          now={currentTime}
-        />
-      } />
+      {contest.runningStatus !== 'FINISHED' && (
+        <Slider value={sliderValue} formatTooltip={(v) =>
+          <Statistic.Countdown
+            styleValue={{color: 'var(--color-neutral-1)', fontSize: '16px'}}
+            value={dayjs(contest.endTime)}
+            format='剩余 D 天 H 时 m 分 s 秒'
+            now={currentTime}
+          />
+        } />
+      )}
     </Header>
   );
 }
