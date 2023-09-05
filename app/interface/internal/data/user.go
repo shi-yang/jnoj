@@ -297,7 +297,7 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 	)
 	if req.Year == 0 {
 		end = time.Now()
-		start = end.AddDate(-1, 0, 0)
+		start = end.AddDate(-1, 1, 0)
 	} else {
 		start = time.Date(int(req.Year), 1, 1, 0, 0, 0, 0, time.UTC)
 		end = time.Date(int(req.Year)+1, 1, 1, 0, 0, 0, 0, time.UTC)
