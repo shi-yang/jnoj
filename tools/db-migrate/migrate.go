@@ -23,12 +23,45 @@ func Migrate(db *gorm.DB) {
 		MigrateAddProblemsetExamScore20230809(),
 		MigrateAddProblemsetUserScore20230831(),
 		MigrateAddContestUserRank20230903(),
+		MigrateFixCannotSubmitProblemsetExam20230906(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateFixCannotSubmitProblemsetExam20230906() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateFixCannotSubmitProblemsetExam20230906",
+		Migrate: func(d *gorm.DB) error {
+			err := d.Exec("ALTER TABLE `answered_problem_ids` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `unanswered_problem_ids` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `correct_problem_ids` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `wrong_problem_ids` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			if err != nil {
+				return err
+			}
+			err = d.Exec("ALTER TABLE `submission_ids` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		Rollback: func(d *gorm.DB) error {
+			return nil
+		},
+	}
 }
 
 func MigrateAddContestUserRank20230903() *gormigrate.Migration {
