@@ -952,14 +952,12 @@ func (s *ProblemService) ListProblemsetUsers(ctx context.Context, req *v1.ListPr
 }
 
 // CreateProblemsetUser 添加用户到题单
-func (s *ProblemService) CreateProblemsetUser(ctx context.Context, req *v1.CreateProblemsetUserRequest) (*v1.ProblemsetUser, error) {
+func (s *ProblemService) CreateProblemsetUser(ctx context.Context, req *v1.CreateProblemsetUserRequest) (*v1.CreateProblemsetUserResponse, error) {
 	res, err := s.problemsetUc.CreateProblemsetUser(ctx, req)
 	if err != nil {
 		return nil, v1.ErrorBadRequest(err.Error())
 	}
-	return &v1.ProblemsetUser{
-		Id: int32(res.ID),
-	}, nil
+	return res, nil
 }
 
 // DeleteProblemsetUser 删除题单用户

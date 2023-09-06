@@ -272,7 +272,7 @@ service ProblemService {
         };
     }
     // 添加用户到题单
-    rpc CreateProblemsetUser (CreateProblemsetUserRequest) returns (ProblemsetUser) {
+    rpc CreateProblemsetUser (CreateProblemsetUserRequest) returns (CreateProblemsetUserResponse) {
         option (google.api.http) = {
             post: "/problemsets/{id}/users"
             body: "*"
@@ -802,6 +802,15 @@ message CreateProblemsetUserRequest {
     int32 id = 1;
     string username = 2;
     string invitation_code = 3;
+}
+
+message CreateProblemsetUserResponse {
+    message User {
+        string username = 1;
+        string reason = 2;
+    }
+    repeated User success = 1;
+    repeated User failed = 2;
 }
 
 message DeleteProblemsetUserRequest {

@@ -244,8 +244,9 @@ func (uc *ProblemsetUsecase) ListProblemsetUsers(ctx context.Context, req *v1.Li
 // 刷题资格为任何人时，提交代码会自动加入，因此此时只需要对两种加入情况进行处理：
 // 1. 题单创建人在题单管理页面加入
 // 2. 刷题资格为邀请码时，用户填写邀请码来加入
-func (uc *ProblemsetUsecase) CreateProblemsetUser(ctx context.Context, req *v1.CreateProblemsetUserRequest) (*ProblemsetUser, error) {
+func (uc *ProblemsetUsecase) CreateProblemsetUser(ctx context.Context, req *v1.CreateProblemsetUserRequest) (*v1.CreateProblemsetUserResponse, error) {
 	problemset, err := uc.repo.GetProblemset(ctx, int(req.Id))
+	var resp = new(v1.CreateProblemsetUserResponse)
 	if err != nil {
 		return nil, v1.ErrorBadRequest("problemset not found")
 	}
@@ -258,11 +259,35 @@ func (uc *ProblemsetUsecase) CreateProblemsetUser(ctx context.Context, req *v1.C
 		if problemset.Role != ProblemsetRoleAdmin {
 			return nil, v1.ErrorForbidden("permission denied")
 		}
-		user, err := uc.userRepo.GetUser(ctx, &User{Username: req.Username})
-		if err != nil {
-			return nil, v1.ErrorBadRequest("user not found")
+		for _, username := range strings.Split(req.Username, "\n") {
+			username = strings.TrimSpace(username)
+			if username == "" {
+				continue
+			}
+			user, err := uc.userRepo.GetUser(ctx, &User{Username: username})
+			if err != nil {
+				resp.Failed = append(resp.Failed, &v1.CreateProblemsetUserResponse_User{
+					Username: username,
+					Reason:   "user not found",
+				})
+				continue
+			}
+			_, err = uc.repo.CreateProblemsetUser(ctx, &ProblemsetUser{
+				UserID:       user.ID,
+				ProblemsetID: int(req.Id),
+				InitialScore: -1,
+			})
+			if err != nil {
+				resp.Failed = append(resp.Failed, &v1.CreateProblemsetUserResponse_User{
+					Username: username,
+					Reason:   err.Error(),
+				})
+			} else {
+				resp.Success = append(resp.Success, &v1.CreateProblemsetUserResponse_User{
+					Username: username,
+				})
+			}
 		}
-		uid = user.ID
 	}
 	// 用户邀请码方式加入，校验邀请码
 	if req.InvitationCode != "" {
@@ -272,12 +297,13 @@ func (uc *ProblemsetUsecase) CreateProblemsetUser(ctx context.Context, req *v1.C
 		if problemset.Role != ProblemsetRoleGuest {
 			return nil, v1.ErrorBadRequest("you are already in this problemset")
 		}
+		_, err = uc.repo.CreateProblemsetUser(ctx, &ProblemsetUser{
+			UserID:       uid,
+			ProblemsetID: int(req.Id),
+			InitialScore: -1,
+		})
 	}
-	return uc.repo.CreateProblemsetUser(ctx, &ProblemsetUser{
-		UserID:       uid,
-		ProblemsetID: int(req.Id),
-		InitialScore: -1,
-	})
+	return resp, err
 }
 
 // DeleteProblemsetUser 删除题单用户

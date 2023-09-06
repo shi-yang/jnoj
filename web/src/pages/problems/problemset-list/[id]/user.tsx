@@ -4,7 +4,9 @@ import {
   Button, Card, Form,
   Link,
   Message, Modal, PaginationProps, Popconfirm,
-  Table, TableColumnProps
+  Radio,
+  Input,
+  Table, TableColumnProps, Space
 } from '@arco-design/web-react';
 import {
   createProblemsetUser,
@@ -162,12 +164,49 @@ function AddUser({problemsetId, callback}: {problemsetId: number, callback?:() =
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
+  const [addMethod, setAddMethod] = useState<'one' | 'many'>('one');
 
   function onOk() {
     form.validate().then((values) => {
       setConfirmLoading(true);
       createProblemsetUser(problemsetId, values)
         .then(res => {
+          if (res.data.failed.length === 0) {
+            Message.success({
+              content: (
+                <div>
+                  所有用户已经成功添加：{res.data.success.length}
+                </div>
+              )
+            });
+          } else {
+            const failed = res.data.failed.map(item => {
+              return item.username + ' ' + item.name;
+            });
+            const failedReason = res.data.failed.map(item => {
+              return item.reason;
+            });
+            Message.error({
+              closable: true,
+              duration: 0,
+              content: (
+                <div>
+                  <p>成功添加：{res.data.success.length}</p>
+                  <p>以下用户添加失败：</p>
+                  <Space>
+                    <div>
+                      <p>失败用户</p>
+                      <Input.TextArea defaultValue={failed.join('\n')} autoSize />
+                    </div>
+                    <div>
+                      <p>失败原因</p>
+                      <Input.TextArea defaultValue={failedReason.join('\n')} autoSize />
+                    </div>
+                  </Space>
+                </div>
+              )
+            });
+          }
           setVisible(false);
           callback();
         })
@@ -196,8 +235,24 @@ function AddUser({problemsetId, callback}: {problemsetId: number, callback?:() =
         <Form
           form={form}
         >
-          <Form.Item  label={t['user']} required field='username' rules={[{ required: true }]}>
-            <SearchInputUsername />
+          <Form.Item wrapperCol={{ offset: 5 }}>
+            <Radio.Group
+              type='button'
+              defaultValue='one'
+              onChange={setAddMethod}
+            >
+              <Radio value='one'>单个添加</Radio>
+              <Radio value='many'>批量添加</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label={t['user']} required field='username' rules={[{ required: true }]}
+            help={addMethod === 'many' && '每个用户名一行'}
+          >
+            {addMethod === 'one' ? (
+              <SearchInputUsername />
+            ):(
+              <Input.TextArea autoSize={{minRows: 3}} />
+            )}
           </Form.Item>
         </Form>
       </Modal>

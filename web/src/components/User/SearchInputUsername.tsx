@@ -39,7 +39,7 @@ export default function SearchInputUsername(props: any) {
     <AutoComplete
       data={data}
       value={value}
-      placeholder='Please Enter'
+      placeholder='请输入用户名'
       triggerElement={<Input.Search />}
       onSearch={handleSearch}
       onChange={handleChange}

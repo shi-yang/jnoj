@@ -92,7 +92,7 @@ type ProblemServiceHTTPServer interface {
 	CreateProblemset(context.Context, *CreateProblemsetRequest) (*Problemset, error)
 	CreateProblemsetAnswer(context.Context, *CreateProblemsetAnswerRequest) (*ProblemsetAnswer, error)
 	CreateProblemsetChild(context.Context, *CreateProblemsetChildRequest) (*emptypb.Empty, error)
-	CreateProblemsetUser(context.Context, *CreateProblemsetUserRequest) (*ProblemsetUser, error)
+	CreateProblemsetUser(context.Context, *CreateProblemsetUserRequest) (*CreateProblemsetUserResponse, error)
 	DeleteProblemFile(context.Context, *DeleteProblemFileRequest) (*emptypb.Empty, error)
 	DeleteProblemFromProblemset(context.Context, *DeleteProblemFromProblemsetRequest) (*emptypb.Empty, error)
 	DeleteProblemLanguage(context.Context, *DeleteProblemLanguageRequest) (*emptypb.Empty, error)
@@ -1126,7 +1126,7 @@ func _ProblemService_CreateProblemsetUser0_HTTP_Handler(srv ProblemServiceHTTPSe
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProblemsetUser)
+		reply := out.(*CreateProblemsetUserResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -1470,7 +1470,7 @@ type ProblemServiceHTTPClient interface {
 	CreateProblemset(ctx context.Context, req *CreateProblemsetRequest, opts ...http.CallOption) (rsp *Problemset, err error)
 	CreateProblemsetAnswer(ctx context.Context, req *CreateProblemsetAnswerRequest, opts ...http.CallOption) (rsp *ProblemsetAnswer, err error)
 	CreateProblemsetChild(ctx context.Context, req *CreateProblemsetChildRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	CreateProblemsetUser(ctx context.Context, req *CreateProblemsetUserRequest, opts ...http.CallOption) (rsp *ProblemsetUser, err error)
+	CreateProblemsetUser(ctx context.Context, req *CreateProblemsetUserRequest, opts ...http.CallOption) (rsp *CreateProblemsetUserResponse, err error)
 	DeleteProblemFile(ctx context.Context, req *DeleteProblemFileRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemFromProblemset(ctx context.Context, req *DeleteProblemFromProblemsetRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteProblemLanguage(ctx context.Context, req *DeleteProblemLanguageRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -1668,8 +1668,8 @@ func (c *ProblemServiceHTTPClientImpl) CreateProblemsetChild(ctx context.Context
 	return &out, err
 }
 
-func (c *ProblemServiceHTTPClientImpl) CreateProblemsetUser(ctx context.Context, in *CreateProblemsetUserRequest, opts ...http.CallOption) (*ProblemsetUser, error) {
-	var out ProblemsetUser
+func (c *ProblemServiceHTTPClientImpl) CreateProblemsetUser(ctx context.Context, in *CreateProblemsetUserRequest, opts ...http.CallOption) (*CreateProblemsetUserResponse, error) {
+	var out CreateProblemsetUserResponse
 	pattern := "/problemsets/{id}/users"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProblemServiceCreateProblemsetUser))
