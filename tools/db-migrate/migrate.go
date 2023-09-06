@@ -36,23 +36,23 @@ func MigrateFixCannotSubmitProblemsetExam20230906() *gormigrate.Migration {
 	return &gormigrate.Migration{
 		ID: "MigrateFixCannotSubmitProblemsetExam20230906",
 		Migrate: func(d *gorm.DB) error {
-			err := d.Exec("ALTER TABLE `answered_problem_ids` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			err := d.Exec("ALTER TABLE `problemset_answer` CHANGE `answered_problem_ids` `answered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
 			if err != nil {
 				return err
 			}
-			err = d.Exec("ALTER TABLE `unanswered_problem_ids` CHANGE `unanswered_problem_ids` `unanswered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			err = d.Exec("ALTER TABLE `problemset_answer` CHANGE `unanswered_problem_ids` `unanswered_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
 			if err != nil {
 				return err
 			}
-			err = d.Exec("ALTER TABLE `correct_problem_ids` CHANGE `correct_problem_ids` `correct_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			err = d.Exec("ALTER TABLE `problemset_answer` CHANGE `correct_problem_ids` `correct_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
 			if err != nil {
 				return err
 			}
-			err = d.Exec("ALTER TABLE `wrong_problem_ids` CHANGE `wrong_problem_ids` `wrong_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			err = d.Exec("ALTER TABLE `problemset_answer` CHANGE `wrong_problem_ids` `wrong_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
 			if err != nil {
 				return err
 			}
-			err = d.Exec("ALTER TABLE `wrong_problem_ids` CHANGE `wrong_problem_ids` `wrong_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
+			err = d.Exec("ALTER TABLE `problemset_answer` CHANGE `wrong_problem_ids` `wrong_problem_ids` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;").Error
 			if err != nil {
 				return err
 			}
