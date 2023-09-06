@@ -12,23 +12,28 @@ const AnchorLink = Anchor.Link;
 function AnswerSheet({problems, answerState}: {problems:any[], answerState: any}) {
   return (
     <div className={styles['answer-sheet-container']}>
-      <Card className='container'>
-        <Anchor
-          affix={false}
-          lineless
-          direction='horizontal'
-          className={styles['arco-anchor-list']}
-          style={{ backgroundColor: 'var(--color-bg-2)' }}
-        >
-          {problems.map((item, index) => (
-            <AnchorLink
-              key={index}
-              href={`#problem-${item.problemId}`}
-              title={<Button status={answerState[item.problemId] && answerState[item.problemId] === 'correct' ? 'success' : 'danger'}>{index + 1}</Button>}
-            />
-          ))}
-        </Anchor>
-      </Card>
+      <div className='container'>
+        <div className='shadow-sm border-solid border border-slate-100'>
+          <Anchor
+            affix={false}
+            lineless
+            direction='horizontal'
+            className={styles['arco-anchor-list']}
+            style={{ backgroundColor: 'var(--color-bg-2)' }}
+          >
+            {problems.map((item, index) => (
+              <AnchorLink
+                key={index}
+                className='m-0'
+                href={`#problem-${item.problemId}`}
+                title={
+                  <Button shape='circle' status={answerState[item.problemId] && answerState[item.problemId] === 'correct' ? 'success' : 'danger'}>{index + 1}</Button>
+                }
+              />
+            ))}
+          </Anchor>
+        </div>
+      </div>
     </div>
   );
 }
@@ -85,30 +90,30 @@ function Page() {
       });
   }
   return (
-    <div className='container'>
+    <>
       <Head>
         <title>{`${problemset.name} - ${settings.name}`}</title>
       </Head>
-      <>
-        <div className='container'>
+      <div className='container'>
+        <div>
           <div>
-            <div>
-              <Link href={`/problemsets/${id}`}>
-                <Typography.Title>
-                  {problemset.name}
-                </Typography.Title>
-              </Link>
-              <div>{problemset.description}</div>
-            </div>
-            <Divider />
-            <Card>
-              <AnswerSheet problems={problems} answerState={answerState} />
-              <ExamProblemsList problems={problems} answer={answer} submissions={submissions} />
-            </Card>
+            <Link href={`/problemsets/${id}`}>
+              <Typography.Title heading={5}>
+                {problemset.name}
+              </Typography.Title>
+            </Link>
+            <div>{problemset.description}</div>
           </div>
+          <Divider />
+          <Card>
+            <AnswerSheet problems={problems} answerState={answerState} />
+            <div className='pb-10'>
+              <ExamProblemsList problems={problems} answer={answer} submissions={submissions} />
+            </div>
+          </Card>
         </div>
-      </>
-    </div>
+      </div>
+    </>
   );
 }
 

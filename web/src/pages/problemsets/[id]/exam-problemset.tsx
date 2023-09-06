@@ -41,8 +41,8 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
       });
   }
   return (
-    <div className={styles['answer-sheet-container']}>
-      <Card className='container' bordered style={{padding: 0}}>
+    <div>
+      <div className='shadow-sm border-solid border border-slate-100'>
         <Anchor
           affix={false}
           lineless
@@ -55,7 +55,11 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
               key={index}
               className={styles['arco-anchor-item']}
               href={`#problem-${item.problemId}`}
-              title={<Button status={answers[`problem-${item.problemId}`] && answers[`problem-${item.problemId}`].every(item => item) ? 'success' : 'default'}>{index + 1}</Button>}
+              title={
+                <Button shape='circle' status={answers[`problem-${item.problemId}`] && answers[`problem-${item.problemId}`].every(item => item) ? 'success' : 'default'}>
+                  {index + 1}
+                </Button>
+              }
             />
           ))}
         </Anchor>
@@ -67,7 +71,7 @@ function AnswerSheet({problems, answers, unsubmitAnswerId, problemset}: {problem
         >
           <Button type='primary'>交卷</Button>
         </Popconfirm>
-      </Card>
+      </div>
     </div>
   );
 }
@@ -382,7 +386,7 @@ function Page({problemset}: {problemset:any}) {
       <Divider />
       {unsubmitAnswerId !== 0 ? (
         <div>
-          <Card style={{height: 'calc(100vh - 412px)', overflow: 'hidden'}} bodyStyle={{height: '100%', overflow: 'scroll', padding: 0}}>
+          <Card style={{height: 'calc(100vh - 380px)', overflow: 'hidden'}} bodyStyle={{height: '100%', overflow: 'scroll', padding: 0}}>
             <Form form={form} onChange={onFormChange} onSubmit={onSubmit}>
               <List
                 dataSource={problems}
