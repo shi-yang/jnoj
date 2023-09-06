@@ -16,7 +16,6 @@ const MarkdownEditor = dynamic(
   { ssr: false }
 );
 const image = function(props:UploadProps) {
-  console.log(props.imageUploadedFile)
   return commands.group([], {
     name: 'insert image',
     groupName: 'insert image',
