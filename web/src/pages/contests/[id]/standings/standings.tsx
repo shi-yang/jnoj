@@ -308,12 +308,12 @@ const App = () => {
           {
             contest.runningStatus === 'FINISHED' && (
               <Space>
-                <span>
+                <Typography.Text>
                   <Switch defaultChecked checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowMatchUsersOnly(e)} /> 比赛期间榜单
-                </span>
-                <span>
+                </Typography.Text>
+                <Typography.Text>
                   <Switch defaultChecked checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setShowVirtualUser(e)} /> 含虚拟参赛
-                </span>
+                </Typography.Text>
               </Space>
             )
           }
@@ -321,7 +321,9 @@ const App = () => {
             contest.runningStatus === 'IN_PROGRESS' && contest.role === 'ROLE_ADMIN' &&
             <span>
               <Tooltip content='勾选将每30s自动更新榜单'>
-                <Typography.Text><Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setAutoRefreshStanding(e)} /> 自动刷新</Typography.Text>
+                <Typography.Text>
+                  <Switch checkedIcon={<IconCheck />} uncheckedIcon={<IconClose />} onChange={(e) => setAutoRefreshStanding(e)} /> 自动刷新
+                </Typography.Text>
               </Tooltip>
             </span>
           }

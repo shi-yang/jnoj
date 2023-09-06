@@ -104,9 +104,10 @@ export default function App() {
       <div className={styles['code-header']}>
         <Select
           disabled={problem.type === 'OBJECTIVE'}
+          bordered={false}
           size='large'
           defaultValue={language}
-          style={{ width: 154 }}
+          style={{ width: 120 }}
           onChange={onChangeLanguage}
         >
           {languageList.map((item, index) => {

@@ -18,7 +18,7 @@ import './mock';
 import Editor from './editor';
 import Description from './description';
 import Submission from './submission';
-import { IconClockCircle, IconInfoCircle, IconLanguage, IconRefresh } from '@arco-design/web-react/icon';
+import { IconClockCircle, IconInfoCircle, IconLanguage, IconMoreVertical, IconRefresh } from '@arco-design/web-react/icon';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useAppSelector } from '@/hooks';
@@ -155,7 +155,7 @@ function Index() {
       <Head>
         <title>{`${problemset.name} - ${pid}. ${problem.name} - ${settings.name}`}</title>
       </Head>
-      <div className={styles.container}>
+      <div className={styles.container} style={{backgroundColor: 'var(--color-neutral-3)'}}>
         <Grid.Row className={styles.header} justify="space-between" align="center">
           <Grid.Col flex='auto'>
             <Typography.Title className={styles.title} heading={5}>
@@ -187,6 +187,13 @@ function Index() {
           max={0.8}
           min={0.2}
           style={{ height: 'calc(100% - 69px)' }}
+          trigger={
+            <div
+              className='group flex h-full items-center justify-center transition hover:bg-blue-600 dark:hover:bg-dark-blue-600 w-3 hover:cursor-col-resize'
+            >
+              <IconMoreVertical />
+            </div>
+          }
           panes={[
             <div key='first' className={styles.left}>
               <Tabs
