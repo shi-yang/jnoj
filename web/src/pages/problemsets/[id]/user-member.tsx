@@ -154,7 +154,7 @@ export function UserMember({problemset}: {problemset:any}) {
         <IconUser />{problemset.memberCount}
       </Button>
       <Drawer
-        width={500}
+        width={700}
         title={<span>用户列表</span>}
         visible={visible}
         footer={null}

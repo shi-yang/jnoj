@@ -83,7 +83,7 @@ function Page({problemset}: {problemset:any}) {
       align: 'center',
       render: (_, record) => (
         <>
-          <Link href={`/u/${record.userId}`} target='_blank'>
+          <Link href={`/u/${record.user.id}`} target='_blank'>
             {
               record.user.avatar  && (
                 <Avatar size={18}>
@@ -106,6 +106,7 @@ function Page({problemset}: {problemset:any}) {
       title: t['initialScore'],
       dataIndex: 'initialScore',
       align: 'center',
+      sorter: (a, b) => a.initialScore - b.initialScore,
       render: col => col < 0 ? '-' : col
     },
     {
@@ -113,6 +114,7 @@ function Page({problemset}: {problemset:any}) {
       title: t['bestScore'],
       dataIndex: 'bestScore',
       align: 'center',
+      sorter: (a, b) => a.bestScore - b.bestScore,
     },
     {
       key: 'createdAt',
