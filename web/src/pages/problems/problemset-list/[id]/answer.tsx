@@ -132,7 +132,7 @@ function Page({problemset}: {problemset:any}) {
       title: t['duration'],
       dataIndex: 'duration',
       align: 'center',
-      render: (_, item) => FormatDuration(item.submittedAt, item.createdAt)
+      render: (_, item) => item.submittedAt ? FormatDuration(item.submittedAt, item.createdAt) : '未提交'
     },
     {
       key: 'action',
