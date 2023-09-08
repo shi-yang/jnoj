@@ -109,7 +109,7 @@ function Page({problemset}: {problemset:any}) {
                   <img src={record.user.avatar} alt='user avatar' />
                 </Avatar>
               )
-            } {record.user.username}
+            } {record.user.nickname}
           </Link>
         </>
       ),
