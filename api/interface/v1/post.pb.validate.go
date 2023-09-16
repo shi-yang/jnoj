@@ -227,6 +227,8 @@ func (m *ListPostsRequest) validate(all bool) error {
 
 	// no validation rules for EntityType
 
+	// no validation rules for UserId
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage

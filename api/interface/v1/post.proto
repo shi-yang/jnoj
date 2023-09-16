@@ -52,8 +52,9 @@ message ListPostsRequest {
     string title = 1;
     int32 entity_id = 2;
     PostEntityType entity_type = 3;
-    int32 page = 4;
-    int32 per_page = 5;
+    int32 user_id = 4;
+    int32 page = 5;
+    int32 per_page = 6;
 }
 
 message ListPostsResponse {
