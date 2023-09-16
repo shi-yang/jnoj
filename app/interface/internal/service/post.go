@@ -34,6 +34,12 @@ func (s *PostService) ListPosts(ctx context.Context, req *v1.ListPostsRequest) (
 			Title:     v.Title,
 			Content:   v.Content,
 			CreatedAt: timestamppb.New(v.CreatedAt),
+			User: &v1.User{
+				Id:       int32(v.User.ID),
+				Nickname: v.User.Nickname,
+				Username: v.User.Username,
+				Avatar:   v.User.Avatar,
+			},
 		})
 	}
 	return resp, nil
@@ -46,10 +52,16 @@ func (s *PostService) GetPost(ctx context.Context, req *v1.GetPostRequest) (*v1.
 		return nil, err
 	}
 	g := &v1.Post{
-		Id:        int32(res.ID),
-		Title:     res.Title,
-		Content:   res.Content,
-		UserId:    int32(res.UserID),
+		Id:      int32(res.ID),
+		Title:   res.Title,
+		Content: res.Content,
+		UserId:  int32(res.UserID),
+		User: &v1.User{
+			Id:       int32(res.User.ID),
+			Nickname: res.User.Nickname,
+			Username: res.User.Username,
+			Avatar:   res.User.Avatar,
+		},
 		CreatedAt: timestamppb.New(res.CreatedAt),
 	}
 	return g, nil

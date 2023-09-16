@@ -10,14 +10,14 @@ import (
 
 // Post is a Post model.
 type Post struct {
-	ID           int
-	Title        string
-	Content      string
-	EntityId     int
-	EntityType   int
-	UserID       int
-	UserNickname string
-	CreatedAt    time.Time
+	ID         int
+	Title      string
+	Content    string
+	EntityId   int
+	EntityType int
+	UserID     int
+	User       *User
+	CreatedAt  time.Time
 }
 
 const (

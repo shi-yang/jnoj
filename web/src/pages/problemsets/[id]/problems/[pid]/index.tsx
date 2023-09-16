@@ -29,6 +29,7 @@ import ProblemContext from './context';
 import ProblemLayout from '../ProblemLayout';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { SolutionList } from './solution';
 dayjs.extend(duration);
 
 function timerReducer(state, action) {
@@ -229,6 +230,9 @@ function Index() {
               >
                 <TabPane key='problem' className={styles['tabs-pane']} title={t['tab.description']}>
                   <Description problemset={problemset} />
+                </TabPane>
+                <TabPane key='solution' className={styles['tabs-pane']} title={t['tab.solution']}>
+                  <SolutionList problemset={problemset} problem={problem} />
                 </TabPane>
                 <TabPane key='submission' className={styles['tabs-pane']} title={t['tab.submissions']}>
                   <Submission problemId={problem.id} />

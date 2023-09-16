@@ -4,6 +4,7 @@ package jnoj.interface.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "v1/user.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -38,7 +39,7 @@ message Post {
     string title = 2;
     string content = 3;
     int32 user_id = 4;
-    string user_nicktitle = 5;
+    user.User user = 5;
     google.protobuf.Timestamp created_at = 6;
 }
 

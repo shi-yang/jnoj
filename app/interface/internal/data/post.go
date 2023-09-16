@@ -57,7 +57,7 @@ func (r *postRepo) ListPosts(ctx context.Context, req *v1.ListPostsRequest) ([]*
 	db := r.data.db.WithContext(ctx).
 		Model(&Post{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname")
+			return db.Select("id, nickname, username, avatar")
 		})
 	db.Where("entity_id = ?", req.EntityId)
 	db.Where("entity_type = ?", req.EntityType)
@@ -71,12 +71,18 @@ func (r *postRepo) ListPosts(ctx context.Context, req *v1.ListPostsRequest) ([]*
 	rv := make([]*biz.Post, 0)
 	for _, v := range res {
 		p := &biz.Post{
-			ID:      v.ID,
-			Title:   v.Title,
-			Content: v.Content,
+			ID:        v.ID,
+			Title:     v.Title,
+			Content:   v.Content,
+			CreatedAt: v.CreatedAt,
 		}
 		if v.User != nil {
-			p.UserNickname = v.User.Nickname
+			p.User = &biz.User{
+				ID:       v.User.ID,
+				Nickname: v.User.Nickname,
+				Username: v.User.Username,
+				Avatar:   v.User.Avatar,
+			}
 		}
 		rv = append(rv, p)
 	}
@@ -88,19 +94,24 @@ func (r *postRepo) GetPost(ctx context.Context, id int) (*biz.Post, error) {
 	var res Post
 	err := r.data.db.Model(Post{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, nickname")
+			return db.Select("id, nickname, username, avatar")
 		}).
 		First(&res, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
 	return &biz.Post{
-		ID:           res.ID,
-		Title:        res.Title,
-		Content:      res.Content,
-		UserID:       res.UserID,
-		UserNickname: res.User.Nickname,
-		CreatedAt:    res.CreatedAt,
+		ID:        res.ID,
+		Title:     res.Title,
+		Content:   res.Content,
+		UserID:    res.UserID,
+		CreatedAt: res.CreatedAt,
+		User: &biz.User{
+			ID:       res.User.ID,
+			Nickname: res.User.Nickname,
+			Username: res.User.Username,
+			Avatar:   res.User.Avatar,
+		},
 	}, err
 }
 
