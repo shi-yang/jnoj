@@ -84,6 +84,13 @@ class UploadForm extends Model
                 $newProblem->sample_output = serialize([self::getValue($searchNode, 'sample_output'), '', '']);
                 $newProblem->spj = $spj;
                 $newProblem->created_by = Yii::$app->user->id;
+                //导入题解
+                $solutionText = "";
+                foreach($solutions as $solutionNode){
+                    $solutionText .= "```\n".$solutionNode."```\n";
+                }
+                $newProblem->solution = $solutionText;
+                
                 $newProblem->save();
                 $pid = $newProblem->id;
 
