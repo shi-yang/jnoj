@@ -501,8 +501,9 @@ message ListContestSubmissionsRequest {
     repeated int32 verdict = 2;
     optional int32 problem = 3;
     int32 user_id = 4;
-    int32 page = 5;
-    int32 per_page = 6;
+    string username = 5;
+    int32 page = 6;
+    int32 per_page = 7;
 }
 
 message ListContestSubmissionsResponse {

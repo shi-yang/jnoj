@@ -4069,6 +4069,8 @@ func (m *ListContestSubmissionsRequest) validate(all bool) error {
 
 	// no validation rules for UserId
 
+	// no validation rules for Username
+
 	// no validation rules for Page
 
 	// no validation rules for PerPage

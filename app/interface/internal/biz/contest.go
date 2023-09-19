@@ -332,6 +332,7 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 		Verdict:    req.Verdict,
 		ProblemId:  reqProblemID,
 		UserId:     req.UserId,
+		Username:   req.Username,
 	})
 	for _, v := range submissions {
 		cs := &ContestSubmission{
