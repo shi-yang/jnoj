@@ -31,7 +31,6 @@ function RecentlySubmission({userId}: {userId: number}) {
       page: 1,
       perPage: 10,
       userId: userId,
-      entityType: 0,
     };
     listSubmissions(params).then(res => {
       setData(res.data.data);
