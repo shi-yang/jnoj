@@ -10,6 +10,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
+	"strconv"
 	"strings"
 	"time"
 
@@ -1269,7 +1270,7 @@ func (s *ProblemService) GetProblemsetAnswer(ctx context.Context, req *v1.GetPro
 			Id:            int64(v.ID),
 			ProblemId:     int32(v.ProblemID),
 			ProblemName:   v.ProblemName,
-			ProblemNumber: int32(v.ProblemNumber),
+			ProblemNumber: strconv.Itoa(v.ProblemNumber),
 			UserId:        int32(v.UserID),
 			Nickname:      v.Nickname,
 			Time:          int64(v.Time),

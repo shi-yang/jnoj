@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	v1 "jnoj/api/interface/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
 	"jnoj/internal/middleware/auth"
@@ -152,21 +153,36 @@ func (uc *SubmissionUsecase) ListSubmissions(ctx context.Context, req *v1.ListSu
 	if req.ProblemId != nil {
 		problemId = int(*req.ProblemId)
 	}
-	isOIModeRunning, _, hasPermission := uc.checkerPermission(
-		ctx, int(req.EntityType),
-		int(req.EntityId),
-		problemId,
-		0,
-	)
-	if !hasPermission {
-		return nil, 0
-	}
-	if isOIModeRunning {
-		req.Verdict = nil
-	}
 	submissions, count := uc.repo.ListSubmissions(ctx, req)
-	if isOIModeRunning {
-		for i := 0; i < len(submissions); i++ {
+	// 查询不同 EntityType 的权限
+	// 注意 OI 模式下，提交信息无法查看
+	type EntityTypePermission struct {
+		IsOIModeRunning  bool
+		IsContestRunning bool
+		OK               bool
+	}
+	isOIModeRunningMap := make(map[string]EntityTypePermission)
+	for i := 0; i < len(submissions); i++ {
+		key := fmt.Sprintf("%d_%d", submissions[i].EntityType, submissions[i].EntityID)
+		_, ok := isOIModeRunningMap[key]
+		if ok {
+			continue
+		}
+		isOIModeRunning, isContestRunning, isOk := uc.checkerPermission(
+			ctx, submissions[i].EntityType,
+			int(submissions[i].EntityID),
+			problemId,
+			0,
+		)
+		isOIModeRunningMap[key] = EntityTypePermission{
+			IsOIModeRunning:  isOIModeRunning,
+			IsContestRunning: isContestRunning,
+			OK:               isOk,
+		}
+	}
+	for i := 0; i < len(submissions); i++ {
+		key := fmt.Sprintf("%d_%d", submissions[i].EntityType, submissions[i].EntityID)
+		if isOIModeRunningMap[key].IsOIModeRunning {
 			submissions[i].Time = 0
 			submissions[i].Memory = 0
 			submissions[i].Verdict = 0

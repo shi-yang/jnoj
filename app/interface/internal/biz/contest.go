@@ -324,9 +324,10 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 	if contest.Type == ContestTypeOI && !isContestManager && runningStatus != ContestRunningStatusFinished {
 		req.Verdict = nil
 	}
+	entityType := int32(SubmissionEntityTypeContest)
 	submissions, count := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
 		EntityId:   req.ContestId,
-		EntityType: SubmissionEntityTypeContest,
+		EntityType: &entityType,
 		Page:       req.Page,
 		PerPage:    req.PerPage,
 		Verdict:    req.Verdict,
@@ -415,10 +416,11 @@ func (uc *ContestUsecase) QueryContestSpecialEffects(ctx context.Context, contes
 		return nil, nil
 	}
 	// 判断是否满足AK条件
+	entityType := int32(SubmissionEntityTypeContest)
 	submissions, _ := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
 		UserId:     int32(userId),
 		EntityId:   int32(contest.ID),
-		EntityType: SubmissionEntityTypeContest,
+		EntityType: &entityType,
 		Verdict:    []int32{SubmissionVerdictAccepted},
 	})
 	var akTime time.Time

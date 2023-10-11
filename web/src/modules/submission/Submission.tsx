@@ -33,7 +33,7 @@ export default function Submission ({id}: {id: number}) {
         if (data.entityType === 'PROBLEMSET') {
           problemLink = <Link href={`/problemsets/${data.entityId}/problems/${data.problemNumber}`}>{`${data.problemNumber} - ${data.problemName}`}</Link>;
         } else if (data.entityType === 'CONTEST') {
-          problemLink = <Link href={`/contests/${data.entityId}`}>{`${String.fromCharCode(65 + data.problemNumber)} - ${data.problemName}`}</Link>;
+          problemLink = <Link href={`/contests/${data.entityId}/problem/${data.problemNumber}`}>{`${data.problemNumber} - ${data.problemName}`}</Link>;
         }
         setDescriptionData([
           {label: t['user'], value: <Link href={`/u/${data.userId}`}>{data.nickname}</Link>},

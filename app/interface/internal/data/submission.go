@@ -56,6 +56,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	count := int64(0)
 	page := pagination.NewPagination(req.Page, req.PerPage)
 	db := r.data.db.WithContext(ctx).
+		Select("ID", "EntityID", "EntityType", "ProblemID", "Verdict", "Memory", "Time", "Language", "Score", "CreatedAt", "UserID").
 		Model(&Submission{}).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, nickname")
@@ -86,7 +87,9 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	if len(req.Id) > 0 {
 		db.Where("id in (?)", req.Id)
 	}
-	db.Where("entity_type = ?", req.EntityType)
+	if req.EntityType != nil {
+		db.Where("entity_type = ?", *req.EntityType)
+	}
 	db.Count(&count)
 	db.
 		Limit(page.GetPageSize()).
@@ -94,6 +97,34 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 		Order("id desc")
 	db.Find(&res)
 
+	// 查询题目编号
+	problemNumberMap := make(map[string]int)
+	for _, v := range res {
+		key := fmt.Sprintf("%d_%d", v.EntityType, v.EntityID)
+		_, ok := problemNumberMap[key]
+		if ok {
+			continue
+		}
+		var number int
+		if v.EntityType == biz.SubmissionEntityTypeProblemset {
+			r.data.db.WithContext(ctx).Select("`order`").
+				Model(&ProblemsetProblem{}).
+				Where("problemset_id = ?", v.EntityID).
+				Where("problem_id = ?", v.ProblemID).
+				Row().
+				Scan(&number)
+		} else if v.EntityType == biz.SubmissionEntityTypeContest {
+			r.data.db.WithContext(ctx).Select("`number`").
+				Model(&ContestProblem{}).
+				Where("contest_id = ?", v.EntityID).
+				Where("problem_id = ?", v.ProblemID).
+				Row().
+				Scan(&number)
+		} else if v.EntityType == biz.SubmissionEntityTypeProblemFile {
+			number = v.ProblemID
+		}
+		problemNumberMap[key] = number
+	}
 	rv := make([]*biz.Submission, 0)
 	for _, v := range res {
 		s := &biz.Submission{
@@ -110,14 +141,10 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 			UserID:     v.UserID,
 			Nickname:   v.User.Nickname,
 		}
-		// 查询题目编号
-		if req.EntityType == biz.SubmissionEntityTypeProblemset {
-			r.data.db.WithContext(ctx).Select("`order`").
-				Model(&ProblemsetProblem{}).
-				Where("problemset_id = ?", v.EntityID).
-				Where("problem_id = ?", v.ProblemID).
-				Row().
-				Scan(&s.ProblemNumber)
+		// 设置题目编号
+		number, ok := problemNumberMap[fmt.Sprintf("%d_%d", v.EntityType, v.EntityID)]
+		if ok {
+			s.ProblemNumber = number
 		}
 		if len(v.Problem.ProblemStatements) > 0 {
 			s.ProblemName = v.Problem.ProblemStatements[0].Name

@@ -244,8 +244,6 @@ func (m *ListSubmissionsRequest) validate(all bool) error {
 
 	// no validation rules for EntityId
 
-	// no validation rules for EntityType
-
 	// no validation rules for UserId
 
 	// no validation rules for Username
@@ -256,6 +254,10 @@ func (m *ListSubmissionsRequest) validate(all bool) error {
 
 	if m.ProblemId != nil {
 		// no validation rules for ProblemId
+	}
+
+	if m.EntityType != nil {
+		// no validation rules for EntityType
 	}
 
 	if len(errors) > 0 {

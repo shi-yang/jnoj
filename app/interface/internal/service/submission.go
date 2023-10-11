@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strconv"
 
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
@@ -26,11 +27,11 @@ func (s *SubmissionService) ListSubmissions(ctx context.Context, req *v1.ListSub
 	resp.Total = count
 	resp.Data = make([]*v1.Submission, 0)
 	for _, v := range res {
-		resp.Data = append(resp.Data, &v1.Submission{
+		s := &v1.Submission{
 			Id:            int64(v.ID),
 			ProblemId:     int32(v.ProblemID),
 			ProblemName:   v.ProblemName,
-			ProblemNumber: int32(v.ProblemNumber),
+			ProblemNumber: strconv.Itoa(v.ProblemNumber),
 			UserId:        int32(v.UserID),
 			Nickname:      v.Nickname,
 			Time:          int64(v.Time),
@@ -41,7 +42,13 @@ func (s *SubmissionService) ListSubmissions(ctx context.Context, req *v1.ListSub
 			EntityId:      int32(v.EntityID),
 			EntityType:    v1.SubmissionEntityType(v.EntityType),
 			CreatedAt:     timestamppb.New(v.CreatedAt),
-		})
+		}
+		// 比赛的题目序号转化为 A,B,C,D的形式
+		if v.EntityType == biz.SubmissionEntityTypeContest {
+			letter := rune(v.ProblemNumber + 65)
+			s.ProblemNumber = string(letter)
+		}
+		resp.Data = append(resp.Data, s)
 	}
 	return resp, nil
 }
@@ -93,12 +100,12 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 			infoResp.Subtasks = append(infoResp.Subtasks, subtaskResult)
 		}
 	}
-	return &v1.Submission{
+	submission := &v1.Submission{
 		Id:            int64(res.ID),
 		EntityId:      int32(res.EntityID),
 		EntityType:    v1.SubmissionEntityType(res.EntityType),
 		ProblemName:   res.ProblemName,
-		ProblemNumber: int32(res.ProblemNumber),
+		ProblemNumber: strconv.Itoa(res.ProblemNumber),
 		Score:         int32(res.Score),
 		Source:        res.Source,
 		Memory:        int64(res.Memory),
@@ -109,7 +116,13 @@ func (s *SubmissionService) GetSubmission(ctx context.Context, req *v1.GetSubmis
 		Info:          infoResp,
 		UserId:        int32(res.UserID),
 		Nickname:      res.Nickname,
-	}, nil
+	}
+	// 比赛的题目序号转化为 A,B,C,D的形式
+	if res.EntityType == biz.SubmissionEntityTypeContest {
+		letter := rune(res.ProblemNumber + 65)
+		submission.ProblemNumber = string(letter)
+	}
+	return submission, nil
 }
 
 // CreateSubmission .

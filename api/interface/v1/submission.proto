@@ -41,7 +41,7 @@ message Submission {
     // 题目ID
     int32 problem_id = 2;
     string problem_name = 3;
-    int32 problem_number = 4;
+    string problem_number = 4;
     // 编程语言
     int32 language = 5;
     // 源码
@@ -62,7 +62,7 @@ message ListSubmissionsRequest {
     repeated int32 id = 1;
     optional int32 problem_id = 2;
     int32 entity_id = 3;
-    int32 entity_type = 4;
+    optional int32 entity_type = 4;
     repeated int32 verdict = 5;
     int32 user_id = 6;
     string username = 7;

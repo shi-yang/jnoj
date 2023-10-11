@@ -124,11 +124,28 @@ const Submission = () => {
       title: t['problemName'],
       dataIndex: 'problemId',
       align: 'center',
-      render: (_, record) => (
-        <Link href={`/problemsets/${record.entityId}/problems/${record.problemNumber}`}>
-          {record.problemNumber}. {record.problemName}
-        </Link>
-      ),
+      render: (_, record) => {
+        if (record.entityType === 'CONTEST') {
+          return (
+            <Link href={`/contests/${record.entityId}/problem/${record.problemNumber}`}>
+              {record.problemNumber}. {record.problemName}
+            </Link>
+          );
+        } else if (record.entityType === 'PROBLEMSET') {
+          return (
+            <Link href={`/problemsets/${record.entityId}/problems/${record.problemNumber}`}>
+              {record.problemNumber}. {record.problemName}
+            </Link>
+          );
+        } else if (record.entityType === 'PROBLEM_FILE') {
+          return (
+            <Link href={`/problems/${record.problemNumber}/update`}>
+              {record.problemNumber}. {record.problemName}
+            </Link>
+          );
+        }
+        return <span>{record.problemNumber}. {record.problemName}</span>;
+      },
       filterMultiple: false,
       filterIcon: <IconSearch />,
       filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
