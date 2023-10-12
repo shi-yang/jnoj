@@ -100,7 +100,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 	// 查询题目编号
 	problemNumberMap := make(map[string]int)
 	for _, v := range res {
-		key := fmt.Sprintf("%d_%d", v.EntityType, v.EntityID)
+		key := fmt.Sprintf("%d_%d_%d", v.EntityType, v.EntityID, v.ProblemID)
 		_, ok := problemNumberMap[key]
 		if ok {
 			continue
@@ -142,7 +142,7 @@ func (r *submissionRepo) ListSubmissions(ctx context.Context, req *v1.ListSubmis
 			Nickname:   v.User.Nickname,
 		}
 		// 设置题目编号
-		number, ok := problemNumberMap[fmt.Sprintf("%d_%d", v.EntityType, v.EntityID)]
+		number, ok := problemNumberMap[fmt.Sprintf("%d_%d_%d", v.EntityType, v.EntityID, v.ProblemID)]
 		if ok {
 			s.ProblemNumber = number
 		}
