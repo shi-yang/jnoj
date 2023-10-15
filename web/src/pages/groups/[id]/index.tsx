@@ -75,11 +75,13 @@ function StandingStats() {
         )
       }
     >
-      <ReactECharts
-        option={lineChartOption}
-        style={{ height: 400 }}
-        opts={{ locale: 'FR' }}
-      />
+      {lineChartOption.series[0].data.length > 0 && (
+        <ReactECharts
+          option={lineChartOption}
+          style={{ height: 400 }}
+          opts={{ locale: 'FR' }}
+        />
+      )}
     </Card>
   );
 }
