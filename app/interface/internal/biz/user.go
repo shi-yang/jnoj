@@ -68,7 +68,6 @@ type UserRepo interface {
 	CreateUser(context.Context, *User) (*User, error)
 	GetUser(context.Context, *User) (*User, error)
 	UpdateUser(context.Context, *User) (*User, error)
-	FindByID(context.Context, int) (*User, error)
 	GetUserProfile(context.Context, int) (*UserProfile, error)
 	UpdateUserProfile(context.Context, *UserProfile) (*UserProfile, error)
 	UpdateUserAvatar(context.Context, *User, *v1.UpdateUserAvatarRequest) (*User, error)
@@ -212,8 +211,8 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, u *User) (*User, error) {
 	return uc.repo.CreateUser(ctx, u)
 }
 
-func (uc *UserUsecase) GetUser(ctx context.Context, id int) (*User, error) {
-	return uc.repo.FindByID(ctx, id)
+func (uc *UserUsecase) GetUser(ctx context.Context, u *User) (*User, error) {
+	return uc.repo.GetUser(ctx, u)
 }
 
 func (uc *UserUsecase) UpdateUser(ctx context.Context, u *User) (*User, error) {

@@ -126,6 +126,7 @@ func (r *userRepo) GetUser(ctx context.Context, u *biz.User) (*biz.User, error) 
 	res := User{}
 	err := r.data.db.WithContext(ctx).
 		Where(&User{
+			ID:       u.ID,
 			Username: u.Username,
 			Email:    u.Email,
 			Phone:    u.Phone,
@@ -225,25 +226,6 @@ func (r *userRepo) UpdateUserAvatar(ctx context.Context, u *biz.User, req *v1.Up
 		UpdateColumn("avatar", u.Avatar).
 		Error
 	return u, err
-}
-
-func (r *userRepo) FindByID(ctx context.Context, id int) (*biz.User, error) {
-	var o User
-	err := r.data.db.WithContext(ctx).
-		First(&o, "id = ?", id).
-		Error
-	if err != nil {
-		return nil, err
-	}
-	return &biz.User{
-		ID:       o.ID,
-		Username: o.Username,
-		Nickname: o.Nickname,
-		Avatar:   o.Avatar,
-		Role:     o.Role,
-		Status:   o.Status,
-		Password: o.Password,
-	}, nil
 }
 
 // GetUserProfile 获取用户信息

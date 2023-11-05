@@ -160,10 +160,8 @@ function renderItemWithResponsive(item1: React.ReactNode, item2: React.ReactNode
   );
 }
 
-function SubmissionCalHeatmap() {
-  const router = useRouter();
+function SubmissionCalHeatmap({id}:{id:any}) {
   const t = useLocale(locale);
-  const { id } = router.query;
   const [calendarSelectYear, setCalendarSelectYear] = useState(0);
   const [calendarOptions, setCalendarOptions] = useState([]);
   const [profileCalendar, setProfileCalendar] = useState({
@@ -176,6 +174,9 @@ function SubmissionCalHeatmap() {
   });
   const cal = new CalHeatmap();
   useEffect(() => {
+    if (!id) {
+      return;
+    }
     getUserProfileCalendar(id).
       then(res => {
         const { data } = res;
@@ -275,7 +276,7 @@ const Color = {
 export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
-  const { id } = router.query;
+  const [id, setId] = useState(0);
   const [user, setUser] = useState({username: '', nickname: '', avatar: '', role: ''});
   const settings = useAppSelector<SettingState>(setting);
   const [profile, setProfile] = useState({
@@ -367,13 +368,12 @@ export default function UserPage() {
         });
     }
   }, [problemSolvedProgressTab, pagination.current, pagination.pageSize]);
+  async function fetchData() {
+    const response = await getUsers(router.query.id);
+    setUser(response.data);
+    setId(response.data.id);
 
-  useEffect(() => {
-    getUsers(id)
-      .then(res => {
-        setUser(res.data);
-      });
-    getUserProfile(id)
+    getUserProfile(response.data.id)
       .then(res => {
         const { data } = res;
         setProfile(data);
@@ -398,15 +398,15 @@ export default function UserPage() {
         }
         setProfileDescriptionData(arr);
       });
-    listUserProfileUserBadges(Number(id))
+    listUserProfileUserBadges(response.data.id)
       .then(res => {
         setProfileUserBadges(res.data.data);
       });
-    getUserProfileProblemSolved(id, {type: 'PROBLEMSET'})
+    getUserProfileProblemSolved(response.data.id, {type: 'PROBLEMSET'})
       .then(res => {
         setProfileProblemsets(res.data.problemsets);
       });
-    getUserProfileCount(Number(id)).then(res => {
+    getUserProfileCount(response.data.id).then(res => {
       setProfileCount({
         contestRating: res.data.contestRating,
         problemSolved: res.data.problemSolved,
@@ -424,7 +424,11 @@ export default function UserPage() {
         ],
       }));
     });
-  }, [id]);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [router.query.id]);
   return (
     <>
       <Head>
@@ -561,7 +565,7 @@ export default function UserPage() {
               </Grid.Col>
             </Grid.Row>
             <Divider type='horizontal' />
-            <SubmissionCalHeatmap />
+            <SubmissionCalHeatmap id={id} />
             <Divider type='horizontal' />
             <Card
               title='做题进度'

@@ -5,6 +5,7 @@ import (
 	v1 "jnoj/api/interface/v1"
 	"jnoj/app/interface/internal/biz"
 	"jnoj/internal/middleware/auth"
+	"strconv"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -64,7 +65,7 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *emptypb.Empty) (*v1.
 	if userID == 0 {
 		return nil, v1.ErrorUnauthorized("not login")
 	}
-	user, err := s.uc.GetUser(ctx, userID)
+	user, err := s.uc.GetUser(ctx, &biz.User{ID: userID})
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +116,14 @@ func (s *UserService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (
 
 // GetUser 获取用户主页信息
 func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.User, error) {
-	res, err := s.uc.GetUser(ctx, int(req.Id))
+	id, err := strconv.Atoi(req.Id)
+	query := &biz.User{}
+	if err != nil {
+		query.Username = req.Id
+	} else {
+		query.ID = id
+	}
+	res, err := s.uc.GetUser(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +139,7 @@ func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.
 // UpdateUser 修改用户信息
 func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.User, error) {
 	uid, _ := auth.GetUserID(ctx)
-	user, _ := s.uc.GetUser(ctx, uid)
+	user, _ := s.uc.GetUser(ctx, &biz.User{ID: uid})
 	user.Nickname = req.Nickname
 	s.uc.UpdateUser(ctx, user)
 	up := &biz.UserProfile{
@@ -157,7 +165,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 // UpdateUserAvatar 修改用户头像
 func (s *UserService) UpdateUserAvatar(ctx context.Context, req *v1.UpdateUserAvatarRequest) (*v1.UpdateUserAvatarResponse, error) {
 	userId, _ := auth.GetUserID(ctx)
-	user, _ := s.uc.GetUser(ctx, userId)
+	user, _ := s.uc.GetUser(ctx, &biz.User{ID: userId})
 	u, err := s.uc.UpdateUserAvatar(ctx, user, req)
 	if err != nil {
 		return nil, err
@@ -188,7 +196,7 @@ func (s *UserService) GetUserProfile(ctx context.Context, req *v1.GetUserProfile
 
 // UpdateUserPassword 修改用户密码
 func (s *UserService) UpdateUserPassword(ctx context.Context, req *v1.UpdateUserPasswordRequest) (*emptypb.Empty, error) {
-	user, err := s.uc.GetUser(ctx, int(req.Id))
+	user, err := s.uc.GetUser(ctx, &biz.User{ID: int(req.Id)})
 	if err != nil {
 		return nil, err
 	}
