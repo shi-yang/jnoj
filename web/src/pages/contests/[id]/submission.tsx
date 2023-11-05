@@ -34,7 +34,13 @@ function Submission() {
   });
   useEffect(() => {
     fetchData();
-  }, [pagination.pageSize, pagination.current, JSON.stringify(formParams)]);
+  }, [pagination.pageSize, pagination.current]);
+  useEffect(() => {
+    setPatination({
+      ...pagination,
+      current: 1,
+    });
+  }, [JSON.stringify(formParams)]);
   function fetchData() {
     const { current, pageSize } = pagination;
     const params = {

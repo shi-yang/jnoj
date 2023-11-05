@@ -16,7 +16,7 @@ const Submission = () => {
   const [visible, setVisible] = useState(false);
   const [formParams, setFormParams] = useState({});
   const inputRef = useRef(null);
-  const [pagination, setPatination] = useState<PaginationProps>({
+  const [pagination, setPagination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
     pageSize: 25,
@@ -35,7 +35,7 @@ const Submission = () => {
     listSubmissions(params)
       .then((res) => {
         setData(res.data.data || []);
-        setPatination({
+        setPagination({
           ...pagination,
           current,
           pageSize,
@@ -52,7 +52,7 @@ const Submission = () => {
   }
   function onChangeTable({ current, pageSize }, sorter, filters) {
     setFormParams({...formParams, ...filters});
-    setPatination({
+    setPagination({
       ...pagination,
       current,
       pageSize,
@@ -222,7 +222,13 @@ const Submission = () => {
   ];
   useEffect(() => {
     fetchData();
-  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+  }, [pagination.current, pagination.pageSize]);
+  useEffect(() => {
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+  }, [JSON.stringify(formParams)]);
   return (
     <Card>
       <SubmissionDrawer visible={visible} id={submissionId} onCancel={() => setVisible(false)} />
