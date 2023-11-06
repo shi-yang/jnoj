@@ -40,6 +40,7 @@ function Submission() {
       ...pagination,
       current: 1,
     });
+    fetchData();
   }, [JSON.stringify(formParams)]);
   function fetchData() {
     const { current, pageSize } = pagination;

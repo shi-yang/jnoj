@@ -31,6 +31,7 @@ const Submission = () => {
       perPage: pageSize,
       ...formParams,
     };
+    console.log('params', params);
     setLoading(true);
     listSubmissions(params)
       .then((res) => {
@@ -228,6 +229,7 @@ const Submission = () => {
       ...pagination,
       current: 1,
     });
+    fetchData();
   }, [JSON.stringify(formParams)]);
   return (
     <Card>
