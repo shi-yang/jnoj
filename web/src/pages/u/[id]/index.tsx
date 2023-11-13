@@ -27,6 +27,9 @@ import CalTooltip from 'cal-heatmap/plugins/Tooltip';
 function RecentlySubmission({userId}: {userId: number}) {
   const [data, setData] = useState([]);
   useEffect(() => {
+    if (userId === 0) {
+      return;
+    }
     const params = {
       page: 1,
       perPage: 10,
@@ -174,7 +177,7 @@ function SubmissionCalHeatmap({id}:{id:any}) {
   });
   const cal = new CalHeatmap();
   useEffect(() => {
-    if (!id) {
+    if (id === 0) {
       return;
     }
     getUserProfileCalendar(id).
