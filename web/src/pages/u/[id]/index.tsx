@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { getUserProfile, getUserProfileCalendar, getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
+import { getUserProfile,  getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
 import {
   Avatar, Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, PageHeader, Pagination, PaginationProps,
-  Progress, Select, Space, Statistic, Tabs, Tag, Tooltip, Typography
+  Progress, Space, Tabs, Tag, Tooltip, Typography
 } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
@@ -19,10 +19,8 @@ import { FormatTime } from '@/utils/format';
 import StatisticCard from '@/components/StatisticCard';
 import { IconBook, IconFile, IconLocation, IconMan, IconMore, IconTrophy, IconUserGroup, IconWoman } from '@arco-design/web-react/icon';
 import ReactECharts from 'echarts-for-react';
-import CalHeatmap from 'cal-heatmap';
-import 'cal-heatmap/cal-heatmap.css';
-// @ts-ignore https://github.com/wa0x6e/cal-heatmap/issues/366
-import CalTooltip from 'cal-heatmap/plugins/Tooltip';
+import SubmissionCalHeatmap from '@/components/User/SubmissionCalHeatmap';
+import ProblemSolvedProgress from '@/components/User/ProblemSolvedProgress';
 
 function RecentlySubmission({userId}: {userId: number}) {
   const [data, setData] = useState([]);
@@ -147,135 +145,6 @@ function UserBadageListModal({userBadges}: {userBadges: any[]}) {
   );
 }
 
-function renderItemWithResponsive(item1: React.ReactNode, item2: React.ReactNode, item3: React.ReactNode) {
-  return (
-    <Grid.Row>
-      <Grid.Col xs={24} sm={16} md={16} lg={12}>
-        {item1}
-      </Grid.Col>
-      <Grid.Col xs={12} sm={4} md={4} lg={6}>
-        {item2}
-      </Grid.Col>
-      <Grid.Col xs={12} sm={4} md={4} lg={6} style={{textAlign: 'center'}}>
-        {item3}
-      </Grid.Col>
-    </Grid.Row>
-  );
-}
-
-function SubmissionCalHeatmap({id}:{id:any}) {
-  const t = useLocale(locale);
-  const [calendarSelectYear, setCalendarSelectYear] = useState(0);
-  const [calendarOptions, setCalendarOptions] = useState([]);
-  const [profileCalendar, setProfileCalendar] = useState({
-    submissionCalendar: [],
-    totalSubmission: 0,
-    totalProblemSolved: 0,
-    totalActiveDays: 0,
-    start: '',
-    end: '',
-  });
-  const cal = new CalHeatmap();
-  useEffect(() => {
-    if (id === 0) {
-      return;
-    }
-    getUserProfileCalendar(id).
-      then(res => {
-        const { data } = res;
-        setProfileCalendar(data);
-        paint(data);
-        data.activeYears.forEach(item => {
-          setCalendarOptions(current => [...current, {
-            name: item,
-            value: item
-          }]);
-        });
-      });
-  }, [id]);
-  function paint(data:any) {
-    const div = document.getElementById('cal-heatmap');
-    if (div) {
-      while (div.firstChild) {
-        div.removeChild(div.firstChild);
-      }
-    }
-    cal.paint(
-      {
-        data: {
-          source: data.submissionCalendar,
-          x: 'date',
-          y: 'count',
-        },
-        date: { start: new Date(data.start), locale: 'zh' },
-        range: 12,
-        animationDuration: 100,
-        scale: { color: { type: 'diverging', scheme: 'PRGn', domain: [-10, 15] } },
-        domain: {
-          type: 'month',
-        },
-        subDomain: { type: 'day', radius: 2, height: 12, width: 12 },
-        itemSelector: '#cal-heatmap',
-      },
-      [
-        [
-          CalTooltip,
-          {
-            // @ts-ignore
-            text: function (date, value, dayjsDate) {
-              return (
-                (value ? value + '次提交' : '没有提交') + ' - ' + dayjsDate.format('LL')
-              );
-            },
-          },
-        ],
-      ]
-    );
-  }
-  function onCalendarSelectChange(e) {
-    setCalendarSelectYear(e);
-    getUserProfileCalendar(id, { year: e })
-      .then(res => {
-        const { data } = res;
-        setProfileCalendar(data);
-        paint(data);
-      });
-  }
-  return (
-    <Card
-      title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
-      extra={
-        <div>
-          <Space>
-            <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
-              <Select.Option value={0}>
-                {t['pastYear']}
-              </Select.Option>
-              {calendarOptions.map((option, index) => (
-                <Select.Option key={index} value={option.value}>
-                  {option.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Space>
-        </div>
-      }
-    >
-      <Space style={{minWidth: '355px', marginBottom: '20px'}}>
-        <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
-        <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
-        <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
-      </Space>
-      <div id="cal-heatmap"></div>
-    </Card>
-  );
-}
-
-const Color = {
-  'NOT_START': 'gray',
-  'INCORRECT': 'orange',
-  'CORRECT': 'green',
-};
 export default function UserPage() {
   const router = useRouter();
   const t = useLocale(locale);
@@ -289,10 +158,6 @@ export default function UserPage() {
     gender: 0,
   });
   const [profileDescriptionData, setProfileDescriptionData] = useState([]);
-  const [problemSolvedProgressTab, setProblemSolvedProgressTab] = useState('problemset');
-  const [profileProblemsets, setProfileProblemsets] = useState([]);
-  const [profileContests, setProfileContests] = useState([]);
-  const [profileGroups, setProfileGroups] = useState([]);
   const [profileUserBadges, setProfileUserBadges] = useState([]);
   const [profileCount, setProfileCount] = useState({
     contestRating: 0,
@@ -334,43 +199,7 @@ export default function UserPage() {
       trigger: 'axis',
     }
   });
-  useEffect(() => {
-    const { current, pageSize } = pagination;
-    if (problemSolvedProgressTab === 'problemset') {
-      getUserProfileProblemSolved(id, {type: 'PROBLEMSET', page: current, perPage: pageSize})
-        .then(res => {
-          setProfileProblemsets(res.data.problemsets);
-          setPagination({
-            ...pagination,
-            current,
-            pageSize,
-            total: res.data.total,
-          });
-        });
-    } else if (problemSolvedProgressTab === 'contest') {
-      getUserProfileProblemSolved(id, {type: 'CONTEST', page: current, perPage: pageSize})
-        .then(res => {
-          setProfileContests(res.data.contests);
-          setPagination({
-            ...pagination,
-            current,
-            pageSize,
-            total: res.data.total,
-          });
-        });
-    } else {
-      getUserProfileProblemSolved(id, {type: 'GROUP', page: current, perPage: pageSize})
-        .then(res => {
-          setProfileGroups(res.data.groups);
-          setPagination({
-            ...pagination,
-            current,
-            pageSize,
-            total: res.data.total,
-          });
-        });
-    }
-  }, [problemSolvedProgressTab, pagination.current, pagination.pageSize]);
+
   async function fetchData() {
     const response = await getUsers(router.query.id);
     setUser(response.data);
@@ -404,10 +233,6 @@ export default function UserPage() {
     listUserProfileUserBadges(response.data.id)
       .then(res => {
         setProfileUserBadges(res.data.data);
-      });
-    getUserProfileProblemSolved(response.data.id, {type: 'PROBLEMSET'})
-      .then(res => {
-        setProfileProblemsets(res.data.problemsets);
       });
     getUserProfileCount(response.data.id).then(res => {
       setProfileCount({
@@ -570,111 +395,7 @@ export default function UserPage() {
             <Divider type='horizontal' />
             <SubmissionCalHeatmap id={id} />
             <Divider type='horizontal' />
-            <Card
-              title='做题进度'
-            >
-              <Tabs type='rounded' destroyOnHide onChange={e => setProblemSolvedProgressTab(e)}>
-                <Tabs.TabPane key='problemset' title='题单进度'>
-                  <Collapse accordion bordered={false}>
-                    {profileProblemsets.map((item, index) => 
-                      <Collapse.Item
-                        key={index}
-                        name={item.id}
-                        header={
-                          renderItemWithResponsive(
-                            <Link href={`/problemsets/${item.id}`} target='_blank'>{item.name}</Link>,
-                            <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
-                            <span>{item.count} / {item.total}</span>
-                          )
-                        }
-                      >
-                        <Space wrap>
-                          {item.problems.map((problem, index) => (
-                            <Link key={index} href={`/problemsets/${item.id}/problems/${problem.id}`}><Tag color={Color[problem.status]}>{problem.id}</Tag></Link>
-                          ))}
-                        </Space>
-                      </Collapse.Item>
-                    )}
-                  </Collapse>
-                </Tabs.TabPane>
-                <Tabs.TabPane key='contest' title='比赛进度'>
-                  <Collapse accordion bordered={false}>
-                    {profileContests.map((item, index) => 
-                      <Collapse.Item
-                        key={index}
-                        name={item.id}
-                        header={
-                          renderItemWithResponsive(
-                            <>
-                              {item.groupName !== '' && (
-                                <>
-                                  <Link href={`/groups/${item.groupId}`} target='_blank'>{item.groupName}</Link>
-                                  <Divider type='vertical' />
-                                </>
-                              )}
-                              {<Link href={`/contests/${item.id}`} target='_blank'>{item.name}</Link>}
-                            </>,
-                            <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
-                            <span>{item.count} / {item.total}</span>
-                          )
-                        }
-                      >
-                        <Space wrap>
-                          {item.problems.map((problem, index) => (
-                            <Link key={index} href={`/contests/${item.id}`}>
-                              <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
-                            </Link>
-                          ))}
-                        </Space>
-                      </Collapse.Item>
-                    )}
-                  </Collapse>
-                  <Pagination {...pagination} />
-                </Tabs.TabPane>
-                <Tabs.TabPane key='group' title='小组进度'>
-                  <Collapse accordion bordered={false}>
-                    {profileGroups.map((item, index) => 
-                      <Collapse.Item
-                        key={index}
-                        name={item.id}
-                        header={
-                          renderItemWithResponsive(
-                            <Link href={`/groups/${item.id}`} target='_blank'>{item.name}</Link>,
-                            <Progress percent={item.total === 0 ? 0 : Number(Number(item.count * 100 / item.total).toFixed(0))} />,
-                            <span>{item.count} / {item.total}</span>
-                          )
-                        }
-                      >
-                        <Collapse accordion bordered={false}>
-                          {item.contests.map((contest, index) => 
-                            <Collapse.Item
-                              key={index}
-                              name={contest.id}
-                              header={
-                                renderItemWithResponsive(
-                                  <Link href={`/contests/${contest.id}`} target='_blank'>{contest.name}</Link>,
-                                  <Progress percent={contest.total === 0 ? 0 : Number(Number(contest.count * 100 / contest.total).toFixed(0))} />,
-                                  <span>{contest.count} / {contest.total}</span>
-                                )
-                              }
-                            >
-                              <Space wrap>
-                                {contest.problems.map((problem, index) => (
-                                  <Link key={index} href={`/contests/${contest.id}`}>
-                                    <Tag color={Color[problem.status]}>{String.fromCharCode(65 + problem.id)}</Tag>
-                                  </Link>
-                                ))}
-                              </Space>
-                            </Collapse.Item>
-                          )}
-                        </Collapse>
-                      </Collapse.Item>
-                    )}
-                  </Collapse>
-                  <Pagination {...pagination} />
-                </Tabs.TabPane>
-              </Tabs>
-            </Card>
+            {id !== 0 && <ProblemSolvedProgress id={id} />}
             <Divider type='horizontal' />
             <Card title='最近提交' className='mobile-hide'>
               <RecentlySubmission userId={Number(id)} />
