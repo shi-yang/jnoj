@@ -2,6 +2,7 @@ version: '3'
 
 services:
   phpmyadmin:
+    container_name: jnoj-phpmyadmin
     image: phpmyadmin/phpmyadmin
     ports:
       - 9500:80
@@ -12,3 +13,6 @@ services:
       PMA_PASSWORD: 123456
     links:
       - mysql:db
+
+networks:
+  jnoj_net:

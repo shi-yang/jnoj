@@ -26,15 +26,11 @@ module.exports = removeImports(withLess(
 
       return config;
     },
-    // async redirects() {
-    //   return [
-    //     {
-    //       source: '/',
-    //       destination: '/dashboard/workplace',
-    //       permanent: true,
-    //     },
-    //   ];
-    // },
+    publicRuntimeConfig: {
+      API_BASE_URL: process.env.API_BASE_URL,
+      API_WS_URL: process.env.API_WS_URL,
+      ADMIN_API_BASE_URL: process.env.ADMIN_API_BASE_URL,
+    },
     pageExtensions: ['tsx'],
   })
 ));

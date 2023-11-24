@@ -1,9 +1,10 @@
 import axios from 'axios';
 import Router from 'next/router';
 import { getAccessToken } from './auth';
-
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_ADMIN_BASE_URL
+  baseURL: publicRuntimeConfig.ADMIN_API_BASE_URL
 });
 
 http.interceptors.request.use(config => {

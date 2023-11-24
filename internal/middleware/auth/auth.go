@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -14,27 +15,24 @@ import (
 	jwt2 "github.com/golang-jwt/jwt/v4"
 )
 
-// TODO Key最好需要放到配置文件中去，写到代码中极不安全
-const Key = "xTtbTjnc5KmBfRYf3b1pMjf1KxFjaQE1"
+var jwt_key = "xTtbTjnc5KmBfRYf3b1pMjf1KxFjaQE1"
+
+func init() {
+	jwt_key = os.Getenv("JWT_KEY")
+}
 
 const (
 	// bearerWord the bearer key word for authorization
 	bearerWord string = "Bearer"
 
-	// bearerFormat authorization token format
-	bearerFormat string = "Bearer %s"
-
 	// authorizationKey holds the key used to store the JWT Token in the request tokenHeader.
 	authorizationKey string = "Authorization"
-
-	// reason holds the error reason.
-	reason string = "UNAUTHORIZED"
 )
 
 // User 必须要携带 jwt token 才能访问接口
 func User() middleware.Middleware {
 	return jwt.Server(func(token *jwt2.Token) (interface{}, error) {
-		return []byte(Key), nil
+		return []byte(jwt_key), nil
 	}, jwt.WithSigningMethod(jwt2.SigningMethodHS256), jwt.WithClaims(func() jwt2.Claims {
 		return &jwt2.MapClaims{}
 	}))
@@ -43,7 +41,7 @@ func User() middleware.Middleware {
 // Guest 可携带可不携带。用于某些接口根据用户的登录情况不同返回对应的数据
 func Guest() middleware.Middleware {
 	keyFunc := func(token *jwt2.Token) (interface{}, error) {
-		return []byte(Key), nil
+		return []byte(jwt_key), nil
 	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -79,7 +77,7 @@ func GenerateToken(userID int, userRole int) (string, error) {
 		"userRole": userRole,
 		"exp":      date,
 	})
-	return tokenClaims.SignedString([]byte(Key))
+	return tokenClaims.SignedString([]byte(jwt_key))
 }
 
 func GetUserID(ctx context.Context) (userId int, userRole int) {

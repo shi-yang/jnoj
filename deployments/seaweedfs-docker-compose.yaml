@@ -2,6 +2,7 @@ version: '3'
 
 services:
   master:
+    container_name: jnoj-seaweedfs-master
     image: chrislusf/seaweedfs # use a remote image
     ports:
       - 9333:9333
@@ -10,7 +11,9 @@ services:
     volumes:
       - ../data/seaweedfs/master:/data
     command: "master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324"
+
   volume:
+    container_name: jnoj-seaweedfs-volume
     image: chrislusf/seaweedfs # use a remote image
     ports:
       - 8080:8080
@@ -21,7 +24,9 @@ services:
     command: 'volume -mserver="master:9333" -dir="/data" -ip.bind=0.0.0.0 -port=8080  -metricsPort=9325'
     depends_on:
       - master
+
   filer:
+    container_name: jnoj-seaweedfs-filer
     image: chrislusf/seaweedfs # use a remote image
     ports:
       - 8888:8888
@@ -35,8 +40,9 @@ services:
     depends_on:
       - master
       - volume
+
   s3:
-    container_name: jnoj-s3
+    container_name: jnoj-seaweedfs-s3
     image: chrislusf/seaweedfs # use a remote image
     ports:
       - 8333:8333
@@ -48,12 +54,6 @@ services:
       - master
       - volume
       - filer
-  prometheus:
-    image: prom/prometheus:v2.21.0
-    ports:
-      - 9000:9090
-    volumes:
-      - ../data/prometheus:/etc/prometheus
-    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
-    depends_on:
-      - s3
+
+networks:
+  jnoj_net:

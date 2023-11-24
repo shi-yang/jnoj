@@ -1,0 +1,14 @@
+{
+  "position": 1,
+  "label": "安装指南",
+  "collapsible": true,
+  "collapsed": false,
+  "className": "red",
+  "link": {
+    "type": "generated-index",
+    "title": "安装指南"
+  },
+  "customProps": {
+    "description": ""
+  }
+}

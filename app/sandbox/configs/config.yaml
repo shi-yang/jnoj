@@ -16,14 +16,14 @@ data:
   object_storage:
     private_bucket:
       bucket: "private"
-      secret_id: "jnoj_access_key1"
-      secret_key: "jnoj_secret_key1"
-      endpoint: "http://jnoj-s3:8333"
+      secret_id: "{S3_SECRET_ID}"
+      secret_key: "{S3_SECRET_KEY}"
+      endpoint: "${JNOJ_HOST}/s3"
     public_bucket:
       bucket: "public"
-      secret_id: "jnoj_access_key1"
-      secret_key: "jnoj_secret_key1"
-      endpoint: "http://jnoj-s3:8333"
+      secret_id: "{S3_SECRET_ID}"
+      secret_key: "{S3_SECRET_KEY}"
+      endpoint: "${JNOJ_HOST}/s3"
   message_queue:
     address: "amqp://admin:admin@rabbitmq:5672/"
 consul:

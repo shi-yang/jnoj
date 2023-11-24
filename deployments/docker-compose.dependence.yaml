@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  consul:
+    container_name: jnoj-consul
+    image: consul:1.15.4
+    # ports:
+    #   - "9502:8500"
+    command: agent -server -bootstrap -ui -node=1 -client=0.0.0.0
+
+  redis:
+    container_name: jnoj-redis
+    image: redis:5.0-alpine
+    command: redis-server
+    volumes:
+      - ../data/redis:/data
+    restart: always
+
+  mysql:
+    container_name: jnoj-mysql
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - ../data/mysql/logs:/logs
+      - ../data/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: jnoj
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: Asia/Shanghai
+
+  rabbitmq:
+    container_name: jnoj-rabbitmq
+    image: rabbitmq:management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "admin"
+    volumes:
+        - '../data/rabbitmq:/var/lib/rabbitmq/mnesia/'
+    # ports:
+    #   - "15672:15672"
+    #   - "4369:4369"
+    #   - "5672:5672"
+    #   - "25672:25672"
+
+networks:
+  jnoj_net:

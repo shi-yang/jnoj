@@ -1,26 +1,26 @@
 {
-    "identities": [
-      {
-        "name": "anonymous",
-        "actions": [
-          "Read:public"
-        ]
-      },
-      {
-        "name": "admin_user",
-        "credentials": [
-          {
-            "accessKey": "jnoj_access_key1",
-            "secretKey": "jnoj_secret_key1"
-          }
-        ],
-        "actions": [
-          "Admin",
-          "Read",
-          "List",
-          "Tagging",
-          "Write"
-        ]
-      }
-    ]
-  }
+  "identities": [
+    {
+      "name": "anonymous",
+      "actions": [
+        "Read:public"
+      ]
+    },
+    {
+      "name": "admin_user",
+      "credentials": [
+        {
+          "accessKey": "jnoj_access_key1",
+          "secretKey": "jnoj_secret_key1"
+        }
+      ],
+      "actions": [
+        "Admin",
+        "Read",
+        "List",
+        "Tagging",
+        "Write"
+      ]
+    }
+  ]
+}

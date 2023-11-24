@@ -10,6 +10,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import locale from './locale';
 import SubmissionModalAnimation from './SubmissionModalAnimation';
 import ContestAnimationModal from '../contest/ContestAnimationModal';
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 
 interface RecentlySubmittedProps {
   problemId: number,
@@ -34,7 +36,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const contestAnimationModalRef = useRef(null);
   // websocket 即时向用户反馈测评进度
   function wsConnect() {
-    ws.current = new WebSocket(process.env.NEXT_PUBLIC_API_WS_URL + '?uid=' + user.id);
+    ws.current = new WebSocket(publicRuntimeConfig.API_WS_URL + '?uid=' + user.id);
     ws.current.onmessage = (e) => {
       if (e.data === '') {
         return;

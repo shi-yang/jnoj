@@ -1,8 +1,12 @@
 ---
-sidebar_position: 4
+sidebar_position: 1
 ---
 
 # 从 v1 版本升级到 v2 版本
+
+## 本指南有待完善
+
+如有需要，去喊作者更新此指南。
 
 ## 版本说明
 
