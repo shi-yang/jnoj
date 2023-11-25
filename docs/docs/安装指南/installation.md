@@ -24,7 +24,7 @@ git fetch origin v2
 git checkout v2
 cd deployments
 bash init.sh
-sudo docker-compose -f docker-compose.yaml -f docker-compose.dependence.yaml -f seaweedfs-docker-compose.yaml up -d
+sudo docker-compose -f docker-compose.yaml -f docker-compose.dependence.yaml -f docker-compose.seaweedfs.yaml up -d
 ```
 
 > 命令解释：`bash init.sh` 会运行 deployments 目录下的 init.sh 文件，**这一步很重要**，该文件会做一些初始化操作，例如初始化密钥。
