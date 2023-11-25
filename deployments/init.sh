@@ -50,8 +50,11 @@ if credentials_are_default; then
     new_s3_secret_key=$(generate_random_string 32)
 
     update_env_var "JWT_SECRET" "$new_jwt_secret"
-    update_env_var "S3_SECRET_ID" "$new_s3_secret_id"
-    update_env_var "S3_SECRET_KEY" "$new_s3_secret_key"
+    update_env_var "S3_PRIVATE_SECRET_ID" "$new_s3_secret_id"
+    update_env_var "S3_PRIVATE_SECRET_KEY" "$new_s3_secret_key"
+
+    update_env_var "S3_PUBLIC_SECRET_ID" "$new_s3_secret_id"
+    update_env_var "S3_PUBLIC_SECRET_KEY" "$new_s3_secret_key"
 
     # 也更新 JSON 文件中的 credentials
     update_json_credentials "$new_s3_secret_id" "$new_s3_secret_key"
@@ -59,9 +62,54 @@ else
     echo "Credentials have been modified. No update needed."
 fi
 
+# Function to validate the domain/IP input
+validate_domain() {
+    local domain=$1
+
+    # Check for "127.0.0.1" or "localhost"
+    if [[ $domain =~ ^127\.0\.0\.1$ ]] || [[ $domain == "localhost" ]]; then
+        echo "127.0.0.1 or localhost is not supported."
+        return 1
+    fi
+
+    # Regular expression for validating IP address
+    local ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}$'
+
+    # Regular expression for validating domain
+    local domain_regex='^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
+
+    # Check if the input is a valid IP or domain
+    if [[ $domain =~ $ip_regex ]] || [[ $domain =~ $domain_regex ]]; then
+        return 0
+    else
+        echo "Invalid domain or IP. Please enter a valid one."
+        return 1
+    fi
+}
+
+
+
 # 2. 从用户输入获取新的域名并更新 JNOJ_HOST
-# 从用户输入获取新的域名并更新 JNOJ_HOST
-read -p "Enter new domain for JNOJ_HOST (eg: www.jnoj.dev): " new_domain
+# Prompt for domain/IP
+while true; do
+    echo "Enter your domain or your IP for JNOJ_HOST (127.0.0.1 or localhost is not supported)"
+    # 通过检查每个接口来获取局域网 IP
+    for interface in $(ip -o link show | awk -F': ' '{print $2}')
+    do
+        IP=$(ip -o -4 addr list $interface | awk '{print $4}' | cut -d/ -f1)
+        if [[ -n $IP && $IP != "127.0.0.1" ]]; then
+            echo -e "Tip: LAN IP on $interface: your IP may be: \033[0;32m$IP\033[0m"
+        fi
+    done
+
+    read -p "(eg: www.jnoj.dev or $IP): " new_domain
+    if validate_domain "$new_domain"; then
+        break
+    else
+        echo "Invalid domain or IP. Please enter a valid one."
+    fi
+done
+
 read -p "Does your domain support HTTPS? (y/n): " use_https
 
 # 根据用户输入决定是使用 http 还是 https
@@ -76,5 +124,8 @@ fi
 # 更新 JNOJ_HOST 和 JNOJ_WS_HOST
 update_env_var "JNOJ_HOST" "${protocol}${new_domain}"
 update_env_var "JNOJ_WS_HOST" "${ws_protocol}${new_domain}"
+# 更新 S3
+update_env_var "S3_PRIVATE_ENDPOINT" "${protocol}${new_domain}"
+update_env_var "S3_PUBLIC_ENDPOINT" "${protocol}${new_domain}"
 
 echo "Updated settings as needed."

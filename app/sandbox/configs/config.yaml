@@ -15,15 +15,15 @@ data:
     write_timeout: 0.2s
   object_storage:
     private_bucket:
-      bucket: "private"
-      secret_id: "{S3_SECRET_ID}"
-      secret_key: "{S3_SECRET_KEY}"
-      endpoint: "${JNOJ_HOST}/s3"
+      bucket: "${S3_PRIVATE_BUCKET_NAME}"
+      secret_id: "${S3_PRIVATE_SECRET_ID}"
+      secret_key: "${S3_PRIVATE_SECRET_KEY}"
+      endpoint: "${S3_PRIVATE_ENDPOINT}"
     public_bucket:
-      bucket: "public"
-      secret_id: "{S3_SECRET_ID}"
-      secret_key: "{S3_SECRET_KEY}"
-      endpoint: "${JNOJ_HOST}/s3"
+      bucket: "${S3_PUBLIC_BUCKET_NAME}"
+      secret_id: "${S3_PUBLIC_SECRET_ID}"
+      secret_key: "${S3_PUBLIC_SECRET_KEY}"
+      endpoint: "${S3_PUBLIC_ENDPOINT}"
   message_queue:
     address: "amqp://admin:admin@rabbitmq:5672/"
 consul:

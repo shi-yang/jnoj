@@ -133,10 +133,11 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 		OutputPreview: b.OutputPreview,
 		Order:         b.Order,
 	}
-	err := r.data.db.WithContext(ctx).
-		Create(o).
+	tx := r.data.db.WithContext(ctx).Begin()
+	err := tx.Create(o).
 		Error
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 	// 保存文件
@@ -145,9 +146,11 @@ func (r *problemRepo) CreateProblemTest(ctx context.Context, b *biz.ProblemTest)
 		storeName := fmt.Sprintf(problemTestInputPath, b.ProblemID, o.ID)
 		err := store.PutObject(r.data.conf.ObjectStorage.PrivateBucket, storeName, bytes.NewReader(b.InputFileContent))
 		if err != nil {
+			tx.Rollback()
 			return nil, err
 		}
 	}
+	tx.Commit()
 	return &biz.ProblemTest{
 		ID: o.ID,
 	}, err
