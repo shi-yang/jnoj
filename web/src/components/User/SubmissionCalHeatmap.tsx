@@ -37,6 +37,9 @@ export default function SubmissionCalHeatmap({id}:{id:Number}) {
           }]);
         });
       });
+    return () => {
+      cal.destroy();
+    };
   }, [id]);
   function paint(data:any) {
     const div = document.getElementById('cal-heatmap');
