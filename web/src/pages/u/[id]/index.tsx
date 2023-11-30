@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { getUserProfile,  getUserProfileCount, getUserProfileProblemSolved, getUsers, listUserProfileUserBadges } from '@/api/user';
+import { getUserProfile,  getUserProfileCount, getUsers, listUserProfileUserBadges } from '@/api/user';
 import {
-  Avatar, Button, Card, Collapse, Descriptions, Divider, Grid, Image, Link, List, Modal, PageHeader, Pagination, PaginationProps,
-  Progress, Space, Tabs, Tag, Tooltip, Typography
+  Avatar, Button, Card, Descriptions, Divider, Grid, Image, Link, List, Modal, PageHeader, PaginationProps,
+  Space, Tooltip, Typography
 } from '@arco-design/web-react';
 import Head from 'next/head';
 import { setting, SettingState } from '@/store/reducers/setting';
@@ -18,9 +18,9 @@ import SubmissionVerdict from '@/modules/submission/SubmissionVerdict';
 import { FormatTime } from '@/utils/format';
 import StatisticCard from '@/components/StatisticCard';
 import { IconBook, IconFile, IconLocation, IconMan, IconMore, IconTrophy, IconUserGroup, IconWoman } from '@arco-design/web-react/icon';
-import ReactECharts from 'echarts-for-react';
 import SubmissionCalHeatmap from '@/components/User/SubmissionCalHeatmap';
 import ProblemSolvedProgress from '@/components/User/ProblemSolvedProgress';
+import { Line, XAxis, Tooltip as Rtooltip, YAxis, CartesianGrid, Legend, ResponsiveContainer, LineChart } from 'recharts';
 
 function RecentlySubmission({userId}: {userId: number}) {
   const [data, setData] = useState([]);
@@ -179,26 +179,7 @@ export default function UserPage() {
       });
     }
   });
-  const [ratingHistory, setRatingHistory] = useState({
-    grid: { top: 8, right: 8, bottom: 24, left: 36 },
-    xAxis: {
-      show: false,
-      data: [],
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        data: [],
-        type: 'line',
-        smooth: true,
-      },
-    ],
-    tooltip: {
-      trigger: 'axis',
-    }
-  });
+  const [ratingHistory, setRatingHistory] = useState([]);
 
   async function fetchData() {
     const response = await getUsers(router.query.id);
@@ -239,18 +220,10 @@ export default function UserPage() {
         contestRating: res.data.contestRating,
         problemSolved: res.data.problemSolved,
       });
-      setRatingHistory(prevState => ({...prevState,
-        xAxis: {
-          ...prevState.xAxis,
-          data: res.data.contestRankingHistory.map(item => item.name),
-        },
-        series: [
-          {
-            ...prevState.series[0],
-            data: res.data.contestRankingHistory.map(item => item.rating)
-          }
-        ],
-      }));
+      setRatingHistory(res.data.contestRankingHistory.map(item => ({
+        name: item.name,
+        rating: item.rating
+      })));
     });
   }
 
@@ -327,7 +300,17 @@ export default function UserPage() {
                   {
                     profileCount.contestRating !== 0 && (
                       <div>
-                        <ReactECharts style={{height: '200px'}} option={ratingHistory} />
+                        <ResponsiveContainer width="100%" height={150}>
+                          <LineChart
+                            data={ratingHistory}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <YAxis dataKey="rating" />
+                            <Legend />
+                            <Rtooltip />
+                            <Line dataKey="rating" fill="#2d62f8"/>
+                          </LineChart>
+                        </ResponsiveContainer>
                       </div>
                     )
                   }
