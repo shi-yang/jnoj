@@ -23,6 +23,7 @@ function Submission() {
   const [id, setId] = useState(0);
   const [formParams, setFormParams] = useState({});
   const [isMounted, setIsMounted] = useState(false);
+  const [onlyMe, setOnlyMe] = useState(false);
   const inputRef = useRef(null);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
@@ -41,7 +42,7 @@ function Submission() {
       current: 1,
     });
     fetchData();
-  }, [JSON.stringify(formParams)]);
+  }, [JSON.stringify(formParams), onlyMe]);
   function fetchData() {
     const { current, pageSize } = pagination;
     const params = {
@@ -51,9 +52,10 @@ function Submission() {
       ...formParams,
     };
     // 第一次获取数据时，若是登录了，默认查当前用户
-    if (!isMounted && isLogged()) {
+    if (!isMounted && isLogged() || onlyMe) {
       setIsMounted(true);
       params.userId = user.id;
+      setOnlyMe(true);
     }
     setLoading(true);
     listContestSubmissions(contest.id, params)
@@ -85,9 +87,9 @@ function Submission() {
 
   function onSwitchChange(value: boolean, event: any) {
     if (value) {
-      setFormParams({...formParams, userId: user.id});
+      setOnlyMe(true);
     } else {
-      setFormParams({...formParams, userId: 0});
+      setOnlyMe(false);
     }
   }
   const columns: TableColumnProps[] = [
