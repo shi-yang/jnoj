@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Tabs, Collapse, Progress, Space, Tag, Divider, Pagination, Grid } from '@arco-design/web-react';
+import { Link, Card, Tabs, Collapse, Progress, Space, Tag, Divider, Pagination, Grid } from '@arco-design/web-react';
 import { PaginationProps } from '@arco-design/web-react/es/Pagination/pagination';
-import Link from 'next/link';
 import { getUserProfileProblemSolved } from '@/api/user';
 
 function renderItemWithResponsive(item1: React.ReactNode, item2: React.ReactNode, item3: React.ReactNode) {
