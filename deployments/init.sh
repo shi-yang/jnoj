@@ -62,9 +62,14 @@ else
     echo "Credentials have been modified. No update needed."
 fi
 
-# Function to validate the domain/IP input
+# Function to validate the domain/IP input with optional port
 validate_domain() {
-    local domain=$1
+    local input=$1
+    local domain
+    local port
+
+    # Split the input into domain and port
+    IFS=':' read -r domain port <<< "$input"
 
     # Check for "127.0.0.1" or "localhost"
     if [[ $domain =~ ^127\.0\.0\.1$ ]] || [[ $domain == "localhost" ]]; then
@@ -78,14 +83,32 @@ validate_domain() {
     # Regular expression for validating domain
     local domain_regex='^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
 
-    # Check if the input is a valid IP or domain
-    if [[ $domain =~ $ip_regex ]] || [[ $domain =~ $domain_regex ]]; then
-        return 0
-    else
+    # Check if the domain part is a valid IP or domain
+    if ! [[ $domain =~ $ip_regex ]] && ! [[ $domain =~ $domain_regex ]]; then
         echo "Invalid domain or IP. Please enter a valid one."
         return 1
     fi
+
+    # Validate the port number if present
+    if [[ -n $port ]]; then
+        # Regular expression for validating port number
+        local port_regex='^([0-9]{1,5})$'
+
+        if ! [[ $port =~ $port_regex ]]; then
+            echo "Invalid port number. Please enter a valid one."
+            return 1
+        fi
+
+        # Check if port number is within valid range (1-65535)
+        if ((port < 1 || port > 65535)); then
+            echo "Port number is out of range. Please enter a number between 1 and 65535."
+            return 1
+        fi
+    fi
+
+    return 0
 }
+
 
 
 
