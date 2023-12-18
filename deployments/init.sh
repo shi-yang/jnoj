@@ -148,7 +148,6 @@ fi
 update_env_var "JNOJ_HOST" "${protocol}${new_domain}"
 update_env_var "JNOJ_WS_HOST" "${ws_protocol}${new_domain}"
 # 更新 S3
-update_env_var "S3_PRIVATE_ENDPOINT" "${protocol}${new_domain}"
 update_env_var "S3_PUBLIC_ENDPOINT" "${protocol}${new_domain}"
 
 echo "Updated settings as needed."
