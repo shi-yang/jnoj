@@ -206,7 +206,7 @@ const SettingInfo = () => {
                   format='YYYY-MM-DD HH:mm:ss'
                 />
               </Form.Item>
-              <Form.Item label={t['setting.info.frozenTime']} required field='frozenTime' rules={[{ required: true }]}
+              <Form.Item label={t['setting.info.frozenTime']} field='frozenTime'
                 help={
                   <div>{t['setting.info.frozenTimeHelp']} 点击进入：<Link href={`/contests/${contest.id}/scrollboard`} target='_blank'>滚榜地址</Link></div>
                 }
