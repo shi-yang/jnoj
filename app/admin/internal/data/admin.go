@@ -27,7 +27,7 @@ func (r *adminRepo) AnalyticsUserActivities(ctx context.Context) *v1.AnalyticsUs
 	var (
 		start, end time.Time
 	)
-	start = end.AddDate(0, 1, 0)
+	start = time.Now().AddDate(-1, 1, 0)
 	end = time.Now()
 	db := r.data.db.WithContext(ctx).
 		Select("DATE_FORMAT(created_at, '%Y-%m-%d') as date, count(*)").
