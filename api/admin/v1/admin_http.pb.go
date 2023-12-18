@@ -21,9 +21,11 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 // auth.
+const OperationAdminServiceAnalyticsUserActivities = "/jnoj.admin.v1.AdminService/AnalyticsUserActivities"
 const OperationAdminServiceListServiceStatuses = "/jnoj.admin.v1.AdminService/ListServiceStatuses"
 
 type AdminServiceHTTPServer interface {
+	AnalyticsUserActivities(context.Context, *AnalyticsUserActivitiesRequest) (*AnalyticsUserActivitiesResponse, error)
 	ListServiceStatuses(context.Context, *ListServiceStatusesRequest) (*ListServiceStatusesResponse, error)
 }
 
@@ -31,6 +33,7 @@ func RegisterAdminServiceHTTPServer(s *http.Server, srv AdminServiceHTTPServer) 
 	s.Use("/jnoj.admin.v1.AdminService/ListServiceStatuses", auth.User())
 	r := s.Route("/")
 	r.GET("/service_statuses", _AdminService_ListServiceStatuses0_HTTP_Handler(srv))
+	r.GET("/overview/user-activities", _AdminService_AnalyticsUserActivities0_HTTP_Handler(srv))
 }
 
 func _AdminService_ListServiceStatuses0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
@@ -52,7 +55,27 @@ func _AdminService_ListServiceStatuses0_HTTP_Handler(srv AdminServiceHTTPServer)
 	}
 }
 
+func _AdminService_AnalyticsUserActivities0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AnalyticsUserActivitiesRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceAnalyticsUserActivities)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AnalyticsUserActivities(ctx, req.(*AnalyticsUserActivitiesRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AnalyticsUserActivitiesResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AdminServiceHTTPClient interface {
+	AnalyticsUserActivities(ctx context.Context, req *AnalyticsUserActivitiesRequest, opts ...http.CallOption) (rsp *AnalyticsUserActivitiesResponse, err error)
 	ListServiceStatuses(ctx context.Context, req *ListServiceStatusesRequest, opts ...http.CallOption) (rsp *ListServiceStatusesResponse, err error)
 }
 
@@ -62,6 +85,19 @@ type AdminServiceHTTPClientImpl struct {
 
 func NewAdminServiceHTTPClient(client *http.Client) AdminServiceHTTPClient {
 	return &AdminServiceHTTPClientImpl{client}
+}
+
+func (c *AdminServiceHTTPClientImpl) AnalyticsUserActivities(ctx context.Context, in *AnalyticsUserActivitiesRequest, opts ...http.CallOption) (*AnalyticsUserActivitiesResponse, error) {
+	var out AnalyticsUserActivitiesResponse
+	pattern := "/overview/user-activities"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminServiceAnalyticsUserActivities))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *AdminServiceHTTPClientImpl) ListServiceStatuses(ctx context.Context, in *ListServiceStatusesRequest, opts ...http.CallOption) (*ListServiceStatusesResponse, error) {

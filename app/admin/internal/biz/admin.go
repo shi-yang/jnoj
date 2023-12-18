@@ -16,13 +16,14 @@ import (
 
 // AdminRepo is a Admin repo.
 type AdminRepo interface {
+	AnalyticsUserActivities(context.Context) *v1.AnalyticsUserActivitiesResponse
 }
 
 // AdminUsecase is a Admin usecase.
 type AdminUsecase struct {
 	log       *log.Helper
 	discovery registry.Discovery
-	conf      *conf.Registry
+	repo      AdminRepo
 }
 
 // NewAdminUsecase new a Admin usecase.
@@ -30,10 +31,12 @@ func NewAdminUsecase(
 	logger log.Logger,
 	discovery registry.Discovery,
 	conf *conf.Registry,
+	repo AdminRepo,
 ) *AdminUsecase {
 	return &AdminUsecase{
 		discovery: discovery,
 		log:       log.NewHelper(logger),
+		repo:      repo,
 	}
 }
 
@@ -142,4 +145,8 @@ func (uc *AdminUsecase) ListServiceStatuses(ctx context.Context) *v1.ListService
 		res.SanboxSystemInfo = append(res.SanboxSystemInfo, info)
 	}
 	return res
+}
+
+func (uc *AdminUsecase) AnalyticsUserActivities(ctx context.Context) *v1.AnalyticsUserActivitiesResponse {
+	return uc.repo.AnalyticsUserActivities(ctx)
 }

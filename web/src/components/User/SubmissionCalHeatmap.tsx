@@ -110,7 +110,7 @@ export default function SubmissionCalHeatmap({id}:{id:Number}) {
       <Card
         title={
           <div>
-            <Select style={{ width: 100 }} defaultValue={0} onChange={onCalendarSelectChange}>
+            <Select bordered={false} style={{ width: 100 }} defaultValue={0} onChange={onCalendarSelectChange}>
               <Select.Option value={0}>
                 {t['pastYear']}
               </Select.Option>

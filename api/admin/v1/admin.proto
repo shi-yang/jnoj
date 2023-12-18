@@ -7,12 +7,18 @@ import "google/api/annotations.proto";
 option go_package = "api/admin/v1;v1";
 
 service AdminService {
-    // 获取题目列表
+    // 获取测评服务列表
     rpc ListServiceStatuses (ListServiceStatusesRequest) returns (ListServiceStatusesResponse) {
         option (google.api.http) = {
             get: "/service_statuses"
         };
     };
+    // 首页数据统计
+    rpc AnalyticsUserActivities (AnalyticsUserActivitiesRequest) returns (AnalyticsUserActivitiesResponse) {
+        option (google.api.http) = {
+            get: "/overview/user-activities"
+        };
+    }
 }
 
 message ListServiceStatusesRequest {
@@ -101,4 +107,15 @@ message ListServiceStatusesResponse {
         string endpoint = 5;
     }
     repeated SanboxSystemInfo sanbox_system_info = 1;
+}
+
+message AnalyticsUserActivitiesRequest {}
+
+message AnalyticsUserActivitiesResponse {
+    message Calendar {
+        string date = 1;
+        int32 count = 2;
+    }
+    repeated Calendar user_count = 1;
+    repeated Calendar submission_count = 2;
 }

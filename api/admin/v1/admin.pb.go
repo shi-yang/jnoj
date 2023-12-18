@@ -106,6 +106,99 @@ func (x *ListServiceStatusesResponse) GetSanboxSystemInfo() []*ListServiceStatus
 	return nil
 }
 
+type AnalyticsUserActivitiesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *AnalyticsUserActivitiesRequest) Reset() {
+	*x = AnalyticsUserActivitiesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_admin_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AnalyticsUserActivitiesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnalyticsUserActivitiesRequest) ProtoMessage() {}
+
+func (x *AnalyticsUserActivitiesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_admin_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnalyticsUserActivitiesRequest.ProtoReflect.Descriptor instead.
+func (*AnalyticsUserActivitiesRequest) Descriptor() ([]byte, []int) {
+	return file_v1_admin_proto_rawDescGZIP(), []int{2}
+}
+
+type AnalyticsUserActivitiesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserCount       []*AnalyticsUserActivitiesResponse_Calendar `protobuf:"bytes,1,rep,name=user_count,json=userCount,proto3" json:"user_count,omitempty"`
+	SubmissionCount []*AnalyticsUserActivitiesResponse_Calendar `protobuf:"bytes,2,rep,name=submission_count,json=submissionCount,proto3" json:"submission_count,omitempty"`
+}
+
+func (x *AnalyticsUserActivitiesResponse) Reset() {
+	*x = AnalyticsUserActivitiesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_admin_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AnalyticsUserActivitiesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnalyticsUserActivitiesResponse) ProtoMessage() {}
+
+func (x *AnalyticsUserActivitiesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_admin_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnalyticsUserActivitiesResponse.ProtoReflect.Descriptor instead.
+func (*AnalyticsUserActivitiesResponse) Descriptor() ([]byte, []int) {
+	return file_v1_admin_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AnalyticsUserActivitiesResponse) GetUserCount() []*AnalyticsUserActivitiesResponse_Calendar {
+	if x != nil {
+		return x.UserCount
+	}
+	return nil
+}
+
+func (x *AnalyticsUserActivitiesResponse) GetSubmissionCount() []*AnalyticsUserActivitiesResponse_Calendar {
+	if x != nil {
+		return x.SubmissionCount
+	}
+	return nil
+}
+
 type ListServiceStatusesResponse_SanboxSystemInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -121,7 +214,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[2]
+		mi := &file_v1_admin_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -134,7 +227,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo) String() string {
 func (*ListServiceStatusesResponse_SanboxSystemInfo) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[2]
+	mi := &file_v1_admin_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -196,7 +289,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Host struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Host) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Host{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[3]
+		mi := &file_v1_admin_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -209,7 +302,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Host) String() string {
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Host) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Host) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[3]
+	mi := &file_v1_admin_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +339,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Cpu struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Cpu) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Cpu{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[4]
+		mi := &file_v1_admin_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -259,7 +352,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Cpu) String() string {
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Cpu) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Cpu) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[4]
+	mi := &file_v1_admin_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +401,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Memory struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Memory{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[5]
+		mi := &file_v1_admin_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -321,7 +414,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory) String() string {
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Memory) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[5]
+	mi := &file_v1_admin_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -362,7 +455,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Disk struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Disk{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[6]
+		mi := &file_v1_admin_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -375,7 +468,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk) String() string {
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Disk) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[6]
+	mi := &file_v1_admin_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -421,7 +514,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[7]
+		mi := &file_v1_admin_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -434,7 +527,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) String() st
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[7]
+	mi := &file_v1_admin_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -564,7 +657,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[8]
+		mi := &file_v1_admin_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -577,7 +670,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) String() str
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[8]
+	mi := &file_v1_admin_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -697,7 +790,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[9]
+		mi := &file_v1_admin_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -710,7 +803,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) String(
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[9]
+	mi := &file_v1_admin_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -766,7 +859,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat struc
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[10]
+		mi := &file_v1_admin_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -779,7 +872,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) 
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[10]
+	mi := &file_v1_admin_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -878,7 +971,7 @@ type ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat struct {
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) Reset() {
 	*x = ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_admin_proto_msgTypes[11]
+		mi := &file_v1_admin_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -891,7 +984,7 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) String() s
 func (*ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) ProtoMessage() {}
 
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_admin_proto_msgTypes[11]
+	mi := &file_v1_admin_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -973,6 +1066,61 @@ func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) GetInodesF
 func (x *ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat) GetInodesUsedPercent() float64 {
 	if x != nil {
 		return x.InodesUsedPercent
+	}
+	return 0
+}
+
+type AnalyticsUserActivitiesResponse_Calendar struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Date  string `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	Count int32  `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+}
+
+func (x *AnalyticsUserActivitiesResponse_Calendar) Reset() {
+	*x = AnalyticsUserActivitiesResponse_Calendar{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_admin_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AnalyticsUserActivitiesResponse_Calendar) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnalyticsUserActivitiesResponse_Calendar) ProtoMessage() {}
+
+func (x *AnalyticsUserActivitiesResponse_Calendar) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_admin_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnalyticsUserActivitiesResponse_Calendar.ProtoReflect.Descriptor instead.
+func (*AnalyticsUserActivitiesResponse_Calendar) Descriptor() ([]byte, []int) {
+	return file_v1_admin_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *AnalyticsUserActivitiesResponse_Calendar) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *AnalyticsUserActivitiesResponse_Calendar) GetCount() int32 {
+	if x != nil {
+		return x.Count
 	}
 	return 0
 }
@@ -1148,19 +1296,48 @@ var file_v1_admin_proto_rawDesc = []byte{
 	0x52, 0x0a, 0x69, 0x6e, 0x6f, 0x64, 0x65, 0x73, 0x46, 0x72, 0x65, 0x65, 0x12, 0x2e, 0x0a, 0x13,
 	0x69, 0x6e, 0x6f, 0x64, 0x65, 0x73, 0x5f, 0x75, 0x73, 0x65, 0x64, 0x5f, 0x70, 0x65, 0x72, 0x63,
 	0x65, 0x6e, 0x74, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x01, 0x52, 0x11, 0x69, 0x6e, 0x6f, 0x64, 0x65,
-	0x73, 0x55, 0x73, 0x65, 0x64, 0x50, 0x65, 0x72, 0x63, 0x65, 0x6e, 0x74, 0x32, 0x98, 0x01, 0x0a,
-	0x0c, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x87, 0x01,
-	0x0a, 0x13, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x65, 0x73, 0x12, 0x29, 0x2e, 0x6a, 0x6e, 0x6f, 0x6a, 0x2e, 0x61, 0x64, 0x6d,
-	0x69, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
-	0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x2a, 0x2e, 0x6a, 0x6e, 0x6f, 0x6a, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31,
-	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x19, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x13, 0x12, 0x11, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x73,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x42, 0x11, 0x5a, 0x0f, 0x61, 0x70, 0x69, 0x2f, 0x61,
-	0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x3b, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x73, 0x55, 0x73, 0x65, 0x64, 0x50, 0x65, 0x72, 0x63, 0x65, 0x6e, 0x74, 0x22, 0x20, 0x0a, 0x1e,
+	0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x55, 0x73, 0x65, 0x72, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x69, 0x74, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x93,
+	0x02, 0x0a, 0x1f, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x55, 0x73, 0x65, 0x72,
+	0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x56, 0x0a, 0x0a, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x37, 0x2e, 0x6a, 0x6e, 0x6f, 0x6a, 0x2e, 0x61, 0x64,
+	0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73,
+	0x55, 0x73, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x69, 0x65, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x43, 0x61, 0x6c, 0x65, 0x6e, 0x64, 0x61, 0x72, 0x52,
+	0x09, 0x75, 0x73, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x62, 0x0a, 0x10, 0x73, 0x75,
+	0x62, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x37, 0x2e, 0x6a, 0x6e, 0x6f, 0x6a, 0x2e, 0x61, 0x64, 0x6d, 0x69,
+	0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x55, 0x73,
+	0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x43, 0x61, 0x6c, 0x65, 0x6e, 0x64, 0x61, 0x72, 0x52, 0x0f, 0x73,
+	0x75, 0x62, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x1a, 0x34,
+	0x0a, 0x08, 0x43, 0x61, 0x6c, 0x65, 0x6e, 0x64, 0x61, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61,
+	0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x65, 0x12, 0x14,
+	0x0a, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x32, 0xb6, 0x02, 0x0a, 0x0c, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x87, 0x01, 0x0a, 0x13, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x12, 0x29, 0x2e,
+	0x6a, 0x6e, 0x6f, 0x6a, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69,
+	0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x6a, 0x6e, 0x6f, 0x6a, 0x2e,
+	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x19, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x13, 0x12, 0x11, 0x2f, 0x73,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x12,
+	0x9b, 0x01, 0x0a, 0x17, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x55, 0x73, 0x65,
+	0x72, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x69, 0x65, 0x73, 0x12, 0x2d, 0x2e, 0x6a, 0x6e,
+	0x6f, 0x6a, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x61, 0x6c,
+	0x79, 0x74, 0x69, 0x63, 0x73, 0x55, 0x73, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74,
+	0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x6a, 0x6e, 0x6f,
+	0x6a, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x61, 0x6c, 0x79,
+	0x74, 0x69, 0x63, 0x73, 0x55, 0x73, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x69,
+	0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x21, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x1b, 0x12, 0x19, 0x2f, 0x6f, 0x76, 0x65, 0x72, 0x76, 0x69, 0x65, 0x77, 0x2f, 0x75, 0x73,
+	0x65, 0x72, 0x2d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x69, 0x65, 0x73, 0x42, 0x11, 0x5a,
+	0x0f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x3b, 0x76, 0x31,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1175,39 +1352,46 @@ func file_v1_admin_proto_rawDescGZIP() []byte {
 	return file_v1_admin_proto_rawDescData
 }
 
-var file_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_v1_admin_proto_goTypes = []interface{}{
 	(*ListServiceStatusesRequest)(nil),                                            // 0: jnoj.admin.v1.ListServiceStatusesRequest
 	(*ListServiceStatusesResponse)(nil),                                           // 1: jnoj.admin.v1.ListServiceStatusesResponse
-	(*ListServiceStatusesResponse_SanboxSystemInfo)(nil),                          // 2: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Host)(nil),                     // 3: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu)(nil),                      // 4: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Memory)(nil),                   // 5: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Disk)(nil),                     // 6: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat)(nil),            // 7: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host.InfoStat
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat)(nil),             // 8: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu.InfoStat
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice)(nil),        // 9: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.SwapDevice
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat)(nil), // 10: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.VirtualMemoryStat
-	(*ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat)(nil),           // 11: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk.UsageStat
+	(*AnalyticsUserActivitiesRequest)(nil),                                        // 2: jnoj.admin.v1.AnalyticsUserActivitiesRequest
+	(*AnalyticsUserActivitiesResponse)(nil),                                       // 3: jnoj.admin.v1.AnalyticsUserActivitiesResponse
+	(*ListServiceStatusesResponse_SanboxSystemInfo)(nil),                          // 4: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Host)(nil),                     // 5: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu)(nil),                      // 6: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Memory)(nil),                   // 7: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Disk)(nil),                     // 8: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat)(nil),            // 9: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host.InfoStat
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat)(nil),             // 10: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu.InfoStat
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice)(nil),        // 11: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.SwapDevice
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat)(nil), // 12: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.VirtualMemoryStat
+	(*ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat)(nil),           // 13: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk.UsageStat
+	(*AnalyticsUserActivitiesResponse_Calendar)(nil),                              // 14: jnoj.admin.v1.AnalyticsUserActivitiesResponse.Calendar
 }
 var file_v1_admin_proto_depIdxs = []int32{
-	2,  // 0: jnoj.admin.v1.ListServiceStatusesResponse.sanbox_system_info:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo
-	3,  // 1: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.host:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host
-	4,  // 2: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.cpu:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu
-	5,  // 3: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.memory:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory
-	6,  // 4: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.disk:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk
-	7,  // 5: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host.info_stat:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host.InfoStat
-	8,  // 6: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu.info_stat:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu.InfoStat
-	9,  // 7: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.swap_device:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.SwapDevice
-	10, // 8: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.virtual_memory:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.VirtualMemoryStat
-	11, // 9: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk.usage_stat:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk.UsageStat
-	0,  // 10: jnoj.admin.v1.AdminService.ListServiceStatuses:input_type -> jnoj.admin.v1.ListServiceStatusesRequest
-	1,  // 11: jnoj.admin.v1.AdminService.ListServiceStatuses:output_type -> jnoj.admin.v1.ListServiceStatusesResponse
-	11, // [11:12] is the sub-list for method output_type
-	10, // [10:11] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	4,  // 0: jnoj.admin.v1.ListServiceStatusesResponse.sanbox_system_info:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo
+	14, // 1: jnoj.admin.v1.AnalyticsUserActivitiesResponse.user_count:type_name -> jnoj.admin.v1.AnalyticsUserActivitiesResponse.Calendar
+	14, // 2: jnoj.admin.v1.AnalyticsUserActivitiesResponse.submission_count:type_name -> jnoj.admin.v1.AnalyticsUserActivitiesResponse.Calendar
+	5,  // 3: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.host:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host
+	6,  // 4: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.cpu:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu
+	7,  // 5: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.memory:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory
+	8,  // 6: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.disk:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk
+	9,  // 7: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host.info_stat:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Host.InfoStat
+	10, // 8: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu.info_stat:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Cpu.InfoStat
+	11, // 9: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.swap_device:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.SwapDevice
+	12, // 10: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.virtual_memory:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Memory.VirtualMemoryStat
+	13, // 11: jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk.usage_stat:type_name -> jnoj.admin.v1.ListServiceStatusesResponse.SanboxSystemInfo.Disk.UsageStat
+	0,  // 12: jnoj.admin.v1.AdminService.ListServiceStatuses:input_type -> jnoj.admin.v1.ListServiceStatusesRequest
+	2,  // 13: jnoj.admin.v1.AdminService.AnalyticsUserActivities:input_type -> jnoj.admin.v1.AnalyticsUserActivitiesRequest
+	1,  // 14: jnoj.admin.v1.AdminService.ListServiceStatuses:output_type -> jnoj.admin.v1.ListServiceStatusesResponse
+	3,  // 15: jnoj.admin.v1.AdminService.AnalyticsUserActivities:output_type -> jnoj.admin.v1.AnalyticsUserActivitiesResponse
+	14, // [14:16] is the sub-list for method output_type
+	12, // [12:14] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_v1_admin_proto_init() }
@@ -1241,7 +1425,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo); i {
+			switch v := v.(*AnalyticsUserActivitiesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1253,7 +1437,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Host); i {
+			switch v := v.(*AnalyticsUserActivitiesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1265,7 +1449,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1277,7 +1461,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Memory); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Host); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1289,7 +1473,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Disk); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1301,7 +1485,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Memory); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1313,7 +1497,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Disk); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1325,7 +1509,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Host_InfoStat); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1337,7 +1521,7 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat); i {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Cpu_InfoStat); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1349,7 +1533,43 @@ func file_v1_admin_proto_init() {
 			}
 		}
 		file_v1_admin_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_SwapDevice); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_admin_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Memory_VirtualMemoryStat); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_admin_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStat); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_admin_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AnalyticsUserActivitiesResponse_Calendar); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1367,7 +1587,7 @@ func file_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_v1_admin_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

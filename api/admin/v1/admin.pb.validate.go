@@ -274,6 +274,280 @@ var _ interface {
 	ErrorName() string
 } = ListServiceStatusesResponseValidationError{}
 
+// Validate checks the field values on AnalyticsUserActivitiesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AnalyticsUserActivitiesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AnalyticsUserActivitiesRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AnalyticsUserActivitiesRequestMultiError, or nil if none found.
+func (m *AnalyticsUserActivitiesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AnalyticsUserActivitiesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AnalyticsUserActivitiesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AnalyticsUserActivitiesRequestMultiError is an error wrapping multiple
+// validation errors returned by AnalyticsUserActivitiesRequest.ValidateAll()
+// if the designated constraints aren't met.
+type AnalyticsUserActivitiesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AnalyticsUserActivitiesRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AnalyticsUserActivitiesRequestMultiError) AllErrors() []error { return m }
+
+// AnalyticsUserActivitiesRequestValidationError is the validation error
+// returned by AnalyticsUserActivitiesRequest.Validate if the designated
+// constraints aren't met.
+type AnalyticsUserActivitiesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AnalyticsUserActivitiesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AnalyticsUserActivitiesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AnalyticsUserActivitiesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AnalyticsUserActivitiesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AnalyticsUserActivitiesRequestValidationError) ErrorName() string {
+	return "AnalyticsUserActivitiesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AnalyticsUserActivitiesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAnalyticsUserActivitiesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AnalyticsUserActivitiesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AnalyticsUserActivitiesRequestValidationError{}
+
+// Validate checks the field values on AnalyticsUserActivitiesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AnalyticsUserActivitiesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AnalyticsUserActivitiesResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AnalyticsUserActivitiesResponseMultiError, or nil if none found.
+func (m *AnalyticsUserActivitiesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AnalyticsUserActivitiesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetUserCount() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AnalyticsUserActivitiesResponseValidationError{
+						field:  fmt.Sprintf("UserCount[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AnalyticsUserActivitiesResponseValidationError{
+						field:  fmt.Sprintf("UserCount[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AnalyticsUserActivitiesResponseValidationError{
+					field:  fmt.Sprintf("UserCount[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetSubmissionCount() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AnalyticsUserActivitiesResponseValidationError{
+						field:  fmt.Sprintf("SubmissionCount[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AnalyticsUserActivitiesResponseValidationError{
+						field:  fmt.Sprintf("SubmissionCount[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AnalyticsUserActivitiesResponseValidationError{
+					field:  fmt.Sprintf("SubmissionCount[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AnalyticsUserActivitiesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AnalyticsUserActivitiesResponseMultiError is an error wrapping multiple
+// validation errors returned by AnalyticsUserActivitiesResponse.ValidateAll()
+// if the designated constraints aren't met.
+type AnalyticsUserActivitiesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AnalyticsUserActivitiesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AnalyticsUserActivitiesResponseMultiError) AllErrors() []error { return m }
+
+// AnalyticsUserActivitiesResponseValidationError is the validation error
+// returned by AnalyticsUserActivitiesResponse.Validate if the designated
+// constraints aren't met.
+type AnalyticsUserActivitiesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AnalyticsUserActivitiesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AnalyticsUserActivitiesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AnalyticsUserActivitiesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AnalyticsUserActivitiesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AnalyticsUserActivitiesResponseValidationError) ErrorName() string {
+	return "AnalyticsUserActivitiesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AnalyticsUserActivitiesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAnalyticsUserActivitiesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AnalyticsUserActivitiesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AnalyticsUserActivitiesResponseValidationError{}
+
 // Validate checks the field values on
 // ListServiceStatusesResponse_SanboxSystemInfo with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
@@ -1795,3 +2069,113 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListServiceStatusesResponse_SanboxSystemInfo_Disk_UsageStatValidationError{}
+
+// Validate checks the field values on AnalyticsUserActivitiesResponse_Calendar
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *AnalyticsUserActivitiesResponse_Calendar) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AnalyticsUserActivitiesResponse_Calendar with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// AnalyticsUserActivitiesResponse_CalendarMultiError, or nil if none found.
+func (m *AnalyticsUserActivitiesResponse_Calendar) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AnalyticsUserActivitiesResponse_Calendar) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Date
+
+	// no validation rules for Count
+
+	if len(errors) > 0 {
+		return AnalyticsUserActivitiesResponse_CalendarMultiError(errors)
+	}
+
+	return nil
+}
+
+// AnalyticsUserActivitiesResponse_CalendarMultiError is an error wrapping
+// multiple validation errors returned by
+// AnalyticsUserActivitiesResponse_Calendar.ValidateAll() if the designated
+// constraints aren't met.
+type AnalyticsUserActivitiesResponse_CalendarMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AnalyticsUserActivitiesResponse_CalendarMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AnalyticsUserActivitiesResponse_CalendarMultiError) AllErrors() []error { return m }
+
+// AnalyticsUserActivitiesResponse_CalendarValidationError is the validation
+// error returned by AnalyticsUserActivitiesResponse_Calendar.Validate if the
+// designated constraints aren't met.
+type AnalyticsUserActivitiesResponse_CalendarValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AnalyticsUserActivitiesResponse_CalendarValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AnalyticsUserActivitiesResponse_CalendarValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AnalyticsUserActivitiesResponse_CalendarValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AnalyticsUserActivitiesResponse_CalendarValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AnalyticsUserActivitiesResponse_CalendarValidationError) ErrorName() string {
+	return "AnalyticsUserActivitiesResponse_CalendarValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AnalyticsUserActivitiesResponse_CalendarValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAnalyticsUserActivitiesResponse_Calendar.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AnalyticsUserActivitiesResponse_CalendarValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AnalyticsUserActivitiesResponse_CalendarValidationError{}

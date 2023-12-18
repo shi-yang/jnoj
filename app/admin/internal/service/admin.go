@@ -20,7 +20,12 @@ func NewAdminService(uc *biz.AdminUsecase, logger log.Logger) *AdminService {
 	return &AdminService{uc: uc, log: log.NewHelper(logger)}
 }
 
-func (s AdminService) ListServiceStatuses(ctx context.Context, req *v1.ListServiceStatusesRequest) (*v1.ListServiceStatusesResponse, error) {
+func (s *AdminService) ListServiceStatuses(ctx context.Context, req *v1.ListServiceStatusesRequest) (*v1.ListServiceStatusesResponse, error) {
 	resp := s.uc.ListServiceStatuses(ctx)
+	return resp, nil
+}
+
+func (s *AdminService) AnalyticsUserActivities(ctx context.Context, req *v1.AnalyticsUserActivitiesRequest) (*v1.AnalyticsUserActivitiesResponse, error) {
+	resp := s.uc.AnalyticsUserActivities(ctx)
 	return resp, nil
 }
