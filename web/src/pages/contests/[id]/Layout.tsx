@@ -130,6 +130,7 @@ function ContestLayout(page) {
     name: '',
     startTime: new Date(),
     endTime: new Date(),
+    frozenTime: null,
     privacy: '',
     membership: '',
     role: 'GUEST',
