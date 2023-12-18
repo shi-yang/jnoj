@@ -108,12 +108,18 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 		if userMap[uid].Problem == nil {
 			userMap[uid].Problem = make(map[int]*StandingProblem)
 		}
-		p, ok := userMap[uid].Problem[problemNumber]
+		userProblemStatus, ok := userMap[uid].Problem[problemNumber]
 		if !ok {
-			p = &StandingProblem{}
+			userProblemStatus = &StandingProblem{}
 		}
 		// 已经通过，则直接跳过
-		if p.Status == SubmissionVerdictAccepted {
+		if userProblemStatus.Status == SubmissionVerdictAccepted {
+			continue
+		}
+		// 存在封榜
+		if contest.FrozenTime != nil && submission.CreatedAt.After(*contest.FrozenTime) {
+			userProblemStatus.Status = SubmissionVerdictPending
+			userMap[uid].Problem[problemNumber] = userProblemStatus
 			continue
 		}
 		// 判断是否比赛中的提交：正常比赛
@@ -130,35 +136,35 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 			}
 		}
 		if isInComp && submission.Verdict == SubmissionVerdictAccepted {
-			p.IsInComp = isInComp
+			userProblemStatus.IsInComp = isInComp
 		}
 		// 只显示正式比赛的提交
 		if c.options.OnlyOfficial && !isInComp {
 			continue
 		}
-		p.Status = submission.Verdict
+		userProblemStatus.Status = submission.Verdict
 		// 编译错误不算提交
 		if submission.Verdict != SubmissionVerdictCompileError {
-			p.Attempted++
+			userProblemStatus.Attempted++
 		}
 		// 通过
 		if submission.Verdict == SubmissionVerdictAccepted {
 			if _, ok := firstBlood[problemNumber]; !ok {
 				firstBlood[problemNumber] = uid
-				p.IsFirstBlood = true
+				userProblemStatus.IsFirstBlood = true
 			}
-			p.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
+			userProblemStatus.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
 			// ICPC 尝试次数会有20分罚时，加上本题通过时间，即为分数
-			p.Score = 20*(p.Attempted-1) + p.SolvedAt
+			userProblemStatus.Score = 20*(userProblemStatus.Attempted-1) + userProblemStatus.SolvedAt
 			// 虚拟比赛计分换算
 			if userMap[uid].VirtualStart != nil && isInComp {
-				p.SolvedAt = int(submission.CreatedAt.Sub(*userMap[uid].VirtualStart).Minutes())
-				p.Score = 20*(p.Attempted-1) + int(submission.CreatedAt.Sub(*userMap[uid].VirtualStart).Minutes())
+				userProblemStatus.SolvedAt = int(submission.CreatedAt.Sub(*userMap[uid].VirtualStart).Minutes())
+				userProblemStatus.Score = 20*(userProblemStatus.Attempted-1) + int(submission.CreatedAt.Sub(*userMap[uid].VirtualStart).Minutes())
 			}
-			userMap[uid].Score += p.Score
+			userMap[uid].Score += userProblemStatus.Score
 			userMap[uid].Solved += 1
 		}
-		userMap[uid].Problem[problemNumber] = p
+		userMap[uid].Problem[problemNumber] = userProblemStatus
 	}
 	var res = make([]*StandingUser, 0, len(userMap))
 	for _, user := range userMap {
@@ -223,12 +229,18 @@ func (c *ContestStandingIOI) Sort(contest *Contest, users []*ContestUser, proble
 		if userMap[uid].Problem == nil {
 			userMap[uid].Problem = make(map[int]*StandingProblem)
 		}
-		p, ok := userMap[uid].Problem[problemNumber]
+		userProblemStatus, ok := userMap[uid].Problem[problemNumber]
 		if !ok {
-			p = &StandingProblem{}
+			userProblemStatus = &StandingProblem{}
 		}
 		// 已经通过，则直接跳过
-		if p.Status == SubmissionVerdictAccepted {
+		if userProblemStatus.Status == SubmissionVerdictAccepted {
+			continue
+		}
+		// 存在封榜
+		if contest.FrozenTime != nil && submission.CreatedAt.After(*contest.FrozenTime) {
+			userProblemStatus.Status = SubmissionVerdictPending
+			userMap[uid].Problem[problemNumber] = userProblemStatus
 			continue
 		}
 		// 判断是否比赛中的提交：正常比赛
@@ -245,31 +257,31 @@ func (c *ContestStandingIOI) Sort(contest *Contest, users []*ContestUser, proble
 			}
 		}
 		if isInComp && submission.Verdict == SubmissionVerdictAccepted {
-			p.IsInComp = isInComp
+			userProblemStatus.IsInComp = isInComp
 		}
 		// 只显示正式比赛的提交
 		if c.options.OnlyOfficial && !isInComp {
 			continue
 		}
-		p.Status = submission.Verdict
+		userProblemStatus.Status = submission.Verdict
 		// 编译错误不算提交
 		if submission.Verdict != SubmissionVerdictCompileError {
-			p.Attempted++
+			userProblemStatus.Attempted++
 		}
 		// 通过
 		if submission.Verdict == SubmissionVerdictAccepted {
 			if _, ok := firstBlood[problemNumber]; !ok {
 				firstBlood[problemNumber] = uid
-				p.IsFirstBlood = true
+				userProblemStatus.IsFirstBlood = true
 			}
-			p.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
+			userProblemStatus.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
 			userMap[uid].Solved += 1
 		}
 		// IOI 取最大得分
-		if p.Score < submission.Score {
-			p.Score = submission.Score
+		if userProblemStatus.Score < submission.Score {
+			userProblemStatus.Score = submission.Score
 		}
-		userMap[uid].Problem[problemNumber] = p
+		userMap[uid].Problem[problemNumber] = userProblemStatus
 	}
 	var res = make([]*StandingUser, 0, len(userMap))
 	for _, user := range userMap {
@@ -340,12 +352,18 @@ func (c *ContestStandingOI) Sort(contest *Contest, users []*ContestUser, problem
 		if userMap[uid].Problem == nil {
 			userMap[uid].Problem = make(map[int]*StandingProblem)
 		}
-		p, ok := userMap[uid].Problem[problemNumber]
+		userProblemStatus, ok := userMap[uid].Problem[problemNumber]
 		if !ok {
-			p = &StandingProblem{}
+			userProblemStatus = &StandingProblem{}
 		}
 		// 已经通过，则直接跳过
-		if p.Status == SubmissionVerdictAccepted {
+		if userProblemStatus.Status == SubmissionVerdictAccepted {
+			continue
+		}
+		// 存在封榜
+		if contest.FrozenTime != nil && submission.CreatedAt.After(*contest.FrozenTime) {
+			userProblemStatus.Status = SubmissionVerdictPending
+			userMap[uid].Problem[problemNumber] = userProblemStatus
 			continue
 		}
 		// 判断是否比赛中的提交：正常比赛
@@ -362,27 +380,27 @@ func (c *ContestStandingOI) Sort(contest *Contest, users []*ContestUser, problem
 			}
 		}
 		if isInComp && submission.Verdict == SubmissionVerdictAccepted {
-			p.IsInComp = isInComp
+			userProblemStatus.IsInComp = isInComp
 		}
 		// 只显示正式比赛的提交
 		if c.options.OnlyOfficial && !isInComp {
 			continue
 		}
-		p.Status = submission.Verdict
+		userProblemStatus.Status = submission.Verdict
 		if submission.Verdict == SubmissionVerdictAccepted {
 			if _, ok := firstBlood[problemNumber]; !ok {
 				firstBlood[problemNumber] = uid
-				p.IsFirstBlood = true
+				userProblemStatus.IsFirstBlood = true
 			}
-			p.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
+			userProblemStatus.SolvedAt = int(submission.CreatedAt.Sub(contest.StartTime).Minutes())
 			userMap[uid].Solved += 1
 		}
 		// OI 取最后一次得分
-		p.Score = submission.Score
-		if p.MaxScore < submission.Score {
-			p.MaxScore = submission.Score
+		userProblemStatus.Score = submission.Score
+		if userProblemStatus.MaxScore < submission.Score {
+			userProblemStatus.MaxScore = submission.Score
 		}
-		userMap[uid].Problem[problemNumber] = p
+		userMap[uid].Problem[problemNumber] = userProblemStatus
 	}
 	var res = make([]*StandingUser, 0, len(userMap))
 	for _, user := range userMap {

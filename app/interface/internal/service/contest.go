@@ -81,6 +81,9 @@ func (s *ContestService) GetContest(ctx context.Context, req *v1.GetContestReque
 		Role:             v1.ContestUserRole(res.Role),
 		Feature:          res.Feature,
 	}
+	if res.FrozenTime != nil {
+		resp.FrozenTime = timestamppb.New(*res.FrozenTime)
+	}
 	if res.VirtualStart != nil {
 		resp.VirtualStart = timestamppb.New(*res.VirtualStart)
 	}
@@ -114,7 +117,7 @@ func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContes
 	if req.Feature != "" && !biz.CheckAccess(role, biz.ResourceContest) {
 		return nil, v1.ErrorPermissionDenied("permission denied")
 	}
-	res, err := s.uc.UpdateContest(ctx, &biz.Contest{
+	update := biz.Contest{
 		ID:             int(req.Id),
 		Name:           req.Name,
 		Description:    req.Description,
@@ -125,7 +128,12 @@ func (s *ContestService) UpdateContest(ctx context.Context, req *v1.UpdateContes
 		Membership:     int(req.Membership),
 		InvitationCode: req.InvitationCode,
 		Feature:        req.Feature,
-	})
+	}
+	if req.FrozenTime != nil {
+		t := req.FrozenTime.AsTime()
+		update.FrozenTime = &t
+	}
+	res, err := s.uc.UpdateContest(ctx, &update)
 	if err != nil {
 		return nil, err
 	}
@@ -526,10 +534,11 @@ func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.
 	resp := new(v1.ListContestAllSubmissionsResponse)
 	for _, v := range submissions {
 		s := &v1.ListContestAllSubmissionsResponse_Submission{
-			Id:      int32(v.ID),
-			Score:   int32(v.Score),
-			UserId:  int32(v.UserID),
-			Problem: int32(v.ProblemNumber),
+			Id:        int32(v.ID),
+			Score:     int32(v.Score),
+			UserId:    int32(v.UserID),
+			Problem:   int32(v.ProblemNumber),
+			CreatedAt: timestamppb.New(v.CreatedAt),
 		}
 		switch v.Verdict {
 		case biz.SubmissionVerdictPending:

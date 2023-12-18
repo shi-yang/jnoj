@@ -1,7 +1,7 @@
 import { createContestProblem, deleteContest, deleteContestProblem, listContestProblems, updateContest } from '@/api/contest';
 import Editor from '@/components/MarkdownEditor';
 import useLocale from '@/utils/useLocale';
-import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select, Divider, Alert } from '@arco-design/web-react';
+import { Button, Card, Form, Input, DatePicker, List, Avatar, Modal, Message, Radio, Space, Typography, Popconfirm, Grid, Select, Divider, Alert, Link } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import React, { useContext, useEffect, useState } from 'react';
 import ContestContext from '../context';
@@ -126,6 +126,7 @@ const SettingInfo = () => {
         name: values.name,
         startTime: new Date(values.time[0]).toISOString(),
         endTime: new Date(values.time[1]).toISOString(),
+        frozenTime: null,
         type: values.type,
         privacy: values.privacy,
         membership: values.membership,
@@ -133,6 +134,9 @@ const SettingInfo = () => {
         description: values.description,
         feature: '',
       };
+      if (values.frozenTime) {
+        data.frozenTime = new Date(values.frozenTime).toISOString();
+      }
       if (values.feature) {
         data.feature = values.feature.filter(v => v != '').join(',');
       }
@@ -176,6 +180,7 @@ const SettingInfo = () => {
       name: contest.name,
       time: [new Date(contest.startTime), new Date(contest.endTime)],
       type: contest.type,
+      frozenTime: contest.frozenTime ? new Date(contest.frozenTime) : null,
       privacy: contest.privacy,
       membership: contest.membership,
       invitationCode: invitationCode,
@@ -198,6 +203,16 @@ const SettingInfo = () => {
                   showTime={{
                     format: 'HH:mm:ss',
                   }}
+                  format='YYYY-MM-DD HH:mm:ss'
+                />
+              </Form.Item>
+              <Form.Item label={t['setting.info.frozenTime']} required field='frozenTime' rules={[{ required: true }]}
+                help={
+                  <div>{t['setting.info.frozenTimeHelp']} 点击进入：<Link href={`/contests/${contest.id}/scrollboard`} target='_blank'>滚榜地址</Link></div>
+                }
+              >
+                <DatePicker
+                  showTime
                   format='YYYY-MM-DD HH:mm:ss'
                 />
               </Form.Item>
@@ -307,8 +322,8 @@ const SettingInfo = () => {
               </Form.Item>
             </Grid.Col>
           </Grid.Row>
-          <Form.Item wrapperCol={{ offset: 5 }}>
-            <Button loading={confirmLoading} type='primary' htmlType='submit'>{t['save']}</Button>
+          <Form.Item>
+            <Button loading={confirmLoading} size='large' type='primary' htmlType='submit'>{t['save']}</Button>
           </Form.Item>
         </Form>
       </Card>

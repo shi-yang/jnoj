@@ -5,6 +5,7 @@ const ContestContext = createContext({
   name: '',
   startTime: new Date(),
   endTime: new Date(),
+  frozenTime: null,
   virtualStart: null,
   privacy: '',
   membership: '',

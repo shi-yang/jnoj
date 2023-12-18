@@ -309,6 +309,7 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 	res := make([]*ContestSubmission, 0)
 	problems, _ := uc.repo.ListContestProblems(ctx, int(req.ContestId))
 	problemMap := make(map[int]int)
+	uid, _ := auth.GetUserID(ctx)
 	var reqProblemID *int32
 	for _, v := range problems {
 		problemMap[v.ProblemID] = v.Number
@@ -352,7 +353,10 @@ func (uc *ContestUsecase) ListContestSubmissions(ctx context.Context, req *v1.Li
 			},
 		}
 		// OI 提交之后无反馈
-		if contest.Type == ContestTypeOI && !isContestManager && runningStatus != ContestRunningStatusFinished {
+		oiRunning := contest.Type == ContestTypeOI && !isContestManager && runningStatus != ContestRunningStatusFinished
+		// 封榜
+		frozen := contest.FrozenTime != nil && v.CreatedAt.After(*contest.FrozenTime) && v.UserID != uid
+		if oiRunning || frozen {
 			cs.Verdict = SubmissionVerdictPending
 			cs.Time = 0
 			cs.Memory = 0

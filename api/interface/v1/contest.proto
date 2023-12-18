@@ -492,6 +492,7 @@ message ListContestAllSubmissionsResponse {
         int32 user_id = 4;
         int32 score = 5;
         int32 inComp = 6;
+        google.protobuf.Timestamp created_at = 7;
     }
     repeated Submission data = 1;
 }
