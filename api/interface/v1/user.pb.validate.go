@@ -2068,6 +2068,14 @@ func (m *GetUserProfileCalendarResponse) validate(all bool) error {
 
 	// no validation rules for End
 
+	// no validation rules for TodayProblem
+
+	// no validation rules for ConsecutiveDay
+
+	// no validation rules for Past_7DayProblem
+
+	// no validation rules for Past_30DayProblem
+
 	if len(errors) > 0 {
 		return GetUserProfileCalendarResponseMultiError(errors)
 	}

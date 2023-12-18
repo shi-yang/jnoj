@@ -232,6 +232,15 @@ message GetUserProfileCalendarResponse {
     int32 totalProblemSolved = 5;
     string start = 6;
     string end = 7;
+
+    // 今日做题
+    int32 today_problem = 8;
+    // 连续做题天数
+    int32 consecutive_day = 9;
+    // 过去7天做题数
+    int32 past_7_day_problem = 10;
+    // 过去30天做题数
+    int32 past_30_day_problem = 11;
 }
 
 message GetUserProfileProblemSolvedRequest {

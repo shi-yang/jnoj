@@ -1,6 +1,6 @@
 import { getUserProfileCalendar } from '@/api/user';
 import useLocale from '@/utils/useLocale';
-import { Card, Space, Select, Statistic } from '@arco-design/web-react';
+import { Card, Space, Select, Statistic, Divider, Typography } from '@arco-design/web-react';
 import React, { useState, useEffect } from 'react';
 import locale from './locale';
 import CalHeatmap from 'cal-heatmap';
@@ -19,6 +19,10 @@ export default function SubmissionCalHeatmap({id}:{id:Number}) {
     totalActiveDays: 0,
     start: '',
     end: '',
+    todayProblem: 0,
+    past7DayProblem: 0,
+    past30DayProblem: 0,
+    consecutiveDay: 0,
   });
   const cal = new CalHeatmap();
   useEffect(() => {
@@ -90,12 +94,23 @@ export default function SubmissionCalHeatmap({id}:{id:Number}) {
       });
   }
   return (
-    <Card
-      title={(calendarSelectYear === 0 ? t['pastYear'] : calendarSelectYear) + '年度做题统计'}
-      extra={
-        <div>
-          <Space>
-            <Select style={{ width: 154 }} defaultValue={0} onChange={onCalendarSelectChange}>
+    <>
+      <Card>
+        <Space split={<Divider type='vertical' />}>
+          <div>
+            <Statistic title='今日做题数' value={profileCalendar.todayProblem} groupSeparator style={{ marginRight: 60 }} />
+            <Statistic title='过去7天做题数' value={profileCalendar.past7DayProblem} groupSeparator style={{ marginRight: 60 }} />
+            <Statistic title='过去30天做题数' value={profileCalendar.past30DayProblem} groupSeparator style={{ marginRight: 60 }} />
+          </div>
+          <div className='flex items-center'>
+            <Typography.Title heading={5}>你已经连续做题{profileCalendar.consecutiveDay}天了，继续加油</Typography.Title>
+          </div>
+        </Space>
+      </Card>
+      <Card
+        title={
+          <div>
+            <Select style={{ width: 100 }} defaultValue={0} onChange={onCalendarSelectChange}>
               <Select.Option value={0}>
                 {t['pastYear']}
               </Select.Option>
@@ -105,16 +120,23 @@ export default function SubmissionCalHeatmap({id}:{id:Number}) {
                 </Select.Option>
               ))}
             </Select>
-          </Space>
-        </div>
-      }
-    >
-      <Space style={{minWidth: '355px', marginBottom: '20px'}}>
-        <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
-        <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
-        <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
-      </Space>
-      <div id='cal-heatmap'></div>
-    </Card>
+            年度做题统计
+          </div>
+        }
+        extra={
+          <div>
+            <Space>
+            </Space>
+          </div>
+        }
+      >
+        <Space style={{minWidth: '355px', marginBottom: '20px'}}>
+          <Statistic title={t['problemSolved']} value={profileCalendar.totalProblemSolved} groupSeparator style={{ marginRight: 60 }} />
+          <Statistic title={t['totalSubmission']} value={profileCalendar.totalSubmission} groupSeparator style={{ marginRight: 60 }} />
+          <Statistic title={t['activeDays']} value={profileCalendar.totalActiveDays} groupSeparator style={{ marginRight: 60 }} />
+        </Space>
+        <div id='cal-heatmap'></div>
+      </Card>
+    </>
   );
 }

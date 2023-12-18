@@ -272,6 +272,53 @@ func (r *userRepo) UpdateUserProfile(ctx context.Context, up *biz.UserProfile) (
 	return up, err
 }
 
+// getUserPastDayProblem 过去用户过去几天做题数量
+func (r *userRepo) getUserPastDayProblem(ctx context.Context, userID int, days int) int32 {
+	now := time.Now()
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	var count int64
+	r.data.db.WithContext(ctx).
+		Select("distinct(problem_id)").
+		Table("submission").
+		Where("user_id = ?", userID).
+		Where("created_at >= ?", startOfDay.AddDate(0, 0, -days)).
+		Count(&count)
+	return int32(count)
+}
+
+// getUserConsecutiveDays 用户连续做题天数
+func (r *userRepo) getUserConsecutiveDays(ctx context.Context, userID int) int32 {
+	var count int32
+	sqlQuery := `
+WITH RECURSIVE RecursiveSubmissionDates AS (
+    SELECT
+        DATE(created_at) AS submission_date,
+        1 AS continuous_days
+    FROM
+        submission
+    WHERE
+        user_id = ? AND
+        created_at >= CURRENT_DATE - INTERVAL 1 DAY
+    UNION ALL
+    SELECT
+        DATE(submission.created_at),
+        r.continuous_days + 1
+    FROM
+        submission
+    JOIN RecursiveSubmissionDates r ON DATE(submission.created_at) = r.submission_date - INTERVAL 1 DAY
+    WHERE
+        submission.user_id = ?
+)
+SELECT
+    MAX(continuous_days) AS continuous_submission_days
+FROM
+    RecursiveSubmissionDates;
+`
+	r.data.db.WithContext(ctx).
+		Raw(sqlQuery, userID, userID).Scan(&count)
+	return count
+}
+
 func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserProfileCalendarRequest) (*v1.GetUserProfileCalendarResponse, error) {
 	res := new(v1.GetUserProfileCalendarResponse)
 	var (
@@ -313,6 +360,11 @@ func (r *userRepo) GetUserProfileCalendar(ctx context.Context, req *v1.GetUserPr
 		Where("verdict = ?", biz.SubmissionVerdictAccepted).
 		Where("created_at >= ? and created_at < ?", start, end).
 		Scan(&res.TotalProblemSolved)
+
+	res.TodayProblem = r.getUserPastDayProblem(ctx, int(req.Id), 0)
+	res.Past_7DayProblem = r.getUserPastDayProblem(ctx, int(req.Id), 7)
+	res.Past_30DayProblem = r.getUserPastDayProblem(ctx, int(req.Id), 30)
+	res.ConsecutiveDay = r.getUserConsecutiveDays(ctx, int(req.Id))
 	return res, nil
 }
 
