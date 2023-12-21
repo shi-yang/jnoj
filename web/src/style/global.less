@@ -177,9 +177,14 @@ body[arco-theme='dark'] {
 }
 
 .scrollboard {
+  .header {
+    color: var(--color-text-1);
+    background-color: var(--color-bg-1) !important;
+  }
   .problem-status span {
+    border-radius: var(--border-radius-medium);
     display: block;
-    width: 100%;
+    width: 96%;
     font-size: 100%;
     font-weight: normal;
     padding: 7px 0;
@@ -189,15 +194,15 @@ body[arco-theme='dark'] {
   }
   
   .label-success {
-    background-color: #5cb85c;
+    background-color: rgb(var(--green-6));
   }
   
   .label-warning {
-    background-color: #f0ad4e;
+    background-color: rgb(var(--orange-6));
   }
   
   .label-danger {
-    background-color: #d9534f;
+    background-color: rgb(var(--red-6));
   }
   
   .user-item {
@@ -205,6 +210,7 @@ body[arco-theme='dark'] {
     height: 67px;
     width: 100%;
     table {
+      color: var(--color-text-1);
       height: 67px;
       text-align: center;
       font-size: 20px;

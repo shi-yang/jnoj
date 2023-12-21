@@ -1,7 +1,13 @@
 import { getContest, listContestAllSubmissions, listContestProblems, listContestUsers } from '@/api/contest';
 import { createRoot } from 'react-dom/client';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import Head from 'next/head';
+import { Modal, Slider, Tooltip } from '@arco-design/web-react';
+import IconButton from '@/components/Layouts/IconButton';
+import { GlobalContext } from '@/context';
+import { IconMoonFill, IconSunFill } from '@arco-design/web-react/icon';
+
 class User {
   who: string; // 用户
   userId: number; // 用户ID
@@ -337,15 +343,13 @@ class Board {
     });
   }
   moveUser(toPos: number): void {
-    const headerHeight = 44;
-    const userHeight = 68;
     for (let i = 0; i < this.userCount; i++) {
       const user = this.userNextSequence[i].userId;
       const userElement = document.querySelector(`div[data-user-id="${user}"]`);
       if (!userElement) {
         continue;
       }
-      //延时2.2s后更新位置，为了等待题目状态更新完成
+      // 延时2.2s后更新位置，为了等待题目状态更新完成
       if (toPos != -1) {
         animateElement(userElement, { margin: 0 }, 2200, () => {
           animateElement(userElement, { top: i * userHeight + headerHeight }, 1000, () => {
@@ -365,7 +369,6 @@ class Board {
       const user = this.updateOneUser();
       if (user) {
         const toPos = this.updateUserSequence();
-        console.log(toPos);
         this.updateUserStatus(user);
         this.moveUser(toPos);
       }
@@ -377,7 +380,7 @@ class Board {
     return (
       <div className='scrollboard'>
         <div id="timer"></div>
-        <table className='w-full h-[44px] fixed bg-white z-50'>
+        <table className='w-full h-[44px] fixed z-50 header'>
           <tbody>
             <tr>
               <th style={{ width: rankThWidth + '%' }}>Rank</th>
@@ -404,7 +407,9 @@ class Board {
                 <tbody>
                   <tr>
                     <th style={{ width: rankThWidth + '%' }} className='rank'>{rank}</th>
-                    <th style={{ width: nameThWidth + '%' }} className='user'>{user.who}</th>
+                    <th style={{ width: nameThWidth + '%' }} className='user'>
+                      {user.who}
+                    </th>
                     <th style={{ width: solvedThWidth + '%' }} className='solved'>{user.solved}</th>
                     <th style={{ width: penaltyThWidth + '%' }} className='penalty'>{user.penalty / 1000}</th>
                     {this.problemList.map((problem, problemKey) => {
@@ -433,21 +438,15 @@ class Board {
             </div>
           );
         })}
-        {/* <div id='user-void' className='user-item' style={{top: this.userCount * userHeight + headerHeight}}>
+        <div id='user-void' className='user-item' style={{top: this.userCount * userHeight + headerHeight, margin: 0}}>
           <table className='w-full'>
             <tbody>
               <tr>
-                <th style={{ width: rankThWidth + '%' }} className='rank'>Rank</th>
-                <th style={{ width: nameThWidth + '%' }} className='user'>Name</th>
-                <th style={{ width: solvedThWidth + '%' }} className='solved'>Solved</th>
-                <th style={{ width: penaltyThWidth + '%' }} className='penalty'>Penalty</th>
-                {this.problemList.map((_, index) => {
-                  return (<th key={index} style={{ width: problemThWidth + '%' }}></th>);
-                })}
+                <th></th>
               </tr>
             </tbody>
           </table>
-        </div> */}
+        </div>
       </div>
     );
   }
@@ -457,14 +456,18 @@ function Page() {
   const router = useRouter();
   const [contest, setContest] = useState({} as any);
   const [board, setBoard] = useState(null as any);
-  const [problems, setProblems] = useState([] as any);
   const [isListen, setIsListen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [speed, setSpeed] = useState(1000);
+  const timerActive = useRef(false);
+  const { theme, setTheme } = useContext(GlobalContext);
+  let timerId = null;
   async function  fetchData() {
     const c = await getContest(router.query.id);
+    setContest(c.data);
     const submissionList = await listContestAllSubmissions(router.query.id);
     const u = await listContestUsers(router.query.id);
     const p = await listContestProblems(router.query.id);
-    setProblems(p.data.data);
     const submissionData:Submission[] = [];
     for (const submission of submissionList.data.data) {
       submissionData.push({
@@ -481,6 +484,13 @@ function Page() {
     }
     setBoard(new Board(p.data.data.length, users, submissionData, new Date(c.data.startTime), new Date(c.data.frozenTime)));
   }
+
+  const autoScrollboard = async () => {
+    board.keydown();
+    if (timerActive.current) {
+        timerId = setTimeout(autoScrollboard, speed);
+    }
+  };
   useEffect(() => {
     if (isListen || !board) {
       return;
@@ -490,13 +500,65 @@ function Page() {
       if (event.key === ' ' || event.key === 'Enter') {
         board.keydown();
       }
+      if (event.key === 'a' || event.key === 'A') {
+        timerActive.current = true;
+        if (!timerId) {
+          autoScrollboard();
+        }
+      }
+      if (event.key === 's' || event.key === 'S') {
+        timerActive.current = false;
+        if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+        }
+      }
     });
+      // 清理函数，在组件卸载时清除定时器
+      return () => {
+        if (timerId) {
+          clearTimeout(timerId);
+        }
+      };
   }, [board]);
   useEffect(() => {
     fetchData();
   }, []);
   return (
     <div>
+      <Head>
+        <title>{contest.name}</title>
+      </Head>
+      <Modal
+        title='滚榜说明'
+        visible={visible}
+        autoFocus={false}
+        onCancel={() => {
+          setVisible(false);
+        }}
+        focusLock={true}
+        footer={null}
+      >
+        <div>关闭此说明对话框后：</div>
+        <div>1. 按下A键（Auto）自动滚榜，按下S键（Stop）停止自动滚榜</div>
+        <div>2. 按下回车键手动滚榜，按一次跳一次</div>
+        <div>3. 滚榜过程中请勿刷新此页面，刷新页面会需要重新滚榜</div>
+        <div>4. 自动滚榜速度设置（单位毫秒）：
+          <Slider
+            value={speed}
+            min={500}
+            max={3000}
+            onChange={(val) => setSpeed(Number(val))}
+            style={{ width: 200 }}
+          />
+        </div>
+        <div>5. 主题模式（如果投屏到建议使用暗黑模式）：
+          <IconButton
+            icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          />
+        </div>
+      </Modal>
       <main>
         <div className='table-header'>
           {board && board.showInitBoard()}
