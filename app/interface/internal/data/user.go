@@ -290,32 +290,31 @@ func (r *userRepo) getUserPastDayProblem(ctx context.Context, userID int, days i
 func (r *userRepo) getUserConsecutiveDays(ctx context.Context, userID int) int32 {
 	var count int32
 	sqlQuery := `
-WITH RECURSIVE RecursiveSubmissionDates AS (
-    SELECT
-        DATE(created_at) AS submission_date,
-        1 AS continuous_days
-    FROM
-        submission
-    WHERE
-        user_id = ? AND
-        created_at >= CURRENT_DATE - INTERVAL 1 DAY
-    UNION ALL
-    SELECT
-        DATE(submission.created_at),
-        r.continuous_days + 1
-    FROM
-        submission
-    JOIN RecursiveSubmissionDates r ON DATE(submission.created_at) = r.submission_date - INTERVAL 1 DAY
-    WHERE
-        submission.user_id = ?
-)
-SELECT
-    MAX(continuous_days) AS continuous_submission_days
-FROM
-    RecursiveSubmissionDates;
+	SELECT
+		COUNT(*) AS num
+	FROM (
+		SELECT
+			DATE_SUB(submission_data, INTERVAL row_num DAY) AS new_date
+		FROM (
+			SELECT
+				DATE(created_at) AS submission_data,
+				ROW_NUMBER() OVER (ORDER BY DATE(created_at)) AS row_num
+			FROM
+				submission
+			WHERE
+				user_id = ?
+			GROUP BY
+				DATE(created_at)
+		) AS sub
+	) AS sub2
+	GROUP BY
+		new_date
+	ORDER BY
+		new_date DESC
+	LIMIT 1;
 `
 	r.data.db.WithContext(ctx).
-		Raw(sqlQuery, userID, userID).Scan(&count)
+		Raw(sqlQuery, userID).Scan(&count)
 	return count
 }
 
