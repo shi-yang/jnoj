@@ -478,12 +478,17 @@ function Page() {
     const u = await listContestUsers(router.query.id);
     const p = await listContestProblems(router.query.id);
     const submissionData:Submission[] = [];
+    const endTime = new Date(c.data.endTime);
     for (const submission of submissionList.data.data) {
+      const submitTime = new Date(submission.createdAt);
+      if (submitTime >= endTime) {
+        continue;
+      }
       submissionData.push({
         submitId: submission.id,
         problemId: submission.problem,
         userId: submission.userId,
-        submitTime: new Date(submission.createdAt),
+        submitTime: submitTime,
         verdict: submission.status,
       } as Submission);
     }
