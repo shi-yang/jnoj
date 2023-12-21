@@ -457,7 +457,7 @@ function Page() {
   const [contest, setContest] = useState({} as any);
   const [board, setBoard] = useState(null as any);
   const [isListen, setIsListen] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [speed, setSpeed] = useState(1000);
   const timerActive = useRef(false);
   const { theme, setTheme } = useContext(GlobalContext);
@@ -540,8 +540,8 @@ function Page() {
         footer={null}
       >
         <div>关闭此说明对话框后：</div>
-        <div>1. 按下A键（Auto）自动滚榜，按下S键（Stop）停止自动滚榜</div>
-        <div>2. 按下回车键手动滚榜，按一次跳一次</div>
+        <div>1. 自动滚榜：按下A键（Auto）自动滚榜，按下S键（Stop）停止自动滚榜</div>
+        <div>2. 手动滚榜：按下回车键手动滚榜，按一次跳一次</div>
         <div>3. 滚榜过程中请勿刷新此页面，刷新页面会需要重新滚榜</div>
         <div>4. 自动滚榜速度设置（单位毫秒）：
           <Slider
@@ -552,7 +552,7 @@ function Page() {
             style={{ width: 200 }}
           />
         </div>
-        <div>5. 主题模式（如果投屏到建议使用暗黑模式）：
+        <div>5. 主题模式（如果投到大屏展示建议切换至暗黑模式，效果更佳）：
           <IconButton
             icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
