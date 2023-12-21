@@ -37,7 +37,7 @@ class User {
     this.submitProblemList = {};
   }
   init(startTime: Date, frozenTime: Date): void {
-    this.submitList.sort((a, b) => a.submitId - b.submitId);
+    this.submitList.sort((a, b) => a.submitTime.getTime() - b.submitTime.getTime());
     for (const submission of this.submitList) {
       let p = this.submitProblemList[submission.problemId];
       if (!p) {
@@ -52,16 +52,20 @@ class User {
       }
       if (p.isAccepted)
         continue;
+      // 封榜后的提交设置isUnkonwn为true
       if (submission.submitTime.getTime() > frozenTime.getTime()) {
         p.isUnknown = true;
         this.unkonwnProblemIdMap[p.problemId] = true;
       }
-      p.submitCount++;
+      // 编译错误不算提交
+      if (submission.verdict != 'COMPILER_ERROR') {
+        p.submitCount++;
+      }
       p.isAccepted = (submission.verdict === 'CORRECT');
       if (p.isAccepted) {
         p.acceptedTime = submission.submitTime.getTime() - startTime.getTime();
         if (p.acceptedTime < frozenTime.getTime() - startTime.getTime()) {
-          p.penalty += p.acceptedTime + (p.submitCount - 1) * 20 * 60 * 1000;
+          p.penalty += Math.floor(p.acceptedTime / 60000) + (p.submitCount - 1) * 20;
           this.solved++;
           this.penalty += p.penalty;
         }
@@ -79,7 +83,7 @@ class User {
         p.isUnknown = false;
         delete this.unkonwnProblemIdMap[p.problemId];
         if (p.isAccepted) {
-          p.penalty += p.acceptedTime + (p.submitCount - 1) * 20 * 60 * 1000;
+          p.penalty += Math.floor(p.acceptedTime / 60000) + (p.submitCount - 1) * 20;
           this.solved++;
           this.penalty += p.penalty;
           return true;
@@ -337,7 +341,7 @@ class Board {
         if (userElement) {
           userElement.querySelector('.rank').innerHTML = rankValue.toString();
           userElement.querySelector('.solved').innerHTML = user.solved.toString();
-          userElement.querySelector('.penalty').innerHTML = String(Number(user.penalty / 1000 / 60).toFixed(0));
+          userElement.querySelector('.penalty').innerHTML = user.penalty.toFixed(0).toString();
         }
       }
     });
@@ -371,6 +375,11 @@ class Board {
         const toPos = this.updateUserSequence();
         this.updateUserStatus(user);
         this.moveUser(toPos);
+      } else {
+        // 无队伍可更新时取消高亮边框
+        document.querySelectorAll('.user-item.hold').forEach(function(element) {
+          element.classList.remove('hold');
+        });
       }
     }
   }
@@ -411,7 +420,7 @@ class Board {
                       {user.who}
                     </th>
                     <th style={{ width: solvedThWidth + '%' }} className='solved'>{user.solved}</th>
-                    <th style={{ width: penaltyThWidth + '%' }} className='penalty'>{user.penalty / 1000}</th>
+                    <th style={{ width: penaltyThWidth + '%' }} className='penalty'>{user.penalty.toFixed(0)}</th>
                     {this.problemList.map((problem, problemKey) => {
                       const p = user.submitProblemList[problem];
                       return (
@@ -482,7 +491,8 @@ function Page() {
     for (const user of u.data.data) {
       users[user.userId] = new User(user.name, user.userId, user.role === 'ROLE_VIRTUAL_PLAYER');
     }
-    setBoard(new Board(p.data.data.length, users, submissionData, new Date(c.data.startTime), new Date(c.data.frozenTime)));
+    const frozenTime = c.data.frozenTime ? new Date(c.data.frozenTime) : new Date();
+    setBoard(new Board(p.data.data.length, users, submissionData, new Date(c.data.startTime), frozenTime));
   }
 
   const autoScrollboard = async () => {
@@ -514,12 +524,12 @@ function Page() {
         }
       }
     });
-      // 清理函数，在组件卸载时清除定时器
-      return () => {
-        if (timerId) {
-          clearTimeout(timerId);
-        }
-      };
+    // 清理函数，在组件卸载时清除定时器
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
   }, [board]);
   useEffect(() => {
     fetchData();

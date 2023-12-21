@@ -487,6 +487,7 @@ message ListContestAllSubmissionsResponse {
             PENDING = 0;
             INCORRECT = 1;
             CORRECT = 2;
+            COMPILER_ERROR = 3;
         };
         Status status = 3;
         int32 user_id = 4;

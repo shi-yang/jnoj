@@ -527,7 +527,7 @@ func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.
 	if err != nil {
 		return nil, v1.ErrorContestNotFound(err.Error())
 	}
-	if !contest.HasPermission(ctx, biz.ContestPermissionView) {
+	if !contest.HasPermission(ctx, biz.ContestPermissionUpdate) {
 		return nil, v1.ErrorForbidden("permission denied")
 	}
 	submissions := s.uc.ListContestAllSubmissions(ctx, contest)
@@ -545,6 +545,8 @@ func (s *ContestService) ListContestAllSubmissions(ctx context.Context, req *v1.
 			s.Status = v1.ListContestAllSubmissionsResponse_Submission_PENDING
 		case biz.SubmissionVerdictAccepted:
 			s.Status = v1.ListContestAllSubmissionsResponse_Submission_CORRECT
+		case biz.SubmissionVerdictCompileError:
+			s.Status = v1.ListContestAllSubmissionsResponse_Submission_COMPILER_ERROR
 		default:
 			s.Status = v1.ListContestAllSubmissionsResponse_Submission_INCORRECT
 		}

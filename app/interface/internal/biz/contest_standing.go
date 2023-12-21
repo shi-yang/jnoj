@@ -117,7 +117,7 @@ func (c *ContestStandingICPC) Sort(contest *Contest, users []*ContestUser, probl
 			continue
 		}
 		// 存在封榜
-		if contest.FrozenTime != nil && submission.CreatedAt.After(*contest.FrozenTime) {
+		if contest.FrozenTime != nil && (submission.CreatedAt.After(*contest.FrozenTime) || userProblemStatus.Status == SubmissionVerdictPending) {
 			userProblemStatus.Status = SubmissionVerdictPending
 			userMap[uid].Problem[problemNumber] = userProblemStatus
 			continue
