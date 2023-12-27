@@ -22,11 +22,16 @@ const LayoutHeader:React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedKeys, setSelectedKeys] = useState([]);
   const { lang, setLang, theme, setTheme } = useContext(GlobalContext);
 
   function onMainClickMenuItem(key) {
     router.push(key);
   }
+
+  useEffect(() => {
+    setSelectedKeys([router.pathname]);
+  }, [router]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -36,7 +41,12 @@ const LayoutHeader:React.FC = () => {
   return (
     <div className={styles.navbar}>
       <div className={styles.left}>
-        <Menu className={styles['arco-menu']} mode='horizontal' onClickMenuItem={onMainClickMenuItem}>
+        <Menu
+          className={styles['arco-menu']}
+          mode='horizontal'
+          onClickMenuItem={onMainClickMenuItem}
+          selectedKeys={selectedKeys}
+        >
           <MenuItem
             key='logo'
             disabled
