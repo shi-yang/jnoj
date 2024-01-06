@@ -52,11 +52,19 @@ func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v
 }
 
 // GetCaptcha 获取验证码
-func (s *UserService) GetCaptcha(ctx context.Context, req *v1.GetCaptchaRequest) (*emptypb.Empty, error) {
-	if err := s.uc.GetCaptcha(ctx, req.GetEmail(), req.GetPhone()); err != nil {
+func (s *UserService) GetCaptcha(ctx context.Context, req *v1.GetCaptchaRequest) (*v1.GetCaptchaResponse, error) {
+	return s.uc.GetCaptcha(ctx, req.GetUsername(), req.GetEmail(), req.GetPhone())
+}
+
+// VerifyCaptcha 验证验证码
+func (s *UserService) VerifyCaptcha(ctx context.Context, req *v1.VerifyCaptchaRequest) (*v1.VerifyCaptchaResponse, error) {
+	ok, err := s.uc.VerifyCaptcha(ctx, req.CaptchaKey, req.Dots)
+	if err != nil {
 		return nil, err
 	}
-	return &emptypb.Empty{}, nil
+	return &v1.VerifyCaptchaResponse{
+		Ok: ok,
+	}, nil
 }
 
 // GetUserInfo 获取登录用户信息

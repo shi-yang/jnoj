@@ -233,3 +233,341 @@ body[arco-theme='dark'] {
     -webkit-box-shadow: 0 0 3px #03A9F4, 0px 0 30px #00BCD4;
   }
 }
+
+.wg-cap-wrap{
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.wg-cap-wrap__header{
+  height: 50px;
+  width: 100%;
+  font-size: 15px;
+
+  display:-webkit-box;
+  display:-webkit-flex;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-align:center;
+  -webkit-align-items:center;
+  -ms-flex-align:center;
+  align-items: center;
+}
+.wg-cap-wrap__header span{
+  padding-right: 5px;
+}
+.wg-cap-wrap__header span em{
+  padding: 0 3px;
+  font-weight: bold;
+  color: #3e7cff;
+  font-style: normal;
+}
+.wg-cap-wrap__header .wg-cap-wrap__image{
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+  text-align: center;
+  line-height: 1;
+}
+.wg-cap-wrap__header .wg-cap-wrap__thumb{
+  min-width: 150px;
+  text-align: center;
+  line-height: 1;
+  max-height: 100%;
+}
+.wg-cap-wrap__header .wg-cap-wrap__thumb.wg-cap-wrap__hidden{
+  display: none;
+}
+
+.wg-cap-wrap__body{
+  position: relative;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  background: #34383e;
+  margin: auto;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.wg-cap-wrap__body .wg-cap-wrap__picture{
+  position: relative;
+  z-index: 10;
+  width: 100%;
+
+  /*height: 100%;*/
+  /*max-width: 100%;*/
+  /*max-height: 100%;*/
+  /*object-fit: cover;*/
+  /*text-align: center;*/
+}
+.wg-cap-wrap__body .wg-cap-wrap__picture.wg-cap-wrap__hidden{
+  display: none;
+}
+.wg-cap-wrap__body .wg-cap-wrap__loading{
+  position: absolute;
+  z-index: 9;
+  top: 50%;
+  left: 50%;
+  width: 68px;
+  height: 68px;
+  margin-left: -34px;
+  margin-top: -34px;
+  line-height: 68px;
+  text-align: center;
+}
+.wg-cap-wrap__body .wg-cap-wrap__dot{
+  position: absolute;
+  z-index: 10;
+  width: 22px;
+  height: 22px;
+  color: #cedffe;
+  background: #3e7cff;
+  border: 2px solid #f7f9fb;
+  line-height: 20px;
+  text-align: center;
+  -webkit-border-radius: 22px;
+  -moz-border-radius: 22px;
+  border-radius: 22px;
+  cursor: default;
+}
+
+.wg-cap-wrap__footer {
+  width: 100%;
+  height: 40px;
+  color: #34383e;
+  display:-webkit-box;
+  display:-webkit-flex;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-align:center;
+  -webkit-align-items:center;
+  -ms-flex-align:center;
+  align-items: center;
+  padding-top: 15px;
+}
+.wg-cap-wrap__footer .wg-cap-wrap__ico{
+  flex: 1;
+}
+.wg-cap-wrap__footer .wg-cap-wrap__ico img{
+  width: 24px;
+  height: 24px;
+  color: #34383e;
+  margin: 0 5px;
+  cursor: pointer;
+}
+.wg-cap-wrap__footer .wg-cap-wrap__btn{
+  width: 120px;
+  height: 40px;
+}
+.wg-cap-wrap__footer .wg-cap-wrap__btn button{
+  width: 100%;
+  height: 40px;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 9px 15px;
+  font-size: 15px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #fff;
+  background-color: #409eff;
+  border: 1px solid #409eff;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: .1s;
+  font-weight: 500;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+.wg-cap-wrap__footer .wg-cap-wrap__btn button:hover {
+  background: #66b1ff;
+  border-color: #66b1ff;
+  color: #fff;
+}
+
+.wg-cap-btn {
+  width: 100%;
+  height: 48px;
+}
+.wg-cap-btn .wg-cap-btn__inner{
+  width: 100%;
+  height: 48px;
+  position: relative;
+  letter-spacing: 1px;
+}
+.wg-cap-btn .wg-cap-btn__inner > span{
+  display: block;
+}
+.wg-cap-btn .wg-cap-state__default,.wg-cap-btn .wg-cap-state__check, .wg-cap-btn .wg-cap-state__error, .wg-cap-btn .wg-cap-state__success, .wg-cap-btn .wg-cap-state__over{
+  position: absolute;
+  width: 100%;
+  height: 48px;
+  font-size: 13px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: .1s;
+  font-weight: 500;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+
+  display:-webkit-box;
+  display:-webkit-flex;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-align:center;
+  -webkit-align-items:center;
+  -ms-flex-align:center;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+
+  visibility: hidden;
+}
+.wg-cap-btn .wg-cap-state__default{
+  color: #3e7cff;
+  border: 1px solid #50a1ff;
+  background: #ecf5ff;
+  box-shadow: 0 0 20px rgba(62, 124, 255, 0.1);
+  -webkit-box-shadow: 0 0 20px rgba(62, 124, 255, 0.1);
+  -moz-box-shadow: 0 0 20px rgba(62, 124, 255, 0.1);
+}
+.wg-cap-btn .wg-cap-state__check{
+  cursor: default;
+  color: #ffa000;
+  background: #fdf6ec;
+  border: 1px solid #ffbe09;
+  pointer-events: none;
+}
+.wg-cap-btn .wg-cap-state__error{
+  color: #ed4630;
+  background: #fef0f0;
+  border: 1px solid #ff5a34;
+}
+.wg-cap-btn .wg-cap-state__over{
+  color: #ed4630;
+  background: #fef0f0;
+  border: 1px solid #ff5a34;
+}
+.wg-cap-btn .wg-cap-state__success{
+  color: #5eaa2f;
+  background: #f0f9eb;
+  border: 1px solid #8bc640;
+  pointer-events: none;
+}
+.wg-cap-btn .wg-cap-active__default .wg-cap-state__default, .wg-cap-btn .wg-cap-active__error .wg-cap-state__error,.wg-cap-btn .wg-cap-active__over .wg-cap-state__over ,.wg-cap-btn .wg-cap-active__success .wg-cap-state__success,.wg-cap-btn .wg-cap-active__check .wg-cap-state__check {
+  visibility: visible;
+}
+.wg-cap-btn .wg-cap-state__inner{
+  display:-webkit-box;
+  display:-webkit-flex;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-align:center;
+  -webkit-align-items:center;
+  -ms-flex-align:center;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+}
+.wg-cap-btn .wg-cap-state__inner em{
+  padding-left: 5px;
+  color: #3e7cff;
+  font-style: normal;
+}
+.wg-cap-btn .wg-cap-btn__inner .wg-cap-btn__ico{
+  position: relative;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  font-size: 14px;
+  display: inline-block;
+}
+.wg-cap-btn .wg-cap-btn__inner .wg-cap-btn__ico img{
+  width: 24px;
+  height: 24px;
+  float: left;
+  position: relative;
+  z-index: 10;
+}
+@keyframes ripple {
+  0% { opacity: 0; }
+  5% { opacity: 0.05; }
+  20% { opacity: 0.35; }
+  65% { opacity: 0.01;  }
+  100% {
+      transform: scaleX(2) scaleY(2);
+      opacity: 0;
+  }
+}
+@-webkit-keyframes ripple {
+  0% { opacity: 0; }
+  5% { opacity: 0.05; }
+  20% { opacity: 0.35; }
+  65% { opacity: 0.01;  }
+  100% {
+      transform: scaleX(2) scaleY(2);
+      opacity: 0;
+  }
+}
+.wg-cap-btn .wg-cap-btn__inner .wg-cap-btn__verify::after {
+  background: #409eff;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+
+  animation: ripple 1.3s infinite;
+  -moz-animation: ripple 1.3s infinite;
+  -webkit-animation: ripple 1.3s infinite;
+  animation-delay: 2s;
+  -moz-animation-delay: 2s;
+  -webkit-animation-delay: 2s;
+}
+
+.wg-cap-tip{
+  padding: 50px 20px 100px;
+  font-size: 13px;
+  color: #76839b;
+  text-align: center;
+  line-height: 180%;
+  width: 100%;
+  max-width: 680px;
+}

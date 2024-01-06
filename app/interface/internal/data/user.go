@@ -554,8 +554,8 @@ func (r *userRepo) GetUserProfileGroupProblemSolved(ctx context.Context, uid int
 	return res, nil
 }
 
-// GetCaptcha 获取验证码
-func (r *userRepo) GetCaptcha(ctx context.Context, key string) (string, error) {
+// GetCache 获取缓存
+func (r *userRepo) GetCache(ctx context.Context, key string) (string, error) {
 	val, err := r.data.redisdb.Get(ctx, key).Result()
 	if err != nil {
 		return "", err
@@ -563,9 +563,14 @@ func (r *userRepo) GetCaptcha(ctx context.Context, key string) (string, error) {
 	return val, nil
 }
 
-// SaveCaptcha 保存验证码，5分钟
-func (r *userRepo) SaveCaptcha(ctx context.Context, key string, value string) error {
-	return r.data.redisdb.Set(ctx, key, value, time.Minute*5).Err()
+// AddCache 添加缓存
+func (r *userRepo) AddCache(ctx context.Context, key string, value string, ttl time.Duration) error {
+	return r.data.redisdb.Set(ctx, key, value, ttl).Err()
+}
+
+// DelCache 删除缓存
+func (r *userRepo) DelCache(ctx context.Context, key string) error {
+	return r.data.redisdb.Del(ctx, key).Err()
 }
 
 // GetUserProfileCount 用户主页-统计

@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	v1 "jnoj/api/interface/v1"
@@ -11,11 +12,13 @@ import (
 	"jnoj/pkg/password"
 	"math/rand"
 	"net/smtp"
+	"strconv"
+	"strings"
 	"time"
 
-	"github.com/jordan-wright/email"
-
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/jordan-wright/email"
+	"github.com/wenlng/go-captcha/captcha"
 )
 
 // User is a User model.
@@ -78,8 +81,9 @@ type UserRepo interface {
 	GetUserProfileCount(ctx context.Context, uid int) (*v1.GetUserProfileCountResponse, error)
 	ListUserProfileUserBadges(ctx context.Context, uid int) (*v1.ListUserProfileUserBadgesResponse, error)
 
-	GetCaptcha(ctx context.Context, key string) (string, error)
-	SaveCaptcha(ctx context.Context, key string, value string) error
+	AddCache(ctx context.Context, key string, value string, ttl time.Duration) error
+	DelCache(ctx context.Context, key string) error
+	GetCache(ctx context.Context, key string) (string, error)
 }
 
 // UserUsecase is a User usecase.
@@ -99,6 +103,11 @@ func NewUserUsecase(repo UserRepo, c *conf.Service, logger log.Logger) *UserUsec
 }
 
 func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string, error) {
+	uc.log.WithContext(ctx).Infof("Login: %v", req.Username)
+	if v, err := uc.repo.GetCache(ctx, req.CaptchaKey); err != nil || v != "ok" {
+		return "", v1.ErrorCaptchaError(err.Error())
+	}
+	uc.repo.DelCache(ctx, req.CaptchaKey)
 	user, err := uc.repo.GetUser(ctx, &User{Username: req.Username})
 	if err != nil {
 		return "", v1.ErrorInvalidUsernameOrPassword(err.Error())
@@ -129,7 +138,7 @@ func (uc *UserUsecase) Register(ctx context.Context, u *User, captcha string) (i
 			return 0, "", fmt.Errorf("phone exist")
 		}
 	}
-	if err := uc.VerifyCaptcha(ctx, u.Email, u.Phone, captcha); err != nil {
+	if err := uc.verifyOTP(ctx, u.Email, u.Phone, captcha); err != nil {
 		return 0, "", v1.ErrorCaptchaError(err.Error())
 	}
 	u.Password, _ = password.GeneratePasswordHash(u.Password)
@@ -142,20 +151,47 @@ func (uc *UserUsecase) Register(ctx context.Context, u *User, captcha string) (i
 }
 
 // GetCaptcha 获取验证码
-func (uc *UserUsecase) GetCaptcha(ctx context.Context, email, phone string) (err error) {
+func (uc *UserUsecase) GetCaptcha(ctx context.Context, username, email, phone string) (res *v1.GetCaptchaResponse, err error) {
 	var key string
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
-	code := fmt.Sprintf("%06v", rnd.Int31n(1000000))
-	uc.log.Info("captcha:", code)
-	if email != "" {
+	var code string
+	if username != "" {
+		capt := captcha.GetCaptcha()
+		dots, b64, tb64, key1, err := capt.Generate()
+		if err != nil {
+			return nil, err
+		}
+		key = key1
+		res = &v1.GetCaptchaResponse{
+			CaptchaKey:  key,
+			ImageBase64: b64,
+			ThumbBase64: tb64,
+		}
+		value, _ := json.Marshal(dots)
+		code = string(value)
+	} else if email != "" {
+		code = uc.generateOTP()
+		uc.log.Info("captcha:", code)
 		key = fmt.Sprintf("captcha:email:%s", email)
-		err = uc.sendEmailCaptcha(ctx, email, code)
+		if err = uc.sendEmailCaptcha(ctx, email, code); err != nil {
+			return nil, err
+		}
 	} else {
+		code = uc.generateOTP()
+		uc.log.Info("captcha:", code)
 		key = fmt.Sprintf("captcha:phone:%s", phone)
-		err = uc.sendPhoneCaptcha(ctx, phone, code)
+		if err = uc.sendPhoneCaptcha(ctx, phone, code); err != nil {
+			return nil, err
+		}
 	}
-	uc.repo.SaveCaptcha(ctx, key, code)
-	return err
+	if err := uc.repo.AddCache(ctx, key, code, 5*time.Minute); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (uc *UserUsecase) generateOTP() string {
+	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	return fmt.Sprintf("%06v", rnd.Int31n(1000000))
 }
 
 func (uc *UserUsecase) sendEmailCaptcha(ctx context.Context, emailAddress, code string) error {
@@ -184,8 +220,44 @@ func (uc *UserUsecase) sendPhoneCaptcha(ctx context.Context, phone, code string)
 	return errors.New("not support")
 }
 
-// VerifyCaptcha 验证验证码
-func (uc *UserUsecase) VerifyCaptcha(ctx context.Context, email, phone, captcha string) error {
+// VerifyCaptcha 验证图形验证码
+func (uc *UserUsecase) VerifyCaptcha(ctx context.Context, key, dots string) (bool, error) {
+	captchaData, err := uc.repo.GetCache(ctx, key)
+	if err != nil {
+		return false, err
+	}
+	src := strings.Split(dots, ",")
+	var dct map[int]captcha.CharDot
+	if err := json.Unmarshal([]byte(captchaData), &dct); err != nil {
+		return false, err
+	}
+	chkRet := false
+	if (len(dct) * 2) == len(src) {
+		for i, dot := range dct {
+			j := i * 2
+			k := i*2 + 1
+			sx, _ := strconv.ParseFloat(fmt.Sprintf("%v", src[j]), 64)
+			sy, _ := strconv.ParseFloat(fmt.Sprintf("%v", src[k]), 64)
+			// 检测点位置
+			// chkRet = captcha.CheckPointDist(int64(sx), int64(sy), int64(dot.Dx), int64(dot.Dy), int64(dot.Width), int64(dot.Height))
+			// 校验点的位置,在原有的区域上添加额外边距进行扩张计算区域,不推荐设置过大的padding
+			// 例如：文本的宽和高为30，校验范围x为10-40，y为15-45，此时扩充5像素后校验范围宽和高为40，则校验范围x为5-45，位置y为10-50
+			chkRet = captcha.CheckPointDistWithPadding(int64(sx), int64(sy), int64(dot.Dx), int64(dot.Dy), int64(dot.Width), int64(dot.Height), 5)
+			if !chkRet {
+				break
+			}
+		}
+	}
+	if chkRet {
+		if err := uc.repo.AddCache(ctx, key, "ok", 5*time.Minute); err != nil {
+			return false, err
+		}
+	}
+	return chkRet, nil
+}
+
+// verifyOTP 验证OTP验证码
+func (uc *UserUsecase) verifyOTP(ctx context.Context, email, phone, captcha string) error {
 	var key string
 	if email != "" {
 		key = fmt.Sprintf("captcha:email:%s", email)
@@ -193,7 +265,7 @@ func (uc *UserUsecase) VerifyCaptcha(ctx context.Context, email, phone, captcha 
 		key = fmt.Sprintf("captcha:phone:%s", phone)
 	}
 	uc.log.Info(key)
-	res, err := uc.repo.GetCaptcha(ctx, key)
+	res, err := uc.repo.GetCache(ctx, key)
 	if err != nil {
 		return err
 	}

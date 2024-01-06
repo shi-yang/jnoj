@@ -3,7 +3,7 @@ import axios from '@/utils/request';
 export interface LoginRequest {
   phone: string;
   password: string;
-  captcha: string;
+  captchaKey: string;
 }
 
 export interface LoginResponse {
@@ -46,9 +46,14 @@ export function getUserProfile(id) {
 interface getCaptchaRequest {
   phone?: string;
   email?: string;
+  username?: string;
 }
 export function getCaptcha(params:getCaptchaRequest) {
   return axios.get(`/captcha`, { params });
+}
+
+export function verifyCaptcha(data) {
+  return axios.post(`/captcha`, data);
 }
 
 export function getUserProfileCalendar(id, params = undefined) {

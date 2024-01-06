@@ -26,9 +26,16 @@ service UserService {
         };
     };
     // 获取验证码
-    rpc GetCaptcha (GetCaptchaRequest) returns (google.protobuf.Empty) {
+    rpc GetCaptcha (GetCaptchaRequest) returns (GetCaptchaResponse) {
         option (google.api.http) = {
             get: "/captcha"
+        };
+    };
+    // 验证验证码
+    rpc VerifyCaptcha (VerifyCaptchaRequest) returns (VerifyCaptchaResponse) {
+        option (google.api.http) = {
+            post: "/captcha"
+            body: "*"
         };
     };
     // 获取登录用户信息
@@ -104,6 +111,7 @@ service UserService {
 message LoginRequest {
     string username = 1;
     string password = 2;
+    string captcha_key = 3;
 }
 
 message LoginResponse {
@@ -147,7 +155,24 @@ message GetCaptchaRequest {
         string phone = 1 [(validate.rules).string = { pattern: "^1[3456789][0-9]{9}$" }];
         // 邮箱
         string email = 2 [(validate.rules).string.email = true];
+        // 用户名
+        string username = 3;
     }
+}
+
+message GetCaptchaResponse {
+    string image_base64 = 1;
+    string thumb_base64 = 2;
+    string captcha_key = 3;
+}
+
+message VerifyCaptchaRequest {
+    string captcha_key = 1;
+    string dots = 2;
+}
+
+message VerifyCaptchaResponse {
+    bool ok = 1;
 }
 
 message GetUserInfoResponse {

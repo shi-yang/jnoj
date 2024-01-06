@@ -37,9 +37,10 @@ const OperationUserServiceRegister = "/jnoj.interface.v1.user.UserService/Regist
 const OperationUserServiceUpdateUser = "/jnoj.interface.v1.user.UserService/UpdateUser"
 const OperationUserServiceUpdateUserAvatar = "/jnoj.interface.v1.user.UserService/UpdateUserAvatar"
 const OperationUserServiceUpdateUserPassword = "/jnoj.interface.v1.user.UserService/UpdateUserPassword"
+const OperationUserServiceVerifyCaptcha = "/jnoj.interface.v1.user.UserService/VerifyCaptcha"
 
 type UserServiceHTTPServer interface {
-	GetCaptcha(context.Context, *GetCaptchaRequest) (*emptypb.Empty, error)
+	GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetUserInfo(context.Context, *emptypb.Empty) (*GetUserInfoResponse, error)
 	GetUserProfile(context.Context, *GetUserProfileRequest) (*UserProfile, error)
@@ -53,6 +54,7 @@ type UserServiceHTTPServer interface {
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
 	UpdateUserAvatar(context.Context, *UpdateUserAvatarRequest) (*UpdateUserAvatarResponse, error)
 	UpdateUserPassword(context.Context, *UpdateUserPasswordRequest) (*emptypb.Empty, error)
+	VerifyCaptcha(context.Context, *VerifyCaptchaRequest) (*VerifyCaptchaResponse, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
@@ -67,6 +69,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/login", _UserService_Login0_HTTP_Handler(srv))
 	r.POST("/register", _UserService_Register0_HTTP_Handler(srv))
 	r.GET("/captcha", _UserService_GetCaptcha0_HTTP_Handler(srv))
+	r.POST("/captcha", _UserService_VerifyCaptcha0_HTTP_Handler(srv))
 	r.GET("/user/info", _UserService_GetUserInfo0_HTTP_Handler(srv))
 	r.GET("/users", _UserService_ListUsers0_HTTP_Handler(srv))
 	r.GET("/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
@@ -132,7 +135,26 @@ func _UserService_GetCaptcha0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 		if err != nil {
 			return err
 		}
-		reply := out.(*emptypb.Empty)
+		reply := out.(*GetCaptchaResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_VerifyCaptcha0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in VerifyCaptchaRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceVerifyCaptcha)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.VerifyCaptcha(ctx, req.(*VerifyCaptchaRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*VerifyCaptchaResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -374,7 +396,7 @@ func _UserService_ListUserProfileUserBadges0_HTTP_Handler(srv UserServiceHTTPSer
 }
 
 type UserServiceHTTPClient interface {
-	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *GetCaptchaResponse, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	GetUserInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetUserInfoResponse, err error)
 	GetUserProfile(ctx context.Context, req *GetUserProfileRequest, opts ...http.CallOption) (rsp *UserProfile, err error)
@@ -388,6 +410,7 @@ type UserServiceHTTPClient interface {
 	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *User, err error)
 	UpdateUserAvatar(ctx context.Context, req *UpdateUserAvatarRequest, opts ...http.CallOption) (rsp *UpdateUserAvatarResponse, err error)
 	UpdateUserPassword(ctx context.Context, req *UpdateUserPasswordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	VerifyCaptcha(ctx context.Context, req *VerifyCaptchaRequest, opts ...http.CallOption) (rsp *VerifyCaptchaResponse, err error)
 }
 
 type UserServiceHTTPClientImpl struct {
@@ -398,8 +421,8 @@ func NewUserServiceHTTPClient(client *http.Client) UserServiceHTTPClient {
 	return &UserServiceHTTPClientImpl{client}
 }
 
-func (c *UserServiceHTTPClientImpl) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
-	var out emptypb.Empty
+func (c *UserServiceHTTPClientImpl) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...http.CallOption) (*GetCaptchaResponse, error) {
+	var out GetCaptchaResponse
 	pattern := "/captcha"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceGetCaptcha))
@@ -574,6 +597,19 @@ func (c *UserServiceHTTPClientImpl) UpdateUserPassword(ctx context.Context, in *
 	opts = append(opts, http.Operation(OperationUserServiceUpdateUserPassword))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserServiceHTTPClientImpl) VerifyCaptcha(ctx context.Context, in *VerifyCaptchaRequest, opts ...http.CallOption) (*VerifyCaptchaResponse, error) {
+	var out VerifyCaptchaResponse
+	pattern := "/captcha"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserServiceVerifyCaptcha))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
