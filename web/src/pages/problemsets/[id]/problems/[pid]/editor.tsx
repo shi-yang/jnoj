@@ -70,8 +70,6 @@ export default function App() {
               setLanguageId(userLang.id);
               setValue(res.data.userContent);
             });
-        } else {
-          setValue('');
         }
       });
   };
