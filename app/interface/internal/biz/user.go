@@ -105,7 +105,7 @@ func NewUserUsecase(repo UserRepo, c *conf.Service, logger log.Logger) *UserUsec
 func (uc *UserUsecase) Login(ctx context.Context, req *v1.LoginRequest) (string, error) {
 	uc.log.WithContext(ctx).Infof("Login: %v", req.Username)
 	if v, err := uc.repo.GetCache(ctx, req.CaptchaKey); err != nil || v != "ok" {
-		return "", v1.ErrorCaptchaError(err.Error())
+		return "", v1.ErrorCaptchaError("")
 	}
 	uc.repo.DelCache(ctx, req.CaptchaKey)
 	user, err := uc.repo.GetUser(ctx, &User{Username: req.Username})
