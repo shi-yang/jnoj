@@ -14,7 +14,7 @@ import Console from '@/modules/problem/Console';
 
 export default function App(props: any) {
   const t = useLocale(locale);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useStorage('CODE', '');
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageList, setLanguageList] = useState([]);
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');

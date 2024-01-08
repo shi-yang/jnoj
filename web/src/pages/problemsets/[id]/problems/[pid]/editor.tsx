@@ -27,7 +27,7 @@ const languageNameToMonacoLanguage = {
 export default function App() {
   const t = useLocale(locale);
   const { problem } = useContext(ProblemContext);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useStorage('CODE', '');
   const [language, setLanguage] = useStorage('CODE_LANGUAGE', '1');
   const [languageId, setLanguageId] = useState(0);
   const [theme, setTheme] = useStorage('CODE_THEME', 'light');
