@@ -87,6 +87,7 @@ func (r *contestRepo) CreateContestEvent(ctx context.Context, b *biz.ContestEven
 			UserId:    b.UserId,
 			ProblemId: b.ProblemId,
 			Type:      biz.ContestEventTypeFirstSolve,
+			CreatedAt: submissionTime,
 		}
 		r.data.db.WithContext(ctx).
 			Omit(clause.Associations).
@@ -115,6 +116,7 @@ func (r *contestRepo) CreateContestEvent(ctx context.Context, b *biz.ContestEven
 			UserId:    b.UserId,
 			ProblemId: b.ProblemId,
 			Type:      biz.ContestEventTypeAK,
+			CreatedAt: submissionTime,
 		}
 		r.data.db.WithContext(ctx).
 			Omit(clause.Associations).
