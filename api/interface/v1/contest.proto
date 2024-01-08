@@ -6,7 +6,6 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
-import "google/protobuf/duration.proto";
 
 option go_package = "api/interface/v1;v1";
 
@@ -157,16 +156,22 @@ service ContestService {
             get: "/contests/{contest_id}/rating_changes"
         };
     }
-    // 查询比赛特效
-    rpc QueryContestSpecialEffects (QueryContestSpecialEffectsRequest) returns (QueryContestSpecialEffectsResponse) {
-        option (google.api.http) = {
-            get: "/contests/{contest_id}/special_effects"
-        };
-    }
     // 获取比赛排名统计列表
     rpc ListContestStandingStats (ListContestStandingStatsRequest) returns (ListContestStandingStatsResponse) {
         option (google.api.http) = {
             get: "/contest/standing_stats"
+        };
+    }
+    // 查询比赛事件列表
+    rpc ListContestEvents (ListContestEventsRequest) returns (ListContestEventsResponse) {
+        option (google.api.http) = {
+            get: "/contests/{contest_id}/events"
+        };
+    }
+    // 查询比赛事件
+    rpc GetContestEvent (GetContestEventRequest) returns (ContestEvent) {
+        option (google.api.http) = {
+            get: "/contests/{contest_id}/events/{id}"
         };
     }
 }
@@ -412,7 +417,6 @@ message ContestUser {
     int32 old_rating = 7;
     int32 new_rating = 8;
     ContestUserRole role = 9;
-    string special_effects = 10;
 }
 
 message ListContestUsersRequest {
@@ -558,17 +562,6 @@ message CalculateContestRatingRequest {
     int32 contest_id = 1;
 }
 
-message QueryContestSpecialEffectsRequest {
-    int32 contest_id = 1;
-}
-
-message QueryContestSpecialEffectsResponse {
-    string contest_name = 1;
-    string user_name = 2;
-    google.protobuf.Duration contestDuration = 3;
-    optional google.protobuf.Duration ak_time = 4;
-}
-
 message ListContestRatingChangesRequest {
     int32 contest_id = 1;
     int32 page = 2;
@@ -595,4 +588,36 @@ message ListContestStandingStatsResponse {
         google.protobuf.Timestamp start_time = 5;
     }
     repeated ContestStanding data = 1;
+}
+
+enum ContestEventType {
+    FIRST_SOLVE = 0;
+	AK = 1;
+}
+
+message ContestEvent {
+    int32 id = 1;
+    int32 contest_id = 2;
+    int32 user_id = 3;
+    int32 problem_id = 4;
+    ContestEventType type = 5;
+    google.protobuf.Timestamp created_at = 6;
+    ContestUser user = 7;
+}
+
+message GetContestEventRequest {
+    int32 id = 1;
+    int32 contest_id = 2;
+}
+
+message ListContestEventsRequest {
+    int32 contest_id = 1;
+    int32 user_id = 2;
+    ContestEventType type = 3;
+    int32 problem_id = 4;
+}
+
+message ListContestEventsResponse {
+    repeated ContestEvent data = 1;
+    int64 total = 2;
 }

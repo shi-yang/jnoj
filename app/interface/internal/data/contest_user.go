@@ -14,22 +14,21 @@ import (
 )
 
 type ContestUser struct {
-	ID             int
-	ContestID      int
-	UserID         int
-	Name           string
-	Role           int
-	Rank           int        // 最终排名
-	Score          int        // 得分
-	VirtualStart   *time.Time // 虚拟竞赛开始时间
-	VirtualEnd     *time.Time // 虚拟竞赛结束时间
-	OldRating      int        // 上场比赛竞赛积分
-	NewRating      int        // 本场比赛竞赛积分
-	RatedAt        *time.Time // 竞赛积分计算时间
-	SpecialEffects string     // 比赛特效：allkilled，等
-	CreatedAt      time.Time
-	User           *User    `json:"user" gorm:"foreignKey:UserID"`
-	Contest        *Contest `json:"contest" gorm:"foreignKey:ContestID"`
+	ID           int
+	ContestID    int
+	UserID       int
+	Name         string
+	Role         int
+	Rank         int        // 最终排名
+	Score        int        // 得分
+	VirtualStart *time.Time // 虚拟竞赛开始时间
+	VirtualEnd   *time.Time // 虚拟竞赛结束时间
+	OldRating    int        // 上场比赛竞赛积分
+	NewRating    int        // 本场比赛竞赛积分
+	RatedAt      *time.Time // 竞赛积分计算时间
+	CreatedAt    time.Time
+	User         *User    `json:"user" gorm:"foreignKey:UserID"`
+	Contest      *Contest `json:"contest" gorm:"foreignKey:ContestID"`
 }
 
 // ListContestUsers .
@@ -112,21 +111,20 @@ func (r *contestRepo) GetContestUser(ctx context.Context, cid int, uid int) *biz
 		return nil
 	}
 	return &biz.ContestUser{
-		ID:             res.ID,
-		ContestID:      res.ContestID,
-		UserID:         res.UserID,
-		Name:           res.Name,
-		Role:           res.Role,
-		Rank:           res.Rank,
-		Score:          res.Score,
-		VirtualStart:   res.VirtualStart,
-		VirtualEnd:     res.VirtualEnd,
-		UserNickname:   res.User.Nickname,
-		UserAvatar:     res.User.Avatar,
-		OldRating:      res.OldRating,
-		NewRating:      res.NewRating,
-		SpecialEffects: res.SpecialEffects,
-		RatingChanged:  res.NewRating - res.OldRating,
+		ID:            res.ID,
+		ContestID:     res.ContestID,
+		UserID:        res.UserID,
+		Name:          res.Name,
+		Role:          res.Role,
+		Rank:          res.Rank,
+		Score:         res.Score,
+		VirtualStart:  res.VirtualStart,
+		VirtualEnd:    res.VirtualEnd,
+		UserNickname:  res.User.Nickname,
+		UserAvatar:    res.User.Avatar,
+		OldRating:     res.OldRating,
+		NewRating:     res.NewRating,
+		RatingChanged: res.NewRating - res.OldRating,
 	}
 }
 
@@ -153,17 +151,16 @@ func (r *contestRepo) CreateContestUser(ctx context.Context, b *biz.ContestUser)
 
 func (r *contestRepo) UpdateContestUser(ctx context.Context, c *biz.ContestUser) (*biz.ContestUser, error) {
 	res := ContestUser{
-		ID:             c.ID,
-		ContestID:      c.ContestID,
-		UserID:         c.UserID,
-		Name:           c.Name,
-		Role:           c.Role,
-		Rank:           c.Rank,
-		Score:          c.Score,
-		VirtualEnd:     c.VirtualEnd,
-		SpecialEffects: c.SpecialEffects,
+		ID:         c.ID,
+		ContestID:  c.ContestID,
+		UserID:     c.UserID,
+		Name:       c.Name,
+		Role:       c.Role,
+		Rank:       c.Rank,
+		Score:      c.Score,
+		VirtualEnd: c.VirtualEnd,
 	}
-	updateColumns := []string{"name", "role", "rank", "score", "special_effects"}
+	updateColumns := []string{"name", "role", "rank", "score"}
 	if c.VirtualEnd != nil {
 		updateColumns = append(updateColumns, "virtual_end")
 	}

@@ -119,12 +119,13 @@ type SubmissionRepo interface {
 
 // SubmissionUsecase is a Submission usecase.
 type SubmissionUsecase struct {
-	repo           SubmissionRepo
-	problemRepo    ProblemRepo
-	problemsetRepo ProblemsetRepo
-	contestRepo    ContestRepo
-	sandboxClient  sandboxV1.SandboxServiceClient
-	log            *log.Helper
+	repo                SubmissionRepo
+	problemRepo         ProblemRepo
+	problemsetRepo      ProblemsetRepo
+	contestRepo         ContestRepo
+	sandboxClient       sandboxV1.SandboxServiceClient
+	submissionCheckList chan int
+	log                 *log.Helper
 }
 
 // NewSubmissionUsecase new a Submission usecase.
@@ -136,13 +137,43 @@ func NewSubmissionUsecase(
 	sandboxClient sandboxV1.SandboxServiceClient,
 	logger log.Logger,
 ) *SubmissionUsecase {
-	return &SubmissionUsecase{
-		repo:           repo,
-		problemRepo:    problemRepo,
-		problemsetRepo: problemsetRepo,
-		contestRepo:    contestRepo,
-		sandboxClient:  sandboxClient,
-		log:            log.NewHelper(logger),
+	uc := &SubmissionUsecase{
+		repo:                repo,
+		problemRepo:         problemRepo,
+		problemsetRepo:      problemsetRepo,
+		contestRepo:         contestRepo,
+		sandboxClient:       sandboxClient,
+		log:                 log.NewHelper(logger),
+		submissionCheckList: make(chan int, 1<<10),
+	}
+	go func() {
+		uc.checkSubmissionResult()
+	}()
+	return uc
+}
+
+// checkSubmissionResult 判题结果出来后在这里做一些业务逻辑
+func (uc *SubmissionUsecase) checkSubmissionResult() {
+	for submissionId := range uc.submissionCheckList {
+		ticker := time.NewTicker(2 * time.Second)
+		for range ticker.C {
+			submission, err := uc.repo.GetSubmission(context.TODO(), submissionId)
+			if err != nil {
+				break
+			}
+			// 判题结果出来了
+			if submission.Verdict == SubmissionVerdictAccepted {
+				// 比赛中的提交，应对比赛事件
+				if submission.EntityType == SubmissionEntityTypeContest {
+					uc.contestRepo.CreateContestEvent(context.TODO(), &ContestEvent{
+						UserId:    submission.UserID,
+						ContestId: submission.EntityID,
+						ProblemId: submission.ProblemID,
+					}, submission.CreatedAt)
+				}
+			}
+		}
+		ticker.Stop()
 	}
 }
 
@@ -369,6 +400,9 @@ func (uc *SubmissionUsecase) CreateSubmission(ctx context.Context, s *Submission
 	uc.sandboxClient.RunSubmission(ctx, &sandboxV1.RunSubmissionRequest{
 		SubmissionId: int64(res.ID),
 	})
+	go func() {
+		uc.submissionCheckList <- res.ID
+	}()
 	return res, nil
 }
 

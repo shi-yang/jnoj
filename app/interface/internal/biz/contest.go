@@ -4,12 +4,10 @@ import (
 	"context"
 	v1 "jnoj/api/interface/v1"
 	"jnoj/internal/middleware/auth"
-	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/robfig/cron/v3"
-	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -164,6 +162,7 @@ type ContestRepo interface {
 	CronUpdateContestUserStanding(ctx context.Context)
 	ContestProblemRepo
 	ContestUserRepo
+	ContestEventRepo
 }
 
 // ContestUsecase is a Contest usecase.
@@ -399,50 +398,6 @@ func (uc *ContestUsecase) CalculateContestRating(ctx context.Context, contest *C
 		})
 	}
 	return uc.repo.SaveContestRating(ctx, contestUsers)
-}
-
-// QueryContestSpecialEffects .
-func (uc *ContestUsecase) QueryContestSpecialEffects(ctx context.Context, contest *Contest) (*v1.QueryContestSpecialEffectsResponse, error) {
-	userId, _ := auth.GetUserID(ctx)
-	cu := uc.repo.GetContestUser(ctx, contest.ID, userId)
-	if cu == nil || contest.Type == ContestTypeOI {
-		return nil, nil
-	}
-	res := &v1.QueryContestSpecialEffectsResponse{
-		ContestName:     contest.Name,
-		UserName:        cu.Name,
-		ContestDuration: durationpb.New(contest.EndTime.Sub(contest.StartTime)),
-	}
-	if res.UserName == "" {
-		res.UserName = cu.UserNickname
-	}
-	if strings.Contains(cu.SpecialEffects, ContestUserSpecialEffects) {
-		return nil, nil
-	}
-	// 判断是否满足AK条件
-	entityType := int32(SubmissionEntityTypeContest)
-	submissions, _ := uc.submissionRepo.ListSubmissions(ctx, &v1.ListSubmissionsRequest{
-		UserId:     int32(userId),
-		EntityId:   int32(contest.ID),
-		EntityType: &entityType,
-		Verdict:    []int32{SubmissionVerdictAccepted},
-	})
-	var akTime time.Time
-	submissionProblem := make(map[int]struct{})
-	for _, s := range submissions {
-		submissionProblem[s.ProblemID] = struct{}{}
-		// 记录AK时间
-		if s.CreatedAt.Before(contest.EndTime) && akTime.Before(s.CreatedAt) {
-			akTime = s.CreatedAt
-		}
-	}
-	problems, _ := uc.repo.ListContestProblems(ctx, contest.ID)
-	if len(problems) == len(submissionProblem) {
-		cu.SpecialEffects = ContestUserSpecialEffects
-		res.AkTime = durationpb.New(akTime.Sub(contest.StartTime))
-		uc.repo.UpdateContestUser(ctx, cu)
-	}
-	return res, nil
 }
 
 // ListContestRatingChange 获取等级分变化

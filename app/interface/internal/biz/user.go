@@ -26,6 +26,7 @@ type User struct {
 	ID          int
 	Username    string
 	Nickname    string
+	Realname    string
 	Avatar      string
 	Email       string
 	Phone       string

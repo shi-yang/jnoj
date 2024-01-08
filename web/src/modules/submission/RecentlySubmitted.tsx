@@ -9,7 +9,7 @@ import { IconCheckCircle, IconCloseCircle } from '@arco-design/web-react/icon';
 import React, { useRef, useState, useEffect } from 'react';
 import locale from './locale';
 import SubmissionModalAnimation from './SubmissionModalAnimation';
-import ContestAnimationModal from '../contest/ContestAnimationModal';
+import ContestEventModal from '../contest/ContestEventModal';
 import getConfig from "next/config";
 const { publicRuntimeConfig } = getConfig();
 
@@ -33,7 +33,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   const [btnContent, setBtnContent] = useState('');
   const user = useAppSelector(userInfo);
   const submissionModalAnimationRef = useRef(null);
-  const contestAnimationModalRef = useRef(null);
+  const contestEventModalRef = useRef(null);
   // websocket 即时向用户反馈测评进度
   function wsConnect() {
     ws.current = new WebSocket(publicRuntimeConfig.API_WS_URL + '?uid=' + user.id);
@@ -56,7 +56,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
               props.animation && submissionModalAnimationRef.current.done(res.data);
               // 查询是否有AK
               if (res.data.verdict === 4 && props.entityType === 1) {
-                contestAnimationModalRef.current.run(props.entityId);
+                contestEventModalRef.current.run(res.data.entityId, 0, res.data.userId);
               }
             });
         }
@@ -124,7 +124,7 @@ const RecentlySubmitted = React.memo((props: RecentlySubmittedProps) => {
   }
   return (
     <>
-      { props.entityType === 1 && <ContestAnimationModal ref={contestAnimationModalRef} />}
+      { props.entityType === 1 && <ContestEventModal ref={contestEventModalRef} />}
       <SubmissionModalAnimation ref={submissionModalAnimationRef} />
       {
         submission.id !== 0 &&

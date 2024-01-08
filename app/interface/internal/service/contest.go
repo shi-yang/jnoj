@@ -439,15 +439,14 @@ func (s *ContestService) GetContestUser(ctx context.Context, req *v1.GetContestU
 		return nil, v1.ErrorNotFound(err.Error())
 	}
 	cu := &v1.ContestUser{
-		Id:             int32(contestUser.ID),
-		Name:           contestUser.Name,
-		UserId:         int32(contestUser.UserID),
-		UserNickname:   contestUser.UserNickname,
-		UserAvatar:     contestUser.UserAvatar,
-		SpecialEffects: contestUser.SpecialEffects,
-		Role:           v1.ContestUserRole(contestUser.Role),
-		OldRating:      int32(contestUser.OldRating),
-		NewRating:      int32(contestUser.NewRating),
+		Id:           int32(contestUser.ID),
+		Name:         contestUser.Name,
+		UserId:       int32(contestUser.UserID),
+		UserNickname: contestUser.UserNickname,
+		UserAvatar:   contestUser.UserAvatar,
+		Role:         v1.ContestUserRole(contestUser.Role),
+		OldRating:    int32(contestUser.OldRating),
+		NewRating:    int32(contestUser.NewRating),
 	}
 	return cu, nil
 }
@@ -603,15 +602,6 @@ func (s *ContestService) CalculateContestRating(ctx context.Context, req *v1.Cal
 	return &emptypb.Empty{}, err
 }
 
-// QueryContestSpecialEffects 查询比赛特效
-func (s *ContestService) QueryContestSpecialEffects(ctx context.Context, req *v1.QueryContestSpecialEffectsRequest) (*v1.QueryContestSpecialEffectsResponse, error) {
-	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
-	if err != nil {
-		return nil, v1.ErrorContestNotFound(err.Error())
-	}
-	return s.uc.QueryContestSpecialEffects(ctx, contest)
-}
-
 // ListContestRatingChange 获取等级分变化
 func (s *ContestService) ListContestRatingChanges(ctx context.Context, req *v1.ListContestRatingChangesRequest) (*v1.ListContestRatingChangesResponse, error) {
 	contest, err := s.uc.GetContest(ctx, int(req.ContestId))
@@ -624,5 +614,57 @@ func (s *ContestService) ListContestRatingChanges(ctx context.Context, req *v1.L
 // ListContestStandingStats 获取比赛排名统计列表
 func (s *ContestService) ListContestStandingStats(ctx context.Context, req *v1.ListContestStandingStatsRequest) (*v1.ListContestStandingStatsResponse, error) {
 	resp := s.uc.ListContestStandingStats(ctx, req)
+	return resp, nil
+}
+
+// GetContestEvent 获取比赛事件
+func (s *ContestService) GetContestEvent(ctx context.Context, req *v1.GetContestEventRequest) (*v1.ContestEvent, error) {
+	res, err := s.uc.GetContestEvent(ctx, int(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	ce := &v1.ContestEvent{
+		Id:        int32(res.Id),
+		ContestId: int32(res.ContestId),
+		UserId:    int32(res.UserId),
+		Type:      v1.ContestEventType(res.Type),
+		ProblemId: int32(res.ProblemId),
+		CreatedAt: timestamppb.New(res.CreatedAt),
+	}
+	if res.ContestUser != nil {
+		ce.User = &v1.ContestUser{
+			UserId:       int32(res.ContestUser.UserID),
+			UserNickname: res.ContestUser.UserNickname,
+			UserAvatar:   res.ContestUser.UserAvatar,
+			Name:         res.ContestUser.Name,
+		}
+	}
+	return ce, nil
+}
+
+// ListContestEvents 获取比赛事件列表
+func (s *ContestService) ListContestEvents(ctx context.Context, req *v1.ListContestEventsRequest) (*v1.ListContestEventsResponse, error) {
+	res, count := s.uc.ListContestEvents(ctx, int(req.ContestId), int(req.UserId))
+	resp := new(v1.ListContestEventsResponse)
+	resp.Total = count
+	for _, v := range res {
+		ce := &v1.ContestEvent{
+			Id:        int32(v.Id),
+			ContestId: int32(v.ContestId),
+			UserId:    int32(v.UserId),
+			Type:      v1.ContestEventType(v.Type),
+			ProblemId: int32(v.ProblemId),
+			CreatedAt: timestamppb.New(v.CreatedAt),
+		}
+		if v.ContestUser != nil {
+			ce.User = &v1.ContestUser{
+				UserId:       int32(v.ContestUser.UserID),
+				UserNickname: v.ContestUser.UserNickname,
+				UserAvatar:   v.ContestUser.UserAvatar,
+				Name:         v.ContestUser.Name,
+			}
+		}
+		resp.Data = append(resp.Data, ce)
+	}
 	return resp, nil
 }

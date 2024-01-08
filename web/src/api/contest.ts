@@ -92,14 +92,18 @@ export function calculateContestRating(id: number) {
   return axios.post(`/contests/${id}/calculate_rating`, {});
 }
 
-export function queryContestSpecialEffects(id: number) {
-  return axios.get(`/contests/${id}/special_effects`);
-}
-
 export function listContestRatingChanges(id: number, params) {
   return axios.get(`/contests/${id}/rating_changes`, {params});
 }
 
 export function listContestStandingStats(params) {
   return axios.get(`/contest/standing_stats`, {params});
+}
+
+export function listContestEvents(id: number, params=undefined) {
+  return axios.get(`/contests/${id}/events`, {params});
+}
+
+export function getContestEvent(contestId: number, id: number) {
+  return axios.get(`/contests/${contestId}/events/${id}`);
 }

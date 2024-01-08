@@ -24,12 +24,38 @@ func Migrate(db *gorm.DB) {
 		MigrateAddProblemsetUserScore20230831(),
 		MigrateAddContestUserRank20230903(),
 		MigrateFixCannotSubmitProblemsetExam20230906(),
+		MigrateAddContestEvent20240108(),
 	})
 	m.InitSchema(MigrateInitDB)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migration did run successfully")
+}
+
+func MigrateAddContestEvent20240108() *gormigrate.Migration {
+	return &gormigrate.Migration{
+		ID: "MigrateAddContestEvent20240108",
+		Migrate: func(d *gorm.DB) error {
+			d.Exec("ALTER TABLE `contest_user` DROP `special_effects`;")
+			err := d.Exec("CREATE TABLE `contest_event` (" +
+				"`id` INT UNSIGNED NOT NULL AUTO_INCREMENT," +
+				"`contest_id` INT UNSIGNED NOT NULL," +
+				"`user_id` INT UNSIGNED NOT NULL," +
+				"`problem_id` INT UNSIGNED NOT NULL," +
+				"`type` TINYINT UNSIGNED NOT NULL," +
+				"`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+				"PRIMARY KEY (`id`)," +
+				"INDEX `idx_contest_id`(`contest_id`)," +
+				"INDEX `idx_user_id`(`user_id`)," +
+				"INDEX `idx_problem_id`(`problem_id`)" +
+				") ENGINE = InnoDB CHARSET = utf8mb4 COLLATE utf8mb4_general_ci;").Error
+			return err
+		},
+		Rollback: func(d *gorm.DB) error {
+			return d.Exec("DROP TABLE `contest_event`").Error
+		},
+	}
 }
 
 func MigrateFixCannotSubmitProblemsetExam20230906() *gormigrate.Migration {

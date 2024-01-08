@@ -9,22 +9,21 @@ import (
 
 // ContestUser is a ContestUser model.
 type ContestUser struct {
-	ID             int
-	UserID         int
-	ContestID      int
-	Name           string // 自定义参赛名称
-	Role           int
-	UserNickname   string
-	UserAvatar     string
-	Rank           int
-	Score          int
-	OldRating      int        // 上场比赛竞赛积分
-	NewRating      int        // 本场比赛竞赛积分
-	RatingChanged  int        // 积分增减
-	RatedAt        *time.Time // 竞赛积分计算时间
-	SpecialEffects string     // 比赛特效：allkilled，等
-	VirtualStart   *time.Time // 虚拟竞赛开始时间
-	VirtualEnd     *time.Time // 虚拟竞赛结束时间
+	ID            int
+	UserID        int
+	ContestID     int
+	Name          string // 自定义参赛名称
+	Role          int
+	UserNickname  string
+	UserAvatar    string
+	Rank          int
+	Score         int
+	OldRating     int        // 上场比赛竞赛积分
+	NewRating     int        // 本场比赛竞赛积分
+	RatingChanged int        // 积分增减
+	RatedAt       *time.Time // 竞赛积分计算时间
+	VirtualStart  *time.Time // 虚拟竞赛开始时间
+	VirtualEnd    *time.Time // 虚拟竞赛结束时间
 }
 
 const (
