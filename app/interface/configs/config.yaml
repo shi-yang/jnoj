@@ -24,8 +24,6 @@ data:
       secret_id: "${S3_PUBLIC_SECRET_ID}"
       secret_key: "${S3_PUBLIC_SECRET_KEY}"
       endpoint: "${S3_PUBLIC_ENDPOINT}"
-  message_queue:
-    address: "amqp://admin:admin@rabbitmq:5672/"
 service:
   smtp:
     ssl: true
@@ -33,7 +31,3 @@ service:
     username: no-reply@jnoj.dev
     password: GKce4Jj7F8tBzkYQ
     host: smtp.exmail.qq.com
-
-consul:
-  address: consul:8500
-  scheme: http

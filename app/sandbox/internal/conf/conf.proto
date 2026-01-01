@@ -60,14 +60,6 @@ message Data {
 message Service {
 }
 
-message Registry {
-  message Consul {
-      string address = 1;
-      string scheme = 2;
-  }
-  Consul consul = 1;
-}
-
 message Sandbox {
   string testlib_path = 1;
 }

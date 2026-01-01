@@ -7,6 +7,7 @@ import (
 	"io"
 	"jnoj/app/sandbox/internal/conf"
 	"jnoj/pkg/sandbox"
+	"jnoj/pkg/testlib"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -186,9 +187,15 @@ var checkerLanguage *sandbox.Language
 
 // NewSubmissionUsecase new a Submission usecase.
 func NewSubmissionUsecase(c *conf.Sandbox, repo SubmissionRepo, sandboxRepo SandboxRepo, logger log.Logger) *SubmissionUsecase {
+	// 从嵌入的文件中获取 testlib 路径
+	testlibPath, err := testlib.GetTestlibPath()
+	if err != nil {
+		log.Fatalf("Failed to initialize testlib path: %v", err)
+	}
+
 	checkerLanguage = &sandbox.Language{
 		Name: "checker",
-		CompileCommand: []string{"g++", "checker.cpp", "-o", "checker.exe", "-I" + c.TestlibPath, "-Wall",
+		CompileCommand: []string{"g++", "checker.cpp", "-o", "checker.exe", "-I" + testlibPath, "-Wall",
 			"-fno-asm", "-O2", "-lm", "--static", "-std=c++11", "-DONLINE_JUDGE", "-save-temps", "-fmax-errors=10"},
 		RunCommand:   []string{"./checker.exe", "data.in", "user.stdout", "data.out"},
 		CodeFileName: "checker.cpp",
@@ -200,7 +207,7 @@ func NewSubmissionUsecase(c *conf.Sandbox, repo SubmissionRepo, sandboxRepo Sand
 		sandboxRepo: sandboxRepo,
 		log:         log.NewHelper(logger),
 	}
-	err := s.repo.RunSubmissionFromQueue(context.Background(), s.RunSubmission)
+	err = s.repo.RunSubmissionFromQueue(context.Background(), s.RunSubmission)
 	if err != nil {
 		log.Fatal(err)
 	}

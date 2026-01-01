@@ -24,10 +24,5 @@ data:
       secret_id: "${S3_PUBLIC_SECRET_ID}"
       secret_key: "${S3_PUBLIC_SECRET_KEY}"
       endpoint: "${S3_PUBLIC_ENDPOINT}"
-  message_queue:
-    address: "amqp://admin:admin@rabbitmq:5672/"
-consul:
-  address: consul:8500
-  scheme: http
 sandbox:
   testlib_path: "/go/src/sandbox/third_party/testlib"

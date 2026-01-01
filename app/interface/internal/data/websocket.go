@@ -3,34 +3,36 @@ package data
 import (
 	"context"
 	"jnoj/app/interface/internal/biz"
-	"log"
+	"jnoj/pkg/queue"
 
-	"github.com/wagslane/go-rabbitmq"
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type websocketRepo struct {
-	data *Data
+	data     *Data
+	consumer queue.Consumer
+	log      *log.Helper
 }
 
-func NewWebSocketRepo(data *Data) biz.WebSocketRepo {
+func NewWebSocketRepo(data *Data, logger log.Logger) biz.WebSocketRepo {
+	consumer := queue.NewRedisConsumer(data.redisdb, logger)
 	return &websocketRepo{
-		data: data,
+		data:     data,
+		consumer: consumer,
+		log:      log.NewHelper(logger),
 	}
 }
 
 func (r *websocketRepo) HandlerMessageFromQueue(ctx context.Context, handler func(context.Context, []byte) error) {
-	_, err := rabbitmq.NewConsumer(
-		r.data.mqConn,
-		func(d rabbitmq.Delivery) rabbitmq.Action {
-			handler(context.TODO(), d.Body)
-			return rabbitmq.Ack
-		},
-		"websocket",
-		rabbitmq.WithConsumerOptionsRoutingKey("websocket"),
-		rabbitmq.WithConsumerOptionsExchangeName("websocket"),
-		rabbitmq.WithConsumerOptionsExchangeDeclare,
-	)
+	channelName := queue.ChannelKey("websocket")
+	r.log.Infof("starting to subscribe channel: %s", channelName)
+	err := r.consumer.Subscribe(ctx, channelName, func(data []byte) error {
+		// r.log.Infof("receive message from queue, length: %d, content: %s", len(data), string(data))
+		return handler(context.TODO(), data)
+	})
 	if err != nil {
+		r.log.Errorf("failed to subscribe channel %s: %v", channelName, err)
 		log.Fatal(err)
 	}
+	r.log.Infof("subscribed to channel: %s successfully", channelName)
 }

@@ -74,11 +74,7 @@ func main() {
 		panic(err)
 	}
 
-	var rc conf.Registry
-	if err := c.Scan(&rc); err != nil {
-		panic(err)
-	}
-	app, cleanup, err := wireApp(bc.Server, bc.Data, &rc, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
 	if err != nil {
 		panic(err)
 	}

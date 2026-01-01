@@ -4,7 +4,6 @@ import (
 	"context"
 	v1 "jnoj/api/admin/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
-	"jnoj/app/admin/internal/conf"
 	"strings"
 	"time"
 
@@ -30,7 +29,6 @@ type AdminUsecase struct {
 func NewAdminUsecase(
 	logger log.Logger,
 	discovery registry.Discovery,
-	conf *conf.Registry,
 	repo AdminRepo,
 ) *AdminUsecase {
 	return &AdminUsecase{

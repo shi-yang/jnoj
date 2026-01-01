@@ -9,12 +9,12 @@ import (
 	"jnoj/app/interface/internal/conf"
 	"jnoj/internal/middleware/auth"
 
-	consul "github.com/go-kratos/consul/registry"
+	redisRegistry "jnoj/internal/contrib/registry/redis"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	consulAPI "github.com/hashicorp/consul/api"
 
 	v1 "jnoj/api/interface/v1"
 	sandboxV1 "jnoj/api/sandbox/v1"
@@ -100,16 +100,8 @@ func (uc *SandboxUsecase) Run(ctx context.Context, req *v1.RunRequest) (*v1.RunR
 	return &v1.RunResponse{Results: results, CompileMsg: res.CompileMsg}, nil
 }
 
-func NewDiscovery(conf *conf.Registry) registry.Discovery {
-	c := consulAPI.DefaultConfig()
-	c.Address = conf.Consul.Address
-	c.Scheme = conf.Consul.Scheme
-	cli, err := consulAPI.NewClient(c)
-	if err != nil {
-		panic(err)
-	}
-	r := consul.New(cli, consul.WithHealthCheck(false))
-	return r
+func NewDiscovery(conf *conf.Data) registry.Discovery {
+	return redisRegistry.New(conf.Redis.Addr, redisRegistry.WithHealthCheck(false))
 }
 
 func NewSandboxClient(r registry.Discovery) sandboxV1.SandboxServiceClient {

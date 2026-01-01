@@ -12,7 +12,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport"
-	jwt2 "github.com/golang-jwt/jwt/v4"
+	jwt5 "github.com/golang-jwt/jwt/v5"
 )
 
 var jwt_key = "xTtbTjnc5KmBfRYf3b1pMjf1KxFjaQE1"
@@ -31,16 +31,16 @@ const (
 
 // User 必须要携带 jwt token 才能访问接口
 func User() middleware.Middleware {
-	return jwt.Server(func(token *jwt2.Token) (interface{}, error) {
+	return jwt.Server(func(token *jwt5.Token) (interface{}, error) {
 		return []byte(jwt_key), nil
-	}, jwt.WithSigningMethod(jwt2.SigningMethodHS256), jwt.WithClaims(func() jwt2.Claims {
-		return &jwt2.MapClaims{}
+	}, jwt.WithSigningMethod(jwt5.SigningMethodHS256), jwt.WithClaims(func() jwt5.Claims {
+		return &jwt5.MapClaims{}
 	}))
 }
 
 // Guest 可携带可不携带。用于某些接口根据用户的登录情况不同返回对应的数据
 func Guest() middleware.Middleware {
-	keyFunc := func(token *jwt2.Token) (interface{}, error) {
+	keyFunc := func(token *jwt5.Token) (interface{}, error) {
 		return []byte(jwt_key), nil
 	}
 	return func(handler middleware.Handler) middleware.Handler {
@@ -52,10 +52,10 @@ func Guest() middleware.Middleware {
 				}
 				jwtToken := auths[1]
 				var (
-					tokenInfo *jwt2.Token
+					tokenInfo *jwt5.Token
 					err       error
 				)
-				tokenInfo, err = jwt2.ParseWithClaims(jwtToken, &jwt2.MapClaims{}, keyFunc)
+				tokenInfo, err = jwt5.ParseWithClaims(jwtToken, &jwt5.MapClaims{}, keyFunc)
 				if err != nil {
 					return handler(ctx, req)
 				}
@@ -71,8 +71,8 @@ func Guest() middleware.Middleware {
 func GenerateToken(userID int, userRole int) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(7 * 24 * time.Hour)
-	date := jwt2.NewNumericDate(expireTime)
-	tokenClaims := jwt2.NewWithClaims(jwt2.SigningMethodHS256, jwt2.MapClaims{
+	date := jwt5.NewNumericDate(expireTime)
+	tokenClaims := jwt5.NewWithClaims(jwt5.SigningMethodHS256, jwt5.MapClaims{
 		"userId":   userID,
 		"userRole": userRole,
 		"exp":      date,
@@ -85,11 +85,8 @@ func GetUserID(ctx context.Context) (userId int, userRole int) {
 	if !ok {
 		return 0, -1
 	}
-	if err := token.Valid(); err != nil {
-		return 0, -1
-	}
-	claims, ok := token.(*jwt2.MapClaims)
-	if !ok || claims.Valid() != nil {
+	claims, ok := token.(*jwt5.MapClaims)
+	if !ok {
 		return 0, -1
 	}
 	userId, _ = interfaceToInt((*claims)["userId"])

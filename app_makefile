@@ -94,7 +94,7 @@ docker:
 .PHONY: wire
 # generate wire
 wire:
-	cd cmd/server && wire
+	cd cmd/server && go run -mod=mod github.com/google/wire/cmd/wire
 
 .PHONY: api
 # generate api proto

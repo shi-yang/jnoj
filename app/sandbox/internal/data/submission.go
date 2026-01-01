@@ -12,46 +12,33 @@ import (
 
 	queueV1 "jnoj/api/queue/v1"
 	objectstorage "jnoj/pkg/object_storage"
+	"jnoj/pkg/queue"
 
 	"github.com/go-kratos/kratos/v2/encoding"
 	_ "github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/wagslane/go-rabbitmq"
 	"gorm.io/gorm/clause"
 )
 
 type submissionRepo struct {
 	data                *Data
 	log                 *log.Helper
-	websocketPublisher  *rabbitmq.Publisher
-	submissionPublisher *rabbitmq.Publisher
+	websocketPublisher  queue.Publisher
+	submissionPublisher queue.Publisher
+	consumer            queue.Consumer
 }
 
 // NewSubmissionRepo .
 func NewSubmissionRepo(data *Data, logger log.Logger) biz.SubmissionRepo {
-	websocketPublisher, err := rabbitmq.NewPublisher(
-		data.mqConn,
-		rabbitmq.WithPublisherOptionsLogging,
-		rabbitmq.WithPublisherOptionsExchangeName("events"),
-		rabbitmq.WithPublisherOptionsExchangeDeclare,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	submissionPublisher, err := rabbitmq.NewPublisher(
-		data.mqConn,
-		rabbitmq.WithPublisherOptionsLogging,
-		rabbitmq.WithPublisherOptionsExchangeName("events"),
-		rabbitmq.WithPublisherOptionsExchangeDeclare,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
+	websocketPublisher := queue.NewRedisPublisher(data.redisdb, logger)
+	submissionPublisher := queue.NewRedisPublisher(data.redisdb, logger)
+	consumer := queue.NewRedisConsumer(data.redisdb, logger)
 	return &submissionRepo{
 		data:                data,
 		log:                 log.NewHelper(logger),
 		websocketPublisher:  websocketPublisher,
 		submissionPublisher: submissionPublisher,
+		consumer:            consumer,
 	}
 }
 
@@ -290,14 +277,8 @@ func (r *submissionRepo) UpdateProblemTestStdOutput(ctx context.Context, id int,
 // SendSubmissionToQueue 将提交加入到测评队列
 func (r *submissionRepo) SendSubmissionToQueue(ctx context.Context, id int) error {
 	idStr := strconv.Itoa(id)
-	err := r.submissionPublisher.PublishWithContext(
-		context.Background(),
-		[]byte(idStr),
-		[]string{"submission_key"},
-		rabbitmq.WithPublishOptionsMandatory,
-		rabbitmq.WithPublishOptionsPersistentDelivery,
-		rabbitmq.WithPublishOptionsExchange("submission"),
-	)
+	queueName := queue.QueueKey("submission")
+	err := r.submissionPublisher.Publish(ctx, queueName, []byte(idStr))
 	return err
 }
 
@@ -308,21 +289,12 @@ func (r *submissionRepo) RunSubmissionFromQueue(ctx context.Context, handler fun
 	if concurrency > 4 {
 		concurrency /= 2
 	}
-	_, err := rabbitmq.NewConsumer(
-		r.data.mqConn,
-		func(d rabbitmq.Delivery) rabbitmq.Action {
-			submissionId, _ := strconv.Atoi(string(d.Body))
-			handler(context.TODO(), submissionId)
-			// rabbitmq.Ack, rabbitmq.NackDiscard, rabbitmq.NackRequeue
-			return rabbitmq.Ack
-		},
-		"submission",
-		rabbitmq.WithConsumerOptionsRoutingKey("submission_key"),
-		rabbitmq.WithConsumerOptionsExchangeName("submission"),
-		rabbitmq.WithConsumerOptionsExchangeDeclare,
-		rabbitmq.WithConsumerOptionsExchangeDurable,
-		rabbitmq.WithConsumerOptionsConcurrency(concurrency), // 并发执行数量
-	)
+	queueName := queue.QueueKey("submission")
+	err := r.consumer.ConsumeWithConcurrency(ctx, queueName, concurrency, func(data []byte) error {
+		submissionId, _ := strconv.Atoi(string(data))
+		// r.log.Info("receive message from queue:", submissionId)
+		return handler(context.TODO(), submissionId)
+	})
 	return err
 }
 
@@ -330,11 +302,8 @@ func (r *submissionRepo) RunSubmissionFromQueue(ctx context.Context, handler fun
 func (r *submissionRepo) SendWebsocketMessage(ctx context.Context, message *queueV1.Message) error {
 	jsonCodec := encoding.GetCodec("json")
 	res, _ := jsonCodec.Marshal(message)
-	r.websocketPublisher.PublishWithContext(
-		context.Background(),
-		res,
-		[]string{"websocket"},
-		rabbitmq.WithPublishOptionsExchange("websocket"),
-	)
-	return nil
+	channelName := queue.ChannelKey("websocket")
+	// r.log.Info("send websocket message to queue:", string(res))
+	err := r.websocketPublisher.PublishToChannel(ctx, channelName, res)
+	return err
 }

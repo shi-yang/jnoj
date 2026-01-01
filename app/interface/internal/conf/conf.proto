@@ -66,11 +66,3 @@ message Data {
   ObjectStorage object_storage = 3;
   MessageQueue message_queue = 4;
 }
-
-message Registry {
-  message Consul {
-      string address = 1;
-      string scheme = 2;
-  }
-  Consul consul = 1;
-}
